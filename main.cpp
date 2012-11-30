@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
 
     a.setApplicationName("AccessManager");
     a.setApplicationVersion(QString::fromUtf8("0.2 unstable"));
-    a.setOrganizationName(QObject::trUtf8("Rostelecom"));
+    a.setOrganizationName(QObject::trUtf8("rt.ru"));
     Config::initializePath();
     QPixmap pixmap(":/images/splash.png");
     QSplashScreen splash(pixmap);
