@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DslamPageWidget</class>
+ <widget class="QWidget" name="DslamPageWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>608</width>
+    <height>347</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>460</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="boardNameLabel">
+     <property name="text">
+      <string>Доска X</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="QTreeView" name="dslamTreeView">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="backToBoardListButton">
+     <property name="text">
+      <string>Назад</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resource.qrc">
+       <normaloff>:/images/prev.png</normaloff>:/images/prev.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QGroupBox" name="selectProfileGroupBox">
+     <property name="title">
+      <string>Выбор профиля</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="profileDescLabel">
+        <property name="text">
+         <string>Профиль</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="profileListComboBox"/>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="applyProfileButton">
+          <property name="text">
+           <string>Применить</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+  <action name="upPortAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/up.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Активировать порт</string>
+   </property>
+   <property name="toolTip">
+    <string>Активировать порт</string>
+   </property>
+  </action>
+  <action name="downPortAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/down.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Деактивировать порт</string>
+   </property>
+   <property name="toolTip">
+    <string>Деактивировать порт</string>
+   </property>
+  </action>
+  <action name="refreshPortInfoAction">
+   <property name="text">
+    <string>Обновить информацию по порту</string>
+   </property>
+   <property name="toolTip">
+    <string>Обновить информацию по порту</string>
+   </property>
+  </action>
+  <action name="refreshAllPortInfoAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/refresh.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Обновить все</string>
+   </property>
+   <property name="toolTip">
+    <string>Обновить все</string>
+   </property>
+  </action>
+  <action name="collapseAllNodeAction">
+   <property name="text">
+    <string>Свернуть все</string>
+   </property>
+   <property name="toolTip">
+    <string>Свернуть все</string>
+   </property>
+  </action>
+  <action name="showBoardAction">
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+   <property name="toolTip">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="showSelectProfileGBAction">
+   <property name="text">
+    <string>Изменить профиль</string>
+   </property>
+   <property name="toolTip">
+    <string>Изменить профиль</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

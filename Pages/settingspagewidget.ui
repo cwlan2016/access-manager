@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsPageWidget</class>
+ <widget class="QWidget" name="SettingsPageWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>605</width>
+    <height>409</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="topHorizontalLayout">
+     <item>
+      <widget class="QListWidget" name="listWidget">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>90</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>SNMP</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="viewPage">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="styleGroupBox">
+           <property name="title">
+            <string>Стиль</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="viewSettingsGroupBox">
+           <property name="title">
+            <string>Параметры отображения таблиц</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="snmpPage">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QGroupBox" name="snmpSettingsGroupBox">
+           <property name="title">
+            <string>Параметры SNMP</string>
+           </property>
+           <layout class="QFormLayout" name="formLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="readComLabel">
+              <property name="text">
+               <string>Read community</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="readComEdit"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="writeComEdit"/>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="timeoutEdit"/>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLineEdit" name="portEdit"/>
+            </item>
+            <item row="6" column="1">
+             <widget class="QLineEdit" name="retriesEdit"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="writeComLabel">
+              <property name="text">
+               <string>Write community</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="timeoutLabel">
+              <property name="text">
+               <string>Таймаут, мс</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="portLabel">
+              <property name="text">
+               <string>Порт</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="retriesLabel">
+              <property name="text">
+               <string>Повторы</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="saveTimeoutLabel">
+              <property name="text">
+               <string>Таймаут сохранения, мс</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="saveTimeoutEdit"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottomHorizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="saveSettingsButton">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Сохранить</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
