@@ -164,12 +164,12 @@ const QString Pairs =           QString::fromUtf8("Пары");
 
 namespace OntTableModelColumn
 {
-const QString Id =              QString::fromUtf8("Mac/Serial");
-const QString Model =           QString::fromUtf8("Модель");
-const QString State =           QString::fromUtf8("Статус");
-const QString Description =     QString::fromUtf8("Описание");
-const QString ServiceProfile =         QString::fromUtf8("Сервисный профиль");
-const QString MulticastProfile =       QString::fromUtf8("Мультикастовый профиль");
+const QString Id =                  QString::fromUtf8("Mac/Serial");
+const QString Model =               QString::fromUtf8("Модель");
+const QString State =               QString::fromUtf8("Статус");
+const QString Description =         QString::fromUtf8("Описание");
+const QString ServiceProfile =      QString::fromUtf8("Сервисный профиль");
+const QString MulticastProfile =    QString::fromUtf8("Мультикастовый профиль");
 }
 
 namespace SnmpErrors
