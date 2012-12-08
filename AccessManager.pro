@@ -17,6 +17,9 @@ QMAKE_CXXFLAGS+="-std=c++11"
 
 QMAKE_CXXFLAGS_RELEASE+="-O2"
 
+QMAKE_CXXFLAGS_DEBUG +="-pg"
+QMAKE_LFLAGS_DEBUG +="-pg"
+
 SOURCES += main.cpp\
     mainwindow.cpp \
     Models/maclistmodel.cpp \
@@ -55,7 +58,11 @@ SOURCES += main.cpp\
     Pages/editdslamboardlistpagewidget.cpp \
     Pages/aboutpagewidget.cpp \
     Pages/settingspagewidget.cpp \
-    Pages/devicelistpagewidget.cpp
+    Pages/devicelistpagewidget.cpp \
+    Models/onttablemodel.cpp \
+    Info/ontinfo.cpp \
+    Info/nteinfo.cpp \
+    Info/ntpinfo.cpp
 
 HEADERS  += mainwindow.h \
     Models/maclistmodel.h \
@@ -94,7 +101,11 @@ HEADERS  += mainwindow.h \
     Pages/editdslamboardlistpagewidget.h \
     Pages/aboutpagewidget.h \
     Pages/settingspagewidget.h \
-    Pages/devicelistpagewidget.h
+    Pages/devicelistpagewidget.h \
+    Models/onttablemodel.h \
+    Info/ontinfo.h \
+    Info/nteinfo.h \
+    Info/ntpinfo.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \

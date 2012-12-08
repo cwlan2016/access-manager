@@ -317,7 +317,7 @@ bool DeviceListModel::save()
     writer.writeStartElement("devicelist");
 
 
-    for (const DeviceInfo::Ptr &deviceInfo : mDeviceList)
+    for (const DeviceInfo::Ptr& deviceInfo : mDeviceList)
     {
         if (deviceInfo->deviceType() == DeviceType::Switch)
         {
@@ -497,15 +497,14 @@ void DeviceListModel::createOltElement(QXmlStreamWriter& writer, const OltInfo::
 
 void DeviceListModel::createOltProfileList(QXmlStreamWriter& writer, const OltProfileMap& profileMap, QString typeElem)
 {
-    std::for_each(profileMap.begin(), profileMap.end(),
-                  [&](const std::pair<const int, QString>& elem)
-                  {
-                    writer.writeStartElement(typeElem);
+    for (const std::pair<const int, QString>& elem : profileMap)
+    {
+        writer.writeStartElement(typeElem);
 
-                    writer.writeAttribute("index", QString::number(elem.first));
-                    writer.writeAttribute("name", elem.second);
+        writer.writeAttribute("index", QString::number(elem.first));
+        writer.writeAttribute("name", elem.second);
 
-                    writer.writeEndElement();
-                  });
+        writer.writeEndElement();
+    }
 }
 

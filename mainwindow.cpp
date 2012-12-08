@@ -16,9 +16,6 @@ MainWindow::MainWindow(QWidget* parent) :
     connect(ui->settingsAction, SIGNAL(triggered()), SLOT(showSettingsPage()));
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), SLOT(tabCloseRequested(int)));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabCurrentChanged(int)));
-    connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), SLOT(sUpdateVlanInfoAllSwitch()));
-    connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), SLOT(sUpdateBoardInfoAllDslam()));
-    connect(ui->editDslamBoardListAction, SIGNAL(triggered()), SLOT(showEditDslamBoardListPage()));
     connect(ui->saveConfigSwitchAction, SIGNAL(triggered()), SLOT(saveSwitchConfig()));
     connect(ui->upPortAction, SIGNAL(triggered()), SLOT(upDslPort()));
     connect(ui->downPortAction, SIGNAL(triggered()), SLOT(downDslPort()));
@@ -32,6 +29,7 @@ MainWindow::MainWindow(QWidget* parent) :
 
     ui->menuSwitch->setEnabled(false);
     ui->menuDslam->setEnabled(false);
+    ui->menuOlt->setEnabled(false);
 
     this->setWindowState(Qt::WindowMaximized);
 
@@ -61,6 +59,8 @@ void MainWindow::createDeviceListPage()
     connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateVlanInfoSwitch()));
     connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateBoardsInfoDslam()));
     connect(ui->updateInfoAllDevicesAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateInfoAllDevices()));
+    connect(ui->updateAllProfileOltInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateProfileOlt()));
+    connect(ui->editDslamBoardListAction, SIGNAL(triggered()), deviceListPage, SLOT(showEditDslamBoardListPage()));
     connect(deviceListPage, SIGNAL(changedActiveItem(QModelIndex)), SLOT(deviceViewActivatedItem(QModelIndex)));
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
@@ -85,8 +85,8 @@ void MainWindow::loadProgramSettings()
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
+    DeviceListPageWidget* deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
+    DeviceListModel* deviceListModel = deviceListPage->deviceListModel();
 
     if (!deviceListModel->isModified())
     {
@@ -114,6 +114,10 @@ void MainWindow::closeEvent(QCloseEvent* event)
         if (!deviceListModel->save())
         {
             BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
+        }
+        else
+        {
+            BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
         }
 
         event->accept();
@@ -181,6 +185,7 @@ void MainWindow::tabCurrentChanged(int index)
     {
         ui->menuDslam->setEnabled(false);
         ui->menuSwitch->setEnabled(false);
+        ui->menuOlt->setEnabled(false);
     }
     else
     {
@@ -194,15 +199,16 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
     if (!index.isValid())
         return;
 
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
+    DeviceListPageWidget* deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
 
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
+    DeviceListModel* deviceListModel = deviceListPage->deviceListModel();
     index = deviceListPage->proxyModel()->mapToSource(index);
 
     DeviceType deviceType = DeviceTypeFromString(deviceListModel->data(deviceListModel->index(index.row(), 3)).toString());
 
     ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
     ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
+    ui->menuOlt->setEnabled(deviceType == DeviceType::Olt);
 }
 
 void MainWindow::saveSwitchConfig()

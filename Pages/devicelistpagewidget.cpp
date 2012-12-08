@@ -31,7 +31,7 @@ DeviceListPageWidget::DeviceListPageWidget(QTabWidget* parentTabWidget, QVector<
     connect(ui->selectDeviceAction, SIGNAL(triggered()), SLOT(showDevicePage()));
     connect(ui->filterNameLineEdit, SIGNAL(textChanged(QString)), SLOT(filterDeviceTextChanged(QString)));
     connect(ui->vlanInfoGroupBox, SIGNAL(toggled(bool)), SLOT(vlanInfoGBoxStateChanged(bool)));
-    connect(ui->showVlanSwitchAction, SIGNAL(triggered()), SLOT(showInfoVlanGroupBox()));
+    connect(ui->showVlanSwitchAction, SIGNAL(triggered()), SLOT(showVlanInfoGroupBox()));
     connect(ui->editDslamBoardListAction, SIGNAL(triggered()), SLOT(showEditDslamBoardListPage()));
 
     ui->vlanInfoGroupBox->setHidden(true);
@@ -74,11 +74,13 @@ void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
         progressDialog->setLabelText(BatchUpdateLabel::Dslam);
     else if (updatingDeviceType == DeviceType::Switch)
         progressDialog->setLabelText(BatchUpdateLabel::Switch);
+    else if (updatingDeviceType == DeviceType::Olt)
+        progressDialog->setLabelText(BatchUpdateLabel::Olt);
     else
         progressDialog->setLabelText(BatchUpdateLabel::AllDevices);
 
     int size = mDeviceListModel->rowCount(QModelIndex());
-    std::vector<DeviceInfo::Ptr> &deviceList = mDeviceListModel->deviceList();
+    std::vector<DeviceInfo::Ptr>& deviceList = mDeviceListModel->deviceList();
 
     for (int i = 0; i < size; i++)
     {
@@ -192,11 +194,28 @@ void DeviceListPageWidget::updateVlanInfoSwitch()
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о вланах обновлена."));
 
         if(ui->vlanInfoGroupBox->isVisible())
-            showInfoVlanGroupBox();
+            showVlanInfoGroupBox();
     }
 }
 
 void DeviceListPageWidget::updateBoardInfoDslam()
+{
+    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+
+    if (!index.isValid())
+        return;
+
+    bool result = mDeviceListModel->getBoardListFromDevice(index);
+
+    if (!result)
+        BasicDialogs::error(this, BasicDialogTitle::Error, mDeviceListModel->error());
+    else
+    {
+        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о досках обновлена."));
+    }
+}
+
+void DeviceListPageWidget::updateProfileInfoOlt()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
 
@@ -223,9 +242,62 @@ void DeviceListPageWidget::batchUpdateVlanInfoSwitch()
     batchUpdate(DeviceType::Switch);
 }
 
+void DeviceListPageWidget::batchUpdateProfileOlt()
+{
+    batchUpdate(DeviceType::Olt);
+}
+
 void DeviceListPageWidget::batchUpdateInfoAllDevices()
 {
     batchUpdate(DeviceType::Other);
+}
+
+void DeviceListPageWidget::showEditDslamBoardListPage()
+{
+    QModelIndex index = ui->deviceListTableView->currentIndex();
+
+    if (!index.isValid())
+        return;
+
+    index = mProxyModel->mapToSource(index);
+
+    QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
+    QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
+    QString namePage = typeString % ip % "Edit";
+
+    if (mPageList->contains(namePage))
+    {
+        mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
+        return;
+    }
+
+    QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
+    DeviceModel deviceModel = DeviceModelFromString(deviceModelString);
+
+    if ((deviceModel == DeviceModel::Other)
+            || (deviceModel == DeviceModel::MXA32)
+            || (deviceModel == DeviceModel::MXA64))
+    {
+        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Данная модель дслама не имеет досок."));
+        return;
+    }
+
+    DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
+
+    QWidget* pageWidget = new EditDslamBoardListPageWidget(deviceInfo, mDeviceListModel);
+    pageWidget->setObjectName(namePage);
+
+    mPageList->insert(namePage, pageWidget);
+    mTypePageList->append(PageType::EditDslamPage);
+
+    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
+
+    QString title = QString::fromUtf8("%1 %2 - Правка")
+                    .arg(deviceModelString)
+                    .arg(name);
+
+    mParentTabWidget->addTab(pageWidget, title);
+    mParentTabWidget->setCurrentWidget(pageWidget);
 }
 
 void DeviceListPageWidget::filterDeviceTextChanged(QString text)
@@ -260,7 +332,7 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
     contextMenu.exec(ui->deviceListTableView->mapToGlobal(point));
 }
 
-void DeviceListPageWidget::showInfoVlanGroupBox()
+void DeviceListPageWidget::showVlanInfoGroupBox()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
 
@@ -280,6 +352,25 @@ void DeviceListPageWidget::showInfoVlanGroupBox()
 void DeviceListPageWidget::vlanInfoGBoxStateChanged(bool state)
 {
     ui->vlanInfoGroupBox->setShown(state);
+}
+
+void DeviceListPageWidget::showProfileInfoGroupBox()
+{
+    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+
+    if (!index.isValid())
+        return;
+
+    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
+    QString model = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
+
+    ui->profileInfoGroupBox->setTitle(model % " " % name);
+    ui->profileInfoGroupBox->setChecked(true);
+}
+
+void DeviceListPageWidget::profileInfoGboxStateChanged(bool state)
+{
+    ui->profileInfoGroupBox->setShown(state);
 }
 
 void DeviceListPageWidget::showDevicePage()
@@ -320,6 +411,12 @@ void DeviceListPageWidget::showDevicePage()
         pageWidget->setObjectName(namePage);
         mTypePageList->append(PageType::DslamPage);
     }
+    else if (deviceType == DeviceType::Olt)
+    {
+        pageWidget = new OltPageWidget(deviceInfo);
+        pageWidget->setObjectName(namePage);
+        mTypePageList->append(PageType::OltPage);
+    }
     else
     {
         return;
@@ -330,52 +427,6 @@ void DeviceListPageWidget::showDevicePage()
     QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
 
     mParentTabWidget->addTab(pageWidget, deviceModelString % " " % name);
-    mParentTabWidget->setCurrentWidget(pageWidget);
-}
-
-void DeviceListPageWidget::showEditDslamBoardListPage()
-{
-    QModelIndex index = ui->deviceListTableView->currentIndex();
-
-    if (!index.isValid())
-        return;
-
-    index = mProxyModel->mapToSource(index);
-
-    QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
-    QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
-    QString namePage = typeString % ip % "Edit";
-    if (mPageList->contains(namePage))
-    {
-        mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
-        return;
-    }
-
-    QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceModel deviceModel = DeviceModelFromString(deviceModelString);
-
-    if ((deviceModel == DeviceModel::Other)
-            || (deviceModel == DeviceModel::MXA32)
-            || (deviceModel == DeviceModel::MXA64))
-    {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Данная модель дслама не имеет досок."));
-        return;
-    }
-
-    DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
-
-    QWidget* pageWidget = new EditDslamBoardListPageWidget(deviceInfo, mDeviceListModel);
-
-    mPageList->insert(namePage, pageWidget);
-    mTypePageList->append(PageType::EditDslamPage);
-
-    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
-
-    QString title = QString::fromUtf8("%1 %2 - Правка")
-                    .arg(deviceModelString)
-                    .arg(name);
-
-    mParentTabWidget->addTab(pageWidget, title);
     mParentTabWidget->setCurrentWidget(pageWidget);
 }
 

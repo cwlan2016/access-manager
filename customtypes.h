@@ -108,7 +108,13 @@ enum class LteOntState : short
     Blocked =           12
 };
 
-enum class LteOntType : short
+enum class OntType : short
+{
+    Nte = 1,
+    Ntp = 2
+};
+
+enum class NteModel : short
 {
     Nte_2c =            2,
     Nte_rg_1400f =      3,
@@ -128,5 +134,6 @@ enum class LteOntType : short
     Nte_rg_1402fc_w =   17,
     Nte_rg_1402gc_w =   18
 };
+
 
 #endif // CUSTOMTYPES_H

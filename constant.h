@@ -70,7 +70,7 @@ const oid ltp8xONTACSUserID[] =                         { 1, 3, 6, 1, 4, 1, 3526
 const oid ltp8xONTStateState[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 1, 1, 5, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTConfigServicesProfile[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 4, 1, 5, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTConfigMulticastProfile[] =            { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 4, 1, 10, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
-const oid ltp8xONTACSConfigPPPLogin[] =                 { 1, 3, 6, 1, 4 ,1, 35265 ,1, 22, 3, 15, 1, 11, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
+const oid ltp8xONTACSConfigPPPLogin[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 11, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigPPPPassword[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 12, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice1Enable[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice1Number[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 5, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -160,6 +160,16 @@ namespace BoardListModelColumn
 const QString Number =          QString::fromUtf8("№");
 const QString TypeBoard =       QString::fromUtf8("Тип доски");
 const QString Pairs =           QString::fromUtf8("Пары");
+}
+
+namespace OntTableModelColumn
+{
+const QString Id =              QString::fromUtf8("Mac/Serial");
+const QString Model =           QString::fromUtf8("Модель");
+const QString State =           QString::fromUtf8("Статус");
+const QString Description =     QString::fromUtf8("Описание");
+const QString ServiceProfile =         QString::fromUtf8("Сервисный профиль");
+const QString MulticastProfile =       QString::fromUtf8("Мультикастовый профиль");
 }
 
 namespace SnmpErrors

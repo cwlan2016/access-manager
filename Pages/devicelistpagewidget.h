@@ -2,12 +2,12 @@
 #define DEVICELISTPAGEWIDGET_H
 
 #include "stdafx.h"
-
 #include "Models/devicelistmodel.h"
 #include "Models/devicelistdelegate.h"
 #include "Pages/dslampagewidget.h"
 #include "Pages/switchpagewidget.h"
 #include "Pages/editdslamboardlistpagewidget.h"
+#include "Pages/oltpagewidget.h"
 
 namespace Ui {
 class DeviceListPageWidget;
@@ -42,16 +42,20 @@ public slots:
     void removeDevice();
     void updateVlanInfoSwitch();
     void updateBoardInfoDslam();
+    void updateProfileInfoOlt();
     void batchUpdateBoardsInfoDslam();
     void batchUpdateVlanInfoSwitch();
+    void batchUpdateProfileOlt();
     void batchUpdateInfoAllDevices();
+    void showEditDslamBoardListPage();
 private slots:
     void filterDeviceTextChanged(QString text);
     void deviceViewRequestContextMenu(QPoint point);
-    void showInfoVlanGroupBox();
+    void showVlanInfoGroupBox();
     void vlanInfoGBoxStateChanged(bool state);
+    void showProfileInfoGroupBox();
+    void profileInfoGboxStateChanged(bool state);
     void showDevicePage();
-    void showEditDslamBoardListPage();
     void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
 };
 

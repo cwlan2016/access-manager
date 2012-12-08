@@ -21,6 +21,7 @@ QString SnmpInterfaceNumber(DeviceModel model, int slot, int port)
     {
         return "";
     }
+
 }
 
 QString DslamStatePortString(long state)

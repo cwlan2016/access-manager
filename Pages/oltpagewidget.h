@@ -3,7 +3,9 @@
 
 #include "stdafx.h"
 
+#include "basicdialogs.h"
 #include "pagewidget.h"
+#include "Models/onttablemodel.h"
 
 namespace Ui {
 class OltPageWidget;
@@ -18,7 +20,7 @@ public:
     ~OltPageWidget();
     
 private:
-    Ui::OltPageWidget *ui;
+    Ui::OltPageWidget*  ui;
 };
 
 #endif // OLTPAGEWIDGET_H
