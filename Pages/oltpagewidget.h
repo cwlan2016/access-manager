@@ -21,6 +21,9 @@ public:
     
 private:
     Ui::OltPageWidget*  ui;
+private slots:
+    void filterOntCBoxIndexChanged(int index);
+    void filterOntEditTextChanged(QString text);
 };
 
 #endif // OLTPAGEWIDGET_H

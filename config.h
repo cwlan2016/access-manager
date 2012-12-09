@@ -14,7 +14,7 @@ public:
     static bool save();
     static bool backup();
     static QString errorString();
-    static void initializePath();
+    static void init();
     static QString path();
 private:
     static void createSnmpGroup(QSettings& settings);

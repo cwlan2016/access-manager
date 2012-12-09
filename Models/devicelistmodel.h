@@ -5,6 +5,7 @@
 #include "config.h"
 #include "Info/switchinfo.h"
 #include "Info/dslaminfo.h"
+#include "Info/oltinfo.h"
 #include "Info/boardinfo.h"
 #include "constant.h"
 #include "basicdialogs.h"
@@ -27,17 +28,22 @@ public:
     std::vector<DeviceInfo::Ptr>& deviceList();
     void setModified(bool state);
     BoardListModel* boardListModel(QModelIndex index);
-    //файловые операции
+    //file operations
     bool load();
     bool save();
     void toDefault();
     bool isModified();
-    //вланы
+    //vlans
     int inetVlan(QModelIndex index);
     int iptvVlan(QModelIndex index);
+    //olt profiles
+    QStringListModel* serviceProfileOltListModel(QModelIndex index);
+    QStringListModel* multicastProfileOltListModel(QModelIndex index);
+    //Get specific info from device
     bool getVlanTagFromDevice(QModelIndex index);
     bool getBoardListFromDevice(QModelIndex index);
-    //ошибки
+    bool getProfilesFromDevice(QModelIndex index);
+    //error
     QString error() const;
 private:
     std::vector<DeviceInfo::Ptr> mDeviceList;

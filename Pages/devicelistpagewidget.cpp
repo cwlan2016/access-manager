@@ -22,19 +22,22 @@ DeviceListPageWidget::DeviceListPageWidget(QTabWidget* parentTabWidget, QVector<
     deviceListDelegate->setIndexDeviceModel(1);
     ui->deviceListTableView->setItemDelegate(deviceListDelegate);
 
+    connect(ui->selectDeviceAction, SIGNAL(triggered()), SLOT(openDevice()));
     connect(ui->addDeviceAction, SIGNAL(triggered()), SLOT(addDevice()));
     connect(ui->editDeviceAction, SIGNAL(triggered()), SLOT(editDevice()));
     connect(ui->removeDeviceAction, SIGNAL(triggered()), SLOT(removeDevice()));
-    connect(ui->deviceListTableView, SIGNAL(doubleClicked(QModelIndex)), SLOT(showDevicePage()));
+    connect(ui->deviceListTableView, SIGNAL(doubleClicked(QModelIndex)), SLOT(openDevice()));
     connect(ui->deviceListTableView->selectionModel(), SIGNAL(currentChanged(QModelIndex, QModelIndex)), SLOT(viewActivatedItem(QModelIndex, QModelIndex)));
     connect(ui->deviceListTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(deviceViewRequestContextMenu(QPoint)));
-    connect(ui->selectDeviceAction, SIGNAL(triggered()), SLOT(showDevicePage()));
     connect(ui->filterNameLineEdit, SIGNAL(textChanged(QString)), SLOT(filterDeviceTextChanged(QString)));
     connect(ui->vlanInfoGroupBox, SIGNAL(toggled(bool)), SLOT(vlanInfoGBoxStateChanged(bool)));
+    connect(ui->profileInfoGroupBox, SIGNAL(toggled(bool)), SLOT(profileInfoGboxStateChanged(bool)));
     connect(ui->showVlanSwitchAction, SIGNAL(triggered()), SLOT(showVlanInfoGroupBox()));
     connect(ui->editDslamBoardListAction, SIGNAL(triggered()), SLOT(showEditDslamBoardListPage()));
+    connect(ui->showProfilesOltAction, SIGNAL(triggered()), SLOT(showProfileInfoGroupBox()));
 
     ui->vlanInfoGroupBox->setHidden(true);
+    ui->profileInfoGroupBox->setHidden(true);
 }
 
 DeviceListPageWidget::~DeviceListPageWidget()
@@ -141,6 +144,63 @@ void DeviceListPageWidget::saveDeviceList()
     }
 }
 
+void DeviceListPageWidget::openDevice()
+{
+    QModelIndex index = ui->deviceListTableView->currentIndex();
+
+    if (!index.isValid())
+        return;
+
+    index = mProxyModel->mapToSource(index);
+
+    QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
+    QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
+    QString namePage = typeString % ip;
+
+    if (mPageList->contains(namePage))
+    {
+        mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
+        return;
+    }
+
+    QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
+    DeviceType deviceType = DeviceTypeFromString(typeString);
+
+    QWidget* pageWidget;
+
+    DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
+
+    if (deviceType == DeviceType::Switch)
+    {
+        pageWidget = new SwitchPageWidget(deviceInfo);
+        pageWidget->setObjectName(namePage);
+        mTypePageList->append(PageType::SwitchPage);
+    }
+    else if (deviceType == DeviceType::Dslam)
+    {
+        pageWidget = new DslamPageWidget(deviceInfo);
+        pageWidget->setObjectName(namePage);
+        mTypePageList->append(PageType::DslamPage);
+    }
+    else if (deviceType == DeviceType::Olt)
+    {
+        pageWidget = new OltPageWidget(deviceInfo);
+        pageWidget->setObjectName(namePage);
+        mTypePageList->append(PageType::OltPage);
+    }
+    else
+    {
+        return;
+    }
+
+    mPageList->insert(namePage, pageWidget);
+
+    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
+
+    mParentTabWidget->addTab(pageWidget, deviceModelString % " " % name);
+    mParentTabWidget->setCurrentWidget(pageWidget);
+}
+
 void DeviceListPageWidget::addDevice()
 {
     ui->filterNameLineEdit->clear();
@@ -222,13 +282,13 @@ void DeviceListPageWidget::updateProfileInfoOlt()
     if (!index.isValid())
         return;
 
-    bool result = mDeviceListModel->getBoardListFromDevice(index);
+    bool result = mDeviceListModel->getProfilesFromDevice(index);
 
     if (!result)
         BasicDialogs::error(this, BasicDialogTitle::Error, mDeviceListModel->error());
     else
     {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о досках обновлена."));
+        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о профилях обновлена."));
     }
 }
 
@@ -300,6 +360,40 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
     mParentTabWidget->setCurrentWidget(pageWidget);
 }
 
+void DeviceListPageWidget::showVlanInfoGroupBox()
+{
+    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+
+    if (!index.isValid())
+        return;
+
+    ui->inetVlanValueLabel->setText(QString::number(mDeviceListModel->inetVlan(index)));
+    ui->iptvVlanValueLabel->setText(QString::number(mDeviceListModel->iptvVlan(index)));
+
+    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
+    QString model = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
+
+    ui->vlanInfoGroupBox->setTitle(model % " " % name);
+    ui->vlanInfoGroupBox->setChecked(true);
+}
+
+void DeviceListPageWidget::showProfileInfoGroupBox()
+{
+    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+
+    if (!index.isValid())
+        return;
+
+    ui->serviceProfileListView->setModel(mDeviceListModel->serviceProfileOltListModel(index));
+    ui->multicastProfileListView->setModel(mDeviceListModel->multicastProfileOltListModel(index));
+
+    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
+    QString model = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
+
+    ui->profileInfoGroupBox->setTitle(model % " " % name);
+    ui->profileInfoGroupBox->setChecked(true);
+}
+
 void DeviceListPageWidget::filterDeviceTextChanged(QString text)
 {
     mProxyModel->setFilterWildcard(text % "*");
@@ -328,25 +422,13 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
         contextMenu.addSeparator();
         contextMenu.addAction(ui->editDslamBoardListAction);
     }
+    else if (deviceType == DeviceType::Olt)
+    {
+        contextMenu.addSeparator();
+        contextMenu.addAction(ui->showProfilesOltAction);
+    }
 
     contextMenu.exec(ui->deviceListTableView->mapToGlobal(point));
-}
-
-void DeviceListPageWidget::showVlanInfoGroupBox()
-{
-    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-
-    if (!index.isValid())
-        return;
-
-    ui->inetVlanValueLabel->setText(QString::number(mDeviceListModel->inetVlan(index)));
-    ui->iptvVlanValueLabel->setText(QString::number(mDeviceListModel->iptvVlan(index)));
-
-    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
-    QString model = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-
-    ui->vlanInfoGroupBox->setTitle(model % " " % name);
-    ui->vlanInfoGroupBox->setChecked(true);
 }
 
 void DeviceListPageWidget::vlanInfoGBoxStateChanged(bool state)
@@ -354,80 +436,9 @@ void DeviceListPageWidget::vlanInfoGBoxStateChanged(bool state)
     ui->vlanInfoGroupBox->setShown(state);
 }
 
-void DeviceListPageWidget::showProfileInfoGroupBox()
-{
-    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-
-    if (!index.isValid())
-        return;
-
-    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
-    QString model = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-
-    ui->profileInfoGroupBox->setTitle(model % " " % name);
-    ui->profileInfoGroupBox->setChecked(true);
-}
-
 void DeviceListPageWidget::profileInfoGboxStateChanged(bool state)
 {
     ui->profileInfoGroupBox->setShown(state);
-}
-
-void DeviceListPageWidget::showDevicePage()
-{
-    QModelIndex index = ui->deviceListTableView->currentIndex();
-
-    if (!index.isValid())
-        return;
-
-    index = mProxyModel->mapToSource(index);
-
-    QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
-    QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
-    QString namePage = typeString % ip;
-
-    if (mPageList->contains(namePage))
-    {
-        mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
-        return;
-    }
-
-    QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceType deviceType = DeviceTypeFromString(typeString);
-
-    QWidget* pageWidget;
-
-    DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
-
-    if (deviceType == DeviceType::Switch)
-    {
-        pageWidget = new SwitchPageWidget(deviceInfo);
-        pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::SwitchPage);
-    }
-    else if (deviceType == DeviceType::Dslam)
-    {
-        pageWidget = new DslamPageWidget(deviceInfo);
-        pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::DslamPage);
-    }
-    else if (deviceType == DeviceType::Olt)
-    {
-        pageWidget = new OltPageWidget(deviceInfo);
-        pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::OltPage);
-    }
-    else
-    {
-        return;
-    }
-
-    mPageList->insert(namePage, pageWidget);
-
-    QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
-
-    mParentTabWidget->addTab(pageWidget, deviceModelString % " " % name);
-    mParentTabWidget->setCurrentWidget(pageWidget);
 }
 
 void DeviceListPageWidget::viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex)

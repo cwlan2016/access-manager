@@ -18,12 +18,15 @@ public:
     virtual bool getServiceDataFromDevice();
     OltProfileMap& serviceProfileList();
     OltProfileMap& multicastProfileList();
+    QStringListModel* serviceProfileListModel(QObject* parent = 0);
+    QStringListModel* multicastProfileListModel(QObject* parent = 0);
 
     typedef std::shared_ptr<OltInfo> Ptr;
 private:
     OltProfileMap mServiceProfileList;
     OltProfileMap mMulticastProfileList;
     bool getProfileList(OltProfileMap& profileList, const oid* oidProfileName, int oidLen);
+    QStringListModel* createStringListModelFromMap(OltProfileMap& profileList, QObject* parent);
 };
 
 

@@ -38,6 +38,7 @@ void OltInfo::addMulticastProfile(int index, QString profileName)
 
 bool OltInfo::getServiceDataFromDevice()
 {
+    mError.clear();
     bool result = false;
 
     if (mDeviceModel == DeviceModel::LTP8X)
@@ -68,11 +69,19 @@ OltProfileMap& OltInfo::multicastProfileList()
     return mMulticastProfileList;
 }
 
+QStringListModel* OltInfo::serviceProfileListModel(QObject* parent)
+{
+    return createStringListModelFromMap(mServiceProfileList, parent);
+}
+
+QStringListModel* OltInfo::multicastProfileListModel(QObject* parent)
+{
+    return createStringListModelFromMap(mMulticastProfileList, parent);
+}
+
 bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileName, int oidLen)
 {
     profileList.clear();
-
-    mError.clear();
 
     std::unique_ptr<SnmpClient> snmp(new SnmpClient());
 
@@ -80,13 +89,13 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
 
     if (!snmp->setupSession(SessionType::ReadSession))
     {
-        mError = SnmpErrors::SetupSession;
+        mError += SnmpErrors::SetupSession % "\n";
         return false;
     }
 
     if (!snmp->openSession())
     {
-        mError = SnmpErrors::OpenSession;
+        mError = SnmpErrors::OpenSession % "\n";
         return false;
     }
 
@@ -106,7 +115,10 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
         snmp->addOid(nextOid, nextOidLen);
 
         if(!snmp->sendRequest())
+        {
+            mError += SnmpErrors::GetInfo % "\n";
             return false;
+        }
 
         netsnmp_variable_list* vars = snmp->varList();
 
@@ -131,4 +143,16 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
     delete[] profileNameOid;
 
     return true;
+}
+
+QStringListModel* OltInfo::createStringListModelFromMap(OltProfileMap& profileList, QObject* parent)
+{
+    QStringList stringList;
+
+    for (const auto& elem : profileList)
+    {
+        stringList.append(QString::number(elem.first) % ". " % elem.second);
+    }
+
+    return new QStringListModel(stringList, parent);
 }

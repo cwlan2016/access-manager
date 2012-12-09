@@ -59,9 +59,13 @@ QString Config::errorString()
     return mError;
 }
 
-void Config::initializePath()
+void Config::init()
 {
+  #ifdef Q_OS_WIN
     mConfigPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)% "\\Application Data\\" %  qApp->organizationName() % "\\";
+  #else
+    mConfigPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)% qApp->organizationName() % "\\";
+  #endif
 }
 
 QString Config::path()

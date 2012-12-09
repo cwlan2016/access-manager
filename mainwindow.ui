@@ -103,7 +103,7 @@
      <addaction name="showVlanSwitchAction"/>
      <addaction name="updateVlanSwitchAction"/>
     </widget>
-    <widget class="QMenu" name="menu">
+    <widget class="QMenu" name="menuBatchUpdate">
      <property name="title">
       <string>Пакетное обновление</string>
      </property>
@@ -120,6 +120,8 @@
      <addaction name="showProfilesOltAction"/>
      <addaction name="updateProfilesOltAction"/>
     </widget>
+    <addaction name="openDeviceAction"/>
+    <addaction name="separator"/>
     <addaction name="addDeviceAction"/>
     <addaction name="editDeviceAction"/>
     <addaction name="removeDeviceAction"/>
@@ -128,7 +130,7 @@
     <addaction name="menuSwitch"/>
     <addaction name="menuOlt"/>
     <addaction name="separator"/>
-    <addaction name="menu"/>
+    <addaction name="menuBatchUpdate"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -187,7 +189,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="selectDeviceAction"/>
+   <addaction name="openDeviceAction"/>
    <addaction name="separator"/>
    <addaction name="addDeviceAction"/>
    <addaction name="editDeviceAction"/>
@@ -277,7 +279,7 @@
     <string>Редактировать</string>
    </property>
   </action>
-  <action name="selectDeviceAction">
+  <action name="openDeviceAction">
    <property name="icon">
     <iconset>
      <normalon>:/images/open.png</normalon>

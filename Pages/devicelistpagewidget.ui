@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>407</width>
-    <height>424</height>
+    <width>443</width>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,21 +118,68 @@
      <property name="checked">
       <bool>false</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QLabel" name="profileOltLabel">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="serviceProfileOltLabel">
         <property name="text">
-         <string>Профили</string>
+         <string>Сервисные профили</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QTableView" name="profileOltTableView">
+      <item row="0" column="1">
+       <widget class="QLabel" name="multicastProfileOltLabel">
+        <property name="text">
+         <string>Мультикаст профили</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QListView" name="serviceProfileListView">
         <property name="minimumSize">
          <size>
           <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
           <height>200</height>
          </size>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QListView" name="multicastProfileListView">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
         </property>
        </widget>
       </item>
@@ -206,6 +253,14 @@
    </property>
    <property name="toolTip">
     <string>Редактировать доски</string>
+   </property>
+  </action>
+  <action name="showProfilesOltAction">
+   <property name="text">
+    <string>Информация о профилях олт</string>
+   </property>
+   <property name="toolTip">
+    <string>Информация о профилях олт</string>
    </property>
   </action>
  </widget>

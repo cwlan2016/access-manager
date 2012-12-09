@@ -363,6 +363,16 @@ int DeviceListModel::iptvVlan(QModelIndex index)
     return std::static_pointer_cast<SwitchInfo>(mDeviceList[index.row()])->iptvVlanTag();
 }
 
+QStringListModel* DeviceListModel::serviceProfileOltListModel(QModelIndex index)
+{
+    return std::static_pointer_cast<OltInfo>(mDeviceList[index.row()])->serviceProfileListModel(this);
+}
+
+QStringListModel* DeviceListModel::multicastProfileOltListModel(QModelIndex index)
+{
+    return std::static_pointer_cast<OltInfo>(mDeviceList[index.row()])->multicastProfileListModel(this);
+}
+
 bool DeviceListModel::getVlanTagFromDevice(QModelIndex index)
 {
     if (!index.isValid())
@@ -412,6 +422,34 @@ bool DeviceListModel::getBoardListFromDevice(QModelIndex index)
     if (!result)
     {
         mError = std::static_pointer_cast<DslamInfo>(mDeviceList[index.row()])->boardListModel()->error();
+        return false;
+    }
+    else
+    {
+        mModified = true;
+        return true;
+    }
+}
+
+bool DeviceListModel::getProfilesFromDevice(QModelIndex index)
+{
+    if (!index.isValid())
+    {
+        mError = QString::fromUtf8("Неверный индекс.");
+        return false;
+    }
+
+    if (mDeviceList[index.row()]->deviceType() != DeviceType::Olt)
+    {
+        mError = QString::fromUtf8("Обновлять информацию о профилях можно только на олт!");
+        return false;
+    }
+
+    bool result = std::static_pointer_cast<OltInfo>(mDeviceList[index.row()])->getServiceDataFromDevice();
+
+    if (!result)
+    {
+        mError = std::static_pointer_cast<OltInfo>(mDeviceList[index.row()])->error();
         return false;
     }
     else
@@ -497,7 +535,7 @@ void DeviceListModel::createOltElement(QXmlStreamWriter& writer, const OltInfo::
 
 void DeviceListModel::createOltProfileList(QXmlStreamWriter& writer, const OltProfileMap& profileMap, QString typeElem)
 {
-    for (const std::pair<const int, QString>& elem : profileMap)
+    for (const auto& elem : profileMap)
     {
         writer.writeStartElement(typeElem);
 

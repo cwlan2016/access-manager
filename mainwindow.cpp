@@ -49,6 +49,7 @@ void MainWindow::createDeviceListPage()
     DeviceListPageWidget *deviceListPage = new DeviceListPageWidget(ui->tabWidget, mTypePageList, mPageList, this);
     deviceListPage->setObjectName(QString::fromUtf8("deviceListTab"));
 
+    connect(ui->openDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(openDevice()));
     connect(ui->addDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(addDevice()));
     connect(ui->editDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(editDevice()));
     connect(ui->removeDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(removeDevice()));
@@ -56,11 +57,14 @@ void MainWindow::createDeviceListPage()
     connect(ui->saveDeviceListAction, SIGNAL(triggered()), deviceListPage, SLOT(saveDeviceList()));
     connect(ui->updateVlanSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(updateVlanInfoSwitch()));
     connect(ui->updateDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(updateBoardInfoDslam()));
+    connect(ui->updateProfilesOltAction, SIGNAL(triggered()), deviceListPage, SLOT(updateProfileInfoOlt()));
     connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateVlanInfoSwitch()));
     connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateBoardsInfoDslam()));
     connect(ui->updateInfoAllDevicesAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateInfoAllDevices()));
     connect(ui->updateAllProfileOltInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateProfileOlt()));
     connect(ui->editDslamBoardListAction, SIGNAL(triggered()), deviceListPage, SLOT(showEditDslamBoardListPage()));
+    connect(ui->showVlanSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(showVlanInfoGroupBox()));
+    connect(ui->showProfilesOltAction, SIGNAL(triggered()), deviceListPage, SLOT(showProfileInfoGroupBox()));
     connect(deviceListPage, SIGNAL(changedActiveItem(QModelIndex)), SLOT(deviceViewActivatedItem(QModelIndex)));
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);

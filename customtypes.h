@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-typedef std::unordered_map<int, QString> OltProfileMap;
+typedef std::map<int, QString> OltProfileMap;
 //Enums
 enum class PageType
 {

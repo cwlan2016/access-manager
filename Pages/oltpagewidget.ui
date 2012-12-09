@@ -31,6 +31,13 @@
         <number>6</number>
        </property>
        <item>
+        <widget class="QLabel" name="ontListTitleLabel">
+         <property name="text">
+          <string>Список [NTX]</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="ontFilterHorizontalLayout">
          <item>
           <widget class="QComboBox" name="filterOntComboBox">
@@ -72,13 +79,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="ontListTitleLabel">
-         <property name="text">
-          <string>Список [NTX]</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QTableView" name="ontListTableView">
@@ -247,6 +247,13 @@
         <number>6</number>
        </property>
        <item>
+        <widget class="QLabel" name="macAddressTitleLabel">
+         <property name="text">
+          <string>Таблица MAC-адресов</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="filterGroupBox">
          <property name="title">
           <string>Фильтрация</string>
@@ -290,13 +297,6 @@
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="macAddressTitleLabel">
-         <property name="text">
-          <string>Таблица MAC-адресов</string>
-         </property>
         </widget>
        </item>
        <item>

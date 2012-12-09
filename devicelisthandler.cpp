@@ -129,7 +129,7 @@ void DeviceListHandler::parseOltElement(const QXmlAttributes &attributes)
 
 void DeviceListHandler::parseUniOltProfileElement(const QXmlAttributes &attributes)
 {
-    int index = attributes.value("ip").toInt();
+    int index = attributes.value("index").toInt();
     QString name = attributes.value("name");
 
     std::static_pointer_cast<OltInfo>(m_currDeviceInfoElement)->addServiceProfile(index, name);
@@ -137,7 +137,7 @@ void DeviceListHandler::parseUniOltProfileElement(const QXmlAttributes &attribut
 
 void DeviceListHandler::parseMultOltProfileElement(const QXmlAttributes &attributes)
 {
-    int index = attributes.value("ip").toInt();
+    int index = attributes.value("index").toInt();
     QString name = attributes.value("name");
 
     std::static_pointer_cast<OltInfo>(m_currDeviceInfoElement)->addMulticastProfile(index, name);

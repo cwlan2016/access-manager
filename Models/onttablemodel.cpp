@@ -68,11 +68,6 @@ Qt::ItemFlags OntTableModel::flags(const QModelIndex& index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-void OntTableModel::setIp(QString ip)
-{
-    mIp = ip;
-}
-
 bool OntTableModel::load()
 {
     return false;

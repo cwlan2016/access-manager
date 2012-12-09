@@ -37,6 +37,7 @@ signals:
 public slots:
     void loadDeviceList();
     void saveDeviceList();
+    void openDevice();
     void addDevice();
     void editDevice();
     void removeDevice();
@@ -48,14 +49,13 @@ public slots:
     void batchUpdateProfileOlt();
     void batchUpdateInfoAllDevices();
     void showEditDslamBoardListPage();
+    void showVlanInfoGroupBox();
+    void showProfileInfoGroupBox();
 private slots:
     void filterDeviceTextChanged(QString text);
     void deviceViewRequestContextMenu(QPoint point);
-    void showVlanInfoGroupBox();
     void vlanInfoGBoxStateChanged(bool state);
-    void showProfileInfoGroupBox();
     void profileInfoGboxStateChanged(bool state);
-    void showDevicePage();
     void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
 };
 
