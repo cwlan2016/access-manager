@@ -1,5 +1,7 @@
 #include "switchportlistmodel.h"
 
+
+
 // Columns
 // DisplayRole
 // 0 - number
@@ -400,20 +402,22 @@ bool SwitchPortListModel::updateInfoPort(int indexPort)
     snmp->addOid(Mib::ifOperStatus % QString::number(indexPort));
 
     if (mDeviceModel == DeviceModel::DES3526)
-        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3526 % QString::number(indexPort));
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3526, 16, indexPort), 16);
     else if (mDeviceModel == DeviceModel::DES3528)
     {
-        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".1");
+//        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".1");
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 16, indexPort, 1), 17);
 
         if(indexPort == 25 || indexPort == 26)
-            snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".2");
+//            snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".2");
+            snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 16, indexPort, 2), 17);
     }
     else if (mDeviceModel == DeviceModel::DES3550)
-        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3550 % QString::number(indexPort));
+//        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3550 % QString::number(indexPort));
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3550, 16, indexPort), 16);
     else
-        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3526 % QString::number(indexPort));
-
-    snmp->addOid(Mib::ifAlias % QString::number(indexPort));
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3526, 16, indexPort), 16);
+    snmp->addOid(CreateOid(Mib::ifAlias, 12, indexPort), 12);
 
     if (snmp->sendRequest())
     {

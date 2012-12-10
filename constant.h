@@ -14,54 +14,95 @@ const QString LteOntType[] =        { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-
 
 namespace Mib
 {
-const QString ifName =                                  ".1.3.6.1.2.1.31.1.1.1.1.";
-const QString ifDescr =                                 ".1.3.6.1.2.1.2.2.1.2.";                 // .index = Description
+const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1, 0 };  // .index = Description_new
+const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2, 0 };    // .index = Description_new
+
 const QString ifAdminStatus =                           ".1.3.6.1.2.1.2.2.1.7.";
+//const oid ifAdminStatus[] =                           { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7, 0 };
 const QString ifOperStatus =                            ".1.3.6.1.2.1.2.2.1.8.";
+//const oid ifOperStatus[] =                            { 1, 3, 6, 1, 2, 1, 2, 2, 1, 8 };
 const QString ifLastChange =                            ".1.3.6.1.2.1.2.2.1.9.";
-const QString ifAlias =                                 ".1.3.6.1.2.1.31.1.1.1.18.";             // .index = Alias
-const QString swL2PortInfoNwayStatusDES3526 =           ".1.3.6.1.4.1.171.11.64.1.2.4.1.1.5.";   // .index = Speed/Duplex
-const QString swL2PortInfoNwayStatusDES3550 =           ".1.3.6.1.4.1.171.11.64.2.2.4.1.1.5.";   // .index = Speed/Duplex
-const QString swL2PortInfoNwayStatusDES3528 =           ".1.3.6.1.4.1.171.11.105.1.2.3.1.1.6.";  // .index = Speed/Duplex
+//const oid ifLastChange[] =                            { 1, 3, 6, 1, 2, 1, 2, 2, 1, 9 };
+
+const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18, 0 };  // .index = Alias_new
+const oid swL2PortInfoNwayStatusDES3526[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 4, 1, 1, 5, 0 }; // .index = Speed/Duplex_new
+const oid swL2PortInfoNwayStatusDES3550[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 4, 1, 1, 5, 0};   // .index = Speed/Duplex_new
+const oid swL2PortInfoNwayStatusDES3528[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 105, 1, 2, 3, 1, 1, 6, 0 };  // .index = Speed/Duplex_new
+
 const QString dot1qTpFdbPort =                          ".1.3.6.1.2.1.17.7.1.2.2.1.2.";          // .vlanid.mac = portNumber
+//const oid dot1qTpFdbPort[] =                            { 1, 3, 6, 1, 2, 1, 17, 7, 1, 2, 2, 1, 2 };          // .vlanid.mac = portNumber
+
 const QString swL2IGMPMulticastVlanMemberPortDES3526 =  ".1.3.6.1.4.1.171.11.64.1.2.10.6.1.4.";  // .vlanid = mask for ports
+//const oid swL2IGMPMulticastVlanMemberPortDES3526[] =  { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 10, 6, 1, 4 };  // .vlanid = mask for ports
 const QString swL2IGMPMulticastVlanMemberPortDES3550 =  ".1.3.6.1.4.1.171.11.64.2.2.10.6.1.4.";  // .vlanid = mask for ports
+//const oid swL2IGMPMulticastVlanMemberPortDES3550[] =  { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 10, 6, 1, 4 };  // .vlanid = mask for ports
 const QString swL2IGMPMulticastVlanMemberPortDES3528 =  ".1.3.6.1.4.1.171.12.64.3.1.1.4.";       // .vlanid = mask for ports
+//const oid swL2IGMPMulticastVlanMemberPortDES3528[] =  { 1, 3, 6, 1, 4, 1, 171, 12, 64, 3, 1, 1, 4 };       // .vlanid = mask for ports
+
 const oid   dot1qVlanStaticName[] =                     { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 1 };          // .index = VlanName
+
 const QString dot1qVlanStaticEgressPorts =              ".1.3.6.1.2.1.17.7.1.4.3.1.2.";          // .vlanid = mask for ports in vlan
+//const oid dot1qVlanStaticEgressPorts[] =              { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 2 };          // .vlanid = mask for ports in vlan
 const QString dot1qVlanStaticUntaggedPorts =            ".1.3.6.1.2.1.17.7.1.4.3.1.4.";          // .vlanid = mask for ports untag ports in vlan
+//const oid dot1qVlanStaticUntaggedPorts[] =            { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 4 };          // .vlanid = mask for ports untag ports in vlan
 const QString agentStatusSaveCfg =                      ".1.3.6.1.4.1.171.12.1.1.4.0";           // value proceeding(2) - current make. completed(3) failed (4)
+//const oid agentStatusSaveCfg[] =                      { 1, 3, 6, 1, 4, 1, 171, 12, 1, 1, 4, 0 };           // value proceeding(2) - current make. completed(3) failed (4)
 // DES-3526 value 3
 // DES-3528 value 5
 const QString agentSaveCfg =                            ".1.3.6.1.4.1.171.12.1.2.6.0";           // value set(3) for save switch config
+//const oid agentSaveCfg[] =                            { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };           // value set(3) for save switch config
 //информация по Dslam'у MA5600
 const QString dslam_board_name =                        ".1.3.6.1.4.1.2011.2.6.7.1.1.2.1.7";
+//const oid dslam_board_name[] =                        { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7 };
 //MIBs для MXA-64
 const QString mxa64DslPortName =                        ".1.3.6.1.4.1.35265.1.33.10.2.1.2.";
+//const oid mxa64DslPortName[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 2 };
 const QString mxa64DslPortActiveProfile =               ".1.3.6.1.4.1.35265.1.33.10.2.1.6.";
+//const oid mxa64DslPortActiveProfile[] =               { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 6 };
 const QString mxa64DslPortOperStatus =                  ".1.3.6.1.4.1.35265.1.33.10.2.1.3.";
+//const oid mxa64DslPortOperStatus[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 3 };
 const QString mxa64DslPortAdminStatus =                 ".1.3.6.1.4.1.35265.1.33.10.2.1.4.";
+//const oid mxa64DslPortAdminStatus[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 4 };
 const QString mxa64DslBandActualRateTx =                ".1.3.6.1.4.1.35265.1.33.10.3.1.3.2.";
+//const oid mxa64DslBandActualRateTx[] =                { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 3, 2 };
 const QString mxa64DslBandActualRateRx =                ".1.3.6.1.4.1.35265.1.33.10.3.1.3.1.";
+//const oid mxa64DslBandActualRateRx[] =                { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 3, 1 };
 const QString mxa64DslBandLineAttenuationTx =           ".1.3.6.1.4.1.35265.1.33.10.3.1.6.2.";
+//const oid mxa64DslBandLineAttenuationTx[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 2 };
 const QString mxa64DslBandLineAttenuationRx =           ".1.3.6.1.4.1.35265.1.33.10.3.1.6.1.";
+//const oid mxa64DslBandLineAttenuationRx[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 1 };
 //MIBs для MXA-32
 const QString mxa32DslPortName =                        ".1.3.6.1.4.1.35265.1.28.10.2.1.2.";
+//const oid mxa32DslPortName[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 2 };
 const QString mxa32DslPortActiveProfile =               ".1.3.6.1.4.1.35265.1.28.10.2.1.6.";
+//const oid mxa32DslPortActiveProfile[] =               { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 6 };
 const QString mxa32DslPortOperStatus =                  ".1.3.6.1.4.1.35265.1.28.10.2.1.3.";
+//const oid mxa32DslPortOperStatus[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 3 };
 const QString mxa32DslPortAdminStatus =                 ".1.3.6.1.4.1.35265.1.28.10.2.1.4.";
+//const oid mxa32DslPortAdminStatus[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 4 };
 const QString mxa32DslBandActualRateTx =                ".1.3.6.1.4.1.35265.1.28.10.3.1.3.2.";
+//const oid mxa32DslBandActualRateTx[] =                { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 3, 2 };
 const QString mxa32DslBandActualRateRx =                ".1.3.6.1.4.1.35265.1.28.10.3.1.3.1.";
+//const oid mxa32DslBandActualRateRx[] =                { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 3, 1 };
 const QString mxa32DslBandLineAttenuationTx =           ".1.3.6.1.4.1.35265.1.28.10.3.1.6.2.";
+//const oid mxa32DslBandLineAttenuationTx[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 2 };
 const QString mxa32DslBandLineAttenuationRx =           ".1.3.6.1.4.1.35265.1.28.10.3.1.6.1.";
+//const oid mxa32DslBandLineAttenuationRx[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 1 };
 //параметры линии
 const QString adslLineCoding =                          ".1.3.6.1.2.1.10.94.1.1.1.1.1.";
+//const oid adslLineCoding[] =                          { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 1 };
 const QString adslLineType =                            ".1.3.6.1.2.1.10.94.1.1.1.1.2.";
+//const oid adslLineType[] =                            { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 2 };
 const QString adslLineConfProfile =                     ".1.3.6.1.2.1.10.94.1.1.1.1.4.";
+//const oid adslLineConfProfile[] =                     { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 4 };
 const QString adslAtucChanCurrTxRate =                  ".1.3.6.1.2.1.10.94.1.1.4.1.2."; //скорость нисходящего канала
+//const oid adslAtucChanCurrTxRate[] =                  { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 4, 1, 2 }; //скорость нисходящего канала
 const QString adslAturChanCurrTxRate =                  ".1.3.6.1.2.1.10.94.1.1.5.1.2."; //скорость восходящего канала
+//const oid adslAturChanCurrTxRate[] =                  { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 5, 1, 2 }; //скорость восходящего канала
 const QString adslAtucCurrAtn =                         ".1.3.6.1.2.1.10.94.1.1.2.1.5."; //затухание нисходящего канала
+//const oid adslAtucCurrAtn[] =                         { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 2, 1, 5 }; //затухание нисходящего канала
 const QString adslAturCurrAtn =                         ".1.3.6.1.2.1.10.94.1.1.3.1.5."; //затухание восходящего канала
+//const oid adslAturCurrAtn[] =                         { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 3, 1, 5 }; //затухание восходящего канала
 //MIBs для LTP-8X
 //last 8 numbers is serial of device in decimal representation
 const oid ltp8xONTConfigSerial[] =                      { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 4, 1, 2, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0};

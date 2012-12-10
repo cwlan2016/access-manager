@@ -1,5 +1,6 @@
 #include "dslamportlistmodel.h"
 
+
 // index.internalId()
 // -1 - основная информация о порте, верхний уровень
 // >=0 - дополнительная информация о порте, второй уровень number = index rowParent
@@ -205,12 +206,15 @@ bool DslamPortListModel::load()
                 || (mDeviceModel == DeviceModel::MA5300))
         {
             if (mDeviceModel == DeviceModel::MA5300)
-               snmp->addOid(Mib::ifDescr % numInterface);
+//               snmp->addOid(Mib::ifDescr % numInterface);
+               snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11);
             else
-                snmp->addOid(Mib::ifName % numInterface);
+//                snmp->addOid(Mib::ifName % numInterface);
+            snmp->addOid(CreateOid(Mib::ifName, 12, numInterface.toInt()), 12);
 
             snmp->addOid(Mib::ifOperStatus % numInterface);
-            snmp->addOid(Mib::ifAlias % numInterface);
+//            snmp->addOid(Mib::ifAlias % numInterface);
+            snmp->addOid(CreateOid(Mib::ifAlias, 12, numInterface.toInt()), 12);
             snmp->addOid(Mib::adslLineConfProfile % numInterface);
         }
         else if (mDeviceModel == DeviceModel::MXA64)
@@ -476,6 +480,7 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
 
     if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
         snmp->addOid(Mib::ifAdminStatus % numInterface, portState, 'i');
+//        snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11, portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA64)
         snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface, portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA32)
