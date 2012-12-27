@@ -1,7 +1,7 @@
 #ifndef SNMPCONFIGINFO_H
 #define SNMPCONFIGINFO_H
 
-#include "stdafx.h"
+#include <QtCore/QString>
 
 class SnmpConfigInfo
 {

@@ -1,7 +1,8 @@
 #ifndef MACINFO_H
 #define MACINFO_H
 
-#include "stdafx.h"
+#include <QtCore/QString>
+#include <memory>
 
 class MacInfo
 {

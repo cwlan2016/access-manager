@@ -1,20 +1,24 @@
 #ifndef BOARDINFO_H
 #define BOARDINFO_H
 
-#include "converters.h"
+#ifdef _MSC_VER
+#include "../customtypes.h"
+#else
+#include "customtypes.h"
+#endif
 
 class BoardInfo
 {
 public:
     BoardInfo();
-    BoardType type() const;
+    BoardType::Enum type() const;
     int number() const;
     int firstPair() const;
-    void setType(BoardType type);
+    void setType(BoardType::Enum type);
     void setNumber(int number);
     void setFirstPair(int firstPair);
 private:
-    BoardType mType;
+    BoardType::Enum mType;
     int mNumber;
     int mFirstPair;
 };

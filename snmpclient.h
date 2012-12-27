@@ -1,9 +1,10 @@
 #ifndef SNMPCLIENT_H
 #define SNMPCLIENT_H
 
-#include "stdafx.h"
-#include "Info/snmpconfiginfo.h"
-#include "converters.h"
+#include <QtCore/QString>
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include "customtypes.h"
 
 class SnmpClient
 {
@@ -14,11 +15,11 @@ public:
     void createPdu(int pduType, int max_repetitions = 1);
     void clearResponsePdu();
     void addOid(QString oid_string);
-    void addOid(oid* _oid, size_t size);
+    void addOid(oid *_oid, size_t size);
     void addOid(QString oidString, QString value, char type);
-    netsnmp_variable_list* varList();
+    netsnmp_variable_list *varList();
     bool sendRequest();
-    bool setupSession(SessionType sessionType);
+    bool setupSession(SessionType::Enum sessionType);
     bool openSession();
     void closeSession();
     void setTimeoutSaveConfig();

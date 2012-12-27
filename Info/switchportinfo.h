@@ -1,11 +1,19 @@
 #ifndef SWITCHPORTINFO_H
 #define SWITCHPORTINFO_H
 
-#include "stdafx.h"
+#include <QtCore/QString>
+#include <memory>
 
 class SwitchPortInfo
 {
 public:
+    enum VlanState : short
+    {
+        Untag = 0,
+        Tag =   1,
+        None =  2
+    };
+
     SwitchPortInfo();
     int number() const;
     QString state() const;

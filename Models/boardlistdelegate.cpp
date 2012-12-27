@@ -1,32 +1,35 @@
-#include "stdafx.h"
 #include "boardlistdelegate.h"
 
-#include "constant.h"
+#include <QtWidgets/QComboBox>
 
-BoardListDelegate::BoardListDelegate(DeviceModel deviceModel, QObject* parent) :
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../converters.h"
+#else
+#include "constant.h"
+#include "converters.h"
+#endif
+
+BoardListDelegate::BoardListDelegate(DeviceModel::Enum deviceModel, QObject *parent) :
     QItemDelegate(parent)
 {
     mDeviceModel = deviceModel;
 }
 
-QWidget* BoardListDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+QWidget *BoardListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if ((index.column() == mIndexTypeBoard) || (index.column() == mIndexFirstPair))
-    {
+    if ((index.column() == mIndexTypeBoard) || (index.column() == mIndexFirstPair)) {
         return createComboBoxEditor(parent);
-    }
-    else
-    {
+    } else {
         //Делегат по умолчанию
         return QItemDelegate::createEditor(parent, option, index);
     }
 }
 
-void BoardListDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+void BoardListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    if (index.column() == mIndexTypeBoard)
-    {
-        QComboBox* comboBox = qobject_cast<QComboBox*>(editor);
+    if (index.column() == mIndexTypeBoard) {
+        QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
         //запоминаем текст от предыдущего редактирвоания
         QString text = index.model()->data(index).toString();
 
@@ -36,10 +39,8 @@ void BoardListDelegate::setEditorData(QWidget* editor, const QModelIndex& index)
         comboBox->setCurrentIndex(indexFind);
 
         comboBox->setEditable(false);
-    }
-    else if (index.column() == mIndexFirstPair)
-    {
-        QComboBox* comboBox = qobject_cast<QComboBox*>(editor);
+    } else if (index.column() == mIndexFirstPair) {
+        QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
         comboBox->setEditable(false);
         //запоминаем текст от предыдущего редактирования
         QString text = index.model()->data(index).toString();
@@ -49,33 +50,27 @@ void BoardListDelegate::setEditorData(QWidget* editor, const QModelIndex& index)
         comboBox->setModel(fillFirstPairComboBox(mDeviceModel, typeBoard));
 
         //ищем запомненный итем в новой коллекции
-        if (!text.isEmpty())
-        {
+        if (!text.isEmpty()) {
             int indexFind = comboBox->findData(text, Qt::DisplayRole);
             comboBox->setCurrentIndex(indexFind);
         }
-    }
-    else
-    {
+    } else {
         //Делегат по умолчанию
         QItemDelegate::setEditorData(editor, index);
     }
 }
 
-void BoardListDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
+void BoardListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    if (index.column() == mIndexTypeBoard)
-    {
-        QComboBox* comboBox = qobject_cast<QComboBox*>(editor);
+    if (index.column() == mIndexTypeBoard) {
+        QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         if (comboBox->currentIndex() == -1)
             return;
 
         model->setData(index, comboBox->currentText(), Qt::EditRole);
-    }
-    else if (index.column() == mIndexFirstPair)
-    {
-        QComboBox* comboBox = qobject_cast<QComboBox*>(editor);
+    } else if (index.column() == mIndexFirstPair) {
+        QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         if (comboBox->currentIndex() == -1)
             return;
@@ -88,9 +83,7 @@ void BoardListDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
             return;
 
         model->setData(index, firstPair, Qt::EditRole);
-    }
-    else
-    {
+    } else {
         //Делегат по умолчанию
         QItemDelegate::setModelData(editor, model, index);
     }
@@ -118,38 +111,36 @@ void BoardListDelegate::setIndexFirstPair(int index)
 
 void BoardListDelegate::commitAndCloseComboBoxEditor(int)
 {
-    QComboBox* editor = qobject_cast<QComboBox*>(sender());
+    QComboBox *editor = qobject_cast<QComboBox *>(sender());
     emit commitData(editor);
     emit closeEditor(editor);
 }
 
-QWidget* BoardListDelegate::createComboBoxEditor(QWidget* parent) const
+QWidget *BoardListDelegate::createComboBoxEditor(QWidget *parent) const
 {
-    QComboBox* editor = new QComboBox(parent);
+    QComboBox *editor = new QComboBox(parent);
     connect(editor, SIGNAL(currentIndexChanged(int)), SLOT(commitAndCloseComboBoxEditor(int)));
     return editor;
 }
 
-QStringListModel* BoardListDelegate::fillTypeBoardComboBox() const
+QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
 {
     QStringList stringList;
 
-    for (auto elem : BoardTypeName)
-    {
-        stringList << elem;
+    for (int i = 0; i < BoardType::Count; ++i) {
+        stringList.push_back(BoardTypeName[i]);
     }
 
     return new QStringListModel(stringList);
 }
 
-QStringListModel* BoardListDelegate::fillFirstPairComboBox(DeviceModel deviceModel, QString boardType) const
+QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
 {
     int countPairs = CountPorts(deviceModel, BoardTypeFromString(boardType));
     int countBoards = 0;
 
-    if ((deviceModel == DeviceModel::MA5600)
-            || (deviceModel == DeviceModel::MA5300))
-    {
+    if ((deviceModel == DeviceInfo::MA5600)
+            || (deviceModel == DeviceInfo::MA5300)) {
         countBoards = 14;
     }
 
@@ -157,11 +148,10 @@ QStringListModel* BoardListDelegate::fillFirstPairComboBox(DeviceModel deviceMod
 
     int firstPair = 1;
 
-    for (int i = 0; i < countBoards; i++)
-    {
-        stringList << QString::fromUtf8("%1-%2")
+    for (int i = 0; i < countBoards; ++i) {
+        stringList.push_back(QString::fromUtf8("%1-%2")
                    .arg(firstPair)
-                   .arg(firstPair + countPairs - 1);
+                   .arg(firstPair + countPairs - 1));
         firstPair += countPairs;
     }
 

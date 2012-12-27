@@ -1,7 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent) :
+#include "converters.h"
+#include "Pages/devicelistpagewidget.h"
+#include "Pages/settingspagewidget.h"
+#include "Pages/aboutpagewidget.h"
+
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -33,8 +38,8 @@ MainWindow::MainWindow(QWidget* parent) :
 
     this->setWindowState(Qt::WindowMaximized);
 
-    mTypePageList = new QVector<PageType>();
-    mPageList = new QHash<QString, QWidget*>();
+    mTypePageList = new QVector<PageType::Enum>();
+    mPageList = new QHash<QString, QWidget *>();
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +73,7 @@ void MainWindow::createDeviceListPage()
     connect(deviceListPage, SIGNAL(changedActiveItem(QModelIndex)), SLOT(deviceViewActivatedItem(QModelIndex)));
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
-    mTypePageList->append(PageType::DeviceListPage);
+    mTypePageList->push_back(PageType::DeviceListPage);
 
     ui->tabWidget->addTab(deviceListPage, QString::fromUtf8("Оборудование"));
     ui->tabWidget->setCurrentWidget(deviceListPage);
@@ -81,19 +86,17 @@ void MainWindow::loadDeviceList()
 
 void MainWindow::loadProgramSettings()
 {
-    if (!Config::load())
-    {
+    if (!Config::load()) {
         BasicDialogs::error(this, BasicDialogTitle::Error, Config::errorString());
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent* event)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    DeviceListPageWidget* deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
-    DeviceListModel* deviceListModel = deviceListPage->deviceListModel();
+    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
+    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
 
-    if (!deviceListModel->isModified())
-    {
+    if (!deviceListModel->isModified()) {
         event->accept();
         return;
     }
@@ -109,18 +112,12 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     QMessageBox::ButtonRole result = boxOnClose->buttonRole(boxOnClose->clickedButton());
 
-    if (result == QMessageBox::RejectRole)
-    {
+    if (result == QMessageBox::RejectRole) {
         event->ignore();
-    }
-    else if (result == QMessageBox::YesRole)
-    {
-        if (!deviceListModel->save())
-        {
+    } else if (result == QMessageBox::YesRole) {
+        if (!deviceListModel->save()) {
             BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
-        }
-        else
-        {
+        } else {
             BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
         }
 
@@ -130,17 +127,16 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::showAboutProgramPage()
 {
-    if (mPageList->contains("aboutTab"))
-    {
+    if (mPageList->contains("aboutTab")) {
         ui->tabWidget->setCurrentWidget(mPageList->value("aboutTab"));
         return;
     }
 
-    AboutPageWidget* aboutTab = new AboutPageWidget();
+    AboutPageWidget *aboutTab = new AboutPageWidget();
     aboutTab->setObjectName(QString::fromUtf8("aboutTab"));
 
     mPageList->insert(aboutTab->objectName(), aboutTab);
-    mTypePageList->append(PageType::AboutPage);
+    mTypePageList->push_back(PageType::AboutPage);
 
     ui->tabWidget->addTab(aboutTab, QString::fromUtf8("О программе"));
     ui->tabWidget->setCurrentWidget(aboutTab);
@@ -148,17 +144,16 @@ void MainWindow::showAboutProgramPage()
 
 void MainWindow::showSettingsPage()
 {
-    if (mPageList->contains("settingsTab"))
-    {
+    if (mPageList->contains("settingsTab")) {
         ui->tabWidget->setCurrentWidget(mPageList->value("settingsTab"));
         return;
     }
 
-    SettingsPageWidget* settingsTab = new SettingsPageWidget();
+    SettingsPageWidget *settingsTab = new SettingsPageWidget();
     settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
 
     mPageList->insert(settingsTab->objectName(), settingsTab);
-    mTypePageList->append(PageType::SettingsPage);
+    mTypePageList->push_back(PageType::SettingsPage);
 
     ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
     ui->tabWidget->setCurrentWidget(settingsTab);
@@ -166,9 +161,8 @@ void MainWindow::showSettingsPage()
 
 void MainWindow::tabCloseRequested(int index)
 {
-    if (index != 0)
-    {
-        QWidget* deletedWidget = ui->tabWidget->widget(index);
+    if (index != 0) {
+        QWidget *deletedWidget = ui->tabWidget->widget(index);
         ui->tabWidget->removeTab(index);
         mPageList->remove(deletedWidget->objectName());
         mTypePageList->remove(index);
@@ -179,21 +173,18 @@ void MainWindow::tabCloseRequested(int index)
 
 void MainWindow::tabCurrentChanged(int index)
 {
-    PageType pageType = mTypePageList->at(ui->tabWidget->currentIndex());
+    PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
 
     ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
     ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
     ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
 
-    if (index != 0)
-    {
+    if (index != 0) {
         ui->menuDslam->setEnabled(false);
         ui->menuSwitch->setEnabled(false);
         ui->menuOlt->setEnabled(false);
-    }
-    else
-    {
-        DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
+    } else {
+        DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
         deviceListPage->clearSelection();
     }
 }
@@ -203,12 +194,12 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
     if (!index.isValid())
         return;
 
-    DeviceListPageWidget* deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
+    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
 
-    DeviceListModel* deviceListModel = deviceListPage->deviceListModel();
+    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
     index = deviceListPage->proxyModel()->mapToSource(index);
 
-    DeviceType deviceType = DeviceTypeFromString(deviceListModel->data(deviceListModel->index(index.row(), 3)).toString());
+    DeviceType::Enum deviceType = DeviceTypeFromString(deviceListModel->data(deviceListModel->index(index.row(), 3)).toString());
 
     ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
     ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
@@ -220,7 +211,7 @@ void MainWindow::saveSwitchConfig()
     if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage)
         return;
 
-    SwitchPageWidget* switchPageWidget = qobject_cast<SwitchPageWidget*>(ui->tabWidget->currentWidget());
+    SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
 
     switchPageWidget->saveSwitchConfig();
 }
@@ -230,7 +221,7 @@ void MainWindow::upDslPort()
     if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
         return;
 
-    DslamPageWidget* dslamPageWidget = qobject_cast<DslamPageWidget*>(ui->tabWidget->currentWidget());
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
 
     dslamPageWidget->upDslPort();
 }
@@ -240,7 +231,7 @@ void MainWindow::downDslPort()
     if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
         return;
 
-    DslamPageWidget* dslamPageWidget = qobject_cast<DslamPageWidget*>(ui->tabWidget->currentWidget());
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
 
     dslamPageWidget->downDslPort();
 }

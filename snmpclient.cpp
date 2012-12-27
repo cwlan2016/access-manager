@@ -1,5 +1,7 @@
 #include "snmpclient.h"
 
+#include "Info/snmpconfiginfo.h"
+
 SnmpClient::SnmpClient()
 {
     mPdu = nullptr;
@@ -9,10 +11,10 @@ SnmpClient::SnmpClient()
 
 SnmpClient::~SnmpClient()
 {
-    if(mResponsePdu != nullptr)
+    if (mResponsePdu != nullptr)
         snmp_free_pdu(mResponsePdu);
 
-    if(mSnmpSession != nullptr)
+    if (mSnmpSession != nullptr)
         snmp_close(mSnmpSession);
 }
 
@@ -24,14 +26,14 @@ void SnmpClient::setIP(QString ip)
 void SnmpClient::addOid(QString oidString)
 {
     uint length = oidString.split(".").count();
-    oid* OID = new oid[length];
+    oid *OID = new oid[length];
     size_t  lenOID = length;
 
     snmp_parse_oid(oidString.toLatin1().data(), OID, &lenOID);
     snmp_add_null_var(mPdu, OID, lenOID);
 }
 
-void SnmpClient::addOid(oid* _oid, size_t size)
+void SnmpClient::addOid(oid *_oid, size_t size)
 {
     snmp_add_null_var(mPdu, _oid, size);
 }
@@ -48,7 +50,7 @@ void SnmpClient::addOid(oid* _oid, size_t size)
 // b: BITS
 void SnmpClient::addOid(QString oidString, QString value, char type)
 {
-    oid* OID = new oid[oidString.split(".").count()];
+    oid *OID = new oid[oidString.split(".").count()];
     size_t lenOID = oidString.split(".").count();
 
     snmp_parse_oid(oidString.toLatin1().data(), OID, &lenOID);
@@ -56,7 +58,7 @@ void SnmpClient::addOid(QString oidString, QString value, char type)
     snmp_add_var(mPdu, OID, lenOID, type, value.toLatin1().data());
 }
 
-netsnmp_variable_list* SnmpClient::varList()
+netsnmp_variable_list *SnmpClient::varList()
 {
     return mResponsePdu->variables;
 }
@@ -79,22 +81,19 @@ void SnmpClient::createPdu(int pduType, int max_repetitions)
     mPdu->max_repetitions = max_repetitions;
 }
 
-bool SnmpClient::setupSession(SessionType sessionType)
+bool SnmpClient::setupSession(SessionType::Enum sessionType)
 {
     snmp_sess_init(&mBaseSession);
 
     mBaseSession.version = SNMP_VERSION_2c;
 
-    if(sessionType == SessionType::ReadSession)
-    {
+    if (sessionType == SessionType::ReadSession) {
         mBaseSession.community = new uchar[SnmpConfigInfo::readCommunity().length() + 1];
-        qstrcpy(reinterpret_cast<char*>(mBaseSession.community), SnmpConfigInfo::readCommunity().toLatin1().data());
+        qstrcpy(reinterpret_cast<char *>(mBaseSession.community), SnmpConfigInfo::readCommunity().toLatin1().data());
         mBaseSession.community_len = SnmpConfigInfo::readCommunity().length();
-    }
-    else
-    {
+    } else {
         mBaseSession.community = new uchar[SnmpConfigInfo::writeCommunity().length() + 1];
-        qstrcpy(reinterpret_cast<char*>(mBaseSession.community), SnmpConfigInfo::writeCommunity().toLatin1().data());
+        qstrcpy(reinterpret_cast<char *>(mBaseSession.community), SnmpConfigInfo::writeCommunity().toLatin1().data());
         mBaseSession.community_len = SnmpConfigInfo::writeCommunity().length();
     }
 
@@ -110,7 +109,7 @@ bool SnmpClient::setupSession(SessionType sessionType)
 
 bool SnmpClient::openSession()
 {
-    if(mSnmpSession != nullptr)
+    if (mSnmpSession != nullptr)
         closeSession();
 
     mSnmpSession = snmp_open(&mBaseSession);
@@ -136,7 +135,7 @@ void SnmpClient::setTimeoutSaveConfig()
 
 void SnmpClient::clearResponsePdu()
 {
-    if(mResponsePdu != nullptr)
+    if (mResponsePdu != nullptr)
         snmp_free_pdu(mResponsePdu);
 
     mResponsePdu = nullptr;

@@ -1,22 +1,22 @@
 #ifndef SWITCHPAGEWIDGET_H
 #define SWITCHPAGEWIDGET_H
 
-#include "stdafx.h"
 #include "pagewidget.h"
 #include "Models/switchportlistmodel.h"
 #include "Models/maclistmodel.h"
 #include "Info/switchinfo.h"
 
-namespace Ui {
+namespace Ui
+{
 class SwitchPageWidget;
 }
 
 class SwitchPageWidget : public PageWidget
 {
     Q_OBJECT
-    
+
 public:
-    explicit SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget* parent = 0);
+    explicit SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
     ~SwitchPageWidget();
 private:
     void changeStateSwitchPortInMulticastVlan(bool state);
@@ -37,7 +37,7 @@ private slots:
     void macLineEditTextChanged(QString text);
     void macRadioButtonChangeState(bool checked);
 private:
-    Ui::SwitchPageWidget* ui;
+    Ui::SwitchPageWidget *ui;
 };
 
 #endif // SWITCHPAGEWIDGET_H

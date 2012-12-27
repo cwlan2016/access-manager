@@ -1,11 +1,17 @@
 #include "deviceinfo.h"
 
+#ifdef _MSC_VER
+#include "../converters.h"
+#else
+#include "converters.h"
+#endif
+
 DeviceInfo::DeviceInfo()
 {
     setDeviceModel(DeviceModel::Other);
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel deviceModel)
+DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel)
 {
     mName = name;
     mIp = ip;

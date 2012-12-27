@@ -8,7 +8,7 @@ DslamInfo::DslamInfo()
     mBoardListModel->setAutoNumeringBoard(1);
 }
 
-DslamInfo::DslamInfo(QString name, QString ip, DeviceModel deviceModel) :
+DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
     DeviceInfo(name, ip, deviceModel)
 {
     mBoardListModel = new BoardListModel();
@@ -41,7 +41,7 @@ void DslamInfo::setAutoNumeringBoard(short autoNumeringBoard)
     mBoardListModel->setAutoNumeringBoard(autoNumeringBoard);
 }
 
-BoardListModel* DslamInfo::boardListModel()
+BoardListModel *DslamInfo::boardListModel()
 {
     return mBoardListModel;
 }

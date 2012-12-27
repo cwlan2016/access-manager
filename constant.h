@@ -1,13 +1,13 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
-#include "stdafx.h"
+#include "QtCore/QString"
 
 const QString DeviceTypeName[] =    { "Other", "Switch", "Dslam", "Olt" };
 const QString DeviceModelName[] =   { "Other", "DES-3526", "DES-3528", "DES-3550", "DES-3552", "MA5600", "MA5300", "MA5616", "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X" };
-const QString BoardTypeName[]   =   { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other"};
-const QString StatusName[]  =       { "Up", "Down", "Activating", "Defective", "Other"};
-const QString VlanStateName[]  =    { "Untag", "Tag", "None" };
+const QString BoardTypeName[] =     { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other"};
+const QString StatusName[] =        { "Up", "Down", "Activating", "Defective", "Other"};
+const QString VlanStateName[] =     { "Untag", "Tag", "None" };
 const QString LtpOntState[] =       { "Free", "Allocated", "AuthInProgress", "AuthFailed", "AuthOk", "CfgInProgress", "CfgFailed", "Ok", "Failed", "Blocked", "Mibreset", "Preconfig", "FwUpdating", "Unactivated", "Redundant", "Disabled", "Unknown" };
 const QString LteOntState[] =       { "Free", "Allocated", "AuthInProgress", "CfgInProgress", "AuthFailed", "CfgFailed", "ReportTimeout", "Ok", "AuthOk", "ResetInProgress", "ResetOk", "Discovered", "Blocked" };
 const QString LteOntType[] =        { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400g", "Nte-rg-1400f-w", "Nte-rg-1400g-w", "Nte-rg-1400fc", "Nte-rg-1400gc", "Nte-rg-1400fc-w", "Nte-rg-1400gc-w", "Nte-rg-1402f", "Nte-rg-1402g", "Nte-rg-1402f-w", "Nte-rg-1402g-w", "Nte-rg-1402fc", "Nte-rg-1402gc", "Nte-rg-1402fc-w", "Nte-rg-1402gc-w" };
@@ -74,7 +74,7 @@ const oid ltp8xONTACSConfigPPPLogin[] =                 { 1, 3, 6, 1, 4, 1, 3526
 const oid ltp8xONTACSConfigPPPPassword[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 12, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice1Enable[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice1Number[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 5, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
-const oid ltp8xONTACSConfigVoice1Password[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3 ,15, 1, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
+const oid ltp8xONTACSConfigVoice1Password[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3 , 15, 1, 6, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice2Enable[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice2Number[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTACSConfigVoice2Password[] =           { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 15, 1, 9, 8, 0, 0, 0, 0, 0, 0, 0, 0 };

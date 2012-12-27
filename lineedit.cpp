@@ -10,7 +10,7 @@
 #include "lineedit.h"
 
 LineEdit::LineEdit(QWidget *parent)
-  : QLineEdit(parent)
+    : QLineEdit(parent)
 {
     clearButton = new QToolButton(this);
     QPixmap clearButtonPixmap(":/images/clear_left.png");
@@ -21,11 +21,11 @@ LineEdit::LineEdit(QWidget *parent)
     clearButton->setToolTip(QString::fromUtf8("Очистить текст"));
     clearButton->hide();
     connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-    connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateCloseButton(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString &)), SLOT(updateCloseButton(const QString &)));
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-  #ifdef Q_WS_MAC
+#ifdef Q_WS_MAC
     setAttribute(Qt::WA_MacShowFocusRect, 0);
-  #endif
+#endif
     QSize msz = minimumSizeHint();
     setMinimumSize(qMax(msz.width(), clearButton->sizeHint().width() + frameWidth * 2 + 2),
                    qMax(msz.height(), clearButton->sizeHint().height() + frameWidth * 2 + 2));
@@ -37,17 +37,15 @@ void LineEdit::resizeEvent(QResizeEvent *)
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     QSize sz = clearButton->sizeHint();
     clearButton->move(rect().right() - frameWidth - sz.width(),
-                    (rect().bottom() + 2 - sz.height())/2);
+                      (rect().bottom() + 2 - sz.height()) / 2);
 }
 
-void LineEdit::updateCloseButton(const QString& text)
+void LineEdit::updateCloseButton(const QString &text)
 {
-    if (!inputMask().isEmpty())
-    {
+    if (!inputMask().isEmpty()) {
         QString temp = text;
         clearButton->setVisible(!temp.remove('-').isEmpty());
-    }
-    else
+    } else
         clearButton->setVisible(!text.isEmpty());
 }
 

@@ -1,7 +1,8 @@
 #ifndef XDSLPORTINFO_H
 #define XDSLPORTINFO_H
 
-#include "stdafx.h"
+#include <QtCore/QString>
+#include <memory>
 
 class XdslPortInfo
 {
@@ -25,6 +26,15 @@ public:
     void setTxAttenuation(QString txAttenuation);
 
     typedef std::shared_ptr<XdslPortInfo> Ptr;
+
+    enum DslPortStateEnum : short
+    {
+        Up =            1,
+        Down =          2,
+        Activating =    3,
+        Defective =     4,
+        Other =         5
+    };
 protected:
     int mPair;
     QString mName;
@@ -35,6 +45,5 @@ protected:
     QString mRxAttenuation;
     QString mTxAttenuation;
 };
-
 
 #endif // PORTINFO_H

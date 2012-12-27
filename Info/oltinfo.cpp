@@ -1,11 +1,14 @@
 #include "oltinfo.h"
 
+#include "constant.h"
+#include "snmpclient.h"
+
 OltInfo::OltInfo() :
     DeviceInfo()
 {
 }
 
-OltInfo::OltInfo(QString name, QString ip, DeviceModel deviceModel) :
+OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
     DeviceInfo(name, ip, deviceModel)
 {
 }
@@ -41,45 +44,40 @@ bool OltInfo::getServiceDataFromDevice()
     mError.clear();
     bool result = false;
 
-    if (mDeviceModel == DeviceModel::LTP8X)
-    {
+    if (mDeviceModel == DeviceModel::LTP8X) {
         result = getProfileList(mServiceProfileList, Mib::ltp8xONTServicesName, 14);
         result |= getProfileList(mMulticastProfileList, Mib::ltp8xONTMulticastName, 14);
-    }
-    else if (mDeviceModel == DeviceModel::LTE8ST)
-    {
+    } else if (mDeviceModel == DeviceModel::LTE8ST) {
         result = getProfileList(mServiceProfileList, Mib::lte8stProfilesRulesDescription, 14);
         result |= getProfileList(mMulticastProfileList, Mib::lte8stProfilesIpMulticastDescription, 14);
-    }
-    else
-    {
+    } else {
         return false;
     }
 
     return result;
 }
 
-OltProfileMap& OltInfo::serviceProfileList()
+OltProfileMap &OltInfo::serviceProfileList()
 {
     return mServiceProfileList;
 }
 
-OltProfileMap& OltInfo::multicastProfileList()
+OltProfileMap &OltInfo::multicastProfileList()
 {
     return mMulticastProfileList;
 }
 
-QStringListModel* OltInfo::serviceProfileListModel(QObject* parent)
+QStringListModel *OltInfo::serviceProfileListModel(QObject *parent)
 {
     return createStringListModelFromMap(mServiceProfileList, parent);
 }
 
-QStringListModel* OltInfo::multicastProfileListModel(QObject* parent)
+QStringListModel *OltInfo::multicastProfileListModel(QObject *parent)
 {
     return createStringListModelFromMap(mMulticastProfileList, parent);
 }
 
-bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileName, int oidLen)
+bool OltInfo::getProfileList(OltProfileMap &profileList, const oid *oidProfileName, int oidLen)
 {
     profileList.clear();
 
@@ -87,45 +85,41 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
 
     snmp->setIP(mIp);
 
-    if (!snmp->setupSession(SessionType::ReadSession))
-    {
+    if (!snmp->setupSession(SessionType::ReadSession)) {
         mError += SnmpErrors::SetupSession % "\n";
         return false;
     }
 
-    if (!snmp->openSession())
-    {
+    if (!snmp->openSession()) {
         mError = SnmpErrors::OpenSession % "\n";
         return false;
     }
 
     int profileNameOidLen = oidLen - 1;
-    oid* profileNameOid = new oid[profileNameOidLen];
+    oid *profileNameOid = new oid[profileNameOidLen];
 
     memcpy(profileNameOid, oidProfileName, profileNameOidLen * sizeof(oid));
 
     size_t nextOidLen = oidLen;
-    oid* nextOid = new oid[nextOidLen];
+    oid *nextOid = new oid[nextOidLen];
 
     memcpy(nextOid, oidProfileName, nextOidLen * sizeof(oid));
 
-    while (true)
-    {
+    while (true) {
         snmp->createPdu(SNMP_MSG_GETNEXT);
         snmp->addOid(nextOid, nextOidLen);
 
-        if(!snmp->sendRequest())
-        {
+        if (!snmp->sendRequest()) {
             mError += SnmpErrors::GetInfo % "\n";
             return false;
         }
 
-        netsnmp_variable_list* vars = snmp->varList();
+        netsnmp_variable_list *vars = snmp->varList();
 
-        if(snmp_oid_ncompare(profileNameOid, profileNameOidLen, vars->name, vars->name_length, oidLen - 1) != 0)
+        if (snmp_oid_ncompare(profileNameOid, profileNameOidLen, vars->name, vars->name_length, oidLen - 1) != 0)
             break;
 
-        QString profileName = QString::fromLatin1((char*)vars->val.string, vars->val_len);
+        QString profileName = QString::fromLatin1((char *)vars->val.string, vars->val_len);
         int profileIndex = vars->name[vars->name_length - 1];
 
         profileList.insert(OltProfileMap::value_type(profileIndex, profileName));
@@ -145,13 +139,14 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
     return true;
 }
 
-QStringListModel* OltInfo::createStringListModelFromMap(OltProfileMap& profileList, QObject* parent)
+QStringListModel *OltInfo::createStringListModelFromMap(OltProfileMap &profileList, QObject *parent)
 {
     QStringList stringList;
 
-    for (const auto& elem : profileList)
-    {
-        stringList.append(QString::number(elem.first) % ". " % elem.second);
+    auto it = profileList.begin();
+    auto end = profileList.end();
+    for (; it != end; ++it) {
+        stringList.push_back(QString::number((*it).first) % ". " % (*it).second);
     }
 
     return new QStringListModel(stringList, parent);

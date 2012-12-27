@@ -1,7 +1,10 @@
-#include "stdafx.h"
+#include <QtWidgets/QSplashScreen>
+#include <QtCore/QTranslator>
+#include "config.h"
+#include "constant.h"
 #include "mainwindow.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
@@ -16,17 +19,16 @@ int main(int argc, char* argv[])
     a.processEvents();
 
     splash.showMessage(LoadProgramString::LoadLocale);
-    QTranslator* qt_translator = new QTranslator;
+    QTranslator *qt_translator = new QTranslator;
 
-    if(qt_translator->load(":tr/qt_ru.qm"))
-    {
+    if (qt_translator->load(":tr/qt_ru.qm")) {
         a.installTranslator(qt_translator);
     }
 
     a.processEvents();
 
     splash.showMessage(LoadProgramString::CreateWindow);
-    MainWindow* w = new MainWindow();
+    MainWindow *w = new MainWindow();
     a.processEvents();
 
     splash.showMessage(LoadProgramString::CreateDeviceListPage);

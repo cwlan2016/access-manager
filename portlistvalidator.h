@@ -1,17 +1,15 @@
 #ifndef PORTLISTVALIDATOR_H
 #define PORTLISTVALIDATOR_H
 
-#include "stdafx.h"
-
-#include "converters.h"
+#include <QtGui/QValidator>
 #include "customtypes.h"
 
 class PortListValidator : public QValidator
 {
     Q_OBJECT
 public:
-    explicit PortListValidator(DeviceModel deviceModel);
-    State validate(QString& input, int& pos) const;
+    explicit PortListValidator(DeviceModel::Enum deviceModel);
+    State validate(QString &input, int &pos) const;
 signals:
 
 public slots:

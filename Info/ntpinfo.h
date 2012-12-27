@@ -1,9 +1,7 @@
 #ifndef NTPINFO_H
 #define NTPINFO_H
 
-#include "stdafx.h"
 #include "ontinfo.h"
-#include "customtypes.h"
 
 class NtpInfo : public OntInfo
 {
@@ -28,7 +26,10 @@ public:
     void setPhone2Password(QString password);
     void setSipProxy(QString proxy);
 
+    void Reconfigure();
+
     typedef std::shared_ptr<NtpInfo> Ptr;
+
 private:
     QString mPppLogin;
     QString mPppPassword;

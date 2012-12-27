@@ -1,7 +1,7 @@
 #include "devicelistpagewidget.h"
 #include "ui_devicelistpagewidget.h"
 
-DeviceListPageWidget::DeviceListPageWidget(QTabWidget* parentTabWidget, QVector<PageType>* typePageList, QHash<QString, QWidget *>* pageList, QWidget* parent) :
+DeviceListPageWidget::DeviceListPageWidget(QTabWidget *parentTabWidget, QVector<PageType::Enum> *typePageList, QHash<QString, QWidget *> *pageList, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DeviceListPageWidget),
     mDeviceListModel(new DeviceListModel(this)),
@@ -45,12 +45,12 @@ DeviceListPageWidget::~DeviceListPageWidget()
     delete ui;
 }
 
-DeviceListModel* DeviceListPageWidget::deviceListModel() const
+DeviceListModel *DeviceListPageWidget::deviceListModel() const
 {
     return mDeviceListModel;
 }
 
-QSortFilterProxyModel* DeviceListPageWidget::proxyModel() const
+QSortFilterProxyModel *DeviceListPageWidget::proxyModel() const
 {
     return mProxyModel;
 }
@@ -65,7 +65,7 @@ void DeviceListPageWidget::clearSelection()
     ui->deviceListTableView->selectionModel()->clear();
 }
 
-void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
+void DeviceListPageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
 {
     QString errorString = "";
     std::unique_ptr<QProgressDialog> progressDialog(new QProgressDialog(this));
@@ -83,10 +83,9 @@ void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
         progressDialog->setLabelText(BatchUpdateLabel::AllDevices);
 
     int size = mDeviceListModel->rowCount(QModelIndex());
-    std::vector<DeviceInfo::Ptr>& deviceList = mDeviceListModel->deviceList();
+    std::vector<DeviceInfo::Ptr> &deviceList = mDeviceListModel->deviceList();
 
-    for (int i = 0; i < size; i++)
-    {
+    for (int i = 0; i < size; ++i) {
         progressDialog->setValue(i);
 
         if (progressDialog->wasCanceled())
@@ -95,15 +94,13 @@ void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
         DeviceType deviceType = deviceList[i]->deviceType();
 
         if ((deviceType == updatingDeviceType)
-                || (updatingDeviceType == DeviceType::Other))
-        {
+                || (updatingDeviceType == DeviceType::Other)) {
             bool result = deviceList[i]->getServiceDataFromDevice();
 
             if (!result)
                 errorString += deviceList.at(i)->error() + "\n";
 
-            if (deviceType == DeviceType::Dslam)
-            {
+            if (deviceType == DeviceType::Dslam) {
                 if (std::static_pointer_cast<DslamInfo>(deviceList[i])->autoNumeringBoard())
                     std::static_pointer_cast<DslamInfo>(deviceList[i])->boardListModel()->renumeringPairList();
             }
@@ -111,21 +108,19 @@ void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
     }
 
     if (!errorString.isEmpty())
-        BasicDialogs::error(this, BasicDialogTitle::Error,QString::fromUtf8("Во время обновления произошли ошибки!"), errorString);
+        BasicDialogs::error(this, BasicDialogTitle::Error, QString::fromUtf8("Во время обновления произошли ошибки!"), errorString);
 
 }
 
 void DeviceListPageWidget::loadDeviceList()
 {
-    if (mDeviceListModel->isModified())
-    {
+    if (mDeviceListModel->isModified()) {
         if (!BasicDialogs::question(this, QString::fromUtf8("Повторная загрузка данных"),
-                                             QString::fromUtf8("Все сделанные изменения будут утеряны. Вы хотите продолжить?")))
+                                    QString::fromUtf8("Все сделанные изменения будут утеряны. Вы хотите продолжить?")))
             return;
     }
 
-    if (!mDeviceListModel->load())
-    {
+    if (!mDeviceListModel->load()) {
         BasicDialogs::warning(this, QString::fromUtf8("Загрузка данных"), QString::fromUtf8("Ошибка: загрузка списка устройств не удалась."), mDeviceListModel->error());
     }
 
@@ -134,12 +129,9 @@ void DeviceListPageWidget::loadDeviceList()
 
 void DeviceListPageWidget::saveDeviceList()
 {
-    if (!mDeviceListModel->save())
-    {
+    if (!mDeviceListModel->save()) {
         BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), mDeviceListModel->error());
-    }
-    else
-    {
+    } else {
         BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
     }
 }
@@ -157,8 +149,7 @@ void DeviceListPageWidget::openDevice()
     QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
     QString namePage = typeString % ip;
 
-    if (mPageList->contains(namePage))
-    {
+    if (mPageList->contains(namePage)) {
         mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
         return;
     }
@@ -166,30 +157,23 @@ void DeviceListPageWidget::openDevice()
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
     DeviceType deviceType = DeviceTypeFromString(typeString);
 
-    QWidget* pageWidget;
+    QWidget *pageWidget;
 
     DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
 
-    if (deviceType == DeviceType::Switch)
-    {
+    if (deviceType == DeviceType::Switch) {
         pageWidget = new SwitchPageWidget(deviceInfo);
         pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::SwitchPage);
-    }
-    else if (deviceType == DeviceType::Dslam)
-    {
+        mTypePageList->push_back(PageType::SwitchPage);
+    } else if (deviceType == DeviceType::Dslam) {
         pageWidget = new DslamPageWidget(deviceInfo);
         pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::DslamPage);
-    }
-    else if (deviceType == DeviceType::Olt)
-    {
+        mTypePageList->push_back(PageType::DslamPage);
+    } else if (deviceType == DeviceType::Olt) {
         pageWidget = new OltPageWidget(deviceInfo);
         pageWidget->setObjectName(namePage);
-        mTypePageList->append(PageType::OltPage);
-    }
-    else
-    {
+        mTypePageList->push_back(PageType::OltPage);
+    } else {
         return;
     }
 
@@ -232,7 +216,7 @@ void DeviceListPageWidget::removeDevice()
     QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
 
     if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление устройства"),
-                                 QString(QString::fromUtf8("Вы действительно хотите удалить %1(%2)?")).arg(name, ip)))
+                                  QString(QString::fromUtf8("Вы действительно хотите удалить %1(%2)?")).arg(name, ip)))
         return;
 
     mDeviceListModel->removeRow(index.row(), QModelIndex());
@@ -249,11 +233,10 @@ void DeviceListPageWidget::updateVlanInfoSwitch()
 
     if (!result)
         BasicDialogs::error(this, BasicDialogTitle::Error, mDeviceListModel->error());
-    else
-    {
+    else {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о вланах обновлена."));
 
-        if(ui->vlanInfoGroupBox->isVisible())
+        if (ui->vlanInfoGroupBox->isVisible())
             showVlanInfoGroupBox();
     }
 }
@@ -269,8 +252,7 @@ void DeviceListPageWidget::updateBoardInfoDslam()
 
     if (!result)
         BasicDialogs::error(this, BasicDialogTitle::Error, mDeviceListModel->error());
-    else
-    {
+    else {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о досках обновлена."));
     }
 }
@@ -286,8 +268,7 @@ void DeviceListPageWidget::updateProfileInfoOlt()
 
     if (!result)
         BasicDialogs::error(this, BasicDialogTitle::Error, mDeviceListModel->error());
-    else
-    {
+    else {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация о профилях обновлена."));
     }
 }
@@ -325,8 +306,7 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
     QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
     QString namePage = typeString % ip % "Edit";
 
-    if (mPageList->contains(namePage))
-    {
+    if (mPageList->contains(namePage)) {
         mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
         return;
     }
@@ -336,19 +316,18 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
 
     if ((deviceModel == DeviceModel::Other)
             || (deviceModel == DeviceModel::MXA32)
-            || (deviceModel == DeviceModel::MXA64))
-    {
+            || (deviceModel == DeviceModel::MXA64)) {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Данная модель дслама не имеет досок."));
         return;
     }
 
     DeviceInfo::Ptr deviceInfo = mDeviceListModel->deviceList()[index.row()];
 
-    QWidget* pageWidget = new EditDslamBoardListPageWidget(deviceInfo, mDeviceListModel);
+    QWidget *pageWidget = new EditDslamBoardListPageWidget(deviceInfo, mDeviceListModel);
     pageWidget->setObjectName(namePage);
 
     mPageList->insert(namePage, pageWidget);
-    mTypePageList->append(PageType::EditDslamPage);
+    mTypePageList->push_back(PageType::EditDslamPage);
 
     QString name = mDeviceListModel->data(mDeviceListModel->index(index.row(), 0)).toString();
 
@@ -412,18 +391,13 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
     QModelIndex index = mDeviceListModel->index(devModelIndex.row(), 3);
     DeviceType deviceType = DeviceTypeFromString(mDeviceListModel->data(index).toString());
 
-    if (deviceType == DeviceType::Switch)
-    {
+    if (deviceType == DeviceType::Switch) {
         contextMenu.addSeparator();
         contextMenu.addAction(ui->showVlanSwitchAction);
-    }
-    else if (deviceType == DeviceType::Dslam)
-    {
+    } else if (deviceType == DeviceType::Dslam) {
         contextMenu.addSeparator();
         contextMenu.addAction(ui->editDslamBoardListAction);
-    }
-    else if (deviceType == DeviceType::Olt)
-    {
+    } else if (deviceType == DeviceType::Olt) {
         contextMenu.addSeparator();
         contextMenu.addAction(ui->showProfilesOltAction);
     }

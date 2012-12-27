@@ -24,6 +24,4 @@ private:
     QString mLineType;
 };
 
-
-
 #endif // ADSLPORTINFO_H

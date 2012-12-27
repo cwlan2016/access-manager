@@ -1,23 +1,22 @@
 #ifndef EDITDSLAMBOARDLISTPAGEWIDGET_H
 #define EDITDSLAMBOARDLISTPAGEWIDGET_H
 
-#include "stdafx.h"
-
 #include "pagewidget.h"
 #include "Info/dslaminfo.h"
 #include "Models/boardlistdelegate.h"
 #include "Models/devicelistmodel.h"
 
-namespace Ui {
+namespace Ui
+{
 class EditDslamBoardListPageWidget;
 }
 
 class EditDslamBoardListPageWidget : public PageWidget
 {
     Q_OBJECT
-    
+
 public:
-    explicit EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel* deviceListModel, QWidget* parent = 0);
+    explicit EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel *deviceListModel, QWidget *parent = 0);
     ~EditDslamBoardListPageWidget();
 private slots:
     void editBoardViewRequestContextMenu(QPoint point);
@@ -28,9 +27,9 @@ private slots:
     void autoUpdateBoardListStateChanged(bool state);
     void autoNumeringPairsStateChanged(bool state);
 private:
-    Ui::EditDslamBoardListPageWidget* ui;
+    Ui::EditDslamBoardListPageWidget *ui;
 
-    DeviceListModel* mDeviceListModel;
+    DeviceListModel *mDeviceListModel;
 };
 
 #endif // EDITDSLAMBOARDLISTPAGEWIDGET_H

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "boardinfo.h"
 
 BoardInfo::BoardInfo()
@@ -7,7 +6,7 @@ BoardInfo::BoardInfo()
     mFirstPair = 1;
 }
 
-BoardType BoardInfo::type() const
+BoardType::Enum BoardInfo::type() const
 {
     return mType;
 }
@@ -22,7 +21,7 @@ int BoardInfo::firstPair() const
     return mFirstPair;
 }
 
-void BoardInfo::setType(BoardType type)
+void BoardInfo::setType(BoardType::Enum type)
 {
     mType = type;
 }

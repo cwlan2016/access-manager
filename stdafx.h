@@ -1,8 +1,8 @@
+#pragma once
 //Qt libraries
-#include <QtGui>
+#include <QtWidgets>
 #include <QtXml>
 #include <QtXmlPatterns>
-
 //Smart pointers
 #include <memory>
 //STL libraries

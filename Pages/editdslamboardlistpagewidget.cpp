@@ -1,7 +1,7 @@
 #include "editdslamboardlistpagewidget.h"
 #include "ui_editdslamboardlistpagewidget.h"
 
-EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel* deviceListModel, QWidget* parent) :
+EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel *deviceListModel, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::EditDslamBoardListPageWidget),
     mDeviceListModel(deviceListModel)
@@ -13,11 +13,11 @@ EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr devic
     connect(ui->getBoardListAction, SIGNAL(triggered()), SLOT(getBoardList()));
     connect(ui->renumeringBoardPairsAction, SIGNAL(triggered()), SLOT(renumeringBoardPairs()));
 
-    BoardListModel* boardListModel = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *boardListModel = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
     ui->editDslamBoardListTableView->setModel(boardListModel);
 
-    BoardListDelegate* boardListDelegate = new BoardListDelegate(mDeviceInfo->deviceModel(), this);
+    BoardListDelegate *boardListDelegate = new BoardListDelegate(mDeviceInfo->deviceModel(), this);
     boardListDelegate->setIndexTypeBoard(1);
     boardListDelegate->setIndexFirstPair(2);
 
@@ -57,7 +57,7 @@ void EditDslamBoardListPageWidget::editBoardViewRequestContextMenu(QPoint point)
 
 void EditDslamBoardListPageWidget::renumeringBoardPairs()
 {
-    BoardListModel* model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
     model->renumeringPairList();
     mDeviceListModel->setModified(true);
@@ -65,7 +65,7 @@ void EditDslamBoardListPageWidget::renumeringBoardPairs()
 
 void EditDslamBoardListPageWidget::getBoardList()
 {
-    BoardListModel* model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
     if (!model->getBoardListFromDevice())
         BasicDialogs::error(this, BasicDialogTitle::Error, model->error());
@@ -87,12 +87,12 @@ void EditDslamBoardListPageWidget::removeBoard()
     if (!index.isValid())
         return;
 
-    BoardListModel* model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
     QString num = model->data(model->index(index.row(), 0)).toString();
     QString type = model->data(model->index(index.row(), 1)).toString();
 
     if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление доски"),
-                                 QString::fromUtf8("Вы действительно хотите удалить доску №%1(%2)?").arg(num, type)))
+                                  QString::fromUtf8("Вы действительно хотите удалить доску №%1(%2)?").arg(num, type)))
         return;
 
     model->removeRow(index.row(), QModelIndex());
@@ -101,7 +101,7 @@ void EditDslamBoardListPageWidget::removeBoard()
 
 void EditDslamBoardListPageWidget::autoUpdateBoardListStateChanged(bool state)
 {
-    BoardListModel* model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
     model->setAutoFill(state ? 1 : 0);
     mDeviceListModel->setModified(true);
@@ -110,7 +110,7 @@ void EditDslamBoardListPageWidget::autoUpdateBoardListStateChanged(bool state)
 
 void EditDslamBoardListPageWidget::autoNumeringPairsStateChanged(bool state)
 {
-    BoardListModel* model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
     model->setAutoNumeringBoard(state ? 1 : 0);
     mDeviceListModel->setModified(true);

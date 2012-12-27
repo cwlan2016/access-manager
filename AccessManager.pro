@@ -4,21 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml xmlpatterns
+QT       += core gui xml xmlpatterns widgets
 
 TARGET = AccessManager
 TEMPLATE = app
 
 RC_FILE = AccessManager.rc
 
-PRECOMPILED_HEADER = stdafx.h
+#QMAKE_CXXFLAGS+="-std=c++11"
 
-QMAKE_CXXFLAGS+="-std=c++11"
-
-QMAKE_CXXFLAGS_RELEASE+="-O2"
-
-QMAKE_CXXFLAGS_DEBUG +="-pg"
-QMAKE_LFLAGS_DEBUG +="-pg"
+#QMAKE_CXXFLAGS_DEBUG +="-pg"
+#QMAKE_LFLAGS_DEBUG +="-pg"
 
 SOURCES += main.cpp\
     mainwindow.cpp \

@@ -1,14 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "stdafx.h"
-#include "config.h"
-#include "constant.h"
-#include "Pages/devicelistpagewidget.h"
-#include "Pages/dslampagewidget.h"
-#include "Pages/switchpagewidget.h"
-#include "Pages/settingspagewidget.h"
-#include "Pages/aboutpagewidget.h"
+#include <QtWidgets/QMainWindow>
+#include "customtypes.h"
 
 namespace Ui
 {
@@ -20,28 +14,28 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void createDeviceListPage();
     void loadDeviceList();
     void loadProgramSettings();
 private:
-    Ui::MainWindow*             ui;
-    QVector<PageType>*          mTypePageList;
-    QHash<QString, QWidget*>*   mPageList;
+    Ui::MainWindow              *ui;
+    QVector<PageType::Enum>     *mTypePageList;
+    QHash<QString, QWidget *>   *mPageList;
 
-    void closeEvent(QCloseEvent* event);
+    void closeEvent(QCloseEvent *event);
 private slots:
-    //Действия окна
+    //Window actions
     void showAboutProgramPage();
     void showSettingsPage();
     void tabCloseRequested(int index);
     void tabCurrentChanged(int index);
-    //Действия вкладки списка устройст
+    //DeviceTablePage actions
     void deviceViewActivatedItem(QModelIndex index);
-    //Действия вкладки коммутатора
+    //SwitchTablePage actions
     void saveSwitchConfig();
-    //Действия вкладки дслама
+    //DslamTablePage actions
     void upDslPort();
     void downDslPort();
 };

@@ -1,12 +1,23 @@
 #ifndef ONTINFO_H
 #define ONTINFO_H
 
-#include "stdafx.h"
+#include <memory>
+
+#ifdef _MSC_VER
+#include "../customtypes.h"
+#else
 #include "customtypes.h"
+#endif
 
 class OntInfo
 {
 public:
+    enum OntType : short
+    {
+        Nte = 1,
+        Ntp = 2
+    };
+
     OntInfo();
     QString id();
     QString state();

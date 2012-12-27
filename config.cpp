@@ -1,5 +1,12 @@
 #include "config.h"
 
+
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QStandardPaths>
+#include <QtWidgets/QApplication>
+#include "constant.h"
+
 bool Config::exist()
 {
     QFileInfo fileInfo(mConfigPath % qApp->applicationName() % ".ini");
@@ -10,22 +17,21 @@ bool Config::exist()
 void Config::toDefault()
 {
     SnmpConfigInfo::toDefault();
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope,
-                        qApp->organizationName(), qApp->applicationName());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       qApp->organizationName(), qApp->applicationName());
     createSnmpGroup(settings);
 }
 
 bool Config::load()
 {
-    if (!exist())
-    {
+    if (!exist()) {
         toDefault();
 
         return true;
     }
 
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope,
-                        qApp->organizationName(), qApp->applicationName());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       qApp->organizationName(), qApp->applicationName());
     parseSnmpGroup(settings);
 
     return true;
@@ -48,8 +54,10 @@ bool Config::save()
     if (exist())
         backup();
 
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       qApp->organizationName(), qApp->applicationName());
     createSnmpGroup(settings);
+    settings.sync();
 
     return true;
 }
@@ -61,11 +69,13 @@ QString Config::errorString()
 
 void Config::init()
 {
-  #ifdef Q_OS_WIN
-    mConfigPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)% "\\Application Data\\" %  qApp->organizationName() % "\\";
-  #else
-    mConfigPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)% qApp->organizationName() % "\\";
-  #endif
+#ifdef Q_OS_WIN
+    mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+            % "\\Application Data\\" % qApp->organizationName() % "\\";
+#else
+    mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+            % qApp->organizationName() "\\";
+#endif
 }
 
 QString Config::path()
@@ -73,20 +83,19 @@ QString Config::path()
     return mConfigPath;
 }
 
-void Config::createSnmpGroup(QSettings& settings)
+void Config::createSnmpGroup(QSettings &settings)
 {
     settings.beginGroup("snmp");
-    settings.setValue(SnmpSettingsString::port,SnmpConfigInfo::port());
-    settings.setValue(SnmpSettingsString::readCommunity,SnmpConfigInfo::readCommunity());
-    settings.setValue(SnmpSettingsString::writeCommunity,SnmpConfigInfo::writeCommunity());
-    settings.setValue(SnmpSettingsString::retries,SnmpConfigInfo::retries());
-    settings.setValue(SnmpSettingsString::timeout,SnmpConfigInfo::timeout());
-    settings.setValue(SnmpSettingsString::saveConfigTimeout,SnmpConfigInfo::saveConfigTimeout());
+    settings.setValue(SnmpSettingsString::port, SnmpConfigInfo::port());
+    settings.setValue(SnmpSettingsString::readCommunity, SnmpConfigInfo::readCommunity());
+    settings.setValue(SnmpSettingsString::writeCommunity, SnmpConfigInfo::writeCommunity());
+    settings.setValue(SnmpSettingsString::retries, SnmpConfigInfo::retries());
+    settings.setValue(SnmpSettingsString::timeout, SnmpConfigInfo::timeout());
+    settings.setValue(SnmpSettingsString::saveConfigTimeout, SnmpConfigInfo::saveConfigTimeout());
     settings.endGroup();
-    settings.sync();
 }
 
-void Config::parseSnmpGroup(QSettings& settings)
+void Config::parseSnmpGroup(QSettings &settings)
 {
     settings.beginGroup("snmp");
     SnmpConfigInfo::setPort(settings.value("port").toInt());
