@@ -1,6 +1,10 @@
 #include "aboutpagewidget.h"
 #include "ui_aboutpagewidget.h"
 
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include <net-snmp/version.h>
+
 AboutPageWidget::AboutPageWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AboutPageWidget)

@@ -9,6 +9,8 @@
 
 #include "lineedit.h"
 
+#include <QtWidgets/QStyle>
+
 LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
@@ -48,4 +50,3 @@ void LineEdit::updateCloseButton(const QString &text)
     } else
         clearButton->setVisible(!text.isEmpty());
 }
-

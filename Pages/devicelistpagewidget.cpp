@@ -1,6 +1,27 @@
 #include "devicelistpagewidget.h"
 #include "ui_devicelistpagewidget.h"
 
+#include <QtCore/QStringBuilder>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QProgressDialog>
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../converters.h"
+#include "../Models/devicelistdelegate.h"
+#include "../Pages/dslampagewidget.h"
+#include "../Pages/editdslamboardlistpagewidget.h"
+#include "../Pages/oltpagewidget.h"
+#include "../Pages/switchpagewidget.h"
+#else
+#include "constant.h"
+#include "converters.h"
+#include "Models/devicelistdelegate.h"
+#include "Pages/dslampagewidget.h"
+#include "Pages/editdslamboardlistpagewidget.h"
+#include "Pages/oltpagewidget.h"
+#include "Pages/switchpagewidget.h"
+#endif
+
 DeviceListPageWidget::DeviceListPageWidget(QTabWidget *parentTabWidget, QVector<PageType::Enum> *typePageList, QHash<QString, QWidget *> *pageList, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DeviceListPageWidget),
@@ -91,7 +112,7 @@ void DeviceListPageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
         if (progressDialog->wasCanceled())
             break;
 
-        DeviceType deviceType = deviceList[i]->deviceType();
+        DeviceType::Enum deviceType = deviceList[i]->deviceType();
 
         if ((deviceType == updatingDeviceType)
                 || (updatingDeviceType == DeviceType::Other)) {
@@ -155,7 +176,7 @@ void DeviceListPageWidget::openDevice()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceType deviceType = DeviceTypeFromString(typeString);
+    DeviceType::Enum deviceType = DeviceTypeFromString(typeString);
 
     QWidget *pageWidget;
 
@@ -312,7 +333,7 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceModel deviceModel = DeviceModelFromString(deviceModelString);
+    DeviceModel::Enum deviceModel = DeviceModelFromString(deviceModelString);
 
     if ((deviceModel == DeviceModel::Other)
             || (deviceModel == DeviceModel::MXA32)
@@ -389,7 +410,7 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
 
     QModelIndex devModelIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
     QModelIndex index = mDeviceListModel->index(devModelIndex.row(), 3);
-    DeviceType deviceType = DeviceTypeFromString(mDeviceListModel->data(index).toString());
+    DeviceType::Enum deviceType = DeviceTypeFromString(mDeviceListModel->data(index).toString());
 
     if (deviceType == DeviceType::Switch) {
         contextMenu.addSeparator();
@@ -407,12 +428,12 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
 
 void DeviceListPageWidget::vlanInfoGBoxStateChanged(bool state)
 {
-    ui->vlanInfoGroupBox->setShown(state);
+    ui->vlanInfoGroupBox->setVisible(state);
 }
 
 void DeviceListPageWidget::profileInfoGboxStateChanged(bool state)
 {
-    ui->profileInfoGroupBox->setShown(state);
+    ui->profileInfoGroupBox->setVisible(state);
 }
 
 void DeviceListPageWidget::viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex)

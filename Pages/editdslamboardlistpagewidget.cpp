@@ -1,6 +1,19 @@
 #include "editdslamboardlistpagewidget.h"
 #include "ui_editdslamboardlistpagewidget.h"
 
+#include <QtWidgets/QMenu>
+#ifdef _MSC_VER
+#include "../basicdialogs.h"
+#include "../constant.h"
+#include "../Info/dslaminfo.h"
+#include "../Models/boardlistdelegate.h"
+#else
+#include "basicdialogs.h"
+#include "constant.h"
+#include "Info/dslaminfo.h"
+#include "Models/boardlistdelegate.h"
+#endif
+
 EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel *deviceListModel, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::EditDslamBoardListPageWidget),

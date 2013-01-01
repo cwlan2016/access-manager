@@ -1,9 +1,7 @@
 #ifndef OLTPAGEWIDGET_H
 #define OLTPAGEWIDGET_H
 
-#include "basicdialogs.h"
 #include "pagewidget.h"
-#include "Models/onttablemodel.h"
 
 namespace Ui
 {

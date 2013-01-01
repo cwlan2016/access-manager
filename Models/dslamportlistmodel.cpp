@@ -1,12 +1,18 @@
 #include "dslamportlistmodel.h"
-
+#include <QtCore/QDateTime>
+#include <QtCore/QStringBuilder>
+#include <QtGui/QBrush>
+#include <QtGui/QFont>
+#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../constant.h"
+#include "../converters.h"
 #include "../customsnmpfunctions.h"
 #include "../Info/adslportinfo.h"
 #include "../Info/shdslportinfo.h"
 #else
 #include "constant.h"
+#include "converters.h"
 #include "customsnmpfunctions.h"
 #include "Info/adslportinfo.h"
 #include "Info/shdslportinfo.h"
@@ -156,18 +162,21 @@ void DslamPortListModel::setBoardNumber(int boardNum)
 
 bool DslamPortListModel::load()
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    beginResetModel();
 
+    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
+        endResetModel();
         return false;
     }
 
     if (!snmp->openSession()) {
         mError = SnmpErrors::OpenSession;
+        endResetModel();
         return false;
     }
 
@@ -201,6 +210,7 @@ bool DslamPortListModel::load()
             snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface);
         } else {
             mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
+            endResetModel();
             return false;
         }
 
@@ -261,15 +271,18 @@ bool DslamPortListModel::load()
                 }
             } else {
                 mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
+                endResetModel();
                 return false;
             }
         } else {
             mError = SnmpErrors::GetInfo;
+            endResetModel();
             return false;
         }
     }
 
-    reset();
+    endResetModel();
+    //reset();
     return true;
 }
 

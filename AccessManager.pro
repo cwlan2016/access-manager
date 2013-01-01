@@ -11,16 +11,10 @@ TEMPLATE = app
 
 RC_FILE = AccessManager.rc
 
-#QMAKE_CXXFLAGS+="-std=c++11"
-
-#QMAKE_CXXFLAGS_DEBUG +="-pg"
-#QMAKE_LFLAGS_DEBUG +="-pg"
-
 SOURCES += main.cpp\
     mainwindow.cpp \
     Models/maclistmodel.cpp \
     Info/macinfo.cpp \
-    stdafx.cpp \
     snmpclient.cpp \
     constant.cpp \
     config.cpp \
@@ -45,7 +39,7 @@ SOURCES += main.cpp\
     Info/adslportinfo.cpp \
     customtypes.cpp \
     Info/oltinfo.cpp \
-    lineedit.cpp \
+    Pages/lineedit.cpp \
     Pages/dslampagewidget.cpp \
     Pages/pagewidget.cpp \
     Pages/switchpagewidget.cpp \
@@ -63,7 +57,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     Models/maclistmodel.h \
     Info/macinfo.h \
-    stdafx.h \
     snmpclient.h \
     constant.h \
     config.h \
@@ -88,7 +81,7 @@ HEADERS  += mainwindow.h \
     Info/adslportinfo.h \
     customtypes.h \
     Info/oltinfo.h \
-    lineedit.h \
+    Pages/lineedit.h \
     Pages/dslampagewidget.h \
     Pages/pagewidget.h \
     Pages/switchpagewidget.h \

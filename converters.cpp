@@ -1,5 +1,6 @@
 #include "converters.h"
 
+#include <QtCore/QRegExp>
 #include "constant.h"
 
 QString SnmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)

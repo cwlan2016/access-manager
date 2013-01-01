@@ -1,5 +1,6 @@
-#include <QtWidgets/QSplashScreen>
 #include <QtCore/QTranslator>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QSplashScreen>
 #include "config.h"
 #include "constant.h"
 #include "mainwindow.h"

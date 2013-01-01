@@ -1,6 +1,23 @@
 #include "dslampagewidget.h"
 #include "ui_dslampagewidget.h"
 
+#include <QtWidgets/QMenu>
+#ifdef _MSC_VER
+#include "../basicdialogs.h"
+#include "../constant.h"
+#include "../converters.h"
+#include "../Info/dslaminfo.h"
+#include "../Models/boardlistmodel.h"
+#include "../Models/dslamportlistmodel.h"
+#else
+#include "basicdialogs.h"
+#include "constant.h"
+#include "converters.h"
+#include "Info/dslaminfo.h"
+#include "Models/boardlistmodel.h"
+#include "Models/dslamportlistmodel.h"
+#endif
+
 DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::DslamPageWidget)
@@ -161,7 +178,7 @@ void DslamPageWidget::showPortListModel()
     BoardListModel *boardListModel = static_cast<BoardListModel *>(ui->dslamTreeView->model());
 
     QModelIndex indexTypeBoard = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 1);
-    BoardType typeBoard = (BoardType)boardListModel->data(indexTypeBoard, Qt::UserRole).toInt();
+    BoardType::Enum typeBoard = (BoardType::Enum)boardListModel->data(indexTypeBoard, Qt::UserRole).toInt();
 
     if (typeBoard == BoardType::Other) {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите существующую доску."));
@@ -215,7 +232,7 @@ void DslamPageWidget::showSelectProfileGBox()
 {
     DslamPortListModel *portListModel = static_cast<DslamPortListModel *>(ui->dslamTreeView->model());
 
-    DeviceModel deviceModel = mDeviceInfo->deviceModel();
+    DeviceModel::Enum deviceModel = mDeviceInfo->deviceModel();
 
     if ((portListModel->boardType() == BoardType::AnnexA)
             && (deviceModel == DeviceModel::MA5600)) {

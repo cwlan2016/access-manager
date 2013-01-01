@@ -1,5 +1,6 @@
 #include "portlistvalidator.h"
 
+#include <QtCore/QStringList>
 #include "converters.h"
 
 PortListValidator::PortListValidator(DeviceModel::Enum deviceModel)

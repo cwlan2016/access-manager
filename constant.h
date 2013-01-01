@@ -2,6 +2,8 @@
 #define CONSTANT_H
 
 #include "QtCore/QString"
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
 
 const QString DeviceTypeName[] =    { "Other", "Switch", "Dslam", "Olt" };
 const QString DeviceModelName[] =   { "Other", "DES-3526", "DES-3528", "DES-3550", "DES-3552", "MA5600", "MA5300", "MA5616", "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X" };

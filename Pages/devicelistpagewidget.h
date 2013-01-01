@@ -1,12 +1,13 @@
 #ifndef DEVICELISTPAGEWIDGET_H
 #define DEVICELISTPAGEWIDGET_H
 
+#include <QtCore/QSortFilterProxyModel>
+#include <QtWidgets/QTableWidget>
+#ifdef _MSC_VER
+#include "../Models/devicelistmodel.h"
+#else
 #include "Models/devicelistmodel.h"
-#include "Models/devicelistdelegate.h"
-#include "Pages/dslampagewidget.h"
-#include "Pages/switchpagewidget.h"
-#include "Pages/editdslamboardlistpagewidget.h"
-#include "Pages/oltpagewidget.h"
+#endif
 
 namespace Ui
 {
@@ -18,7 +19,9 @@ class DeviceListPageWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit DeviceListPageWidget(QTabWidget *mParentTabWidget, QVector<PageType::Enum> *typePageList, QHash<QString, QWidget *> *pageList, QWidget *parent = 0);
+    explicit DeviceListPageWidget(QTabWidget *mParentTabWidget,
+                                  QVector<PageType::Enum> *typePageList,
+                                  QHash<QString, QWidget *> *pageList, QWidget *parent = 0);
     ~DeviceListPageWidget();
     DeviceListModel *deviceListModel()  const;
     QSortFilterProxyModel *proxyModel() const;

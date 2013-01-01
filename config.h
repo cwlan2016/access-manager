@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <QtCore/QSettings>
 #include "Info/snmpconfiginfo.h"
 
 class Config

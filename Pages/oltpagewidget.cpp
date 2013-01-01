@@ -1,6 +1,18 @@
 #include "oltpagewidget.h"
 #include "ui_oltpagewidget.h"
 
+#include <QtCore/QSortFilterProxyModel>
+#include <QtCore/QStringBuilder>
+#ifdef _MSC_VER
+#include "../basicdialogs.h"
+#include "../constant.h"
+#include "../Models/onttablemodel.h"
+#else
+#include "basicdialogs.h"
+#include "constant.h"
+#include "Models/onttablemodel.h"
+#endif
+
 OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::OltPageWidget)

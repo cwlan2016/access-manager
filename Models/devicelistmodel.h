@@ -1,6 +1,7 @@
 #ifndef DEVICELISTMODEL_H
 #define DEVICELISTMODEL_H
 
+#include <QtCore/QAbstractTableModel>
 #include <QtCore/QXmlStreamWriter>
 #ifdef _MSC_VER
 #include "../Info/switchinfo.h"
@@ -31,7 +32,6 @@ public:
     //file operations
     bool load();
     bool save();
-    void toDefault();
     bool isModified();
     //vlans
     int inetVlan(QModelIndex index);

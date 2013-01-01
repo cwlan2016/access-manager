@@ -93,3 +93,7 @@ void NtpInfo::setSipProxy(QString proxy)
 {
     mSipProxy = proxy;
 }
+
+void NtpInfo::Reconfigure()
+{
+}

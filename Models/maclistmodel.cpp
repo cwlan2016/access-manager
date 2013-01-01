@@ -1,5 +1,8 @@
 #include "maclistmodel.h"
 
+#include <QtCore/QStringBuilder>
+#include <QtGui/QFont>
+#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -90,6 +93,8 @@ Qt::ItemFlags MacListModel::flags(const QModelIndex &index) const
 
 bool MacListModel::updateMacTable()
 {
+    beginResetModel();
+
     mMacList.clear();
 
     SnmpClient *snmp = new SnmpClient();
@@ -99,12 +104,14 @@ bool MacListModel::updateMacTable()
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
         delete snmp;
+        endResetModel();
         return false;
     }
 
     if (!snmp->openSession()) {
         mError = SnmpErrors::OpenSession;
         delete snmp;
+        endResetModel();
         return false;
     }
 
@@ -113,7 +120,8 @@ bool MacListModel::updateMacTable()
 
     delete snmp;
 
-    reset();
+    endResetModel();
+    //reset();
 
     return true;
 }

@@ -1,8 +1,15 @@
 #include "switchinfo.h"
 
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../customsnmpfunctions.h"
+#include "../snmpclient.h"
+#else
 #include "constant.h"
 #include "customsnmpfunctions.h"
 #include "snmpclient.h"
+#endif
+
 
 SwitchInfo::SwitchInfo() :
     DeviceInfo()
@@ -10,7 +17,7 @@ SwitchInfo::SwitchInfo() :
     mInetVlanTag = mIptvVlanTag = 0;
 }
 
-SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel deviceModel) :
+SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
     DeviceInfo(name, ip, deviceModel)
 {
 }

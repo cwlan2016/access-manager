@@ -1,7 +1,13 @@
 #include "oltinfo.h"
 
+#include <QtCore/QStringBuilder>
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../snmpclient.h"
+#else
 #include "constant.h"
 #include "snmpclient.h"
+#endif
 
 OltInfo::OltInfo() :
     DeviceInfo()

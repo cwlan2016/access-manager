@@ -4,6 +4,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QStringBuilder>
 #include <QtWidgets/QApplication>
 #include "constant.h"
 

@@ -1,5 +1,7 @@
 #include "boardlistmodel.h"
 
+#include <QtGui/QFont>
+#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -162,7 +164,7 @@ bool BoardListModel::removeRow(int row, const QModelIndex &parent)
 
     endRemoveRows();
 
-    reset();
+    //reset();
 
     return true;
 }
@@ -189,6 +191,8 @@ DeviceInfo::Ptr BoardListModel::parentDevice()
 
 void BoardListModel::setBoardList(QHash<int, BoardInfo> &boardList)
 {
+    beginResetModel();
+
     mBoardList.clear();
 
     QHashIterator<int, BoardInfo> i(boardList);
@@ -198,7 +202,8 @@ void BoardListModel::setBoardList(QHash<int, BoardInfo> &boardList)
         mBoardList.insert(i.key(), i.value());
     }
 
-    reset();
+    endResetModel();
+    //reset();
 }
 
 void BoardListModel::setAutoFill(short autoFill)
@@ -218,13 +223,17 @@ void BoardListModel::setParentDevice(const DeviceInfo::Ptr &parent)
 
 bool BoardListModel::getBoardListFromDevice()
 {
+    beginResetModel();
+
     if (mParentDevice->deviceModel() != DeviceModel::MA5600) {
         mError = QString::fromUtf8("Автоматическое обновление списка досок невозможно для данной модели дслама.");
+        endResetModel();
         return false;
     }
 
     if (mAutoFill == 0) {
         mError = QString::fromUtf8("На данном дсламе отключено автоматическое обновление досок.");
+        endResetModel();
         return false;
     }
 
@@ -234,11 +243,13 @@ bool BoardListModel::getBoardListFromDevice()
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
+        endResetModel();
         return false;
     }
 
     if (!snmp->openSession()) {
         mError = SnmpErrors::OpenSession;
+        endResetModel();
         return false;
     }
 
@@ -258,6 +269,7 @@ bool BoardListModel::getBoardListFromDevice()
                 vars = vars->next_variable) {
             if (!IsValidSnmpValue(vars)) {
                 mError = SnmpErrors::GetInfo;
+                endResetModel();
                 return false;
             }
 
@@ -279,16 +291,20 @@ bool BoardListModel::getBoardListFromDevice()
 
     } else {
         mError = SnmpErrors::GetInfo;
+        endResetModel();
         return false;
     }
 
-    reset();
+    endResetModel();
+    //reset();
 
     return true;
 }
 
 void BoardListModel::renumeringPairList()
 {
+    //beginResetModel();
+
     int adslStep = CountPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
     int shdslStep = CountPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
 
@@ -311,7 +327,12 @@ void BoardListModel::renumeringPairList()
         }
     }
 
-    reset();
+    QModelIndex first = index(0, 2);
+    QModelIndex last = index(mBoardList.count() -1, 2);
+    emit dataChanged(first, last);
+
+    //endResetModel();
+    //reset();
 }
 
 QString BoardListModel::error() const
@@ -319,7 +340,7 @@ QString BoardListModel::error() const
     return mError;
 }
 
-QString BoardListModel::rangePairs(int firstPair, BoardInfo::BoardType typeBoard) const
+QString BoardListModel::rangePairs(int firstPair, BoardType::Enum typeBoard) const
 {
     return QString("%1-%2")
            .arg(firstPair)

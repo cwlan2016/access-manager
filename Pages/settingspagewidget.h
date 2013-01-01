@@ -1,9 +1,7 @@
 #ifndef SETTINGSPAGEWIDGET_H
 #define SETTINGSPAGEWIDGET_H
 
-#include "config.h"
-#include "constant.h"
-#include "basicdialogs.h"
+#include <QtWidgets/QWidget>
 
 namespace Ui
 {

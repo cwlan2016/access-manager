@@ -1,6 +1,8 @@
 #include "basicdialogs.h"
 
-#include "QtWidgets/QMessageBox"
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPushButton>
 
 namespace BasicDialogs
 {
@@ -18,7 +20,8 @@ bool okToDelete(QWidget *parent, const QString &title, const QString &text, cons
     if (!detailedText.isEmpty())
         messageBox->setInformativeText(detailedText);
 
-    QAbstractButton *deleteButton = messageBox->addButton(QString::fromUtf8("Удалить"), QMessageBox::AcceptRole);
+    QAbstractButton *deleteButton = messageBox->addButton(QString::fromUtf8("Удалить"),
+                                                          QMessageBox::AcceptRole);
     messageBox->addButton(QString::fromUtf8("Не удалять"), QMessageBox::RejectRole);
     messageBox->setDefaultButton(qobject_cast<QPushButton *>(deleteButton));
 
@@ -48,7 +51,8 @@ void error(QWidget *parent, const QString &title, const QString &text, const QSt
     messageBox->exec();
 }
 
-void information(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
+void information(QWidget *parent, const QString &title, const QString &text,
+                 const QString &detailedText)
 {
     std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -67,7 +71,8 @@ void information(QWidget *parent, const QString &title, const QString &text, con
     messageBox->exec();
 }
 
-void warning(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
+void warning(QWidget *parent, const QString &title, const QString &text,
+             const QString &detailedText)
 {
     std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -86,7 +91,8 @@ void warning(QWidget *parent, const QString &title, const QString &text, const Q
     messageBox->exec();
 }
 
-bool question(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
+bool question(QWidget *parent, const QString &title, const QString &text,
+              const QString &detailedText)
 {
     std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
 

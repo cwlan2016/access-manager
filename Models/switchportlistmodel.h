@@ -2,6 +2,7 @@
 #define SWITCHPORTLISTMODEL_H
 
 #include <QtCore/QAbstractTableModel>
+#include <QtCore/QBitArray>
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #include "../Info/switchportinfo.h"
@@ -31,8 +32,8 @@ public:
     QString error() const;
     //информация по порту
     bool memberMulticastVlan(int port);
-    SwitchPortInfo::VlanState memberInetVlan(int port);
-    SwitchPortInfo::VlanState memberIptvVlan(int port);
+    VlanState::Enum memberInetVlan(int port);
+    VlanState::Enum memberIptvVlan(int port);
     //настройка порта
     bool setMemberMulticastVlan(int port, bool value);
     bool setMemberInternetService(int port);

@@ -19,7 +19,7 @@ QString OntInfo::description()
     return mDescription;
 }
 
-OntType OntInfo::type()
+OntType::Enum OntInfo::type()
 {
     return mType;
 }
@@ -54,7 +54,7 @@ void OntInfo::setDescription(QString description)
     mDescription = description;
 }
 
-void OntInfo::setType(OntType type)
+void OntInfo::setType(OntType::Enum type)
 {
     mType = type;
 }

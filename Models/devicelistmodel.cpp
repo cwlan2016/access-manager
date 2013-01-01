@@ -1,5 +1,10 @@
 #include "devicelistmodel.h"
 
+#include <QtCore/QFileInfo>
+#include <QtCore/QStringBuilder>
+#include <QtXmlPatterns/QXmlSchema>
+#include <QtXmlPatterns/QXmlSchemaValidator>
+#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../config.h"
@@ -212,8 +217,11 @@ BoardListModel *DeviceListModel::boardListModel(QModelIndex index)
 
 bool DeviceListModel::load()
 {
+    beginResetModel();
+
     if (!exist()) {
-        toDefault();
+        mDeviceList.clear();
+        endResetModel();
         return true;
     }
 
@@ -225,7 +233,7 @@ bool DeviceListModel::load()
         mError = QString::fromUtf8("Ошибка: невозможно открыть файл %1: %2")
                  .arg(file.fileName())
                  .arg(file.errorString());
-
+        endResetModel();
         return false;
     }
 
@@ -239,7 +247,7 @@ bool DeviceListModel::load()
     if (!schema.isValid()) {
         mError = QString::fromUtf8("Файл схемы содержит ошибки.");
         file.close();
-
+        endResetModel();
         return false;
     }
 
@@ -271,7 +279,8 @@ bool DeviceListModel::load()
 
     mDeviceList = handler.deviceList();
 
-    reset();
+    endResetModel();
+    //reset();
     mModified = false;
 
     return true;
@@ -321,11 +330,6 @@ bool DeviceListModel::save()
     return true;
 }
 
-void DeviceListModel::toDefault()
-{
-    mDeviceList.clear();
-    reset();
-}
 
 bool DeviceListModel::isModified()
 {

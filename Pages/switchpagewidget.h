@@ -2,9 +2,8 @@
 #define SWITCHPAGEWIDGET_H
 
 #include "pagewidget.h"
-#include "Models/switchportlistmodel.h"
-#include "Models/maclistmodel.h"
-#include "Info/switchinfo.h"
+
+class LineEdit;
 
 namespace Ui
 {

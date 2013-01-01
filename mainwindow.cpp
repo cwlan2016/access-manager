@@ -1,9 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QtGui/QCloseEvent>
+#include <QtWidgets/QMessageBox>
+
+#include "config.h"
+#include "constant.h"
 #include "converters.h"
 #include "Pages/devicelistpagewidget.h"
+#include "Pages/dslampagewidget.h"
 #include "Pages/settingspagewidget.h"
+#include "Pages/switchpagewidget.h"
 #include "Pages/aboutpagewidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :

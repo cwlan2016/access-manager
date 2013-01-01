@@ -2,9 +2,11 @@
 #define EDITDSLAMBOARDLISTPAGEWIDGET_H
 
 #include "pagewidget.h"
-#include "Info/dslaminfo.h"
-#include "Models/boardlistdelegate.h"
+#ifdef _MSC_VER
+#include "../Models/devicelistmodel.h"
+#else
 #include "Models/devicelistmodel.h"
+#endif
 
 namespace Ui
 {

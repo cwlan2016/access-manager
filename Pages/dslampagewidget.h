@@ -1,10 +1,9 @@
 #ifndef DSLAMPAGEWIDGET_H
 #define DSLAMPAGEWIDGET_H
 
+#include <QtCore/QModelIndex>
+#include <QtCore/QPoint>
 #include "pagewidget.h"
-#include "Info/dslaminfo.h"
-#include "Models/boardlistmodel.h"
-#include "Models/dslamportlistmodel.h"
 
 namespace Ui
 {

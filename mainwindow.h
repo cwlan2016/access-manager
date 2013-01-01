@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QModelIndex>
 #include <QtWidgets/QMainWindow>
 #include "customtypes.h"
 

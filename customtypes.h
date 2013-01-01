@@ -49,6 +49,14 @@ enum Enum : short
 };
 }
 
+namespace OntType {
+enum Enum : short
+{
+    Nte = 1,
+    Ntp = 2
+};
+}
+
 namespace NteModel {
 enum Enum : short
 {
@@ -134,6 +142,15 @@ enum Enum
 {
     ReadSession,
     WriteSession
+};
+}
+
+namespace VlanState {
+enum Enum : short
+{
+    Untag = 0,
+    Tag =   1,
+    None =  2
 };
 }
 

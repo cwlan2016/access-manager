@@ -1,5 +1,6 @@
 #include "devicelistdelegate.h"
 
+#include <QtWidgets/QComboBox>
 #ifdef _MSC_VER
 #include "../constant.h"
 #else
@@ -40,7 +41,8 @@ void DeviceListDelegate::setEditorData(QWidget *editor, const QModelIndex &index
     }
 }
 
-void DeviceListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+void DeviceListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                                      const QModelIndex &index) const
 {
     if (index.column() == mIndexDeviceModel) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);

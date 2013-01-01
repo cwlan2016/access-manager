@@ -1,12 +1,17 @@
 #include "switchportlistmodel.h"
 
+#include <QtCore/QStringBuilder>
+#include <QtGui/QFont>
+#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
+#include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
 #include "../snmpclient.h"
 #else
 #include "basicdialogs.h"
+#include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
 #include "snmpclient.h"
@@ -126,9 +131,11 @@ QVariant SwitchPortListModel::headerData(int section, Qt::Orientation orientatio
 
 void SwitchPortListModel::sort(int column, Qt::SortOrder order)
 {
+    //beginResetModel();
+
     std::sort(mPortList.begin(), mPortList.end(),
               [&](const SwitchPortInfo::Ptr & first,
-    const SwitchPortInfo::Ptr & second) {
+    const SwitchPortInfo::Ptr & second) -> bool {
         if (column == 0)
             return order == Qt::AscendingOrder ? (first->number() < second->number()) : (first->number() > second->number());
         else if (column == 1)
@@ -140,7 +147,9 @@ void SwitchPortListModel::sort(int column, Qt::SortOrder order)
         return false;
     });
 
-    reset();
+    //TODO: check sort without reset model;
+    //endResetModel();
+    //reset();
 }
 
 Qt::ItemFlags SwitchPortListModel::flags(const QModelIndex &index) const
@@ -184,7 +193,7 @@ bool SwitchPortListModel::memberMulticastVlan(int port)
     return mMulticastVlanMember[port - 1];
 }
 
-SwitchPortInfo::VlanState SwitchPortListModel::memberInetVlan(int port)
+VlanState::Enum SwitchPortListModel::memberInetVlan(int port)
 {
     if (mInetVlanUntagMember[port - 1]) {
         return VlanState::Untag;
@@ -195,7 +204,7 @@ SwitchPortInfo::VlanState SwitchPortListModel::memberInetVlan(int port)
     }
 }
 
-SwitchPortInfo::VlanState SwitchPortListModel::memberIptvVlan(int port)
+VlanState::Enum SwitchPortListModel::memberIptvVlan(int port)
 {
     if (mIptvUnicastVlanUntagMember[port - 1]) {
         return VlanState::Untag;
@@ -396,7 +405,7 @@ bool SwitchPortListModel::updateInfoPort(int indexPort)
         auto it = mPortList.begin();
         auto end = mPortList.end();
         for (; it != end; ++it) {
-            if (*it->number() == indexPort) {
+            if ((*it)->number() == indexPort) {
                 currentPort = *it;
                 break;
             }

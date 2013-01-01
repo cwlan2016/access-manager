@@ -7,13 +7,6 @@
 class SwitchPortInfo
 {
 public:
-    enum VlanState : short
-    {
-        Untag = 0,
-        Tag =   1,
-        None =  2
-    };
-
     SwitchPortInfo();
     int number() const;
     QString state() const;

@@ -1,5 +1,6 @@
 #include "snmpclient.h"
 
+#include <QtCore/QStringList>
 #include "Info/snmpconfiginfo.h"
 
 SnmpClient::SnmpClient()

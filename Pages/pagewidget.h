@@ -1,7 +1,12 @@
 #ifndef PAGEWIDGET_H
 #define PAGEWIDGET_H
 
-#include "Info/deviceinfo.h"
+#include <QtWidgets/QWidget>
+#ifdef _MSC_VER
+#include "../Info/deviceinfo.h"
+#else
+#include "../Info/deviceinfo.h"
+#endif
 
 class PageWidget : public QWidget
 {

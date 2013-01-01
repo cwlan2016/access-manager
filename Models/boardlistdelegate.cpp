@@ -139,8 +139,8 @@ QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum dev
     int countPairs = CountPorts(deviceModel, BoardTypeFromString(boardType));
     int countBoards = 0;
 
-    if ((deviceModel == DeviceInfo::MA5600)
-            || (deviceModel == DeviceInfo::MA5300)) {
+    if ((deviceModel == DeviceModel::MA5600)
+            || (deviceModel == DeviceModel::MA5300)) {
         countBoards = 14;
     }
 

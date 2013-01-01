@@ -32,12 +32,12 @@ QString DeviceInfo::ip() const
     return mIp;
 }
 
-DeviceModel DeviceInfo::deviceModel() const
+DeviceModel::Enum DeviceInfo::deviceModel() const
 {
     return mDeviceModel;
 }
 
-DeviceType DeviceInfo::deviceType() const
+DeviceType::Enum DeviceInfo::deviceType() const
 {
     return mDeviceType;
 }
@@ -57,13 +57,13 @@ void DeviceInfo::setIP(const QString ip)
     mIp = ip;
 }
 
-void DeviceInfo::setDeviceModel(const DeviceModel deviceModel)
+void DeviceInfo::setDeviceModel(const DeviceModel::Enum deviceModel)
 {
     mDeviceModel = deviceModel;
     mDeviceType = DeviceTypeFromDeviceModel(mDeviceModel);
 }
 
-void DeviceInfo::setDeviceType(const DeviceType deviceType)
+void DeviceInfo::setDeviceType(const DeviceType::Enum deviceType)
 {
     mDeviceType = deviceType;
 }

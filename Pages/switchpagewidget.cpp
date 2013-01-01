@@ -1,6 +1,22 @@
 #include "switchpagewidget.h"
 #include "ui_switchpagewidget.h"
 
+#include <QtCore/QSortFilterProxyModel>
+#include <QtWidgets/QMenu>
+#ifdef _MSC_VER
+#include "../basicdialogs.h"
+#include "../constant.h"
+#include "../Info/switchinfo.h"
+#include "../Models/maclistmodel.h"
+#include "../Models/switchportlistmodel.h"
+#else
+#include "basicdialogs.h"
+#include "constant.h"
+#include "Info/switchinfo.h"
+#include "Models/maclistmodel.h"
+#include "Models/switchportlistmodel.h"
+#endif
+
 SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::SwitchPageWidget)
@@ -11,7 +27,7 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
 
     connect(ui->portListTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(portViewRequestContextMenu(QPoint)));
     connect(ui->macAddressTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(macTableViewRequestContextMenu(QPoint)));
-    connect(ui->portInfoGroupBox, SIGNAL(toggled(bool)), ui->portInfoGroupBox, SLOT(setShown(bool)));
+    connect(ui->portInfoGroupBox, SIGNAL(toggled(bool)), ui->portInfoGroupBox, SLOT(setVisible(bool)));
 
     connect(ui->macRadioButton, SIGNAL(toggled(bool)), SLOT(macRadioButtonChangeState(bool)));
     connect(ui->macLineEdit, SIGNAL(textChanged(QString)), SLOT(macLineEditTextChanged(QString)));
@@ -299,7 +315,7 @@ void SwitchPageWidget::filterMacAddressByPorts()
     auto it = rangeStringList.begin();
     auto end = rangeStringList.end();
     for (; it != end; ++it) {
-        QStringList valueStringList = *it.split("-", QString::SkipEmptyParts);
+        QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
 
         if (valueStringList.size() == 2) {
             int first = valueStringList.at(0).toInt();
