@@ -85,46 +85,6 @@ QString SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
         return "Unknown";
 }
 
-DeviceModel::Enum DeviceModelFromString(QString deviceModel)
-{
-    if (deviceModel == DeviceModelName[DeviceModel::DES3526])
-        return DeviceModel::DES3526;
-    else if (deviceModel == DeviceModelName[DeviceModel::MA5600])
-        return DeviceModel::MA5600;
-    else if (deviceModel == DeviceModelName[DeviceModel::LTP8X])
-        return DeviceModel::LTP8X;
-    else if (deviceModel == DeviceModelName[DeviceModel::LTE8ST])
-        return DeviceModel::LTE8ST;
-    else if (deviceModel == DeviceModelName[DeviceModel::DES3528])
-        return DeviceModel::DES3528;
-    else if (deviceModel == DeviceModelName[DeviceModel::MA5300])
-        return DeviceModel::MA5300;
-    else if (deviceModel == DeviceModelName[DeviceModel::MXA64])
-        return DeviceModel::MXA64;
-    else if (deviceModel == DeviceModelName[DeviceModel::DES3552])
-        return DeviceModel::DES3552;
-    else if (deviceModel == DeviceModelName[DeviceModel::MXA32])
-        return DeviceModel::MXA32;
-    else if (deviceModel == DeviceModelName[DeviceModel::MA5616])
-        return DeviceModel::MA5616;
-    else if (deviceModel == DeviceModelName[DeviceModel::DES3550])
-        return DeviceModel::DES3550;
-    else
-        return DeviceModel::Other;
-}
-
-DeviceType::Enum DeviceTypeFromString(QString deviceType)
-{
-    if (deviceType == DeviceTypeName[DeviceType::Switch])
-        return DeviceType::Switch;
-    else if (deviceType == DeviceTypeName[DeviceType::Dslam])
-        return DeviceType::Dslam;
-    else if (deviceType == DeviceTypeName[DeviceType::Olt])
-        return DeviceType::Olt;
-    else
-        return DeviceType::Other;
-}
-
 DeviceType::Enum DeviceTypeFromDeviceModel(DeviceModel::Enum deviceModel)
 {
     switch (deviceModel) {
@@ -147,18 +107,6 @@ DeviceType::Enum DeviceTypeFromDeviceModel(DeviceModel::Enum deviceModel)
     }
 
     return DeviceType::Other;
-}
-
-BoardType::Enum BoardTypeFromString(QString type)
-{
-    if (type == BoardTypeName[(short)BoardType::AnnexA])
-        return BoardType::AnnexA;
-    else if (type == BoardTypeName[(short)BoardType::AnnexB])
-        return BoardType::AnnexB;
-    else if (type == BoardTypeName[(short)BoardType::Shdsl])
-        return BoardType::Shdsl;
-    else
-        return BoardType::Other;
 }
 
 BoardType::Enum BoardTypeFromBoardName(QString boardName)
@@ -227,7 +175,8 @@ QString DecMacAddressToHex(oid *macAddressOid, int length)
 
 bool ValidIpAddress(QString ip)
 {
-    QString regExpStr = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
+    QString regExpStr = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
+            "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
     QRegExp regExp(regExpStr, Qt::CaseInsensitive, QRegExp::RegExp);
 
     return regExp.indexIn(ip) != -1;

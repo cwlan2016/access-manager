@@ -63,11 +63,11 @@ QVariant DeviceListModel::data(const QModelIndex &index, int role) const
         if (index.column() == 0)
             return mDeviceList[index.row()]->name();
         else if (index.column() == 1)
-            return DeviceModelName[(short)mDeviceList[index.row()]->deviceModel()];
+            return DeviceModel::toString(mDeviceList[index.row()]->deviceModel());
         else if (index.column() == 2)
             return mDeviceList[index.row()]->ip();
         else if (index.column() == 3)
-            return DeviceTypeName[(short)mDeviceList[index.row()]->deviceType()];
+            return DeviceType::toString(mDeviceList[index.row()]->deviceType());
         else
             return QVariant();
     } else
@@ -88,7 +88,7 @@ bool DeviceListModel::setData(const QModelIndex &index, const QVariant &value, i
 
             return true;
         } else if (index.column() == 1) {
-            DeviceModel::Enum newModel = DeviceModelFromString(value.toString().trimmed());
+            DeviceModel::Enum newModel = DeviceModel::fromString(value.toString().trimmed());
             DeviceType::Enum newType = DeviceTypeFromDeviceModel(newModel);
 
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
@@ -456,7 +456,7 @@ void DeviceListModel::createSwitchElement(QXmlStreamWriter &writer, const Switch
 
     writer.writeAttribute("name", deviceInfo->name());
     writer.writeAttribute("ip", deviceInfo->ip());
-    writer.writeAttribute("model", DeviceModelName[(short)deviceInfo->deviceModel()]);
+    writer.writeAttribute("model", DeviceModel::toString(deviceInfo->deviceModel()));
     writer.writeAttribute("inetVlan", QString::number(deviceInfo->inetVlanTag()));
     writer.writeAttribute("iptvVlan", QString::number(deviceInfo->iptvVlanTag()));
 
@@ -469,7 +469,7 @@ void DeviceListModel::createDslamElement(QXmlStreamWriter &writer, const DslamIn
 
     writer.writeAttribute("name", deviceInfo->name());
     writer.writeAttribute("ip", deviceInfo->ip());
-    writer.writeAttribute("model", DeviceModelName[deviceInfo->deviceModel()]);
+    writer.writeAttribute("model", DeviceModel::toString(deviceInfo->deviceModel()));
     writer.writeAttribute("autofill", QString::number(deviceInfo->autoFill()));
     writer.writeAttribute("autonumeringboard", QString::number(deviceInfo->autoNumeringBoard()));
 
@@ -480,7 +480,7 @@ void DeviceListModel::createDslamElement(QXmlStreamWriter &writer, const DslamIn
 
         writer.writeAttribute("number", QString::number((*it).number()));
         writer.writeAttribute("firstpair", QString::number((*it).firstPair()));
-        writer.writeAttribute("type", BoardTypeName[(*it).type()]);
+        writer.writeAttribute("type", BoardType::toString((*it).type()));
 
         writer.writeEndElement();
     }
@@ -494,7 +494,7 @@ void DeviceListModel::createOltElement(QXmlStreamWriter &writer, const OltInfo::
 
     writer.writeAttribute("name", deviceInfo->name());
     writer.writeAttribute("ip", deviceInfo->ip());
-    writer.writeAttribute("model", DeviceModelName[(short)deviceInfo->deviceModel()]);
+    writer.writeAttribute("model", DeviceModel::toString(deviceInfo->deviceModel()));
 
     createOltProfileList(writer, deviceInfo->serviceProfileList(), "uniprofile");
     createOltProfileList(writer, deviceInfo->multicastProfileList(), "multprofile");

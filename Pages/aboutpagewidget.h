@@ -15,7 +15,6 @@ class AboutPageWidget : public QWidget
 public:
     explicit AboutPageWidget(QWidget *parent = 0);
     ~AboutPageWidget();
-
 private:
     Ui::AboutPageWidget *ui;
 };

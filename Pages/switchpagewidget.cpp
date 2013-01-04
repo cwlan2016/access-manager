@@ -25,22 +25,36 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
 
     ui->portInfoGroupBox->setVisible(false);
 
-    connect(ui->portListTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(portViewRequestContextMenu(QPoint)));
-    connect(ui->macAddressTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(macTableViewRequestContextMenu(QPoint)));
-    connect(ui->portInfoGroupBox, SIGNAL(toggled(bool)), ui->portInfoGroupBox, SLOT(setVisible(bool)));
+    connect(ui->portListTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::portViewRequestContextMenu);
+    connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::macTableViewRequestContextMenu);
+    connect(ui->portInfoGroupBox, &QGroupBox::toggled,
+            ui->portInfoGroupBox, &QGroupBox::setVisible);
 
-    connect(ui->macRadioButton, SIGNAL(toggled(bool)), SLOT(macRadioButtonChangeState(bool)));
-    connect(ui->macLineEdit, SIGNAL(textChanged(QString)), SLOT(macLineEditTextChanged(QString)));
-    connect(ui->filterPortButton, SIGNAL(pressed()), SLOT(filterMacAddressByPorts()));
+    connect(ui->macRadioButton, &QRadioButton::toggled,
+            this, &SwitchPageWidget::macRadioButtonChangeState);
+    connect(ui->macLineEdit, &QLineEdit::textChanged,
+            this, &SwitchPageWidget::macLineEditTextChanged);
+    connect(ui->filterPortButton, &QPushButton::pressed,
+            this, &SwitchPageWidget::filterMacAddressByPorts);
 
-    connect(ui->showPortInfoAction, SIGNAL(triggered()), SLOT(showPortInfoGroupBox()));
-    connect(ui->refreshPortInfoAction, SIGNAL(triggered()), SLOT(refreshPortInfo()));
-    connect(ui->refreshAllPortInfoAction, SIGNAL(triggered()), SLOT(refreshAllPortInfo()));
-    connect(ui->refreshMacTableInfoAction, SIGNAL(triggered()), SLOT(refreshMacTable()));
-    connect(ui->addPortToMulticastVlanAction, SIGNAL(triggered()), SLOT(addPortToMulticastVlan()));
-    connect(ui->removePortFromMulticastVlanAction, SIGNAL(triggered()), SLOT(removePortFromMulticastVlan()));
-    connect(ui->setPortInetServiceAction, SIGNAL(triggered()), SLOT(setPortInternetService()));
-    connect(ui->setPortInetWithIptvStbServiceAction, SIGNAL(triggered()), SLOT(setPortInternetWithStbService()));
+    connect(ui->showPortInfoAction, &QAction::triggered,
+            this, &SwitchPageWidget::showPortInfoGroupBox);
+    connect(ui->refreshPortInfoAction, &QAction::triggered,
+            this, &SwitchPageWidget::refreshPortInfo);
+    connect(ui->refreshAllPortInfoAction, &QAction::triggered,
+            this, &SwitchPageWidget::refreshAllPortInfo);
+    connect(ui->refreshMacTableInfoAction, &QAction::triggered,
+            this, &SwitchPageWidget::refreshMacTable);
+    connect(ui->addPortToMulticastVlanAction, &QAction::triggered,
+            this, &SwitchPageWidget::addPortToMulticastVlan);
+    connect(ui->removePortFromMulticastVlanAction, &QAction::triggered,
+            this, &SwitchPageWidget::removePortFromMulticastVlan);
+    connect(ui->setPortInetServiceAction, &QAction::triggered,
+            this, &SwitchPageWidget::setPortInternetService);
+    connect(ui->setPortInetWithIptvStbServiceAction, &QAction::triggered,
+            this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
     SwitchInfo::Ptr info = std::static_pointer_cast<SwitchInfo>(mDeviceInfo);

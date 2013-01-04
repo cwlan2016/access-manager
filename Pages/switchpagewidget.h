@@ -17,11 +17,8 @@ class SwitchPageWidget : public PageWidget
 public:
     explicit SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
     ~SwitchPageWidget();
-private:
-    void changeStateSwitchPortInMulticastVlan(bool state);
-public slots:
     void saveSwitchConfig();
-private slots:
+private:
     void showPortInfoGroupBox();
     void refreshPortInfo();
     void refreshAllPortInfo();
@@ -35,7 +32,8 @@ private slots:
     void filterMacAddressByPorts();
     void macLineEditTextChanged(QString text);
     void macRadioButtonChangeState(bool checked);
-private:
+    void changeStateSwitchPortInMulticastVlan(bool state);
+
     Ui::SwitchPageWidget *ui;
 };
 

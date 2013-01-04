@@ -2,18 +2,15 @@
 #define CONVERTERS_H
 
 #include <QtCore/QBitArray>
-#include "customtypes.h"
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
+#include "customtypes.h"
 
 QString     SnmpInterfaceNumber(DeviceModel::Enum model, int slot, int port);
 QString     DslamStatePortString(long state);
 QString     SwitchStatePortString(long state);
 QString     SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex);
-DeviceModel::Enum   DeviceModelFromString(QString deviceModel);
-DeviceType::Enum    DeviceTypeFromString(QString deviceType);
 DeviceType::Enum    DeviceTypeFromDeviceModel(DeviceModel::Enum deviceModel);
-BoardType::Enum     BoardTypeFromString(QString type);
 BoardType::Enum     BoardTypeFromBoardName(QString boardName);
 int         CountPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType);
 int         CountPorts(DeviceModel::Enum deviceModel);

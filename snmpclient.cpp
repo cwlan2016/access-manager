@@ -75,11 +75,11 @@ bool SnmpClient::sendRequest()
 //          SNMP_MSG_SET
 //          SNMP_MSG_GETNEXT
 //          SNMP_MSG_GETBULK
-void SnmpClient::createPdu(int pduType, int max_repetitions)
+void SnmpClient::createPdu(int pduType, int maxRepetitions)
 {
     mPdu = snmp_pdu_create(pduType);
     mPdu->non_repeaters = 0;
-    mPdu->max_repetitions = max_repetitions;
+    mPdu->max_repetitions = maxRepetitions;
 }
 
 bool SnmpClient::setupSession(SessionType::Enum sessionType)

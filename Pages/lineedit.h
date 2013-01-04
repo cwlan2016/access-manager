@@ -19,14 +19,11 @@ class LineEdit : public QLineEdit
 
 public:
     LineEdit(QWidget *parent = 0);
-
 protected:
     void resizeEvent(QResizeEvent *);
-
-private slots:
+private:
     void updateCloseButton(const QString &text);
 
-private:
     QToolButton *clearButton;
 };
 

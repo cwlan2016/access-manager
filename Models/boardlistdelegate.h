@@ -22,15 +22,15 @@ public:
     int indexFirstPair();
     void setIndexTypeBoard(int index);
     void setIndexFirstPair(int index);
-private slots:
-    void commitAndCloseComboBoxEditor(int);
 private:
-    int mIndexTypeBoard;
-    int mIndexFirstPair;
-    DeviceModel::Enum mDeviceModel;
+    void commitAndCloseComboBoxEditor(int index);
     QWidget *createComboBoxEditor(QWidget *parent) const;
     QStringListModel *fillTypeBoardComboBox() const;
     QStringListModel *fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const;
+
+    int mIndexTypeBoard;
+    int mIndexFirstPair;
+    DeviceModel::Enum mDeviceModel;
 };
 
 #endif // BOARDLISTDELEGATE_H

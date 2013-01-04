@@ -26,7 +26,6 @@ private:
     QHash<QString, QWidget *>   *mPageList;
 
     void closeEvent(QCloseEvent *event);
-private slots:
     //Window actions
     void showAboutProgramPage();
     void showSettingsPage();

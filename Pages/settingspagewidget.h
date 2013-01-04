@@ -15,9 +15,8 @@ class SettingsPageWidget : public QWidget
 public:
     explicit SettingsPageWidget(QWidget *parent = 0);
     ~SettingsPageWidget();
-private slots:
-    void saveSetting();
 private:
+    void saveSetting();
     bool validateSettingsData();
 
     Ui::SettingsPageWidget *ui;

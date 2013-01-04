@@ -30,7 +30,8 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
 
     ui->stackedWidget->setCurrentWidget(ui->snmpPage);
 
-    connect(ui->saveSettingsButton, SIGNAL(pressed()), SLOT(saveSetting()));
+    connect(ui->saveSettingsButton, &QPushButton::pressed,
+            this, &SettingsPageWidget::saveSetting);
 }
 
 SettingsPageWidget::~SettingsPageWidget()

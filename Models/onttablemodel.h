@@ -23,9 +23,6 @@ public:
     bool updateOntInfo(QString id);
     //error
     QString error() const;
-signals:
-
-public slots:
 private:
     std::vector<OntInfo::Ptr> mOntList;
     QString mError;

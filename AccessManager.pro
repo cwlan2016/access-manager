@@ -108,12 +108,15 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-win32:debug {
+win32
+{
+debug {
 LIBS += -lnetsnmpd
 }
 
-win32:release {
+release {
 LIBS += -lnetsnmp
+}
 }
 
 win32 {
@@ -168,3 +171,6 @@ OTHER_FILES += \
     AccessManager.rc \
     images/clear_left.png \
     SchemaDeviceList.xsd
+
+HEADERS += \
+    lineedit.h

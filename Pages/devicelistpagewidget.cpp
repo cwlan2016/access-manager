@@ -34,6 +34,7 @@ DeviceListPageWidget::DeviceListPageWidget(QTabWidget *parentTabWidget, QVector<
     ui->setupUi(this);
 
     mProxyModel->setSourceModel(mDeviceListModel);
+    mProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     ui->deviceListTableView->setModel(mProxyModel);
     ui->deviceListTableView->setColumnWidth(0, 200);
@@ -43,22 +44,35 @@ DeviceListPageWidget::DeviceListPageWidget(QTabWidget *parentTabWidget, QVector<
     deviceListDelegate->setIndexDeviceModel(1);
     ui->deviceListTableView->setItemDelegate(deviceListDelegate);
 
-    connect(ui->selectDeviceAction, SIGNAL(triggered()), SLOT(openDevice()));
-    connect(ui->addDeviceAction, SIGNAL(triggered()), SLOT(addDevice()));
-    connect(ui->editDeviceAction, SIGNAL(triggered()), SLOT(editDevice()));
-    connect(ui->removeDeviceAction, SIGNAL(triggered()), SLOT(removeDevice()));
-    connect(ui->deviceListTableView, SIGNAL(doubleClicked(QModelIndex)), SLOT(openDevice()));
-    connect(ui->deviceListTableView->selectionModel(), SIGNAL(currentChanged(QModelIndex, QModelIndex)), SLOT(viewActivatedItem(QModelIndex, QModelIndex)));
-    connect(ui->deviceListTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(deviceViewRequestContextMenu(QPoint)));
-    connect(ui->filterNameLineEdit, SIGNAL(textChanged(QString)), SLOT(filterDeviceTextChanged(QString)));
-    connect(ui->vlanInfoGroupBox, SIGNAL(toggled(bool)), SLOT(vlanInfoGBoxStateChanged(bool)));
-    connect(ui->profileInfoGroupBox, SIGNAL(toggled(bool)), SLOT(profileInfoGboxStateChanged(bool)));
-    connect(ui->showVlanSwitchAction, SIGNAL(triggered()), SLOT(showVlanInfoGroupBox()));
-    connect(ui->editDslamBoardListAction, SIGNAL(triggered()), SLOT(showEditDslamBoardListPage()));
-    connect(ui->showProfilesOltAction, SIGNAL(triggered()), SLOT(showProfileInfoGroupBox()));
+    connect(ui->selectDeviceAction, &QAction::triggered,
+            this, &DeviceListPageWidget::openDevice);
+    connect(ui->addDeviceAction, &QAction::triggered,
+            this, &DeviceListPageWidget::addDevice);
+    connect(ui->editDeviceAction, &QAction::triggered,
+            this, &DeviceListPageWidget::editDevice);
+    connect(ui->removeDeviceAction, &QAction::triggered,
+            this, &DeviceListPageWidget::removeDevice);
+    connect(ui->deviceListTableView, &QTableView::doubleClicked,
+            this, &DeviceListPageWidget::openDevice);
+    connect(ui->deviceListTableView->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &DeviceListPageWidget::viewActivatedItem);
+    connect(ui->deviceListTableView, &QTableView::customContextMenuRequested,
+            this, &DeviceListPageWidget::deviceViewRequestContextMenu);
+    connect(ui->filterNameLineEdit, &QLineEdit::textChanged,
+            this, &DeviceListPageWidget::filterDeviceTextChanged);
+    connect(ui->vlanInfoGroupBox, &QGroupBox::toggled,
+            this, &DeviceListPageWidget::vlanInfoGBoxStateChanged);
+    connect(ui->profileInfoGroupBox, &QGroupBox::toggled,
+            this, &DeviceListPageWidget::profileInfoGboxStateChanged);
+    connect(ui->showVlanSwitchAction, &QAction::triggered,
+            this, &DeviceListPageWidget::showVlanInfoGroupBox);
+    connect(ui->editDslamBoardListAction, &QAction::triggered,
+            this, &DeviceListPageWidget::showEditDslamBoardListPage);
+    connect(ui->showProfilesOltAction, &QAction::triggered,
+            this, &DeviceListPageWidget::showProfileInfoGroupBox);
 
-    ui->vlanInfoGroupBox->setHidden(true);
-    ui->profileInfoGroupBox->setHidden(true);
+    ui->vlanInfoGroupBox->setVisible(false);
+    ui->profileInfoGroupBox->setVisible(false);
 }
 
 DeviceListPageWidget::~DeviceListPageWidget()
@@ -176,7 +190,7 @@ void DeviceListPageWidget::openDevice()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceType::Enum deviceType = DeviceTypeFromString(typeString);
+    DeviceType::Enum deviceType = DeviceType::fromString(typeString);
 
     QWidget *pageWidget;
 
@@ -333,7 +347,7 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceModel::Enum deviceModel = DeviceModelFromString(deviceModelString);
+    DeviceModel::Enum deviceModel = DeviceModel::fromString(deviceModelString);
 
     if ((deviceModel == DeviceModel::Other)
             || (deviceModel == DeviceModel::MXA32)
@@ -410,7 +424,7 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
 
     QModelIndex devModelIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
     QModelIndex index = mDeviceListModel->index(devModelIndex.row(), 3);
-    DeviceType::Enum deviceType = DeviceTypeFromString(mDeviceListModel->data(index).toString());
+    DeviceType::Enum deviceType = DeviceType::fromString(mDeviceListModel->data(index).toString());
 
     if (deviceType == DeviceType::Switch) {
         contextMenu.addSeparator();

@@ -5,9 +5,6 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
-const QString DeviceTypeName[] =    { "Other", "Switch", "Dslam", "Olt" };
-const QString DeviceModelName[] =   { "Other", "DES-3526", "DES-3528", "DES-3550", "DES-3552", "MA5600", "MA5300", "MA5616", "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X" };
-const QString BoardTypeName[] =     { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other"};
 const QString StatusName[] =        { "Up", "Down", "Activating", "Defective", "Other"};
 const QString VlanStateName[] =     { "Untag", "Tag", "None" };
 const QString LtpOntState[] =       { "Free", "Allocated", "AuthInProgress", "AuthFailed", "AuthOk", "CfgInProgress", "CfgFailed", "Ok", "Failed", "Blocked", "Mibreset", "Preconfig", "FwUpdating", "Unactivated", "Redundant", "Disabled", "Unknown" };

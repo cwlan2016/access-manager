@@ -16,6 +16,11 @@ enum Enum : short
     Other =     3,
     Count =     4
 };
+
+const QString BoardTypeName[] = { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other" };
+
+BoardType::Enum fromString(QString boardType);
+QString         toString(BoardType::Enum boardType);
 }
 
 namespace DeviceModel
@@ -36,6 +41,13 @@ enum Enum
     LTP8X =     11,
     Count =     12
 };
+
+const QString DeviceModelName[] = { "Other", "DES-3526", "DES-3528", "DES-3550",
+                                    "DES-3552", "MA5600", "MA5300", "MA5616",
+                                    "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X" };
+
+DeviceModel::Enum   fromString(QString deviceModel);
+QString             toString(DeviceModel::Enum deviceModel);
 }
 
 namespace DeviceType
@@ -47,6 +59,11 @@ enum Enum : short
     Dslam =     2,
     Olt =       3
 };
+
+const QString DeviceTypeName[] = { "Other", "Switch", "Dslam", "Olt" };
+
+DeviceType::Enum    fromString(QString deviceType);
+QString             toString(DeviceType::Enum deviceType);
 }
 
 namespace OntType {

@@ -28,20 +28,33 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     ui->backToBoardListButton->setVisible(false);
     ui->selectProfileGroupBox->setVisible(false);
 
-    connect(ui->dslamTreeView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(viewRequestContextMenu(QPoint)));
-    connect(ui->dslamTreeView, SIGNAL(doubleClicked(QModelIndex)), SLOT(showPortListModel()));
-    connect(ui->dslamTreeView, SIGNAL(expanded(QModelIndex)), SLOT(portListExpandedNode(QModelIndex)));
-    connect(ui->selectProfileGroupBox, SIGNAL(toggled(bool)), ui->selectProfileGroupBox, SLOT(setVisible(bool)));
-    connect(ui->backToBoardListButton, SIGNAL(pressed()), SLOT(backToBoardListModel()));
-    connect(ui->applyProfileButton, SIGNAL(pressed()), SLOT(applyDslProfile()));
+    connect(ui->dslamTreeView, &QTreeView::customContextMenuRequested,
+            this, &DslamPageWidget::viewRequestContextMenu);
+    connect(ui->dslamTreeView, &QTreeView::doubleClicked,
+            this, &DslamPageWidget::showPortListModel);
+    connect(ui->dslamTreeView, &QTreeView::expanded,
+            this, &DslamPageWidget::portListExpandedNode);
+    connect(ui->selectProfileGroupBox, &QGroupBox::toggled,
+            ui->selectProfileGroupBox, &QGroupBox::setVisible);
+    connect(ui->backToBoardListButton, &QPushButton::pressed,
+            this, &DslamPageWidget::backToBoardListModel);
+    connect(ui->applyProfileButton, &QPushButton::pressed,
+            this, &DslamPageWidget::applyDslProfile);
 
-    connect(ui->showBoardAction, SIGNAL(triggered()), SLOT(showPortListModel()));
-    connect(ui->refreshPortInfoAction, SIGNAL(triggered()), SLOT(refreshPortInfo()));
-    connect(ui->upPortAction, SIGNAL(triggered()), SLOT(upDslPort()));
-    connect(ui->downPortAction, SIGNAL(triggered()), SLOT(downDslPort()));
-    connect(ui->showSelectProfileGBAction, SIGNAL(triggered()), SLOT(showSelectProfileGBox()));
-    connect(ui->collapseAllNodeAction, SIGNAL(triggered()), ui->dslamTreeView, SLOT(collapseAll()));
-    connect(ui->refreshAllPortInfoAction, SIGNAL(triggered()), SLOT(refreshAllPortInfo()));
+    connect(ui->showBoardAction, &QAction::triggered,
+            this, &DslamPageWidget::showPortListModel);
+    connect(ui->refreshPortInfoAction, &QAction::triggered,
+            this, &DslamPageWidget::refreshPortInfo);
+    connect(ui->upPortAction, &QAction::triggered,
+            this, &DslamPageWidget::upDslPort);
+    connect(ui->downPortAction, &QAction::triggered,
+            this, &DslamPageWidget::downDslPort);
+    connect(ui->showSelectProfileGBAction, &QAction::triggered,
+            this, &DslamPageWidget::showSelectProfileGBox);
+    connect(ui->collapseAllNodeAction, &QAction::triggered,
+            ui->dslamTreeView, &QTreeView::collapseAll);
+    connect(ui->refreshAllPortInfoAction, &QAction::triggered,
+            this, &DslamPageWidget::refreshAllPortInfo);
 
     fillSelectProfileComboBox();
 
@@ -204,7 +217,9 @@ void DslamPageWidget::showPortListModel()
         BasicDialogs::error(this, BasicDialogTitle::Error, portListModel->error());
     }
 
-    ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]").arg(indexPairRange.row()).arg(BoardTypeName[(short)typeBoard]));
+    ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
+                                .arg(indexPairRange.row())
+                                .arg(BoardType::toString(typeBoard)));
     ui->boardNameLabel->setVisible(true);
     ui->backToBoardListButton->setVisible(true);
     ui->dslamTreeView->setModel(portListModel);

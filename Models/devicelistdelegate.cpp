@@ -57,8 +57,10 @@ void DeviceListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
     }
 }
 
-void DeviceListDelegate::commitAndCloseComboBoxEditor(int)
+void DeviceListDelegate::commitAndCloseComboBoxEditor(int index)
 {
+    Q_UNUSED(index);
+
     QComboBox *editor = qobject_cast<QComboBox *>(sender());
     emit commitData(editor);
     emit closeEditor(editor);
@@ -79,16 +81,17 @@ QStringListModel *DeviceListDelegate::fillDeviceModelComboBox() const
     QStringList stringList;
 
     for (int i = 0; i < DeviceModel::Count; ++i) {
-        stringList.push_back(DeviceModelName[i]);
+        stringList.push_back(DeviceModel::DeviceModelName[i]);
     }
 
-    return new QStringListModel(stringList);
+    return new QStringListModel(stringList, (QObject *)this);
 }
 
 QWidget *DeviceListDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
-    connect(editor, SIGNAL(currentIndexChanged(int)), this, SLOT(commitAndCloseComboBoxEditor(int)));
+    connect(editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &DeviceListDelegate::commitAndCloseComboBoxEditor);
     editor->setMinimumWidth(100);
     return editor;
 }

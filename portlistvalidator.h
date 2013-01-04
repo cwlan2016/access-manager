@@ -10,9 +10,6 @@ class PortListValidator : public QValidator
 public:
     explicit PortListValidator(DeviceModel::Enum deviceModel);
     State validate(QString &input, int &pos) const;
-signals:
-
-public slots:
 private:
     int countPorts;
 };

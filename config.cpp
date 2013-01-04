@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
@@ -18,8 +17,7 @@ bool Config::exist()
 void Config::toDefault()
 {
     SnmpConfigInfo::toDefault();
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       qApp->organizationName(), qApp->applicationName());
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
     createSnmpGroup(settings);
 }
 
@@ -31,8 +29,7 @@ bool Config::load()
         return true;
     }
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       qApp->organizationName(), qApp->applicationName());
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
     parseSnmpGroup(settings);
 
     return true;
@@ -55,8 +52,7 @@ bool Config::save()
     if (exist())
         backup();
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                       qApp->organizationName(), qApp->applicationName());
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
     createSnmpGroup(settings);
     settings.sync();
 

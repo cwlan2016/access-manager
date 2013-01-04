@@ -15,10 +15,6 @@ public:
     explicit PageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
 protected:
     DeviceInfo::Ptr mDeviceInfo;
-signals:
-
-public slots:
-
 };
 
 #endif // PAGEWIDGET_H

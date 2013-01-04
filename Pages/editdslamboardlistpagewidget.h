@@ -20,7 +20,7 @@ class EditDslamBoardListPageWidget : public PageWidget
 public:
     explicit EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel *deviceListModel, QWidget *parent = 0);
     ~EditDslamBoardListPageWidget();
-private slots:
+private:
     void editBoardViewRequestContextMenu(QPoint point);
     void renumeringBoardPairs();
     void getBoardList();
@@ -28,9 +28,8 @@ private slots:
     void removeBoard();
     void autoUpdateBoardListStateChanged(bool state);
     void autoNumeringPairsStateChanged(bool state);
-private:
-    Ui::EditDslamBoardListPageWidget *ui;
 
+    Ui::EditDslamBoardListPageWidget *ui;
     DeviceListModel *mDeviceListModel;
 };
 

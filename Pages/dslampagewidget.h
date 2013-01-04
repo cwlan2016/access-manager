@@ -17,16 +17,9 @@ class DslamPageWidget : public PageWidget
 public:
     explicit DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
     ~DslamPageWidget();
-
-private:
-    Ui::DslamPageWidget *ui;
-
-    void fillSelectProfileComboBox();
-    QModelIndex currentDslamXdslPort();
-public slots:
     void upDslPort();
     void downDslPort();
-private slots:
+private:
     void viewRequestContextMenu(QPoint point);
     void showPortListModel();
     void backToBoardListModel();
@@ -35,6 +28,10 @@ private slots:
     void refreshPortInfo();
     void refreshAllPortInfo();
     void portListExpandedNode(QModelIndex index);
+    void fillSelectProfileComboBox();
+    QModelIndex currentDslamXdslPort();
+
+    Ui::DslamPageWidget *ui;
 };
 
 #endif // DSLAMPAGEWIDGET_H

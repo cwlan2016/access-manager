@@ -27,17 +27,6 @@ public:
     QSortFilterProxyModel *proxyModel() const;
     QModelIndex currentDeviceListItem() const;
     void clearSelection();
-private:
-    Ui::DeviceListPageWidget   *ui;
-    DeviceListModel            *mDeviceListModel;
-    QSortFilterProxyModel      *mProxyModel;
-    QVector<PageType::Enum>    *mTypePageList;
-    QHash<QString, QWidget *>  *mPageList;
-    QTabWidget                 *mParentTabWidget;
-    void batchUpdate(DeviceType::Enum updatingDeviceType);
-signals:
-    void changedActiveItem(QModelIndex index);
-public slots:
     void loadDeviceList();
     void saveDeviceList();
     void openDevice();
@@ -54,12 +43,22 @@ public slots:
     void showEditDslamBoardListPage();
     void showVlanInfoGroupBox();
     void showProfileInfoGroupBox();
-private slots:
+signals:
+    void changedActiveItem(QModelIndex index);
+private:
     void filterDeviceTextChanged(QString text);
     void deviceViewRequestContextMenu(QPoint point);
     void vlanInfoGBoxStateChanged(bool state);
     void profileInfoGboxStateChanged(bool state);
     void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
+    void batchUpdate(DeviceType::Enum updatingDeviceType);
+
+    Ui::DeviceListPageWidget   *ui;
+    DeviceListModel            *mDeviceListModel;
+    QSortFilterProxyModel      *mProxyModel;
+    QVector<PageType::Enum>    *mTypePageList;
+    QHash<QString, QWidget *>  *mPageList;
+    QTabWidget                 *mParentTabWidget;
 };
 
 #endif // DEVICELISTPAGEWIDGET_H

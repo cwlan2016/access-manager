@@ -20,12 +20,11 @@ public:
     int indexDeviceModel();
     void setIndexDeviceModel(int index);
     QStringListModel *fillDeviceModelComboBox() const;
-private slots:
-    void commitAndCloseComboBoxEditor(int);
 private:
-    int mIndexDeviceModel;
-
+    void commitAndCloseComboBoxEditor(int index);
     QWidget *createComboBoxEditor(QWidget *parent) const;
+
+    int mIndexDeviceModel;
 };
 
 #endif // DEVICELISTDELEGATE_H

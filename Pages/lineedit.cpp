@@ -22,8 +22,10 @@ LineEdit::LineEdit(QWidget *parent)
     clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     clearButton->setToolTip(QString::fromUtf8("Очистить текст"));
     clearButton->hide();
-    connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-    connect(this, SIGNAL(textChanged(const QString &)), SLOT(updateCloseButton(const QString &)));
+    connect(clearButton, &QToolButton::clicked,
+            this, &LineEdit::clear);
+    connect(this, &LineEdit::textChanged,
+            this, &LineEdit::updateCloseButton);
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
 #ifdef Q_WS_MAC
     setAttribute(Qt::WA_MacShowFocusRect, 0);

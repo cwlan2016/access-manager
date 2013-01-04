@@ -60,7 +60,7 @@ QVariant BoardListModel::data(const QModelIndex &index, int role) const
         if (index.column() == 0)
             return index.row();
         else if ((index.column() == 1) && mBoardList.contains(index.row()))
-            return BoardTypeName[(short)(mBoardList[index.row()].type())];
+            return BoardType::toString(mBoardList[index.row()].type());
         else if ((index.column() == 2) && mBoardList.contains(index.row())) {
             if (role == Qt::DisplayRole) {
                 return rangePairs(mBoardList[index.row()].firstPair(), mBoardList[index.row()].type());
@@ -94,7 +94,7 @@ bool BoardListModel::setData(const QModelIndex &index, const QVariant &value, in
     }
 
     if (index.column() == 1) {
-        mBoardList[index.row()].setType(BoardTypeFromString(value.toString()));
+        mBoardList[index.row()].setType(BoardType::fromString(value.toString()));
         emit dataChanged(index, index);
 
         return true;

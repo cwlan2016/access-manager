@@ -15,12 +15,11 @@ class OltPageWidget : public PageWidget
 public:
     explicit OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
     ~OltPageWidget();
-
 private:
-    Ui::OltPageWidget  *ui;
-private slots:
     void filterOntCBoxIndexChanged(int index);
     void filterOntEditTextChanged(QString text);
+
+    Ui::OltPageWidget  *ui;
 };
 
 #endif // OLTPAGEWIDGET_H

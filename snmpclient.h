@@ -12,7 +12,7 @@ public:
     SnmpClient();
     ~SnmpClient();
     void setIP(QString ip);
-    void createPdu(int pduType, int max_repetitions = 1);
+    void createPdu(int pduType, int maxRepetitions = 1);
     void clearResponsePdu();
     void addOid(QString oid_string);
     void addOid(oid *_oid, size_t size);

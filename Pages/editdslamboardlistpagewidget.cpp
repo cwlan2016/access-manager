@@ -21,10 +21,14 @@ EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr devic
 {
     ui->setupUi(this);
 
-    connect(ui->editBoardAction, SIGNAL(triggered()), SLOT(editBoard()));
-    connect(ui->removeBoardAction, SIGNAL(triggered()), SLOT(removeBoard()));
-    connect(ui->getBoardListAction, SIGNAL(triggered()), SLOT(getBoardList()));
-    connect(ui->renumeringBoardPairsAction, SIGNAL(triggered()), SLOT(renumeringBoardPairs()));
+    connect(ui->editBoardAction, &QAction::triggered,
+            this, &EditDslamBoardListPageWidget::editBoard);
+    connect(ui->removeBoardAction, &QAction::triggered,
+            this, &EditDslamBoardListPageWidget::removeBoard);
+    connect(ui->getBoardListAction, &QAction::triggered,
+            this, &EditDslamBoardListPageWidget::getBoardList);
+    connect(ui->renumeringBoardPairsAction, &QAction::triggered,
+            this, &EditDslamBoardListPageWidget::renumeringBoardPairs);
 
     BoardListModel *boardListModel = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
 
@@ -40,9 +44,12 @@ EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr devic
     ui->autoNumeringPairCheckBox->setEnabled(boardListModel->autoFill());
     ui->autoNumeringPairCheckBox->setCheckState(boardListModel->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
     //Привязка действий
-    connect(ui->editDslamBoardListTableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(editBoardViewRequestContextMenu(QPoint)));
-    connect(ui->autoUpdateBoardListCheckBox, SIGNAL(toggled(bool)), SLOT(autoUpdateBoardListStateChanged(bool)));
-    connect(ui->autoNumeringPairCheckBox, SIGNAL(toggled(bool)), SLOT(autoNumeringPairsStateChanged(bool)));
+    connect(ui->editDslamBoardListTableView, &QTableView::customContextMenuRequested,
+            this, &EditDslamBoardListPageWidget::editBoardViewRequestContextMenu);
+    connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
+            this, &EditDslamBoardListPageWidget::autoUpdateBoardListStateChanged);
+    connect(ui->autoNumeringPairCheckBox, &QCheckBox::toggled,
+            this, &EditDslamBoardListPageWidget::autoNumeringPairsStateChanged);
 }
 
 EditDslamBoardListPageWidget::~EditDslamBoardListPageWidget()

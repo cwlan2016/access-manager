@@ -23,21 +23,35 @@ MainWindow::MainWindow(QWidget *parent) :
     SOCK_STARTUP;
 
     //Menu Actions
-    connect(ui->exitAction, SIGNAL(triggered()), SLOT(close()));
-    connect(ui->aboutAction, SIGNAL(triggered()), SLOT(showAboutProgramPage()));
-    connect(ui->settingsAction, SIGNAL(triggered()), SLOT(showSettingsPage()));
-    connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), SLOT(tabCloseRequested(int)));
-    connect(ui->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabCurrentChanged(int)));
-    connect(ui->saveConfigSwitchAction, SIGNAL(triggered()), SLOT(saveSwitchConfig()));
-    connect(ui->upPortAction, SIGNAL(triggered()), SLOT(upDslPort()));
-    connect(ui->downPortAction, SIGNAL(triggered()), SLOT(downDslPort()));
+    connect(ui->exitAction, &QAction::triggered,
+            this, &MainWindow::close);
+    connect(ui->aboutAction, &QAction::triggered,
+            this, &MainWindow::showAboutProgramPage);
+    connect(ui->settingsAction, &QAction::triggered,
+            this, &MainWindow::showSettingsPage);
+    connect(ui->tabWidget, &QTabWidget::tabCloseRequested,
+            this, &MainWindow::tabCloseRequested);
+    connect(ui->tabWidget, &QTabWidget::currentChanged,
+            this, &MainWindow::tabCurrentChanged);
+    connect(ui->saveConfigSwitchAction, &QAction::triggered,
+            this, &MainWindow::saveSwitchConfig);
+    connect(ui->upPortAction, &QAction::triggered,
+            this, &MainWindow::upDslPort);
+    connect(ui->downPortAction, &QAction::triggered,
+            this, &MainWindow::downDslPort);
     //Panels actions
-    connect(ui->mainBarAction, SIGNAL(triggered(bool)), ui->mainToolBar, SLOT(setVisible(bool)));
-    connect(ui->mainToolBar, SIGNAL(visibilityChanged(bool)), ui->mainBarAction, SLOT(setChecked(bool)));
-    connect(ui->switchBarAction, SIGNAL(triggered(bool)), ui->switchToolBar, SLOT(setVisible(bool)));
-    connect(ui->switchToolBar, SIGNAL(visibilityChanged(bool)), ui->switchBarAction, SLOT(setChecked(bool)));
-    connect(ui->dslamBarAction, SIGNAL(triggered(bool)), ui->dslamToolBar, SLOT(setVisible(bool)));
-    connect(ui->dslamToolBar, SIGNAL(visibilityChanged(bool)), ui->dslamBarAction, SLOT(setChecked(bool)));
+    connect(ui->mainBarAction, &QAction::triggered,
+            ui->mainToolBar, &QToolBar::setVisible);
+    connect(ui->mainToolBar, &QToolBar::visibilityChanged,
+            ui->mainBarAction, &QAction::setChecked);
+    connect(ui->switchBarAction, &QAction::triggered,
+            ui->switchToolBar, &QToolBar::setVisible);
+    connect(ui->switchToolBar, &QToolBar::visibilityChanged,
+            ui->switchBarAction, &QAction::setChecked);
+    connect(ui->dslamBarAction, &QAction::triggered,
+            ui->dslamToolBar, &QToolBar::setVisible);
+    connect(ui->dslamToolBar, &QToolBar::visibilityChanged,
+            ui->dslamBarAction, &QAction::setChecked);
 
     ui->menuSwitch->setEnabled(false);
     ui->menuDslam->setEnabled(false);
@@ -61,23 +75,38 @@ void MainWindow::createDeviceListPage()
     DeviceListPageWidget *deviceListPage = new DeviceListPageWidget(ui->tabWidget, mTypePageList, mPageList, this);
     deviceListPage->setObjectName(QString::fromUtf8("deviceListTab"));
 
-    connect(ui->openDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(openDevice()));
-    connect(ui->addDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(addDevice()));
-    connect(ui->editDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(editDevice()));
-    connect(ui->removeDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(removeDevice()));
-    connect(ui->loadDeviceListAction, SIGNAL(triggered()), deviceListPage, SLOT(loadDeviceList()));
-    connect(ui->saveDeviceListAction, SIGNAL(triggered()), deviceListPage, SLOT(saveDeviceList()));
-    connect(ui->updateVlanSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(updateVlanInfoSwitch()));
-    connect(ui->updateDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(updateBoardInfoDslam()));
-    connect(ui->updateProfilesOltAction, SIGNAL(triggered()), deviceListPage, SLOT(updateProfileInfoOlt()));
-    connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateVlanInfoSwitch()));
-    connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateBoardsInfoDslam()));
-    connect(ui->updateInfoAllDevicesAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateInfoAllDevices()));
-    connect(ui->updateAllProfileOltInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateProfileOlt()));
-    connect(ui->editDslamBoardListAction, SIGNAL(triggered()), deviceListPage, SLOT(showEditDslamBoardListPage()));
-    connect(ui->showVlanSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(showVlanInfoGroupBox()));
-    connect(ui->showProfilesOltAction, SIGNAL(triggered()), deviceListPage, SLOT(showProfileInfoGroupBox()));
-    connect(deviceListPage, SIGNAL(changedActiveItem(QModelIndex)), SLOT(deviceViewActivatedItem(QModelIndex)));
+    connect(ui->openDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::openDevice);
+    connect(ui->addDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::addDevice);
+    connect(ui->editDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::editDevice);
+    connect(ui->removeDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::removeDevice);
+    connect(ui->loadDeviceListAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::loadDeviceList);
+    connect(ui->saveDeviceListAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::saveDeviceList);
+    connect(ui->updateVlanSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::updateVlanInfoSwitch);
+    connect(ui->updateDslamBoardsInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::updateBoardInfoDslam);
+    connect(ui->updateProfilesOltAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::updateProfileInfoOlt);
+    connect(ui->updateVlanAllSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::batchUpdateVlanInfoSwitch);
+    connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::batchUpdateBoardsInfoDslam);
+    connect(ui->updateInfoAllDevicesAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::batchUpdateInfoAllDevices);
+    connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::batchUpdateProfileOlt);
+    connect(ui->editDslamBoardListAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::showEditDslamBoardListPage);
+    connect(ui->showVlanSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceListPageWidget::showVlanInfoGroupBox);
+    connect(deviceListPage, &DeviceListPageWidget::changedActiveItem,
+            this, &MainWindow::deviceViewActivatedItem);
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
     mTypePageList->push_back(PageType::DeviceListPage);
@@ -206,7 +235,9 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
     DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
     index = deviceListPage->proxyModel()->mapToSource(index);
 
-    DeviceType::Enum deviceType = DeviceTypeFromString(deviceListModel->data(deviceListModel->index(index.row(), 3)).toString());
+    QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
+    QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
+    DeviceType::Enum deviceType = DeviceType::fromString(deviceTypeString);
 
     ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
     ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);

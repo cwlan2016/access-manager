@@ -109,8 +109,10 @@ void BoardListDelegate::setIndexFirstPair(int index)
     mIndexFirstPair = index;
 }
 
-void BoardListDelegate::commitAndCloseComboBoxEditor(int)
+void BoardListDelegate::commitAndCloseComboBoxEditor(int index)
 {
+    Q_UNUSED(index);
+
     QComboBox *editor = qobject_cast<QComboBox *>(sender());
     emit commitData(editor);
     emit closeEditor(editor);
@@ -119,7 +121,8 @@ void BoardListDelegate::commitAndCloseComboBoxEditor(int)
 QWidget *BoardListDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
-    connect(editor, SIGNAL(currentIndexChanged(int)), SLOT(commitAndCloseComboBoxEditor(int)));
+    connect(editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, &BoardListDelegate::commitAndCloseComboBoxEditor);
     return editor;
 }
 
@@ -128,15 +131,15 @@ QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
     QStringList stringList;
 
     for (int i = 0; i < BoardType::Count; ++i) {
-        stringList.push_back(BoardTypeName[i]);
+        stringList.push_back(BoardType::BoardTypeName[i]);
     }
 
-    return new QStringListModel(stringList);
+    return new QStringListModel(stringList, (QObject *)this);
 }
 
 QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
 {
-    int countPairs = CountPorts(deviceModel, BoardTypeFromString(boardType));
+    int countPairs = CountPorts(deviceModel, BoardType::fromString(boardType));
     int countBoards = 0;
 
     if ((deviceModel == DeviceModel::MA5600)
@@ -155,6 +158,5 @@ QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum dev
         firstPair += countPairs;
     }
 
-    return new QStringListModel(stringList);
+    return new QStringListModel(stringList, (QObject *)this);
 }
-
