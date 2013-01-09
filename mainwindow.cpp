@@ -237,7 +237,7 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
 
     QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
     QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
-    DeviceType::Enum deviceType = DeviceType::fromString(deviceTypeString);
+    DeviceType::Enum deviceType = DeviceType::from(deviceTypeString);
 
     ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
     ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);

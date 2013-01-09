@@ -6,20 +6,18 @@
 #include "converters.h"
 #endif
 
-DeviceInfo::DeviceInfo()
+DeviceInfo::DeviceInfo(QObject *parent) :
+    QObject(parent)
 {
     setDeviceModel(DeviceModel::Other);
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel)
+DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+    QObject(parent)
 {
     mName = name;
     mIp = ip;
     setDeviceModel(deviceModel);
-}
-
-DeviceInfo::~DeviceInfo()
-{
 }
 
 QString DeviceInfo::name() const
@@ -60,7 +58,7 @@ void DeviceInfo::setIP(const QString ip)
 void DeviceInfo::setDeviceModel(const DeviceModel::Enum deviceModel)
 {
     mDeviceModel = deviceModel;
-    mDeviceType = DeviceTypeFromDeviceModel(mDeviceModel);
+    mDeviceType = DeviceType::from(mDeviceModel);
 }
 
 void DeviceInfo::setDeviceType(const DeviceType::Enum deviceType)

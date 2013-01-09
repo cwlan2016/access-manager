@@ -25,11 +25,9 @@ public:
     void setPhone2Login(QString login);
     void setPhone2Password(QString password);
     void setSipProxy(QString proxy);
-
     void Reconfigure();
 
     typedef std::shared_ptr<NtpInfo> Ptr;
-
 private:
     QString mPppLogin;
     QString mPppPassword;

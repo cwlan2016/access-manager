@@ -85,30 +85,6 @@ QString SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
         return "Unknown";
 }
 
-DeviceType::Enum DeviceTypeFromDeviceModel(DeviceModel::Enum deviceModel)
-{
-    switch (deviceModel) {
-    case DeviceModel::DES3526:
-    case DeviceModel::DES3528:
-    case DeviceModel::DES3550:
-    case DeviceModel::DES3552:
-        return DeviceType::Switch;
-    case DeviceModel::MA5600:
-    case DeviceModel::MA5300:
-    case DeviceModel::MA5616:
-    case DeviceModel::MXA32:
-    case DeviceModel::MXA64:
-        return DeviceType::Dslam;
-    case DeviceModel::LTP8X:
-    case DeviceModel::LTE8ST:
-        return DeviceType::Olt;
-    case DeviceModel::Other:
-        return DeviceType::Other;
-    }
-
-    return DeviceType::Other;
-}
-
 BoardType::Enum BoardTypeFromBoardName(QString boardName)
 {
     if (boardName.contains("ADEF", Qt::CaseInsensitive))

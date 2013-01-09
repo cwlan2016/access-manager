@@ -10,15 +10,15 @@
 #include "snmpclient.h"
 #endif
 
-
-SwitchInfo::SwitchInfo() :
-    DeviceInfo()
+SwitchInfo::SwitchInfo(QObject *parent) :
+    DeviceInfo(parent)
 {
-    mInetVlanTag = mIptvVlanTag = 0;
+    mInetVlanTag = 0;
+    mIptvVlanTag = 0;
 }
 
-SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
-    DeviceInfo(name, ip, deviceModel)
+SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+    DeviceInfo(name, ip, deviceModel, parent)
 {
 }
 

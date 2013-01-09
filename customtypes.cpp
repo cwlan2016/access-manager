@@ -2,7 +2,7 @@
 
 namespace BoardType
 {
-BoardType::Enum fromString(QString boardType)
+BoardType::Enum from(QString boardType)
 {
     if (boardType == BoardTypeName[BoardType::AnnexA]) {
         return BoardType::AnnexA;
@@ -23,7 +23,7 @@ QString toString(BoardType::Enum boardType)
 
 namespace DeviceModel
 {
-DeviceModel::Enum fromString(QString deviceModel)
+DeviceModel::Enum from(QString deviceModel)
 {
     if (deviceModel == DeviceModelName[DeviceModel::DES3526]) {
         return DeviceModel::DES3526;
@@ -60,7 +60,7 @@ QString toString(DeviceModel::Enum deviceModel)
 
 namespace DeviceType
 {
-DeviceType::Enum fromString(QString deviceType)
+DeviceType::Enum from(QString deviceType)
 {
     if (deviceType == DeviceTypeName[DeviceType::Switch]) {
         return DeviceType::Switch;
@@ -73,8 +73,55 @@ DeviceType::Enum fromString(QString deviceType)
     }
 }
 
+DeviceType::Enum from(DeviceModel::Enum deviceModel)
+{
+    switch (deviceModel) {
+    case DeviceModel::DES3526:
+    case DeviceModel::DES3528:
+    case DeviceModel::DES3550:
+    case DeviceModel::DES3552:
+        return DeviceType::Switch;
+    case DeviceModel::MA5600:
+    case DeviceModel::MA5300:
+    case DeviceModel::MA5616:
+    case DeviceModel::MXA32:
+    case DeviceModel::MXA64:
+        return DeviceType::Dslam;
+    case DeviceModel::LTP8X:
+    case DeviceModel::LTE8ST:
+        return DeviceType::Olt;
+    case DeviceModel::Other:
+        return DeviceType::Other;
+    }
+
+    return DeviceType::Other;
+}
+
 QString toString(DeviceType::Enum deviceType)
 {
     return DeviceTypeName[deviceType];
+}
+}
+
+namespace DslPortState
+{
+DslPortState::Enum from(QString dslPortState)
+{
+    if (dslPortState == DslPortStateName[DslPortState::Activating]) {
+        return DslPortState::Activating;
+    } else if (dslPortState == DslPortStateName[DslPortState::Up]) {
+        return DslPortState::Up;
+    } else if (dslPortState == DslPortStateName[DslPortState::Down]) {
+        return DslPortState::Down;
+    } else if (dslPortState == DslPortStateName[DslPortState::Defective]) {
+        return DslPortState::Defective;
+    } else {
+        return DslPortState::Other;
+    }
+}
+
+QString toString(DslPortState::Enum dslPortState)
+{
+    return DslPortStateName[dslPortState];
 }
 }

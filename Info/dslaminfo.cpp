@@ -3,7 +3,7 @@
 DslamInfo::DslamInfo()
 {
     setDeviceModel(DeviceModel::MA5600);
-    mBoardListModel = new BoardListModel();
+    mBoardListModel = new BoardListModel(this);
     mBoardListModel->setAutoFill(1);
     mBoardListModel->setAutoNumeringBoard(1);
 }
@@ -11,14 +11,9 @@ DslamInfo::DslamInfo()
 DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
     DeviceInfo(name, ip, deviceModel)
 {
-    mBoardListModel = new BoardListModel();
+    mBoardListModel = new BoardListModel(this);
     mBoardListModel->setAutoFill(1);
     mBoardListModel->setAutoNumeringBoard(1);
-}
-
-DslamInfo::~DslamInfo()
-{
-    delete mBoardListModel;
 }
 
 short DslamInfo::autoFill() const

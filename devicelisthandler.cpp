@@ -76,7 +76,7 @@ void DeviceListHandler::parseSwitchElement(const QXmlAttributes &attributes)
 {
     QString name = attributes.value("name");
     QString ip = attributes.value("ip");
-    DeviceModel::Enum deviceModel = DeviceModel::fromString(attributes.value("model"));
+    DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
     m_currDeviceInfoElement = std::make_shared<SwitchInfo>(name, ip, deviceModel);
     std::static_pointer_cast<SwitchInfo>(m_currDeviceInfoElement)->setInetVlanTag(attributes.value("inetVlan").toUInt());
     std::static_pointer_cast<SwitchInfo>(m_currDeviceInfoElement)->setIptvVlanTag(attributes.value("iptvVlan").toUInt());
@@ -86,7 +86,7 @@ void DeviceListHandler::parseDslamElement(const QXmlAttributes &attributes)
 {
     QString name = attributes.value("name");
     QString ip = attributes.value("ip");
-    DeviceModel::Enum deviceModel = DeviceModel::fromString(attributes.value("model"));
+    DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
 
     m_currDeviceInfoElement = std::make_shared<DslamInfo>(name, ip, deviceModel);
     std::static_pointer_cast<DslamInfo>(m_currDeviceInfoElement)->boardListModel()->setParentDevice(m_currDeviceInfoElement);
@@ -99,7 +99,7 @@ void DeviceListHandler::parseDslamElement(const QXmlAttributes &attributes)
 void DeviceListHandler::parseBoardElement(const QXmlAttributes &attributes)
 {
     BoardInfo info;
-    info.setType(BoardType::fromString(attributes.value("type")));
+    info.setType(BoardType::from(attributes.value("type")));
     info.setFirstPair(attributes.value("firstpair").toUInt());
     int number = attributes.value("number").toUInt();
     info.setNumber(number);
@@ -110,7 +110,7 @@ void DeviceListHandler::parseOltElement(const QXmlAttributes &attributes)
 {
     QString name = attributes.value("name");
     QString ip = attributes.value("ip");
-    DeviceModel::Enum deviceModel = DeviceModel::fromString(attributes.value("model"));
+    DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
 
     m_currDeviceInfoElement = std::make_shared<OltInfo>(name, ip, deviceModel);
 }

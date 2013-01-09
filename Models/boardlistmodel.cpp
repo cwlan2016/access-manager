@@ -94,7 +94,7 @@ bool BoardListModel::setData(const QModelIndex &index, const QVariant &value, in
     }
 
     if (index.column() == 1) {
-        mBoardList[index.row()].setType(BoardType::fromString(value.toString()));
+        mBoardList[index.row()].setType(BoardType::from(value.toString()));
         emit dataChanged(index, index);
 
         return true;

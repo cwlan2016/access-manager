@@ -139,7 +139,7 @@ QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
 
 QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
 {
-    int countPairs = CountPorts(deviceModel, BoardType::fromString(boardType));
+    int countPairs = CountPorts(deviceModel, BoardType::from(boardType));
     int countBoards = 0;
 
     if ((deviceModel == DeviceModel::MA5600)

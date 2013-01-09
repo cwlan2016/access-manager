@@ -19,7 +19,7 @@ enum Enum : short
 
 const QString BoardTypeName[] = { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other" };
 
-BoardType::Enum fromString(QString boardType);
+BoardType::Enum from(QString boardType);
 QString         toString(BoardType::Enum boardType);
 }
 
@@ -46,7 +46,7 @@ const QString DeviceModelName[] = { "Other", "DES-3526", "DES-3528", "DES-3550",
                                     "DES-3552", "MA5600", "MA5300", "MA5616",
                                     "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X" };
 
-DeviceModel::Enum   fromString(QString deviceModel);
+DeviceModel::Enum   from(QString deviceModel);
 QString             toString(DeviceModel::Enum deviceModel);
 }
 
@@ -62,8 +62,26 @@ enum Enum : short
 
 const QString DeviceTypeName[] = { "Other", "Switch", "Dslam", "Olt" };
 
-DeviceType::Enum    fromString(QString deviceType);
+DeviceType::Enum    from(QString deviceType);
+DeviceType::Enum    from(DeviceModel::Enum deviceModel);
 QString             toString(DeviceType::Enum deviceType);
+}
+
+namespace DslPortState
+{
+enum Enum : short
+{
+    Up =            1,
+    Down =          2,
+    Activating =    3,
+    Defective =     4,
+    Other =         5
+};
+
+const QString DslPortStateName[] = { "Up", "Down", "Activating", "Defective", "Other"};
+
+DslPortState::Enum  from(QString dslPortState);
+QString             toString(DslPortState::Enum dslPortState);
 }
 
 namespace OntType {

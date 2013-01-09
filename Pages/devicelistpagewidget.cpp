@@ -190,7 +190,7 @@ void DeviceListPageWidget::openDevice()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceType::Enum deviceType = DeviceType::fromString(typeString);
+    DeviceType::Enum deviceType = DeviceType::from(typeString);
 
     QWidget *pageWidget;
 
@@ -347,7 +347,7 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
     }
 
     QString deviceModelString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 1)).toString();
-    DeviceModel::Enum deviceModel = DeviceModel::fromString(deviceModelString);
+    DeviceModel::Enum deviceModel = DeviceModel::from(deviceModelString);
 
     if ((deviceModel == DeviceModel::Other)
             || (deviceModel == DeviceModel::MXA32)
@@ -424,7 +424,7 @@ void DeviceListPageWidget::deviceViewRequestContextMenu(QPoint point)
 
     QModelIndex devModelIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
     QModelIndex index = mDeviceListModel->index(devModelIndex.row(), 3);
-    DeviceType::Enum deviceType = DeviceType::fromString(mDeviceListModel->data(index).toString());
+    DeviceType::Enum deviceType = DeviceType::from(mDeviceListModel->data(index).toString());
 
     if (deviceType == DeviceType::Switch) {
         contextMenu.addSeparator();

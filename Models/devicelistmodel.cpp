@@ -88,8 +88,8 @@ bool DeviceListModel::setData(const QModelIndex &index, const QVariant &value, i
 
             return true;
         } else if (index.column() == 1) {
-            DeviceModel::Enum newModel = DeviceModel::fromString(value.toString().trimmed());
-            DeviceType::Enum newType = DeviceTypeFromDeviceModel(newModel);
+            DeviceModel::Enum newModel = DeviceModel::from(value.toString().trimmed());
+            DeviceType::Enum newType = DeviceType::from(newModel);
 
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
 

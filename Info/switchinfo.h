@@ -5,21 +5,20 @@
 
 class SwitchInfo : public DeviceInfo
 {
+    Q_OBJECT
 public:
-    SwitchInfo();
-    SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel);
+    SwitchInfo(QObject *parent = 0);
+    SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent = 0);
     int inetVlanTag() const;
     int iptvVlanTag() const;
     void setInetVlanTag(int vlanTag);
     void setIptvVlanTag(int vlanTag);
-    virtual bool getServiceDataFromDevice();
+    bool getServiceDataFromDevice();
     bool saveConfig();
     typedef std::shared_ptr<SwitchInfo> Ptr;
 private:
     int mInetVlanTag;
     int mIptvVlanTag;
 };
-
-
 
 #endif // SWITCHINFO_H

@@ -16,7 +16,7 @@ public:
     void setVlanName(QString vlanName);
 
     typedef std::shared_ptr<MacInfo> Ptr;
-protected:
+private:
     int mNumberPort;
     QString mMac;
     QString mVlanName;

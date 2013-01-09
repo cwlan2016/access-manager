@@ -9,6 +9,7 @@
 
 class OltInfo : public DeviceInfo
 {
+    Q_OBJECT
 public:
     OltInfo();
     OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel);
@@ -16,7 +17,7 @@ public:
     QString multicastProfile(int index);
     void addServiceProfile(int index, QString profileName);
     void addMulticastProfile(int index, QString profileName);
-    virtual bool getServiceDataFromDevice();
+    bool getServiceDataFromDevice();
     OltProfileMap &serviceProfileList();
     OltProfileMap &multicastProfileList();
     QStringListModel *serviceProfileListModel(QObject *parent = 0);

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     splash.showMessage(LoadProgramString::LoadLocale);
     QTranslator *qt_translator = new QTranslator;
 
-    if (qt_translator->load(":tr/qt_ru.qm")) {
+    if (qt_translator->load(":tr/qtbase_ru.qm")) {
         a.installTranslator(qt_translator);
     }
 

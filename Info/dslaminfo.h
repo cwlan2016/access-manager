@@ -9,16 +9,16 @@
 
 class DslamInfo : public DeviceInfo
 {
+    Q_OBJECT
 public:
     DslamInfo();
     DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel);
-    virtual ~DslamInfo();
     short autoFill() const;
     short autoNumeringBoard() const;
     void setAutoFill(short autoFill);
     void setAutoNumeringBoard(short autoNumeringBoard);
     BoardListModel *boardListModel();
-    virtual bool getServiceDataFromDevice();
+    bool getServiceDataFromDevice();
 
     typedef std::shared_ptr<DslamInfo> Ptr;
 private:

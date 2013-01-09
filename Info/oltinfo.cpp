@@ -22,7 +22,7 @@ OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
 QString OltInfo::serviceProfile(int index)
 {
     if (mServiceProfileList.find(index) == mServiceProfileList.end())
-        return "";
+        return QString();
 
     return mServiceProfileList[index];
 }
@@ -30,7 +30,7 @@ QString OltInfo::serviceProfile(int index)
 QString OltInfo::multicastProfile(int index)
 {
     if (mMulticastProfileList.find(index) == mMulticastProfileList.end())
-        return "";
+        return QString();
 
     return mMulticastProfileList[index];
 }

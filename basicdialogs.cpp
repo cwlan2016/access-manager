@@ -19,7 +19,7 @@ bool okToDelete(QWidget *parent, const QString &title, const QString &text, cons
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
-        messageBox->setInformativeText(detailedText);
+        messageBox->setDetailedText(detailedText);
 
     QAbstractButton *deleteButton = messageBox->addButton(QString::fromUtf8("Удалить"),
                                                           QMessageBox::AcceptRole);
@@ -44,7 +44,7 @@ void error(QWidget *parent, const QString &title, const QString &text, const QSt
     messageBox->setText(text);
 
     if (!detailedText.isEmpty()) {
-        messageBox->setInformativeText(detailedText);
+        messageBox->setDetailedText(detailedText);
     }
 
     messageBox->addButton(QMessageBox::Ok);
@@ -65,7 +65,7 @@ void information(QWidget *parent, const QString &title, const QString &text,
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
-        messageBox->setInformativeText(detailedText);
+        messageBox->setDetailedText(detailedText);
 
     messageBox->addButton(QMessageBox::Ok);
 
@@ -105,7 +105,7 @@ bool question(QWidget *parent, const QString &title, const QString &text,
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
-        messageBox->setInformativeText(detailedText);
+        messageBox->setDetailedText(detailedText);
 
     messageBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 
