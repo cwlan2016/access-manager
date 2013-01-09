@@ -185,11 +185,11 @@ bool SwitchInfo::saveConfig()
     if ((mDeviceModel == DeviceModel::DES3526)
             || (mDeviceModel == DeviceModel::DES3550))
     {
-        snmp->addOid(Mib::agentSaveCfg, "3", 'i');
+        snmp->addOid(CreateOid(Mib::agentSaveCfg, 12), 12, "3", 'i');
     }
     else if (mDeviceModel == DeviceModel::DES3528)
     {
-        snmp->addOid(Mib::agentSaveCfg, "5", 'i');
+        snmp->addOid(CreateOid(Mib::agentSaveCfg, 12), 12, "5", 'i');
     }
     else
     {

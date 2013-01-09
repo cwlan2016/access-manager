@@ -212,24 +212,24 @@ bool DslamPortListModel::load()
 //                snmp->addOid(Mib::ifName % numInterface);
             snmp->addOid(CreateOid(Mib::ifName, 12, numInterface.toInt()), 12);
 
-            snmp->addOid(Mib::ifOperStatus % numInterface);
+            snmp->addOid(CreateOid(Mib::ifOperStatus, 11, numInterface.toInt()), 11);
 //            snmp->addOid(Mib::ifAlias % numInterface);
             snmp->addOid(CreateOid(Mib::ifAlias, 12, numInterface.toInt()), 12);
-            snmp->addOid(Mib::adslLineConfProfile % numInterface);
+            snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()), 13);
         }
         else if (mDeviceModel == DeviceModel::MXA64)
         {
-            snmp->addOid(Mib::mxa64DslPortOperStatus % numInterface);
-            snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface);
-            snmp->addOid(Mib::mxa64DslPortName % numInterface);
-            snmp->addOid(Mib::mxa64DslPortActiveProfile % numInterface);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13,  numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortName, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()), 13);
         }
         else if (mDeviceModel == DeviceModel::MXA32)
         {
-            snmp->addOid(Mib::mxa32DslPortOperStatus % numInterface);
-            snmp->addOid(Mib::mxa32DslPortAdminStatus % numInterface);
-            snmp->addOid(Mib::mxa32DslPortName % numInterface);
-            snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortName, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()), 13);
         }
         else
         {
@@ -387,35 +387,35 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
     if ((mDeviceModel == DeviceModel::MA5600)
             || (mDeviceModel  == DeviceModel::MA5300))
     {
-        snmp->addOid(Mib::ifOperStatus % numInterface);
-        snmp->addOid(Mib::adslAtucChanCurrTxRate % numInterface);
-        snmp->addOid(Mib::adslAturChanCurrTxRate % numInterface);
-        snmp->addOid(Mib::adslLineCoding % numInterface);
-        snmp->addOid(Mib::adslLineType % numInterface);
-        snmp->addOid(Mib::adslLineConfProfile % numInterface);
-        snmp->addOid(Mib::adslAtucCurrAtn % numInterface);
-        snmp->addOid(Mib::adslAturCurrAtn % numInterface);
-        snmp->addOid(Mib::ifLastChange % numInterface);
+        snmp->addOid(CreateOid(Mib::ifOperStatus, 10, numInterface.toInt()), 10);
+        snmp->addOid(CreateOid(Mib::adslAtucChanCurrTxRate, 13, numInterface.toInt()), 13);
+        snmp->addOid(CreateOid(Mib::adslAturChanCurrTxRate, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::adslLineCoding, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::adslLineType, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::adslAtucCurrAtn, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::adslAturCurrAtn, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::ifLastChange, 10, numInterface.toInt()),10);
     }
     else if (mDeviceModel == DeviceModel::MXA64)
     {
-        snmp->addOid(Mib::mxa64DslPortOperStatus % numInterface);
-        snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface);
-        snmp->addOid(Mib::mxa64DslBandActualRateTx % numInterface);
-        snmp->addOid(Mib::mxa64DslBandActualRateRx % numInterface);
-        snmp->addOid(Mib::mxa64DslBandLineAttenuationTx % numInterface);
-        snmp->addOid(Mib::mxa64DslBandLineAttenuationRx % numInterface);
-        snmp->addOid(Mib::mxa64DslPortActiveProfile % numInterface);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateTx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateRx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationTx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationRx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()),13);
     }
     else if (mDeviceModel == DeviceModel::MXA32)
     {
-        snmp->addOid(Mib::mxa32DslPortOperStatus % numInterface);
-        snmp->addOid(Mib::mxa32DslPortAdminStatus % numInterface);
-        snmp->addOid(Mib::mxa32DslBandActualRateTx % numInterface);
-        snmp->addOid(Mib::mxa32DslBandActualRateRx % numInterface);
-        snmp->addOid(Mib::mxa32DslBandLineAttenuationTx % numInterface);
-        snmp->addOid(Mib::mxa32DslBandLineAttenuationRx % numInterface);
-        snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()),13);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateTx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateRx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationTx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationRx, 14, numInterface.toInt()),14);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()),13);
     }
     else
     {
@@ -479,12 +479,14 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
     QString numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, portIndex);
 
     if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
-        snmp->addOid(Mib::ifAdminStatus % numInterface, portState, 'i');
-//        snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11, portState, 'i');
+//        snmp->addOid(Mib::ifAdminStatus % numInterface, portState, 'i');
+        snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11, portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA64)
-        snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface, portState, 'i');
+//        snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface, portState, 'i');
+        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()), portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA32)
-        snmp->addOid(Mib::mxa32DslPortAdminStatus % numInterface, portState, 'i');
+//        snmp->addOid(Mib::mxa32DslPortAdminStatus % numInterface, portState, 'i');
+        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()), portState, 'i');
     else
     {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама.");
@@ -525,11 +527,14 @@ bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profil
     QString numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
 
     if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
-        snmp->addOid(Mib::adslLineConfProfile % numInterface, profileName, 's');
+//        snmp->addOid(Mib::adslLineConfProfile % numInterface, profileName, 's');
+        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()), profileName, 's');
     else if (mDeviceModel == DeviceModel::MXA64)
-        snmp->addOid(Mib::mxa64DslPortActiveProfile % numInterface, profileName, 'i');
+//        snmp->addOid(Mib::mxa64DslPortActiveProfile % numInterface, profileName, 'i');
+        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()), profileName, 'i');
     else if (mDeviceModel == DeviceModel::MXA32)
-        snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface, profileName, 'i');
+//        snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface, profileName, 'i');
+        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()), profileName, 'i');
     else
     {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");

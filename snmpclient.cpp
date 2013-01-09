@@ -46,14 +46,20 @@ void SnmpClient::addOid(oid* _oid, size_t size)
 // x: HEX STRING
 // d: DECIMAL STRING
 // b: BITS
-void SnmpClient::addOid(QString oidString, QString value, char type)
+
+//void SnmpClient::addOid(QString oidString, QString value, char type)
+//{
+//    oid* OID = new oid[oidString.split(".").count()];
+//    size_t lenOID = oidString.split(".").count();
+//    snmp_parse_oid(oidString.toLatin1().data(), OID, &lenOID);
+//    snmp_add_var(mPdu, OID, lenOID, type, value.toLatin1().data());
+//}
+
+
+
+void SnmpClient::addOid(oid* _oid, size_t size, QString value, char type)
 {
-    oid* OID = new oid[oidString.split(".").count()];
-    size_t lenOID = oidString.split(".").count();
-
-    snmp_parse_oid(oidString.toLatin1().data(), OID, &lenOID);
-
-    snmp_add_var(mPdu, OID, lenOID, type, value.toLatin1().data());
+    snmp_add_var(mPdu, _oid, size, type, value.toLatin1().data());
 }
 
 netsnmp_variable_list* SnmpClient::varList()

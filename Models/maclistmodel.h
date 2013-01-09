@@ -5,6 +5,7 @@
 #include "Info/macinfo.h"
 #include "converters.h"
 #include "snmpclient.h"
+#include "customsnmpfunctions.h"
 
 class MacListModel : public QAbstractTableModel
 {

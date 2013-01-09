@@ -143,8 +143,8 @@ QString MacListModel::error() const
 
 void MacListModel::updateMacTableVlan(SnmpClient* snmp, quint32 vlanTag, QString vlanName)
 {
-    QString oidString = Mib::dot1qTpFdbPort % QString::number(vlanTag);
-//    snmp->addOid(CreateOid(Mib::dot1qTpFdbPort, 13, vlanTag), 13);
+//    QString oidString = Mib::dot1qTpFdbPort % QString::number(vlanTag);
+    snmp->addOid(CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag), 14), vlanMacOid, &lenVlanNameOid;
 
     oid vlanMacOid[14];
     size_t lenVlanNameOid = 14;

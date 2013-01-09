@@ -15,7 +15,8 @@ public:
     void clearResponsePdu();
     void addOid(QString oid_string);
     void addOid(oid* _oid, size_t size);
-    void addOid(QString oidString, QString value, char type);
+    void addOid(oid* _oid, size_t size, QString value, char type);
+    //void addOid(QString oidString, QString value, char type);
     netsnmp_variable_list* varList();
     bool sendRequest();
     bool setupSession(SessionType sessionType);

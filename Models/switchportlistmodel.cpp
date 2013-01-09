@@ -239,14 +239,17 @@ bool SwitchPortListModel::setMemberMulticastVlan(int port, bool value)
         mMulticastVlanMember.setBit(port - 1, value);
     }
 
-    QStringList oidStringList;
+    std::vector<std::pair<oid*, int> > oidList;
 
     if (mDeviceModel == DeviceModel::DES3526)
-        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3526 % QString::number(mIptvMultVlanTag);
+//        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3526 % QString::number(mIptvMultVlanTag);
+        oidList << CreateOid(Mib::swL2IGMPMulticastVlanMemberPortDES3526, 15, mIptvMultVlanTag), 15;
     else if (mDeviceModel == DeviceModel::DES3550)
-        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3550 % QString::number(mIptvMultVlanTag);
+//        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3550 % QString::number(mIptvMultVlanTag);
+        oidList << CreateOid(Mib::swL2IGMPMulticastVlanMemberPortDES3550, 15, mIptvMultVlanTag), 15;
     else
-        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3528 % QString::number(mIptvMultVlanTag);
+//        oidStringList << Mib::swL2IGMPMulticastVlanMemberPortDES3528 % QString::number(mIptvMultVlanTag);
+        oidList << CreateOid(Mib::swL2IGMPMulticastVlanMemberPortDES3528, 13, mIptvMultVlanTag), 13;
 
     QList<QBitArray> arrayList;
     arrayList.append(mMulticastVlanMember);
@@ -399,24 +402,26 @@ bool SwitchPortListModel::updateInfoPort(int indexPort)
 
     snmp->createPdu(SNMP_MSG_GET);
 
-    snmp->addOid(Mib::ifOperStatus % QString::number(indexPort));
+    snmp->addOid(CreateOid(Mib::ifOperStatus, 11, indexPort), 11);
 
     if (mDeviceModel == DeviceModel::DES3526)
         snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3526, 16, indexPort), 16);
     else if (mDeviceModel == DeviceModel::DES3528)
     {
 //        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".1");
-        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 16, indexPort, 1), 17);
+        long NumPort[] = {indexPort, 1};
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 15, NumPort, 2,1), 17);
 
         if(indexPort == 25 || indexPort == 26)
 //            snmp->addOid(Mib::swL2PortInfoNwayStatusDES3528 % QString::number(indexPort) % ".2");
-            snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 16, indexPort, 2), 17);
+
+            snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3528, 15, NumPort,2, 2), 17);
     }
     else if (mDeviceModel == DeviceModel::DES3550)
 //        snmp->addOid(Mib::swL2PortInfoNwayStatusDES3550 % QString::number(indexPort));
-        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3550, 16, indexPort), 16);
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3550, 15, indexPort), 16);
     else
-        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3526, 16, indexPort), 16);
+        snmp->addOid(CreateOid(Mib::swL2PortInfoNwayStatusDES3526, 15, indexPort), 16);
     snmp->addOid(CreateOid(Mib::ifAlias, 12, indexPort), 12);
 
     if (snmp->sendRequest())
@@ -699,7 +704,7 @@ bool SwitchPortListModel::getMulticastVlanSettings()
     return result;
 }
 
-bool SwitchPortListModel::sendVlanSetting(QStringList& oidStringList, QList<QBitArray> &arrayList, bool ismv)
+bool SwitchPortListModel::sendVlanSetting(QVector& oidList, QList<QBitArray> &arrayList, bool ismv)
 {
     std::unique_ptr<SnmpClient> snmp(new SnmpClient());
 
@@ -722,7 +727,7 @@ bool SwitchPortListModel::sendVlanSetting(QStringList& oidStringList, QList<QBit
     for (int i = 0; i < arrayList.count(); i++)
     {
         QString arrayString = QBitArrayToHexString(mDeviceModel, arrayList[i], ismv);
-        snmp->addOid(oidStringList[i], arrayString, 'x');
+        snmp->addOid(oidList[i], arrayString, 'x');
     }
 
     bool result = true;
