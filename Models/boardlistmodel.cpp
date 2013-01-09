@@ -251,7 +251,7 @@ bool BoardListModel::getBoardListFromDevice()
         return false;
     }
 
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mParentDevice->ip());
 
@@ -269,16 +269,16 @@ bool BoardListModel::getBoardListFromDevice()
 
     snmp->createPdu(SNMP_MSG_GETBULK, 16);
 
-    snmp->addOid(Mib::dslam_board_name);
+    snmp->addOid(Mib::dslamBoardName, 15);
 
 
     if (snmp->sendRequest())
     {
         mBoardList.clear();
 
-        oid boardNameOid[15];
+        oid *boardNameOid = CreateOid(Mib::dslamBoardName, 15); //[15];
         size_t lenBoardNameOid = 15;
-        snmp_parse_oid(Mib::dslam_board_name.toLatin1().data(), boardNameOid, &lenBoardNameOid);
+        //snmp_parse_oid(Mib::dslamBoardName.toLatin1().data(), boardNameOid, &lenBoardNameOid);
 
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable)

@@ -1,25 +1,23 @@
 #include "converters.h"
 
-QString SnmpInterfaceNumber(DeviceModel model, int slot, int port)
+int snmpInterfaceNumber(DeviceModel model, int slot, int port)
 {
     if (model == DeviceModel::MA5600)
     {
-        long number = 201326592 + 8192 * slot + 64 * port;
-        return QString::number(number);
+        return 201326592 + 8192 * slot + 64 * port;
     }
     else if (model == DeviceModel::MA5300)
     {
-        long number = 201326592 + 65536 * slot + 64 * port;
-        return QString::number(number);
+        return 201326592 + 65536 * slot + 64 * port;
     }
     else if ((model == DeviceModel::MXA64)
              || (model == DeviceModel::MXA32))
     {
-        return QString::number(port + 1);
+        return port + 1;
     }
     else
     {
-        return "";
+        return 0;
     }
 }
 

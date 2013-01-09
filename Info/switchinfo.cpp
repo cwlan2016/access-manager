@@ -35,7 +35,7 @@ bool SwitchInfo::getServiceDataFromDevice()
 {
     mError.clear();
 
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
@@ -117,7 +117,7 @@ bool SwitchInfo::getServiceDataFromDevice()
 
 bool SwitchInfo::saveConfig()
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
@@ -138,7 +138,7 @@ bool SwitchInfo::saveConfig()
 
         snmp->createPdu(SNMP_MSG_GET);
 
-        snmp->addOid(Mib::agentStatusSaveCfg);
+        snmp->addOid(Mib::agentStatusSaveCfg, 12);
 
         if (snmp->sendRequest())
         {

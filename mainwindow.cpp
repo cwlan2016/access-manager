@@ -94,7 +94,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
         return;
     }
 
-    std::unique_ptr<QMessageBox> boxOnClose(new QMessageBox(this));
+    QScopedPointer<QMessageBox> boxOnClose(new QMessageBox(this));
     boxOnClose->setModal(true);
     boxOnClose->setIcon(QMessageBox::Question);
     boxOnClose->setWindowTitle(QString::fromUtf8("Запрос на сохранение"));

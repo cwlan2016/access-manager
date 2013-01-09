@@ -65,7 +65,7 @@ void DeviceListPageWidget::clearSelection()
 void DeviceListPageWidget::batchUpdate(DeviceType updatingDeviceType)
 {
     QString errorString = "";
-    std::unique_ptr<QProgressDialog> progressDialog(new QProgressDialog(this));
+    QScopedPointer<QProgressDialog> progressDialog(new QProgressDialog(this));
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->setFixedWidth(300);
     progressDialog->setMaximum(mDeviceListModel->rowCount(QModelIndex()));

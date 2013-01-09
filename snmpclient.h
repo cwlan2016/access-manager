@@ -14,8 +14,8 @@ public:
     void createPdu(int pduType, int max_repetitions = 1);
     void clearResponsePdu();
     void addOid(QString oid_string);
-    void addOid(oid* _oid, size_t size);
-    void addOid(oid* _oid, size_t size, QString value, char type);
+    void addOid(const oid* _oid, size_t size);
+    void addOid(const oid* _oid, size_t size, QString value, char type);
     //void addOid(QString oidString, QString value, char type);
     netsnmp_variable_list* varList();
     bool sendRequest();

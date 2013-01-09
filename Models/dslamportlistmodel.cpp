@@ -177,7 +177,7 @@ void DslamPortListModel::setBoardNumber(int boardNum)
 
 bool DslamPortListModel::load()
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
 
     snmp->setIP(mIp);
@@ -200,7 +200,7 @@ bool DslamPortListModel::load()
     {
         snmp->createPdu(SNMP_MSG_GET);
 
-        numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, i);
+        numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, i);
 
         if ((mDeviceModel == DeviceModel::MA5600)
                 || (mDeviceModel == DeviceModel::MA5300))
@@ -354,7 +354,7 @@ void DslamPortListModel::createList()
 
 bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
@@ -382,7 +382,7 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
         return false;
     }
 
-    numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
+    numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
 
     if ((mDeviceModel == DeviceModel::MA5600)
             || (mDeviceModel  == DeviceModel::MA5300))
@@ -458,7 +458,7 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 //2 - set down
 bool DslamPortListModel::changePortState(int portIndex, QString portState)
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
@@ -476,17 +476,17 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
 
     snmp->createPdu(SNMP_MSG_SET);
 
-    QString numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, portIndex);
+    long numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, portIndex);
 
     if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
 //        snmp->addOid(Mib::ifAdminStatus % numInterface, portState, 'i');
-        snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11, portState, 'i');
+        snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface), 11, portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA64)
 //        snmp->addOid(Mib::mxa64DslPortAdminStatus % numInterface, portState, 'i');
-        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()), portState, 'i');
+        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 13, portState, 'i');
     else if (mDeviceModel == DeviceModel::MXA32)
 //        snmp->addOid(Mib::mxa32DslPortAdminStatus % numInterface, portState, 'i');
-        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()), portState, 'i');
+        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 13, portState, 'i');
     else
     {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама.");
@@ -498,7 +498,7 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
 
 bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profileName)
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 
@@ -524,17 +524,17 @@ bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profil
         return false;
     }
 
-    QString numInterface = SnmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
+    long numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
 
     if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
 //        snmp->addOid(Mib::adslLineConfProfile % numInterface, profileName, 's');
-        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()), profileName, 's');
+        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface), 13, profileName, 's');
     else if (mDeviceModel == DeviceModel::MXA64)
 //        snmp->addOid(Mib::mxa64DslPortActiveProfile % numInterface, profileName, 'i');
-        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()), profileName, 'i');
+        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 13, profileName, 'i');
     else if (mDeviceModel == DeviceModel::MXA32)
 //        snmp->addOid(Mib::mxa32DslPortActiveProfile % numInterface, profileName, 'i');
-        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()), profileName, 'i');
+        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 13, profileName, 'i');
     else
     {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");
@@ -604,7 +604,7 @@ QVariant DslamPortListModel::secondLevelData(QModelIndex index) const
         return QVariant();
 }
 
-void DslamPortListModel::updatePortMA(QModelIndex portIndex, std::unique_ptr<SnmpClient> &snmp)
+void DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
     netsnmp_variable_list* vars = snmp->varList();
 
@@ -659,7 +659,7 @@ void DslamPortListModel::updatePortMA(QModelIndex portIndex, std::unique_ptr<Snm
     mPortList[portIndex.row()]->setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
 }
 
-void DslamPortListModel::updatePortMXA(QModelIndex portIndex, std::unique_ptr<SnmpClient> &snmp)
+void DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
     netsnmp_variable_list* vars = snmp->varList();
 

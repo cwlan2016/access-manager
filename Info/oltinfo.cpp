@@ -74,7 +74,7 @@ bool OltInfo::getProfileList(OltProfileMap& profileList, const oid* oidProfileNa
 
     mError.clear();
 
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mIp);
 

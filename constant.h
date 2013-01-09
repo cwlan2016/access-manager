@@ -53,7 +53,7 @@ const oid agentStatusSaveCfg[] =                      { 1, 3, 6, 1, 4, 1, 171, 1
 const oid agentSaveCfg[] =                            { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };           // value set(3) for save switch config
 //информация по Dslam'у MA5600
 //const QString dslam_board_name =                        ".1.3.6.1.4.1.2011.2.6.7.1.1.2.1.7";
-const oid dslam_board_name[] =                        { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7 };
+const oid dslamBoardName[] =                            { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7 };
 //MIBs для MXA-64
 //const QString mxa64DslPortName =                        ".1.3.6.1.4.1.35265.1.33.10.2.1.2.";
 const oid mxa64DslPortName[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 2 };

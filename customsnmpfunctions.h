@@ -10,21 +10,20 @@ inline bool IsValidSnmpValue(netsnmp_variable_list* vars)
             && (vars->type != SNMP_NOSUCHOBJECT);
 }
 
+inline oid *CreateOid(const oid *constOid, int oidLen, long *indexs,
+                      int indexCount = 1, int backOffset = 0)
+{
+    oid *newOid = new oid[oidLen + indexCount];
+    memcpy(newOid, constOid, oidLen * sizeof(oid));
 
+    oidLen += indexCount;
+    oidLen -= backOffset + 1;
 
-inline oid* CreateOid(const oid constOid[], int oidLen, const long indexs[], int indexCount = 1, int backOffset = 0)
+    for (int i = 0; i < indexCount; ++i)
+        newOid[oidLen + i] = indexs[i];
 
-    {
-        oidLen += indexCount;
-        oid *newOid = new oid[oidLen];
-        memcpy(newOid, constOid, oidLen * sizeof(oid));
-
-        oidLen -= backOffset + 1;
-        for (int i = 0; i < indexCount; i++)
-            newOid[oidLen + i] = indexs[i];
-
-        return newOid;
-    }
+    return newOid;
+}
 
 //{
 //    oid *newOid = new oid[oidLen + indexCount];
@@ -35,11 +34,11 @@ inline oid* CreateOid(const oid constOid[], int oidLen, const long indexs[], int
 //    return newOid;
 //}
 
-inline oid* CreateOid(const oid constOid[], int oidLen, long index)
+inline oid *CreateOid(const oid constOid[], int oidLen, long index)
 {
     oid *newOid = new oid[oidLen];
-    memcpy(newOid, constOid, oidLen * sizeof(oid));
-    newOid[oidLen-1]= index;
+    memcpy(newOid, constOid, (oidLen - 1) * sizeof(oid));
+    newOid[oidLen - 1]= index;
 
     return newOid;
 }
@@ -61,9 +60,9 @@ inline oid* CreateOid(const oid constOid[], int oidLen, long index)
 //    return newOid;
 //}
 
-inline oid* CreateOid(const oid constOid[], int oidLen)
+inline oid *CreateOid(const oid constOid[], int oidLen)
 {
-    oid* newOid = new oid[oidLen];
+    oid *newOid = new oid[oidLen];
     memcpy(newOid, constOid, oidLen * sizeof(oid));
 
     return newOid;

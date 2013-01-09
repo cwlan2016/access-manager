@@ -5,7 +5,7 @@
 #include "constant.h"
 #include "customtypes.h"
 
-QString     SnmpInterfaceNumber(DeviceModel model, int slot, int port);
+int         snmpInterfaceNumber(DeviceModel model, int slot, int port);
 QString     DslamStatePortString(long state);
 QString     SwitchStatePortString(long state);
 QString     SpeedDuplexString(DeviceModel deviceModel, long speedDuplex);

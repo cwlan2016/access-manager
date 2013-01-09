@@ -4,7 +4,7 @@ namespace BasicDialogs
 {
 bool okToDelete(QWidget* parent, const QString& title, const QString& text, const QString& detailedText)
 {
-    std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
     if(parent)
         messageBox->setWindowModality(Qt::WindowModal);
@@ -27,7 +27,7 @@ bool okToDelete(QWidget* parent, const QString& title, const QString& text, cons
 
 void error(QWidget* parent, const QString& title, const QString& text, const QString& detailedText)
 {
-    std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
     if(parent)
         messageBox->setWindowModality(Qt::WindowModal);
@@ -46,7 +46,7 @@ void error(QWidget* parent, const QString& title, const QString& text, const QSt
 
 void information(QWidget* parent, const QString& title, const QString& text, const QString& detailedText)
 {
-    std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
     if(parent)
         messageBox->setWindowModality(Qt::WindowModal);
@@ -65,7 +65,7 @@ void information(QWidget* parent, const QString& title, const QString& text, con
 
 void warning(QWidget* parent, const QString& title, const QString& text, const QString& detailedText)
 {
-    std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
     if(parent)
         messageBox->setWindowModality(Qt::WindowModal);
@@ -84,7 +84,7 @@ void warning(QWidget* parent, const QString& title, const QString& text, const Q
 
 bool question(QWidget* parent, const QString& title, const QString& text, const QString& detailedText)
 {
-    std::unique_ptr<QMessageBox> messageBox(new QMessageBox(parent));
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
     if(parent)
         messageBox->setWindowModality(Qt::WindowModal);

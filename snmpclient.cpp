@@ -31,7 +31,7 @@ void SnmpClient::addOid(QString oidString)
     snmp_add_null_var(mPdu, OID, lenOID);
 }
 
-void SnmpClient::addOid(oid* _oid, size_t size)
+void SnmpClient::addOid(const oid *_oid, size_t size)
 {
     snmp_add_null_var(mPdu, _oid, size);
 }
@@ -57,7 +57,7 @@ void SnmpClient::addOid(oid* _oid, size_t size)
 
 
 
-void SnmpClient::addOid(oid* _oid, size_t size, QString value, char type)
+void SnmpClient::addOid(const oid *_oid, size_t size, QString value, char type)
 {
     snmp_add_var(mPdu, _oid, size, type, value.toLatin1().data());
 }
