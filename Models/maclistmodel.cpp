@@ -6,9 +6,11 @@
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
+#include "../customsnmpfunctions.h"
 #else
 #include "constant.h"
 #include "converters.h"
+#include "customsnmpfunctions.h"
 #endif
 
 // Columns
@@ -146,17 +148,21 @@ QString MacListModel::error() const
     return mError;
 }
 
-void MacListModel::updateMacTableVlan(SnmpClient *snmp, quint32 vlanTag, QString vlanName)
+void MacListModel::updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vlanName)
 {
-    QString oidString = Mib::dot1qTpFdbPort % QString::number(vlanTag);
+//    QString oidString = Mib::dot1qTpFdbPort % QString::number(vlanTag);
+    //snmp->addOid(CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag), 14);
 
-    oid vlanMacOid[14];
+    //oid vlanMacOid[14];
+    //long *vlanId = { vlanTag };
+    oid *vlanMacOid = CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag);
     size_t lenVlanNameOid = 14;
-    snmp_parse_oid(oidString.toLatin1().data(), vlanMacOid, &lenVlanNameOid);
+    //snmp_parse_oid(oidString.toLatin1().data(), vlanMacOid, &lenVlanNameOid);
 
-    oid *nextOid = new oid[14];
+    oid *nextOid = CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag);
     size_t nextOid_len = 14;
-    snmp_parse_oid(oidString.toLatin1().data(), nextOid, &nextOid_len);
+
+    //snmp_parse_oid(oidString.toLatin1().data(), nextOid, &nextOid_len);
 
     while (true) {
         snmp->createPdu(SNMP_MSG_GETNEXT);
@@ -175,12 +181,12 @@ void MacListModel::updateMacTableVlan(SnmpClient *snmp, quint32 vlanTag, QString
 
         mMacList[mMacList.size() - 1]->setNumberPort(*(vars->val.integer));
         mMacList[mMacList.size() - 1]->setVlanName(vlanName);
-        mMacList[mMacList.size() - 1]->setMac(DecMacAddressToHex(vars->name, vars->name_length));
+        mMacList[mMacList.size() - 1]->setMac(decMacAddressToHex(vars->name, vars->name_length));
 
         delete[] nextOid;
         nextOid = new oid[vars->name_length];
 
-        memmove(nextOid, vars->name, vars->name_length * sizeof(oid));
+        memcpy(nextOid, vars->name, vars->name_length * sizeof(oid));
         nextOid_len = vars->name_length;
 
         snmp->clearResponsePdu();

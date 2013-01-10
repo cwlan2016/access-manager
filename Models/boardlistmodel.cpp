@@ -237,7 +237,7 @@ bool BoardListModel::getBoardListFromDevice()
         return false;
     }
 
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIP(mParentDevice->ip());
 
@@ -255,15 +255,15 @@ bool BoardListModel::getBoardListFromDevice()
 
     snmp->createPdu(SNMP_MSG_GETBULK, 16);
 
-    snmp->addOid(Mib::dslam_board_name);
+    snmp->addOid(Mib::dslamBoardName, 15);
 
 
     if (snmp->sendRequest()) {
         mBoardList.clear();
 
-        oid boardNameOid[15];
+        oid *boardNameOid = CreateOid(Mib::dslamBoardName, 15); //[15];
         size_t lenBoardNameOid = 15;
-        snmp_parse_oid(Mib::dslam_board_name.toLatin1().data(), boardNameOid, &lenBoardNameOid);
+        //snmp_parse_oid(Mib::dslamBoardName.toLatin1().data(), boardNameOid, &lenBoardNameOid);
 
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable) {
@@ -285,7 +285,7 @@ bool BoardListModel::getBoardListFromDevice()
 
             BoardInfo info;
             info.setNumber(boardIndex);
-            info.setType(BoardTypeFromBoardName(boardName));
+            info.setType(boardTypeFromBoardName(boardName));
             mBoardList.insert(boardIndex, info);
         }
 
@@ -305,8 +305,8 @@ void BoardListModel::renumeringPairList()
 {
     //beginResetModel();
 
-    int adslStep = CountPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
-    int shdslStep = CountPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
+    int adslStep = countPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
+    int shdslStep = countPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
 
     int firstAdslPair = 1;
     int firstShdslPair = 1;
@@ -328,7 +328,7 @@ void BoardListModel::renumeringPairList()
     }
 
     QModelIndex first = index(0, 2);
-    QModelIndex last = index(mBoardList.count() -1, 2);
+    QModelIndex last = index(mBoardList.count() - 1, 2);
     emit dataChanged(first, last);
 
     //endResetModel();
@@ -344,5 +344,5 @@ QString BoardListModel::rangePairs(int firstPair, BoardType::Enum typeBoard) con
 {
     return QString("%1-%2")
            .arg(firstPair)
-           .arg(firstPair + CountPorts(mParentDevice->deviceModel(), typeBoard) - 1);
+           .arg(firstPair + countPorts(mParentDevice->deviceModel(), typeBoard) - 1);
 }

@@ -3,24 +3,22 @@
 #include <QtCore/QRegExp>
 #include "constant.h"
 
-QString SnmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
+int snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
 {
     if (model == DeviceModel::MA5600) {
-        long number = 201326592 + 8192 * slot + 64 * port;
-        return QString::number(number);
+        return 201326592 + 8192 * slot + 64 * port;
     } else if (model == DeviceModel::MA5300) {
-        long number = 201326592 + 65536 * slot + 64 * port;
-        return QString::number(number);
+        return 201326592 + 65536 * slot + 64 * port;
     } else if ((model == DeviceModel::MXA64)
                || (model == DeviceModel::MXA32)) {
-        return QString::number(port + 1);
+        return port + 1;
     } else {
-        return "";
+        return 0;
     }
 
 }
 
-QString DslamStatePortString(long state)
+QString dslamStatePortString(long state)
 {
     if (state == 1)
         return "Up";
@@ -34,7 +32,7 @@ QString DslamStatePortString(long state)
         return "Other";
 }
 
-QString SwitchStatePortString(long state)
+QString switchStatePortString(long state)
 {
     if (state == 1)
         return "Up";
@@ -44,7 +42,7 @@ QString SwitchStatePortString(long state)
         return "Other";
 }
 
-QString SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
+QString speedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
 {
     if ((deviceModel == DeviceModel::DES3526)
             || (deviceModel == DeviceModel::DES3550)) {
@@ -85,7 +83,7 @@ QString SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
         return "Unknown";
 }
 
-BoardType::Enum BoardTypeFromBoardName(QString boardName)
+BoardType::Enum boardTypeFromBoardName(QString boardName)
 {
     if (boardName.contains("ADEF", Qt::CaseInsensitive))
         return BoardType::AnnexA;
@@ -97,7 +95,7 @@ BoardType::Enum BoardTypeFromBoardName(QString boardName)
         return BoardType::Other;
 }
 
-int CountPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
+int countPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
 {
     if (deviceModel == DeviceModel::MA5600) {
         if ((boardType == BoardType::AnnexA)
@@ -123,7 +121,7 @@ int CountPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
         return 0;
 }
 
-int CountPorts(DeviceModel::Enum deviceModel)
+int countPorts(DeviceModel::Enum deviceModel)
 {
     if ((deviceModel == DeviceModel::DES3526)
             || (deviceModel == DeviceModel::DES3528)) {
@@ -135,7 +133,7 @@ int CountPorts(DeviceModel::Enum deviceModel)
         return 0;
 }
 
-QString DecMacAddressToHex(oid *macAddressOid, int length)
+QString decMacAddressToHex(oid *macAddressOid, int length)
 {
     QString tempStr = "";
 
@@ -149,16 +147,16 @@ QString DecMacAddressToHex(oid *macAddressOid, int length)
     return tempStr.toUpper();
 }
 
-bool ValidIpAddress(QString ip)
+bool validIpAddress(QString ip)
 {
     QString regExpStr = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
-            "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
+                        "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
     QRegExp regExp(regExpStr, Qt::CaseInsensitive, QRegExp::RegExp);
 
     return regExp.indexIn(ip) != -1;
 }
 
-QBitArray UCharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
+QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
 {
     int countBits = 0;
 
@@ -195,7 +193,7 @@ QBitArray UCharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
     return array;
 }
 
-QString QBitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &array, bool ismv)
+QString qbitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &array, bool ismv)
 {
     QString tempStr = "";
 
@@ -223,7 +221,7 @@ QString QBitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &arr
     return tempStr.trimmed().toUpper();
 }
 
-QString TypeLineString(int type)
+QString typeLineString(int type)
 {
     if (type == 2)
         return "Fast";
@@ -233,7 +231,7 @@ QString TypeLineString(int type)
         return "другой";
 }
 
-QString CodingString(int coding)
+QString codingString(int coding)
 {
     if (coding == 2)
         return "dmt";
@@ -245,7 +243,7 @@ QString CodingString(int coding)
         return "другой";
 }
 
-QString ProfileExtName(DeviceModel::Enum deviceModel, QString profile)
+QString profileExtName(DeviceModel::Enum deviceModel, QString profile)
 {
     if (deviceModel == DeviceModel::MA5600) {
         if ((profile == AdslProfileDslamName::MA5600::AdslFast)
@@ -288,7 +286,7 @@ QString ProfileExtName(DeviceModel::Enum deviceModel, QString profile)
     }
 }
 
-QString DisplayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString profile)
+QString displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString profile)
 {
     if (deviceModel == DeviceModel::MA5600) {
         if (profile == AdslProfileDisplayName::AdslFast)
@@ -333,7 +331,7 @@ QString DisplayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString pro
     }
 }
 
-QString ToQString(u_char *string, int str_len)
+QString toQString(u_char *string, int str_len)
 {
     return QString::fromLatin1(reinterpret_cast<char *>(string), str_len);
 }

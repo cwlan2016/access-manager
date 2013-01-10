@@ -5,7 +5,7 @@
 
 PortListValidator::PortListValidator(DeviceModel::Enum deviceModel)
 {
-    countPorts = CountPorts(deviceModel);
+    count = countPorts(deviceModel);
 }
 
 QValidator::State PortListValidator::validate(QString &input, int &pos) const
@@ -42,15 +42,15 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
         QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
 
         if (valueStringList.size() == 2) {
-            if ((valueStringList.at(0).toInt() > countPorts)
-                    || (valueStringList.at(1).toInt() > countPorts))
+            if ((valueStringList.at(0).toInt() > count)
+                    || (valueStringList.at(1).toInt() > count))
                 return Invalid;
 
             if (valueStringList.at(1).toInt() < valueStringList.at(0).toInt()) {
                 return Intermediate;
             }
         } else {
-            if (valueStringList.at(0).toInt() > countPorts) {
+            if (valueStringList.at(0).toInt() > count) {
                 return Invalid;
             }
         }

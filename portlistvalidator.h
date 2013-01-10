@@ -11,7 +11,7 @@ public:
     explicit PortListValidator(DeviceModel::Enum deviceModel);
     State validate(QString &input, int &pos) const;
 private:
-    int countPorts;
+    int count;
 };
 
 #endif // PORTLISTVALIDATOR_H

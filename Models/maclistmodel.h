@@ -32,7 +32,7 @@ private:
     QString mIp;
     int mInetVlanTag;
     int mIptvVlanTag;
-    void updateMacTableVlan(SnmpClient *snmp, quint32 vlanTag, QString vlanName);
+    void updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vlanName);
 };
 
 #endif // MACLISTMODEL_H

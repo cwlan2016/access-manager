@@ -6,20 +6,20 @@
 #include <net-snmp/net-snmp-includes.h>
 #include "customtypes.h"
 
-QString     SnmpInterfaceNumber(DeviceModel::Enum model, int slot, int port);
-QString     DslamStatePortString(long state);
-QString     SwitchStatePortString(long state);
-QString     SpeedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex);
-BoardType::Enum BoardTypeFromBoardName(QString boardName);
-int         CountPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType);
-int         CountPorts(DeviceModel::Enum deviceModel);
-QString     DecMacAddressToHex(oid *macAddressOid, int length);
-bool        ValidIpAddress(QString ip);
-QBitArray   UCharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
-QString     QBitArrayToHexString(DeviceModel::Enum switchType, const QBitArray &array, bool ismv);
-QString     TypeLineString(int type);
-QString     CodingString(int coding);
-QString     ProfileExtName(DeviceModel::Enum deviceModel, QString profile);
-QString     DisplayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString profile);
-QString     ToQString(u_char *string, int str_len);
+int         snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port);
+QString     dslamStatePortString(long state);
+QString     switchStatePortString(long state);
+QString     speedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex);
+BoardType::Enum boardTypeFromBoardName(QString boardName);
+int         countPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType);
+int         countPorts(DeviceModel::Enum deviceModel);
+QString     decMacAddressToHex(oid *macAddressOid, int length);
+bool        validIpAddress(QString ip);
+QBitArray   ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
+QString     qbitArrayToHexString(DeviceModel::Enum switchType, const QBitArray &array, bool ismv);
+QString     typeLineString(int type);
+QString     codingString(int coding);
+QString     profileExtName(DeviceModel::Enum deviceModel, QString profile);
+QString     displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString profile);
+QString     toQString(u_char *string, int str_len);
 #endif // CONVERTERS_H

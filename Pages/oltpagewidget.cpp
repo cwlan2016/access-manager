@@ -35,7 +35,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
 
     ui->ontListTableView->setModel(ontTableFilterProxyModel);
 
-    connect(ui->filterOntComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(ui->filterOntComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &OltPageWidget::filterOntCBoxIndexChanged);
     connect(ui->filterOntLineEdit, &QLineEdit::textChanged,
             this, &OltPageWidget::filterOntEditTextChanged);

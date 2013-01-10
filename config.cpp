@@ -68,10 +68,10 @@ void Config::init()
 {
 #ifdef Q_OS_WIN
     mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
-            % "\\Application Data\\" % qApp->organizationName() % "\\";
+                  % "\\Application Data\\" % qApp->organizationName() % "\\";
 #else
     mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
-            % qApp->organizationName() "\\";
+                  % qApp->organizationName() "\\";
 #endif
 }
 

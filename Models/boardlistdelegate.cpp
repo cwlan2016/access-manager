@@ -121,7 +121,7 @@ void BoardListDelegate::commitAndCloseComboBoxEditor(int index)
 QWidget *BoardListDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
-    connect(editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(editor, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &BoardListDelegate::commitAndCloseComboBoxEditor);
     return editor;
 }
@@ -139,7 +139,7 @@ QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
 
 QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
 {
-    int countPairs = CountPorts(deviceModel, BoardType::from(boardType));
+    int countPairs = countPorts(deviceModel, BoardType::from(boardType));
     int countBoards = 0;
 
     if ((deviceModel == DeviceModel::MA5600)
@@ -153,8 +153,8 @@ QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum dev
 
     for (int i = 0; i < countBoards; ++i) {
         stringList.push_back(QString::fromUtf8("%1-%2")
-                   .arg(firstPair)
-                   .arg(firstPair + countPairs - 1));
+                             .arg(firstPair)
+                             .arg(firstPair + countPairs - 1));
         firstPair += countPairs;
     }
 

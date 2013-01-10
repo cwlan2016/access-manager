@@ -79,7 +79,6 @@ bool DeviceListModel::setData(const QModelIndex &index, const QVariant &value, i
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
 
-
     if (role == Qt::EditRole) {
         if (index.column() == 0) {
             mDeviceList[index.row()]->setName(value.toString().trimmed());
@@ -126,7 +125,7 @@ bool DeviceListModel::setData(const QModelIndex &index, const QVariant &value, i
 
             return true;
         } else if (index.column() == 2) {
-            if (!ValidIpAddress(value.toString())) {
+            if (!validIpAddress(value.toString())) {
                 BasicDialogs::information(NULL, trUtf8("Редактирование IP адреса"), trUtf8("Некорректный IP адрес."));
                 return false;
             }
@@ -280,7 +279,6 @@ bool DeviceListModel::load()
     mDeviceList = handler.deviceList();
 
     endResetModel();
-    //reset();
     mModified = false;
 
     return true;
@@ -329,7 +327,6 @@ bool DeviceListModel::save()
 
     return true;
 }
-
 
 bool DeviceListModel::isModified()
 {
@@ -450,7 +447,8 @@ bool DeviceListModel::backup()
     return true;
 }
 
-void DeviceListModel::createSwitchElement(QXmlStreamWriter &writer, const SwitchInfo::Ptr &deviceInfo)
+void DeviceListModel::createSwitchElement(QXmlStreamWriter &writer,
+        const SwitchInfo::Ptr &deviceInfo)
 {
     writer.writeStartElement("switch");
 
@@ -515,4 +513,3 @@ void DeviceListModel::createOltProfileList(QXmlStreamWriter &writer, const OltPr
         writer.writeEndElement();
     }
 }
-

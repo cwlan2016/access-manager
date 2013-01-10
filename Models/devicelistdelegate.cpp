@@ -90,7 +90,7 @@ QStringListModel *DeviceListDelegate::fillDeviceModelComboBox() const
 QWidget *DeviceListDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
-    connect(editor, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+    connect(editor, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &DeviceListDelegate::commitAndCloseComboBoxEditor);
     editor->setMinimumWidth(100);
     return editor;

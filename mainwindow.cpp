@@ -137,7 +137,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
-    std::unique_ptr<QMessageBox> boxOnClose(new QMessageBox(this));
+    QScopedPointer<QMessageBox> boxOnClose(new QMessageBox(this));
     boxOnClose->setModal(true);
     boxOnClose->setIcon(QMessageBox::Question);
     boxOnClose->setWindowTitle(QString::fromUtf8("Запрос на сохранение"));
@@ -246,8 +246,9 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
 
 void MainWindow::saveSwitchConfig()
 {
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage)
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage) {
         return;
+    }
 
     SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
 
@@ -256,8 +257,9 @@ void MainWindow::saveSwitchConfig()
 
 void MainWindow::upDslPort()
 {
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage) {
         return;
+    }
 
     DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
 

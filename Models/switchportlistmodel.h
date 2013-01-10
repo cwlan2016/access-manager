@@ -56,9 +56,9 @@ private:
     uint mIptvVlanTag;
     uint mIptvMultVlanTag;
     void createList();
-    bool getUnicastVlanSettings(QString oidString, QBitArray &vlanPortArray, QString vlanName);
+    bool getUnicastVlanSettings(const oid *oidVlan, int oidVlanLen, QBitArray &vlanPortArray, QString vlanName);
     bool getMulticastVlanSettings();
-    bool sendVlanSetting(QStringList &oidStringList, QList<QBitArray> &arrayList, bool ismv);
+    bool sendVlanSetting(QVector<OidPair> &oidStringList, QList<QBitArray> &arrayList, bool ismv);
 };
 
 #endif // SWITCHPORTLISTMODEL_H

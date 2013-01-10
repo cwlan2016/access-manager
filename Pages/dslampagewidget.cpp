@@ -272,7 +272,7 @@ void DslamPageWidget::applyDslProfile()
     }
 
     DslamPortListModel *portListModel = static_cast<DslamPortListModel *>(ui->dslamTreeView->model());
-    QString profileName = DisplayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
+    QString profileName = displayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
 
     bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
 

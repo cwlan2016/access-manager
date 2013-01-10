@@ -103,7 +103,7 @@ void DeviceListPageWidget::clearSelection()
 void DeviceListPageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
 {
     QString errorString = "";
-    std::unique_ptr<QProgressDialog> progressDialog(new QProgressDialog(this));
+    QScopedPointer<QProgressDialog> progressDialog(new QProgressDialog(this));
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->setFixedWidth(300);
     progressDialog->setMaximum(mDeviceListModel->rowCount(QModelIndex()));
@@ -144,7 +144,6 @@ void DeviceListPageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
 
     if (!errorString.isEmpty())
         BasicDialogs::error(this, BasicDialogTitle::Error, QString::fromUtf8("Во время обновления произошли ошибки!"), errorString);
-
 }
 
 void DeviceListPageWidget::loadDeviceList()
@@ -339,7 +338,7 @@ void DeviceListPageWidget::showEditDslamBoardListPage()
 
     QString ip = mDeviceListModel->data(mDeviceListModel->index(index.row(), 2)).toString();
     QString typeString = mDeviceListModel->data(mDeviceListModel->index(index.row(), 3)).toString();
-    QString namePage = typeString % ip % "Edit";
+    QString namePage = typeString % ip % " Edit";
 
     if (mPageList->contains(namePage)) {
         mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
