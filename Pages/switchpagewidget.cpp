@@ -326,8 +326,8 @@ void SwitchPageWidget::filterMacAddressByPorts()
 
     QStringList rangeStringList = ui->portListLineEdit->text().split(QRegExp(","), QString::SkipEmptyParts);
 
-    auto it = rangeStringList.begin();
-    auto end = rangeStringList.end();
+    auto it = rangeStringList.constBegin();
+    auto end = rangeStringList.constEnd();
     for (; it != end; ++it) {
         QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
 

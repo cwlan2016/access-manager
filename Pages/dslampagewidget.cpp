@@ -116,7 +116,7 @@ QModelIndex DslamPageWidget::currentDslamXdslPort()
     if (!ui->dslamTreeView->currentIndex().isValid())
         return QModelIndex();
 
-    if (ui->dslamTreeView->currentIndex().internalId() == -1) {
+    if (ui->dslamTreeView->currentIndex().internalId() == invalidParentIndex) {
         return ui->dslamTreeView->currentIndex();
     } else {
         return ui->dslamTreeView->currentIndex().parent();
@@ -266,7 +266,7 @@ void DslamPageWidget::applyDslProfile()
     if (!ui->dslamTreeView->currentIndex().isValid())
         return;
 
-    if (ui->dslamTreeView->currentIndex().internalId() != -1) {
+    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите порт для изменения профиля."));
         return;
     }
@@ -289,7 +289,7 @@ void DslamPageWidget::refreshPortInfo()
     if (!ui->dslamTreeView->currentIndex().isValid())
         return;
 
-    if (ui->dslamTreeView->currentIndex().internalId() != -1) {
+    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите порт для обновления информации."));
         return;
     }
@@ -313,7 +313,7 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
     if (!index.isValid())
         return;
 
-    if (index.internalId() != -1)
+    if (index.internalId() != invalidParentIndex)
         return;
 
     DslamPortListModel *portListModel = static_cast<DslamPortListModel *>(ui->dslamTreeView->model());

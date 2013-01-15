@@ -85,7 +85,7 @@ void warning(QWidget *parent, const QString &title, const QString &text,
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
-        messageBox->setInformativeText(detailedText);
+        messageBox->setDetailedText(detailedText);
 
     messageBox->addButton(QMessageBox::Ok);
 

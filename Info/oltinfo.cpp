@@ -149,10 +149,10 @@ QStringListModel *OltInfo::createStringListModelFromMap(OltProfileMap &profileLi
 {
     QStringList stringList;
 
-    auto it = profileList.begin();
-    auto end = profileList.end();
+    auto it = profileList.cbegin();
+    auto end = profileList.cend();
     for (; it != end; ++it) {
-        stringList.push_back(QString::number((*it).first) % ". " % (*it).second);
+        stringList.push_front(QString::number((*it).first) % ". " % (*it).second);
     }
 
     return new QStringListModel(stringList, parent);

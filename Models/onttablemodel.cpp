@@ -85,6 +85,8 @@ bool OntTableModel::load()
 
 bool OntTableModel::updateOntInfo(QString id)
 {
+    Q_UNUSED(id)
+
     return false;
 }
 

@@ -5,10 +5,12 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
-const QString VlanStateName[] =     { "Untag", "Tag", "None" };
-const QString LtpOntState[] =       { "Free", "Allocated", "AuthInProgress", "AuthFailed", "AuthOk", "CfgInProgress", "CfgFailed", "Ok", "Failed", "Blocked", "Mibreset", "Preconfig", "FwUpdating", "Unactivated", "Redundant", "Disabled", "Unknown" };
-const QString LteOntState[] =       { "Free", "Allocated", "AuthInProgress", "CfgInProgress", "AuthFailed", "CfgFailed", "ReportTimeout", "Ok", "AuthOk", "ResetInProgress", "ResetOk", "Discovered", "Blocked" };
-const QString LteOntType[] =        { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400g", "Nte-rg-1400f-w", "Nte-rg-1400g-w", "Nte-rg-1400fc", "Nte-rg-1400gc", "Nte-rg-1400fc-w", "Nte-rg-1400gc-w", "Nte-rg-1402f", "Nte-rg-1402g", "Nte-rg-1402f-w", "Nte-rg-1402g-w", "Nte-rg-1402fc", "Nte-rg-1402gc", "Nte-rg-1402fc-w", "Nte-rg-1402gc-w" };
+const quint64 invalidParentIndex = 111111111;
+
+const QString VlanStateName[] = { "Untag", "Tag", "None" };
+const QString LtpOntState[] =   { "Free", "Allocated", "AuthInProgress", "AuthFailed", "AuthOk", "CfgInProgress", "CfgFailed", "Ok", "Failed", "Blocked", "Mibreset", "Preconfig", "FwUpdating", "Unactivated", "Redundant", "Disabled", "Unknown" };
+const QString LteOntState[] =   { "Free", "Allocated", "AuthInProgress", "CfgInProgress", "AuthFailed", "CfgFailed", "ReportTimeout", "Ok", "AuthOk", "ResetInProgress", "ResetOk", "Discovered", "Blocked" };
+const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400g", "Nte-rg-1400f-w", "Nte-rg-1400g-w", "Nte-rg-1400fc", "Nte-rg-1400gc", "Nte-rg-1400fc-w", "Nte-rg-1400gc-w", "Nte-rg-1402f", "Nte-rg-1402g", "Nte-rg-1402f-w", "Nte-rg-1402g-w", "Nte-rg-1402fc", "Nte-rg-1402gc", "Nte-rg-1402fc-w", "Nte-rg-1402gc-w" };
 
 namespace Mib
 {
@@ -17,7 +19,7 @@ const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2
 const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7, 0 };
 const oid ifOperStatus[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 8 };
 const oid ifLastChange[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 9 };
-const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18, 0 };  // .index = Alias_new
+const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 };  // .index = Alias_new
 const oid swL2PortInfoNwayStatusDES3526[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 4, 1, 1, 5 }; // .index = Speed/Duplex_new
 const oid swL2PortInfoNwayStatusDES3550[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 4, 1, 1, 5 };   // .index = Speed/Duplex_new
 const oid swL2PortInfoNwayStatusDES3528[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 105, 1, 2, 3, 1, 1, 6 };  // .index = Speed/Duplex_new
@@ -36,7 +38,7 @@ const oid agentStatusSaveCfg[] =                        { 1, 3, 6, 1, 4, 1, 171,
 // DES-3528 value 5
 const oid agentSaveCfg[] =                              { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };           // value set(3) for save switch config
 //информация по Dslam'у MA5600
-const oid dslamBoardName[] =                            { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7 };
+const oid dslamBoardName[] =                            { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7, 0 };
 //MIBs для MXA-64
 const oid mxa64DslPortName[] =                          { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 2 };
 const oid mxa64DslPortActiveProfile[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 6 };
@@ -223,10 +225,10 @@ const QString AdslGLite =       QString::fromUtf8("2");
 
 namespace BatchUpdateLabel
 {
-const QString Dslam =       QString::fromUtf8("Обновление данных о досках дсламов");
-const QString Switch =      QString::fromUtf8("Обновление данных о вланах коммутатора");
-const QString Olt =         QString::fromUtf8("Обновление данных о профилях olt");
-const QString AllDevices =  QString::fromUtf8("Обновление данных о всех устройствах");
+const QString Dslam =           QString::fromUtf8("Обновление данных о досках дсламов");
+const QString Switch =          QString::fromUtf8("Обновление данных о вланах коммутатора");
+const QString Olt =             QString::fromUtf8("Обновление данных о профилях olt");
+const QString AllDevices =      QString::fromUtf8("Обновление данных о всех устройствах");
 }
 
 namespace SnmpSettingsString

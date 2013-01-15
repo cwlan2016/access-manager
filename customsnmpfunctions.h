@@ -26,40 +26,14 @@ inline oid *CreateOid(const oid *constOid, int oidLen, long *indexs,
     return newOid;
 }
 
-//{
-//    oid *newOid = new oid[oidLen + indexCount];
-//    memcpy(newOid, constOid, oidLen * sizeof(oid));
-//    for (int i = 0; i < indexCount; i++)
-//    newOid[oidLen-1-backOffset + i] = indexs[ i];
-
-//    return newOid;
-//}
-
 inline oid *CreateOid(const oid constOid[], int oidLen, long index)
 {
-    oid *newOid = new oid[oidLen];
-    memcpy(newOid, constOid, (oidLen - 1) * sizeof(oid));
-    newOid[oidLen - 1] = index;
+    oid *newOid = new oid[oidLen + 1];
+    memcpy(newOid, constOid, (oidLen) * sizeof(oid));
+    newOid[oidLen] = index;
 
     return newOid;
 }
-
-//inline oid* CreateOid(const oid constOid[], int oidLen, long index, int backOffset = 0)
-//{
-
-//    oid *newOid = new oid[oidLen];
-//    memcpy(newOid, constOid, oidLen * sizeof(oid));
-//    newOid[oidLen-1]= index;
-////    newOid[oidLen]= backOffset;
-
-//    qDebug() << "INFO1 = " << newOid;
-//        QString s;
-//         for(int i = 0; i < oidLen; i++)
-//            s += QString::number(newOid[i]) % ".";
-//    qDebug() << "INFO2 = " << s;
-
-//    return newOid;
-//}
 
 inline oid *CreateOid(const oid constOid[], int oidLen)
 {

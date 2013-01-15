@@ -20,8 +20,8 @@
 
 
 // index.internalId()
-// -1 - основная информация о порте, верхний уровень
-// >=0 - дополнительная информация о порте, второй уровень number = index rowParent
+// invalidParentIndex - основная информация о порте, верхний уровень
+// > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
 DslamPortListModel::DslamPortListModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent) :
     QAbstractItemModel(parent), mIp(ip), mDeviceModel(deviceModel)
@@ -32,7 +32,7 @@ int DslamPortListModel::rowCount(const QModelIndex &parent) const
 {
     if (!parent.isValid())
         return mPortList.size();
-    else if (parent.internalId() == -1)
+    else if (parent.internalId() == invalidParentIndex)
         return 7;
     else
         return 0;
@@ -42,7 +42,7 @@ int DslamPortListModel::columnCount(const QModelIndex &parent) const
 {
     if (!parent.isValid())
         return 5;
-    else if (parent.internalId() == -1)
+    else if (parent.internalId() == invalidParentIndex)
         return 2;
     else
         return 0;
@@ -57,13 +57,13 @@ QVariant DslamPortListModel::data(const QModelIndex &index, int role) const
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
 
-        if (index.internalId() == -1) {
+        if (index.internalId() == invalidParentIndex) {
             return topLevelData(index);
-        } else if (index.internalId() >= 0) {
+        } else if (index.internalId() < invalidParentIndex) {
             return secondLevelData(index);
         } else
             return QVariant();
-    } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == -1)) {
+    } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == invalidParentIndex)) {
         if (mPortList[index.row()]->state() == "Activating") {
             return QBrush(QColor(223, 255, 252));
         } else if (mPortList[index.row()]->state() == "Up") {
@@ -116,8 +116,8 @@ Qt::ItemFlags DslamPortListModel::flags(const QModelIndex &index) const
 QModelIndex DslamPortListModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
-        return createIndex(row, column, -1);
-    } else if (parent.internalId() == -1) {
+        return createIndex(row, column, invalidParentIndex);
+    } else if (parent.internalId() == invalidParentIndex) {
         return createIndex(row, column, parent.row());
     } else
         return QModelIndex();
@@ -128,10 +128,10 @@ QModelIndex DslamPortListModel::parent(const QModelIndex &child) const
     if (!child.isValid())
         return QModelIndex();
 
-    if (child.internalId() == -1) {
+    if (child.internalId() == invalidParentIndex) {
         return QModelIndex();
-    } else if (child.internalId() >= 0) {
-        return createIndex((int)child.internalId(), 0, -1);
+    } else if (child.internalId() < invalidParentIndex) {
+        return createIndex((int)child.internalId(), 0, invalidParentIndex);
     } else
         return QModelIndex();
 }
@@ -180,10 +180,10 @@ bool DslamPortListModel::load()
         return false;
     }
 
-    QString numInterface;
+    long numInterface;
 
     int size = mPortList.size();
-    for (uint i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {
         snmp->createPdu(SNMP_MSG_GET);
 
         numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, i);
@@ -192,24 +192,24 @@ bool DslamPortListModel::load()
                 || (mDeviceModel == DeviceModel::MA5300)) {
             if (mDeviceModel == DeviceModel::MA5300)
 //               snmp->addOid(Mib::ifDescr % numInterface);
-                snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface.toInt()), 11);
+                snmp->addOid(CreateOid(Mib::ifDescr, 11, numInterface), 12);
             else
 //                snmp->addOid(Mib::ifName % numInterface);
-                snmp->addOid(CreateOid(Mib::ifName, 12, numInterface.toInt()), 12);
-            snmp->addOid(CreateOid(Mib::ifOperStatus, 11, numInterface.toInt()), 11);
+                snmp->addOid(CreateOid(Mib::ifName, 12, numInterface), 13);
+            snmp->addOid(CreateOid(Mib::ifOperStatus, 10, numInterface), 11);
 //            snmp->addOid(Mib::ifAlias % numInterface);
-            snmp->addOid(CreateOid(Mib::ifAlias, 12, numInterface.toInt()), 12);
-            snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::ifAlias, 11, numInterface), 12);
+            snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface), 14);
         } else if (mDeviceModel == DeviceModel::MXA64) {
-            snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13,  numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa64DslPortName, 13, numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13,  numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortName, 13, numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 14);
         } else if (mDeviceModel == DeviceModel::MXA32) {
-            snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa32DslPortName, 13, numInterface.toInt()), 13);
-            snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()), 13);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortName, 13, numInterface), 14);
+            snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 14);
         } else {
             mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
             endResetModel();
@@ -240,7 +240,7 @@ bool DslamPortListModel::load()
                 }
             } else if ((mDeviceModel == DeviceModel::MXA64)
                        || (mDeviceModel == DeviceModel::MXA32)) {
-                mPortList[i]->setName("adsl " % numInterface);
+                mPortList[i]->setName("adsl " % QString::number(numInterface));
 
                 netsnmp_variable_list *vars = snmp->varList();
 
@@ -331,7 +331,7 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 
     snmp->createPdu(SNMP_MSG_GET);
 
-    QString numInterface;
+    long numInterface;
 
     int currPort = currentPort(portIndex);
 
@@ -344,45 +344,53 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 
     if ((mDeviceModel == DeviceModel::MA5600)
             || (mDeviceModel  == DeviceModel::MA5300)) {
-        snmp->addOid(CreateOid(Mib::ifOperStatus, 10, numInterface.toInt()), 10);
-        snmp->addOid(CreateOid(Mib::adslAtucChanCurrTxRate, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslAturChanCurrTxRate, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslLineCoding, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslLineType, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslAtucCurrAtn, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::adslAturCurrAtn, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::ifLastChange, 10, numInterface.toInt()), 10);
+        snmp->addOid(CreateOid(Mib::ifOperStatus, 10, numInterface), 11);
+        snmp->addOid(CreateOid(Mib::adslAtucChanCurrTxRate, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslAturChanCurrTxRate, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslLineCoding, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslLineType, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslLineConfProfile, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslAtucCurrAtn, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::adslAturCurrAtn, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::ifLastChange, 10, numInterface), 11);
     } else if (mDeviceModel == DeviceModel::MXA64) {
-        snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateTx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateRx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationTx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationRx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface.toInt()), 13);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortOperStatus, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateTx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandActualRateRx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationTx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa64DslBandLineAttenuationRx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 14);
     } else if (mDeviceModel == DeviceModel::MXA32) {
-        snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface.toInt()), 13);
-        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateTx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateRx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationTx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationRx, 14, numInterface.toInt()), 14);
-        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface.toInt()), 13);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortOperStatus, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 14);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateTx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandActualRateRx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationTx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa32DslBandLineAttenuationRx, 14, numInterface), 15);
+        snmp->addOid(CreateOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 14);
     } else {
         mError =  QString::fromUtf8("Ошибка: Неизвестный тип дслама!");
         return false;
     }
 
+    bool result = true;
+
     if (snmp->sendRequest()) {
         if ((mDeviceModel == DeviceModel::MA5600)
                 || (mDeviceModel == DeviceModel::MA5300))
-            updatePortMA(portIndex, snmp);
+            result = updatePortMA(portIndex, snmp);
         else if ((mDeviceModel == DeviceModel::MXA64)
                  || (mDeviceModel == DeviceModel::MXA32))
-            updatePortMXA(portIndex, snmp);
+            result = updatePortMXA(portIndex, snmp);
         else {
             mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама!");
+            return false;
+        }
+
+        if (!result)
+        {
+            mError = SnmpErrors::GetInfo;
             return false;
         }
 
@@ -540,56 +548,86 @@ QVariant DslamPortListModel::secondLevelData(QModelIndex index) const
         return QVariant();
 }
 
-void DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
     netsnmp_variable_list *vars = snmp->varList();
 
     mPortList[portIndex.row()]->setState(dslamStatePortString(*vars->val.integer));
 
     if (mPortList[portIndex.row()]->state() == "Up") {
+        //TODO: Make checks with function IsValidSnmpValue in all assign
+
         vars = vars->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
+
         std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
+
         std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(*vars->val.integer / 1000);
     } else {
         std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(0);
         std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(0);
-        vars = vars->next_variable->next_variable; //пропускаем vars
+        vars = vars->next_variable->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
+        //пропускаем vars
     }
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setCoding(codingString(*vars->val.integer));
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setLineType(typeLineString(*vars->val.integer));
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
 
     mPortList[portIndex.row()]->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
 
     if (mPortList[portIndex.row()]->state() == "Up") {
         vars = vars->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
+
         mPortList[portIndex.row()]->setTxAttenuation(QString::number(*vars->val.integer / 10.0));
 
         vars = vars->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
 
         mPortList[portIndex.row()]->setRxAttenuation(QString::number(*vars->val.integer / 10.0));
     } else {
         mPortList[portIndex.row()]->setTxAttenuation("");
         mPortList[portIndex.row()]->setRxAttenuation("");
         vars = vars->next_variable->next_variable;
+        if (!IsValidSnmpValue(vars))
+            return false;
     }
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
 
     QDateTime date = QDateTime::currentDateTime();
     date = date.addSecs(-*vars->val.integer / 100);
 
     mPortList[portIndex.row()]->setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
+
+    return true;
 }
 
-void DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
     netsnmp_variable_list *vars = snmp->varList();
 
@@ -616,23 +654,41 @@ void DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<Snm
         std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(0);
         mPortList[portIndex.row()]->setTxAttenuation("");
         mPortList[portIndex.row()]->setRxAttenuation("");
-        return;
+        return true;
     }
 
+    //TODO: Make ckecks with IsValidSnmpValue
     vars = vars->next_variable->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(*vars->val.integer / 1000);
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(*vars->val.integer / 1000);
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     mPortList[portIndex.row()]->setTxAttenuation(QString::number(*vars->val.integer));
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     mPortList[portIndex.row()]->setRxAttenuation(QString::number(*vars->val.integer));
 
     vars = vars->next_variable;
+    if (!IsValidSnmpValue(vars))
+        return false;
+
     mPortList[portIndex.row()]->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
+
+    return true;
 }
 
 int DslamPortListModel::currentPort(QModelIndex index)
@@ -640,7 +696,7 @@ int DslamPortListModel::currentPort(QModelIndex index)
     if (!index.isValid())
         return -1;
 
-    if (index.internalId() == -1) {
+    if (index.internalId() == invalidParentIndex) {
         return index.row();
     } else {
         return index.parent().row();

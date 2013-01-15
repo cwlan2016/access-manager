@@ -36,8 +36,8 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
 
     QStringList rangeStringList = input.split(QRegExp(","), QString::SkipEmptyParts);
 
-    auto it = rangeStringList.begin();
-    auto end = rangeStringList.end();
+    auto it = rangeStringList.constBegin();
+    auto end = rangeStringList.constEnd();
     for (; it != end; ++it) {
         QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
 

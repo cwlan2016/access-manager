@@ -14,8 +14,8 @@ public:
     void setIP(QString ip);
     void createPdu(int pduType, int maxRepetitions = 1);
     void clearResponsePdu();
-    void addOid(const oid *_oid, size_t size);
-    void addOid(const oid *_oid, size_t size, QString value, char type);
+    void addOid(const oid *someOid, size_t size);
+    void addOid(const oid *someOid, size_t size, QString value, char type);
     netsnmp_variable_list *varList();
     bool sendRequest();
     bool setupSession(SessionType::Enum sessionType);

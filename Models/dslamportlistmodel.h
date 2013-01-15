@@ -45,8 +45,8 @@ private:
 
     QVariant topLevelData(QModelIndex index) const;
     QVariant secondLevelData(QModelIndex index) const;
-    void updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
-    void updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
+    bool updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
+    bool updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
     int currentPort(QModelIndex index);
 };
 

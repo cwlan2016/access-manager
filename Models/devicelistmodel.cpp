@@ -307,8 +307,8 @@ bool DeviceListModel::save()
 
     writer.writeStartElement("devicelist");
 
-    auto it = mDeviceList.begin();
-    auto end = mDeviceList.end();
+    auto it = mDeviceList.cbegin();
+    auto end = mDeviceList.cend();
     for (; it != end; ++it) {
         if ((*it)->deviceType() == DeviceType::Switch) {
             createSwitchElement(writer, std::static_pointer_cast<SwitchInfo>(*it));
@@ -471,8 +471,8 @@ void DeviceListModel::createDslamElement(QXmlStreamWriter &writer, const DslamIn
     writer.writeAttribute("autofill", QString::number(deviceInfo->autoFill()));
     writer.writeAttribute("autonumeringboard", QString::number(deviceInfo->autoNumeringBoard()));
 
-    auto it = deviceInfo->boardListModel()->boardList().begin();
-    auto end = deviceInfo->boardListModel()->boardList().end();
+    auto it = deviceInfo->boardListModel()->boardList().constBegin();
+    auto end = deviceInfo->boardListModel()->boardList().constEnd();
     for (; it != end; ++it) {
         writer.writeStartElement("board");
 
@@ -502,8 +502,8 @@ void DeviceListModel::createOltElement(QXmlStreamWriter &writer, const OltInfo::
 
 void DeviceListModel::createOltProfileList(QXmlStreamWriter &writer, const OltProfileMap &profileMap, QString typeElem)
 {
-    auto it = profileMap.begin();
-    auto end = profileMap.end();
+    auto it = profileMap.cbegin();
+    auto end = profileMap.cend();
     for (; it != end; ++it) {
         writer.writeStartElement(typeElem);
 

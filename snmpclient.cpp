@@ -24,9 +24,9 @@ void SnmpClient::setIP(QString ip)
     mIp = ip;
 }
 
-void SnmpClient::addOid(const oid *_oid, size_t size)
+void SnmpClient::addOid(const oid *someOid, size_t size)
 {
-    snmp_add_null_var(mPdu, _oid, size);
+    snmp_add_null_var(mPdu, someOid, size);
 }
 
 // type next values
@@ -39,9 +39,9 @@ void SnmpClient::addOid(const oid *_oid, size_t size)
 // x: HEX STRING
 // d: DECIMAL STRING
 // b: BITS
-void SnmpClient::addOid(const oid *_oid, size_t size, QString value, char type)
+void SnmpClient::addOid(const oid *someOid, size_t size, QString value, char type)
 {
-    snmp_add_var(mPdu, _oid, size, type, value.toLatin1().data());
+    snmp_add_var(mPdu, someOid, size, type, value.toLatin1().data());
 }
 
 netsnmp_variable_list *SnmpClient::varList()

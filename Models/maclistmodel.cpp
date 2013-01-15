@@ -155,11 +155,11 @@ void MacListModel::updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vl
 
     //oid vlanMacOid[14];
     //long *vlanId = { vlanTag };
-    oid *vlanMacOid = CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag);
+    oid *vlanMacOid = CreateOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t lenVlanNameOid = 14;
     //snmp_parse_oid(oidString.toLatin1().data(), vlanMacOid, &lenVlanNameOid);
 
-    oid *nextOid = CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag);
+    oid *nextOid = CreateOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t nextOid_len = 14;
 
     //snmp_parse_oid(oidString.toLatin1().data(), nextOid, &nextOid_len);
@@ -173,7 +173,7 @@ void MacListModel::updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vl
 
         netsnmp_variable_list *vars = snmp->varList();
 
-        if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name, vars->name_length, 14) != 0)
+        if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name, vars->name_length, lenVlanNameOid) != 0)
             break;
 
         MacInfo::Ptr macInfo = std::make_shared<MacInfo>();

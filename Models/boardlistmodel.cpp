@@ -223,17 +223,13 @@ void BoardListModel::setParentDevice(const DeviceInfo::Ptr &parent)
 
 bool BoardListModel::getBoardListFromDevice()
 {
-    beginResetModel();
-
     if (mParentDevice->deviceModel() != DeviceModel::MA5600) {
         mError = QString::fromUtf8("Автоматическое обновление списка досок невозможно для данной модели дслама.");
-        endResetModel();
         return false;
     }
 
     if (mAutoFill == 0) {
         mError = QString::fromUtf8("На данном дсламе отключено автоматическое обновление досок.");
-        endResetModel();
         return false;
     }
 
@@ -243,26 +239,26 @@ bool BoardListModel::getBoardListFromDevice()
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
-        endResetModel();
         return false;
     }
 
     if (!snmp->openSession()) {
         mError = SnmpErrors::OpenSession;
-        endResetModel();
         return false;
     }
 
     snmp->createPdu(SNMP_MSG_GETBULK, 16);
 
-    snmp->addOid(Mib::dslamBoardName, 15);
+    snmp->addOid(Mib::dslamBoardName, 16);
 
 
     if (snmp->sendRequest()) {
+        beginResetModel();
+
         mBoardList.clear();
 
-        oid *boardNameOid = CreateOid(Mib::dslamBoardName, 15); //[15];
-        size_t lenBoardNameOid = 15;
+        //oid *boardNameOid = CreateOid(Mib::dslamBoardName, 15); //[15];
+        //size_t lenBoardNameOid = 15;
         //snmp_parse_oid(Mib::dslamBoardName.toLatin1().data(), boardNameOid, &lenBoardNameOid);
 
         for (auto vars = snmp->varList(); vars;
@@ -273,7 +269,7 @@ bool BoardListModel::getBoardListFromDevice()
                 return false;
             }
 
-            if (snmp_oid_ncompare(boardNameOid, lenBoardNameOid, vars->name, vars->name_length, 15) != 0)
+            if (snmp_oid_ncompare(Mib::dslamBoardName, 16, vars->name, vars->name_length, 16) != 0)
                 break;
 
             QString boardName = QString::fromLatin1(reinterpret_cast<char *>(vars->val.string), vars->val_len);
