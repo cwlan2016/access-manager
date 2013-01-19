@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     a.setApplicationName("AccessManager");
-    a.setApplicationVersion(QString::fromUtf8("0.2 unstable"));
-    a.setOrganizationName(QObject::trUtf8("Rostelecom"));
+    a.setApplicationVersion(QString::fromUtf8("0.2"));
+    a.setOrganizationName(QObject::trUtf8("rt.ru"));
     Config::init();
 
     QPixmap pixmap(":/images/splash.png");

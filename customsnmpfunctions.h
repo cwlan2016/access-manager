@@ -4,14 +4,14 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
-inline bool IsValidSnmpValue(netsnmp_variable_list *vars)
+inline bool isValidSnmpValue(netsnmp_variable_list *vars)
 {
     return (vars->type != SNMP_ENDOFMIBVIEW)
            && (vars->type != SNMP_NOSUCHINSTANCE)
            && (vars->type != SNMP_NOSUCHOBJECT);
 }
 
-inline oid *CreateOid(const oid *constOid, int oidLen, long *indexs,
+inline oid *createOid(const oid *constOid, int oidLen, long *indexs,
                       int indexCount = 1, int backOffset = 0)
 {
     oid *newOid = new oid[oidLen + indexCount];
@@ -26,7 +26,7 @@ inline oid *CreateOid(const oid *constOid, int oidLen, long *indexs,
     return newOid;
 }
 
-inline oid *CreateOid(const oid constOid[], int oidLen, long index)
+inline oid *createOid(const oid constOid[], int oidLen, long index)
 {
     oid *newOid = new oid[oidLen + 1];
     memcpy(newOid, constOid, (oidLen) * sizeof(oid));
@@ -35,7 +35,7 @@ inline oid *CreateOid(const oid constOid[], int oidLen, long index)
     return newOid;
 }
 
-inline oid *CreateOid(const oid constOid[], int oidLen)
+inline oid *createOid(const oid constOid[], int oidLen)
 {
     oid *newOid = new oid[oidLen];
     memcpy(newOid, constOid, oidLen * sizeof(oid));

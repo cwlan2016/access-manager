@@ -24,7 +24,6 @@ public:
     void setIP(QString ip);
     void setInetVlanTag(int vlanTag);
     void setIptvVlanTag(int vlanTag);
-    //ошибки
     QString error() const;
 private:
     std::vector<MacInfo::Ptr> mMacList;

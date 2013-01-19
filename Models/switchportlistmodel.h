@@ -28,7 +28,6 @@ public:
     void setInetVlanTag(uint vlanTag);
     void setIptvVlanTag(uint vlanTag);
     QString ip();
-    //ошибки
     QString error() const;
     //информация по порту
     bool memberMulticastVlan(int port);

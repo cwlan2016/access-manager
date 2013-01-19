@@ -123,7 +123,6 @@ bool MacListModel::updateMacTable()
     delete snmp;
 
     endResetModel();
-    //reset();
 
     return true;
 }
@@ -150,19 +149,11 @@ QString MacListModel::error() const
 
 void MacListModel::updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vlanName)
 {
-//    QString oidString = Mib::dot1qTpFdbPort % QString::number(vlanTag);
-    //snmp->addOid(CreateOid(Mib::dot1qTpFdbPort, 14, vlanTag), 14);
-
-    //oid vlanMacOid[14];
-    //long *vlanId = { vlanTag };
-    oid *vlanMacOid = CreateOid(Mib::dot1qTpFdbPort, 13, vlanTag);
+    oid *vlanMacOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t lenVlanNameOid = 14;
-    //snmp_parse_oid(oidString.toLatin1().data(), vlanMacOid, &lenVlanNameOid);
 
-    oid *nextOid = CreateOid(Mib::dot1qTpFdbPort, 13, vlanTag);
+    oid *nextOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t nextOid_len = 14;
-
-    //snmp_parse_oid(oidString.toLatin1().data(), nextOid, &nextOid_len);
 
     while (true) {
         snmp->createPdu(SNMP_MSG_GETNEXT);

@@ -21,7 +21,6 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool load();
     bool updateOntInfo(QString id);
-    //error
     QString error() const;
 private:
     std::vector<OntInfo::Ptr> mOntList;

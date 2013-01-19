@@ -1,5 +1,6 @@
 #include "switchinfo.h"
 
+#include <QtCore/QScopedPointer>
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../customsnmpfunctions.h"
@@ -145,7 +146,7 @@ bool SwitchInfo::saveConfig()
         if (snmp->sendRequest()) {
             netsnmp_variable_list *vars = snmp->varList();
 
-            if (IsValidSnmpValue(vars)) {
+            if (isValidSnmpValue(vars)) {
                 if (*(vars->val.integer) == 2) {
 
                     mError = QString::fromUtf8("Ошибка: В данный момент уже идет сохранение конфигурации коммутатора.");
@@ -177,9 +178,9 @@ bool SwitchInfo::saveConfig()
 
     if ((mDeviceModel == DeviceModel::DES3526)
             || (mDeviceModel == DeviceModel::DES3550)) {
-        snmp->addOid(CreateOid(Mib::agentSaveCfg, 12), 12, "3", 'i');
+        snmp->addOid(createOid(Mib::agentSaveCfg, 12), 12, "3", 'i');
     } else if (mDeviceModel == DeviceModel::DES3528) {
-        snmp->addOid(CreateOid(Mib::agentSaveCfg, 12), 12, "5", 'i');
+        snmp->addOid(createOid(Mib::agentSaveCfg, 12), 12, "5", 'i');
     } else {
 
         mError = QString::fromUtf8("Неизвестная модель коммутатора.");

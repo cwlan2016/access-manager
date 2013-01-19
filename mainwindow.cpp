@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuSwitch->setEnabled(false);
     ui->menuDslam->setEnabled(false);
     ui->menuOlt->setEnabled(false);
+    //TODO: Temporary hidden
+    ui->menuOlt->setVisible(false);
 
     this->setWindowState(Qt::WindowMaximized);
 
@@ -212,6 +214,10 @@ void MainWindow::tabCurrentChanged(int index)
     PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
 
     ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
+    ui->openDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->addDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->editDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->removeDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
     ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
     ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
 

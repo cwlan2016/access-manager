@@ -1,5 +1,6 @@
 #include "devicelistmodel.h"
 
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QStringBuilder>
 #include <QtXmlPatterns/QXmlSchema>
@@ -93,7 +94,7 @@ bool DeviceListModel::setData(const QModelIndex &index, const QVariant &value, i
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
 
             if (mDeviceList[index.row()]->deviceType() == DeviceType::Other) {
-                //устройство только что добавлено
+                //device only now added
                 DeviceInfo::Ptr deviceInfo;
 
                 if (newType == DeviceType::Switch) {
@@ -290,6 +291,11 @@ bool DeviceListModel::save()
         backup();
 
     QFile file(mDeviceListPath);
+    QFileInfo fileInfo(mDeviceListPath);
+
+    if (!fileInfo.dir().exists()) {
+        fileInfo.dir().mkpath(fileInfo.dir().path());
+    }
 
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         mError = QString::fromUtf8("Ошибка: невозможно открыть файл на запись %1: %2")

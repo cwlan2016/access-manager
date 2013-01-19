@@ -164,8 +164,6 @@ bool BoardListModel::removeRow(int row, const QModelIndex &parent)
 
     endRemoveRows();
 
-    //reset();
-
     return true;
 }
 
@@ -203,7 +201,6 @@ void BoardListModel::setBoardList(QHash<int, BoardInfo> &boardList)
     }
 
     endResetModel();
-    //reset();
 }
 
 void BoardListModel::setAutoFill(short autoFill)
@@ -257,13 +254,9 @@ bool BoardListModel::getBoardListFromDevice()
 
         mBoardList.clear();
 
-        //oid *boardNameOid = CreateOid(Mib::dslamBoardName, 15); //[15];
-        //size_t lenBoardNameOid = 15;
-        //snmp_parse_oid(Mib::dslamBoardName.toLatin1().data(), boardNameOid, &lenBoardNameOid);
-
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable) {
-            if (!IsValidSnmpValue(vars)) {
+            if (!isValidSnmpValue(vars)) {
                 mError = SnmpErrors::GetInfo;
                 endResetModel();
                 return false;
@@ -292,15 +285,12 @@ bool BoardListModel::getBoardListFromDevice()
     }
 
     endResetModel();
-    //reset();
 
     return true;
 }
 
 void BoardListModel::renumeringPairList()
 {
-    //beginResetModel();
-
     int adslStep = countPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
     int shdslStep = countPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
 
@@ -326,9 +316,6 @@ void BoardListModel::renumeringPairList()
     QModelIndex first = index(0, 2);
     QModelIndex last = index(mBoardList.count() - 1, 2);
     emit dataChanged(first, last);
-
-    //endResetModel();
-    //reset();
 }
 
 QString BoardListModel::error() const

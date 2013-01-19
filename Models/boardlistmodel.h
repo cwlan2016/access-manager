@@ -37,11 +37,11 @@ public:
     void setParentDevice(const DeviceInfo::Ptr &parent);
     bool getBoardListFromDevice();
     void renumeringPairList();
-    //ошибки
     QString error() const;
 private:
     QHash<int, BoardInfo> mBoardList;
     QString mError;
+    //TODO: Remove this 2 fields. its consist mParentDevice
     short mAutoFill;
     short mAutoNumeringBoard;
     DeviceInfo::Ptr mParentDevice;

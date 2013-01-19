@@ -14,9 +14,9 @@ const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400
 
 namespace Mib
 {
-const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1, 0 };  // .index = Description_new
-const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2, 0 };    // .index = Description_new
-const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7, 0 };
+const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 };  // .index = Description_new
+const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2 };    // .index = Description_new
+const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7 };
 const oid ifOperStatus[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 8 };
 const oid ifLastChange[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 9 };
 const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 };  // .index = Alias_new
