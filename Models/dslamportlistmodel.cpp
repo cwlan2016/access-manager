@@ -166,7 +166,7 @@ bool DslamPortListModel::load()
     beginResetModel();
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
@@ -316,7 +316,7 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
@@ -414,7 +414,7 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::WriteSession)) {
         mError = SnmpErrors::SetupSession;
@@ -448,7 +448,7 @@ bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profil
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::WriteSession)) {
         mError = SnmpErrors::SetupSession;

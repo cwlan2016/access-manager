@@ -89,7 +89,7 @@ bool OltInfo::getProfileList(OltProfileMap &profileList, const oid *oidProfileNa
 
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError += SnmpErrors::SetupSession % "\n";

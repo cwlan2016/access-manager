@@ -11,7 +11,7 @@ class SnmpClient
 public:
     SnmpClient();
     ~SnmpClient();
-    void setIP(QString ip);
+    void setIp(QString ip);
     void createPdu(int pduType, int maxRepetitions = 1);
     void clearResponsePdu();
     void addOid(const oid *someOid, size_t size);
@@ -20,8 +20,8 @@ public:
     bool sendRequest();
     bool setupSession(SessionType::Enum sessionType);
     bool openSession();
-    void closeSession();
     void setTimeoutSaveConfig();
+    void createPduFromResponse(int pduType);
 private:
     netsnmp_session *mSnmpSession;
     netsnmp_session  mBaseSession;

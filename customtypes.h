@@ -12,7 +12,7 @@ typedef std::unordered_map<int, QString> OltProfileMap;
 
 namespace BoardType
 {
-enum Enum : short {
+enum Enum {
     AnnexA =    0,
     AnnexB =    1,
     Shdsl =     2,
@@ -55,7 +55,7 @@ QString             toString(DeviceModel::Enum deviceModel);
 
 namespace DeviceType
 {
-enum Enum : short {
+enum Enum {
     Other =     0,
     Switch =    1,
     Dslam =     2,
@@ -71,7 +71,7 @@ QString             toString(DeviceType::Enum deviceType);
 
 namespace DslPortState
 {
-enum Enum : short {
+enum Enum {
     Up =            1,
     Down =          2,
     Activating =    3,
@@ -87,7 +87,7 @@ QString             toString(DslPortState::Enum dslPortState);
 
 namespace OntType
 {
-enum Enum : short {
+enum Enum {
     Nte = 1,
     Ntp = 2
 };
@@ -95,7 +95,7 @@ enum Enum : short {
 
 namespace NteModel
 {
-enum Enum : short {
+enum Enum {
     Nte_2c =            2,
     Nte_rg_1400f =      3,
     Nte_rg_1400g =      4,
@@ -118,7 +118,7 @@ enum Enum : short {
 
 namespace NteState
 {
-enum Enum : short {
+enum Enum {
     Free =              0,
     Allocated =         1,
     AuthInProgress =    2,
@@ -137,7 +137,7 @@ enum Enum : short {
 
 namespace NtpState
 {
-enum Enum : short {
+enum Enum {
     Free =              0,
     Allocated =         1,
     AuthInProgress =    2,
@@ -181,7 +181,7 @@ enum Enum {
 
 namespace VlanState
 {
-enum Enum : short {
+enum Enum {
     Untag = 0,
     Tag =   1,
     None =  2

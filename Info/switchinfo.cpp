@@ -49,7 +49,7 @@ bool SwitchInfo::getServiceDataFromDevice()
 
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;
@@ -125,7 +125,7 @@ bool SwitchInfo::saveConfig()
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
     if ((mDeviceModel == DeviceModel::DES3526)
             || (mDeviceModel == DeviceModel::DES3550)) {

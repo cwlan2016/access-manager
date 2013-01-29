@@ -232,7 +232,7 @@ bool BoardListModel::getBoardListFromDevice()
 
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mParentDevice->ip());
+    snmp->setIp(mParentDevice->ip());
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrors::SetupSession;

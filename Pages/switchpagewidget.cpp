@@ -57,13 +57,10 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
             this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
-    SwitchInfo::Ptr info = std::static_pointer_cast<SwitchInfo>(mDeviceInfo);
+    SwitchInfo::Ptr switchInfo = std::static_pointer_cast<SwitchInfo>(mDeviceInfo);
 
-    SwitchPortListModel *portListModel = new SwitchPortListModel(info->deviceModel(), this);
-    portListModel->setIP(info->ip());
+    SwitchPortListModel *portListModel = new SwitchPortListModel(switchInfo, this);
 
-    portListModel->setInetVlanTag(info->inetVlanTag());
-    portListModel->setIptvVlanTag(info->iptvVlanTag());
     portListModel->updateInfoAllPort();
 
     ui->portListTableView->setModel(portListModel);
@@ -72,14 +69,10 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
     ui->portListTableView->setColumnWidth(2, 145);
 
     //Инициализация модели таблицы mac-адресов
-    MacListModel *macListModel = new MacListModel(this);
-    macListModel->setIP(info->ip());
-    macListModel->setInetVlanTag(info->inetVlanTag());
-    macListModel->setIptvVlanTag(info->iptvVlanTag());
+    MacListModel *macListModel = new MacListModel(switchInfo, this);
 
-    if (!macListModel->updateMacTable()) {
+    if (!macListModel->update())
         BasicDialogs::error(this, BasicDialogTitle::Error, macListModel->error());
-    }
 
     QSortFilterProxyModel *macListFilterProxyModel = new QSortFilterProxyModel(this);
     macListFilterProxyModel->setFilterRole(Qt::DisplayRole);
@@ -91,10 +84,11 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
     ui->macAddressTableView->setColumnWidth(0, 70);
     ui->macAddressTableView->setColumnWidth(1, 100);
 
-    if (info->deviceModel() == DeviceModel::DES3550)
+    if (switchInfo->deviceModel() == DeviceModel::DES3550) {
         ui->portListLineEdit->setText("1-50");
-    else
+    } else {
         ui->portListLineEdit->setText("1-26");
+    }
 }
 
 SwitchPageWidget::~SwitchPageWidget()
@@ -207,7 +201,7 @@ void SwitchPageWidget::refreshMacTable()
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
     MacListModel *macListModel = static_cast<MacListModel *>(proxyModel->sourceModel());
 
-    if (!macListModel->updateMacTable()) {
+    if (!macListModel->update()) {
         BasicDialogs::error(this, BasicDialogTitle::Error, macListModel->error());
     } else {
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация в таблице MAC-адресов обновлена."));

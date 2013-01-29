@@ -1,8 +1,8 @@
 #ifndef SWITCHPORTINFO_H
 #define SWITCHPORTINFO_H
 
+#include <QtCore/QSharedPointer>
 #include <QtCore/QString>
-#include <memory>
 
 class SwitchPortInfo
 {
@@ -17,7 +17,7 @@ public:
     void setDesc(QString desc);
     void setSpeedDuplex(QString speedDuplex);
 
-    typedef std::shared_ptr<SwitchPortInfo> Ptr;
+    typedef QSharedPointer<SwitchPortInfo> Ptr;
 protected:
     int mNumber;
     QString mState;

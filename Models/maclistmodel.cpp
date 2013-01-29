@@ -19,16 +19,10 @@
 // 1 - vlan name
 // 2 - mac
 
-MacListModel::MacListModel(QObject *parent) :
-    QAbstractTableModel(parent)
+MacListModel::MacListModel(SwitchInfo::Ptr parentDevice, QObject *parent) :
+    QAbstractTableModel(parent),
+    mParentDevice(parentDevice)
 {
-}
-
-int MacListModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-
-    return mMacList.size();
 }
 
 int MacListModel::columnCount(const QModelIndex &parent) const
@@ -44,21 +38,24 @@ QVariant MacListModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0)
+        if (index.column() == 0) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
-        else
+        } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
+        }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0)
-            return mMacList[index.row()]->numberPort();
-        else if (index.column() == 1)
-            return mMacList[index.row()]->vlanName();
-        else if (index.column() == 2)
-            return mMacList[index.row()]->mac();
-        else
+        if (index.column() == 0) {
+            return mMacList.at(index.row())->numberPort();
+        } else if (index.column() == 1) {
+            return mMacList.at(index.row())->vlanName();
+        } else if (index.column() == 2) {
+            return mMacList.at(index.row())->mac();
+        } else {
             return QVariant();
-    } else
-        return QVariant();
+        }
+    }
+
+    return QVariant();
 }
 
 QVariant MacListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -67,14 +64,15 @@ QVariant MacListModel::headerData(int section, Qt::Orientation orientation, int 
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0)
+        if (section == 0) {
             return MacListModelColumn::Port;
-        else if (section == 1)
+        } else if (section == 1) {
             return MacListModelColumn::Vlan;
-        else if (section == 2)
+        } else if (section == 2) {
             return MacListModelColumn::MacAddress;
-        else
+        } else {
             return QVariant();
+        }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {
@@ -93,53 +91,11 @@ Qt::ItemFlags MacListModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-bool MacListModel::updateMacTable()
+int MacListModel::rowCount(const QModelIndex &parent) const
 {
-    beginResetModel();
+    Q_UNUSED(parent);
 
-    mMacList.clear();
-
-    SnmpClient *snmp = new SnmpClient();
-
-    snmp->setIP(mIp);
-
-    if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrors::SetupSession;
-        delete snmp;
-        endResetModel();
-        return false;
-    }
-
-    if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
-        delete snmp;
-        endResetModel();
-        return false;
-    }
-
-    updateMacTableVlan(snmp, mInetVlanTag, "Inet");
-    updateMacTableVlan(snmp, mIptvVlanTag, "IPTV Unicast");
-
-    delete snmp;
-
-    endResetModel();
-
-    return true;
-}
-
-void MacListModel::setIP(QString ip)
-{
-    mIp = ip;
-}
-
-void MacListModel::setInetVlanTag(int vlanTag)
-{
-    mInetVlanTag = vlanTag;
-}
-
-void MacListModel::setIptvVlanTag(int vlanTag)
-{
-    mIptvVlanTag = vlanTag;
+    return mMacList.size();
 }
 
 QString MacListModel::error() const
@@ -147,41 +103,55 @@ QString MacListModel::error() const
     return mError;
 }
 
-void MacListModel::updateMacTableVlan(SnmpClient *snmp, long vlanTag, QString vlanName)
+bool MacListModel::update()
+{
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
+
+    snmp->setIp(mParentDevice->ip());
+
+    if (!snmp->setupSession(SessionType::ReadSession)) {
+        mError = SnmpErrors::SetupSession;
+        return false;
+    }
+
+    if (!snmp->openSession()) {
+        mError = SnmpErrors::OpenSession;
+        return false;
+    }
+
+    beginResetModel();
+
+    mMacList.clear();
+    //TODO: Make handling errors
+    updateMacInVlan(snmp, mParentDevice->inetVlanTag(), "Inet");
+    updateMacInVlan(snmp, mParentDevice->iptvVlanTag(), "IPTV Unicast");
+
+    endResetModel();
+
+    return true;
+}
+
+void MacListModel::updateMacInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag, QString vlanName)
 {
     oid *vlanMacOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t lenVlanNameOid = 14;
 
-    oid *nextOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
-    size_t nextOid_len = 14;
+    snmpClient->createPdu(SNMP_MSG_GETNEXT);
+    snmpClient->addOid(vlanMacOid, lenVlanNameOid);
 
-    while (true) {
-        snmp->createPdu(SNMP_MSG_GETNEXT);
-        snmp->addOid(nextOid, nextOid_len);
-
-        if (!snmp->sendRequest())
-            break;
-
-        netsnmp_variable_list *vars = snmp->varList();
+    while (snmpClient->sendRequest()) {
+        netsnmp_variable_list *vars = snmpClient->varList();
 
         if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name, vars->name_length, lenVlanNameOid) != 0)
             break;
 
-        MacInfo::Ptr macInfo = std::make_shared<MacInfo>();
-        mMacList.push_back(std::move(macInfo));
+        MacInfo::Ptr macInfo = MacInfo::Ptr(new MacInfo());
+        macInfo->setNumberPort(*(vars->val.integer));
+        macInfo->setVlanName(vlanName);
+        macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));
 
-        mMacList[mMacList.size() - 1]->setNumberPort(*(vars->val.integer));
-        mMacList[mMacList.size() - 1]->setVlanName(vlanName);
-        mMacList[mMacList.size() - 1]->setMac(decMacAddressToHex(vars->name, vars->name_length));
+        mMacList.push_back(macInfo);
 
-        delete[] nextOid;
-        nextOid = new oid[vars->name_length];
-
-        memcpy(nextOid, vars->name, vars->name_length * sizeof(oid));
-        nextOid_len = vars->name_length;
-
-        snmp->clearResponsePdu();
+        snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
-
-    delete[] nextOid;
 }

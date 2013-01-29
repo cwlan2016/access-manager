@@ -2,7 +2,7 @@
 #define MACINFO_H
 
 #include <QtCore/QString>
-#include <memory>
+#include <QtCore/QSharedPointer>
 
 class MacInfo
 {
@@ -15,10 +15,10 @@ public:
     void setMac(QString mac);
     void setVlanName(QString vlanName);
 
-    typedef std::shared_ptr<MacInfo> Ptr;
+    typedef QSharedPointer<MacInfo> Ptr;
 private:
-    int mNumberPort;
     QString mMac;
+    int mNumberPort;
     QString mVlanName;
 };
 

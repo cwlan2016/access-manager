@@ -5,21 +5,21 @@
 
 SnmpClient::SnmpClient()
 {
-    mPdu = nullptr;
-    mSnmpSession = nullptr;
-    mResponsePdu = nullptr;
+    mPdu = 0;
+    mSnmpSession = 0;
+    mResponsePdu = 0;
 }
 
 SnmpClient::~SnmpClient()
 {
-    if (mResponsePdu != nullptr)
+    if (mResponsePdu)
         snmp_free_pdu(mResponsePdu);
 
-    if (mSnmpSession != nullptr)
+    if (mSnmpSession)
         snmp_close(mSnmpSession);
 }
 
-void SnmpClient::setIP(QString ip)
+void SnmpClient::setIp(QString ip)
 {
     mIp = ip;
 }
@@ -95,23 +95,12 @@ bool SnmpClient::setupSession(SessionType::Enum sessionType)
 
 bool SnmpClient::openSession()
 {
-    if (mSnmpSession != nullptr)
-        closeSession();
+    if (mSnmpSession)
+        snmp_close(mSnmpSession);
 
     mSnmpSession = snmp_open(&mBaseSession);
 
     return mSnmpSession ? true : false;
-}
-
-void SnmpClient::closeSession()
-{
-//    библиотека выдает
-//    Invalid parameter passed to C runtime function.
-//    возможно баг библиотеки net-snmp 4.7.1
-//    if (m_snmpSession != NULL)
-    snmp_close(mSnmpSession);
-
-    //    m_snmpSession = NULL;
 }
 
 void SnmpClient::setTimeoutSaveConfig()
@@ -119,11 +108,23 @@ void SnmpClient::setTimeoutSaveConfig()
     mBaseSession.timeout = (long)(SnmpConfigInfo::saveConfigTimeout() * 1000L);
 }
 
+// Types    SNMP_MSG_GET
+//          SNMP_MSG_SET
+//          SNMP_MSG_GETNEXT
+//          SNMP_MSG_GETBULK
+void SnmpClient::createPduFromResponse(int pduType)
+{
+    mPdu = snmp_clone_pdu(mResponsePdu);
+    mPdu->command = pduType;
+
+    clearResponsePdu();
+}
+
 void SnmpClient::clearResponsePdu()
 {
-    if (mResponsePdu != nullptr)
+    if (mResponsePdu)
         snmp_free_pdu(mResponsePdu);
 
-    mResponsePdu = nullptr;
+    mResponsePdu = 0;
 }
 
