@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="devicelist">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element name="switch" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:attribute name="model" type="xsd:string" use="required"/>
+                            <xsd:attribute name="ip" type="xsd:string" use="required"/>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                            <xsd:attribute name="inetVlan" type="xsd:string" use="required"/>
+                            <xsd:attribute name="iptvVlan" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="dslam" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="board" minOccurs="0" maxOccurs="unbounded">
+                                    <xsd:complexType>
+                                        <xsd:attribute name="number" type="xsd:string" use="required"/>
+                                        <xsd:attribute name="type" type="xsd:string" use="required"/>
+                                        <xsd:attribute name="firstpair" type="xsd:string" use="required"/>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                            <xsd:attribute name="model" type="xsd:string" use="required"/>
+                            <xsd:attribute name="ip" type="xsd:string" use="required"/>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                            <xsd:attribute name="autonumeringboard"  type="xsd:string" use="required"/>
+                            <xsd:attribute name="autofill"  type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="olt" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                                    <xsd:element name="uniprofile" minOccurs="0" maxOccurs="unbounded">
+                                        <xsd:complexType>
+                                            <xsd:attribute name="index" type="xsd:string" use="required"/>
+                                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                    <xsd:element name="multprofile" minOccurs="0" maxOccurs="unbounded">
+                                        <xsd:complexType>
+                                            <xsd:attribute name="index" type="xsd:string" use="required"/>
+                                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                                        </xsd:complexType>
+                                    </xsd:element>
+                                </xsd:choice>
+                            </xsd:sequence>
+                            <xsd:attribute name="model" type="xsd:string" use="required"/>
+                            <xsd:attribute name="ip" type="xsd:string" use="required"/>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
