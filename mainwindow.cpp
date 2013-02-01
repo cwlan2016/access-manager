@@ -7,7 +7,7 @@
 #include "config.h"
 #include "constant.h"
 #include "converters.h"
-#include "Pages/devicelistpagewidget.h"
+#include "Pages/devicetablepagewidget.h"
 #include "Pages/dslampagewidget.h"
 #include "Pages/settingspagewidget.h"
 #include "Pages/switchpagewidget.h"
@@ -74,40 +74,40 @@ MainWindow::~MainWindow()
 
 void MainWindow::createDeviceListPage()
 {
-    DeviceListPageWidget *deviceListPage = new DeviceListPageWidget(ui->tabWidget, mTypePageList, mPageList, this);
+    DeviceTablePageWidget *deviceListPage = new DeviceTablePageWidget(ui->tabWidget, mTypePageList, mPageList, this);
     deviceListPage->setObjectName(QString::fromUtf8("deviceListTab"));
 
     connect(ui->openDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::openDevice);
+            deviceListPage, &DeviceTablePageWidget::openDevice);
     connect(ui->addDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::addDevice);
+            deviceListPage, &DeviceTablePageWidget::addDevice);
     connect(ui->editDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::editDevice);
+            deviceListPage, &DeviceTablePageWidget::editDevice);
     connect(ui->removeDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::removeDevice);
+            deviceListPage, &DeviceTablePageWidget::removeDevice);
     connect(ui->loadDeviceListAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::loadDeviceList);
+            deviceListPage, &DeviceTablePageWidget::loadDeviceList);
     connect(ui->saveDeviceListAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::saveDeviceList);
+            deviceListPage, &DeviceTablePageWidget::saveDeviceList);
     connect(ui->updateVlanSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::updateVlanInfoSwitch);
+            deviceListPage, &DeviceTablePageWidget::updateVlanInfoSwitch);
     connect(ui->updateDslamBoardsInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::updateBoardInfoDslam);
+            deviceListPage, &DeviceTablePageWidget::updateBoardInfoDslam);
     connect(ui->updateProfilesOltAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::updateProfileInfoOlt);
+            deviceListPage, &DeviceTablePageWidget::updateProfileInfoOlt);
     connect(ui->updateVlanAllSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::batchUpdateVlanInfoSwitch);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateVlanInfoSwitch);
     connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::batchUpdateBoardsInfoDslam);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateBoardsInfoDslam);
     connect(ui->updateInfoAllDevicesAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::batchUpdateInfoAllDevices);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateInfoAllDevices);
     connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::batchUpdateProfileOlt);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateProfileOlt);
     connect(ui->editDslamBoardListAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::showEditDslamBoardListPage);
+            deviceListPage, &DeviceTablePageWidget::showEditDslamBoardListPage);
     connect(ui->showVlanSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceListPageWidget::showVlanInfoGroupBox);
-    connect(deviceListPage, &DeviceListPageWidget::changedActiveItem,
+            deviceListPage, &DeviceTablePageWidget::showVlanInfoGroupBox);
+    connect(deviceListPage, &DeviceTablePageWidget::changedActiveItem,
             this, &MainWindow::deviceViewActivatedItem);
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
@@ -131,8 +131,8 @@ void MainWindow::loadProgramSettings()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
+    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+    DeviceTableModel *deviceListModel = deviceListPage->deviceListModel();
 
     if (!deviceListModel->isModified()) {
         event->accept();
@@ -226,7 +226,7 @@ void MainWindow::tabCurrentChanged(int index)
         ui->menuSwitch->setEnabled(false);
         ui->menuOlt->setEnabled(false);
     } else {
-        DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
+        DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
         deviceListPage->clearSelection();
     }
 }
@@ -236,9 +236,9 @@ void MainWindow::deviceViewActivatedItem(QModelIndex index)
     if (!index.isValid())
         return;
 
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget *>(mPageList->value("deviceListTab"));
+    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
 
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
+    DeviceTableModel *deviceListModel = deviceListPage->deviceListModel();
     index = deviceListPage->proxyModel()->mapToSource(index);
 
     QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);

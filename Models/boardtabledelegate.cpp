@@ -1,4 +1,4 @@
-#include "boardlistdelegate.h"
+#include "boardtabledelegate.h"
 
 #include <QtWidgets/QComboBox>
 
@@ -10,13 +10,13 @@
 #include "converters.h"
 #endif
 
-BoardListDelegate::BoardListDelegate(DeviceModel::Enum deviceModel, QObject *parent) :
+BoardTableDelegate::BoardTableDelegate(DeviceModel::Enum deviceModel, QObject *parent) :
     QItemDelegate(parent)
 {
     mDeviceModel = deviceModel;
 }
 
-QWidget *BoardListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *BoardTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if ((index.column() == mIndexTypeBoard) || (index.column() == mIndexFirstPair)) {
         return createComboBoxEditor(parent);
@@ -26,7 +26,7 @@ QWidget *BoardListDelegate::createEditor(QWidget *parent, const QStyleOptionView
     }
 }
 
-void BoardListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+void BoardTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
     if (index.column() == mIndexTypeBoard) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
@@ -60,7 +60,7 @@ void BoardListDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
     }
 }
 
-void BoardListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     if (index.column() == mIndexTypeBoard) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
@@ -89,27 +89,27 @@ void BoardListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     }
 }
 
-int BoardListDelegate::indexTypeBoard()
+int BoardTableDelegate::indexTypeBoard()
 {
     return mIndexTypeBoard;
 }
 
-int BoardListDelegate::indexFirstPair()
+int BoardTableDelegate::indexFirstPair()
 {
     return mIndexFirstPair;
 }
 
-void BoardListDelegate::setIndexTypeBoard(int index)
+void BoardTableDelegate::setIndexTypeBoard(int index)
 {
     mIndexTypeBoard = index;
 }
 
-void BoardListDelegate::setIndexFirstPair(int index)
+void BoardTableDelegate::setIndexFirstPair(int index)
 {
     mIndexFirstPair = index;
 }
 
-void BoardListDelegate::commitAndCloseComboBoxEditor(int index)
+void BoardTableDelegate::commitAndCloseComboBoxEditor(int index)
 {
     Q_UNUSED(index);
 
@@ -118,15 +118,15 @@ void BoardListDelegate::commitAndCloseComboBoxEditor(int index)
     emit closeEditor(editor);
 }
 
-QWidget *BoardListDelegate::createComboBoxEditor(QWidget *parent) const
+QWidget *BoardTableDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
     connect(editor, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this, &BoardListDelegate::commitAndCloseComboBoxEditor);
+            this, &BoardTableDelegate::commitAndCloseComboBoxEditor);
     return editor;
 }
 
-QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
+QStringListModel *BoardTableDelegate::fillTypeBoardComboBox() const
 {
     QStringList stringList;
 
@@ -137,7 +137,7 @@ QStringListModel *BoardListDelegate::fillTypeBoardComboBox() const
     return new QStringListModel(stringList, (QObject *)this);
 }
 
-QStringListModel *BoardListDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
+QStringListModel *BoardTableDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
 {
     int countPairs = countPorts(deviceModel, BoardType::from(boardType));
     int countBoards = 0;

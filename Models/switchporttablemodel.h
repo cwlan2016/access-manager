@@ -1,5 +1,5 @@
-#ifndef SWITCHPORTLISTMODEL_H
-#define SWITCHPORTLISTMODEL_H
+#ifndef SWITCHPORTTABLEMODEL_H
+#define SWITCHPORTTABLEMODEL_H
 
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QBitArray>
@@ -15,11 +15,11 @@
 #include "Info/switchportinfo.h"
 #endif
 
-class SwitchPortListModel : public QAbstractTableModel
+class SwitchPortTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit SwitchPortListModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
+    explicit SwitchPortTableModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
     int rowCount(const QModelIndex &parentDevice) const;
     int columnCount(const QModelIndex &parentDevice) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -58,4 +58,4 @@ private:
     SwitchInfo::Ptr mParentDevice;
 };
 
-#endif // SWITCHPORTLISTMODEL_H
+#endif // SWITCHPORTABLEMODEL_H

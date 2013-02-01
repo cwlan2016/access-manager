@@ -1,7 +1,7 @@
 #include "adslportinfo.h"
 
-AdslPortInfo::AdslPortInfo() :
-    XdslPortInfo()
+AdslPortInfo::AdslPortInfo(QObject *parent) :
+    XdslPortInfo(parent)
 {
     mRxRate = 0;
     mTxRate = 0;

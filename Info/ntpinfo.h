@@ -5,8 +5,9 @@
 
 class NtpInfo : public OntInfo
 {
+    Q_OBJECT
 public:
-    NtpInfo();
+    NtpInfo(QObject *parent);
     QString pppLogin();
     QString pppPassword();
     bool    phone1Enable();
@@ -27,7 +28,7 @@ public:
     void setSipProxy(QString proxy);
     void Reconfigure();
 
-    typedef std::shared_ptr<NtpInfo> Ptr;
+    typedef NtpInfo *Ptr;
 private:
     QString mPppLogin;
     QString mPppPassword;

@@ -1,5 +1,5 @@
-#ifndef DSLAMPORTLISTMODEL_H
-#define DSLAMPORTLISTMODEL_H
+#ifndef DSLAMPORTTABLEMODEL_H
+#define DSLAMPORTTABLEMODEL_H
 
 #include <QtCore/QAbstractItemModel>
 #ifdef _MSC_VER
@@ -12,11 +12,11 @@
 #include "Info/xdslportinfo.h"
 #endif
 
-class DslamPortListModel : public QAbstractItemModel
+class DslamPortTableModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit DslamPortListModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent = 0);
+    explicit DslamPortTableModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent = 0);
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -41,7 +41,7 @@ private:
     int mFirstPair;
     QString mIp;
     DeviceModel::Enum mDeviceModel;
-    std::vector<XdslPortInfo::Ptr> mPortList;
+    QVector<XdslPortInfo::Ptr> mList;
 
     QVariant topLevelData(QModelIndex index) const;
     QVariant secondLevelData(QModelIndex index) const;
@@ -50,4 +50,4 @@ private:
     int currentPort(QModelIndex index);
 };
 
-#endif // DSLAMPORTLISTMODEL_H
+#endif // DSLAMPORTTABLEMODEL_H

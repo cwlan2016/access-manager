@@ -1,6 +1,7 @@
 #include "macinfo.h"
 
-MacInfo::MacInfo()
+MacInfo::MacInfo(QObject *parent) :
+    QObject(parent)
 {
 }
 

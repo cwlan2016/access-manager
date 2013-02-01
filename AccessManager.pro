@@ -13,27 +13,27 @@ RC_FILE = AccessManager.rc
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    Models/maclistmodel.cpp \
+    Models/mactablemodel.cpp \
     Info/macinfo.cpp \
     snmpclient.cpp \
     constant.cpp \
     config.cpp \
     basicdialogs.cpp \
-    Models/devicelistmodel.cpp \
-    Models/devicelistdelegate.cpp \
+    Models/devicetablemodel.cpp \
+    Models/devicetabledelegate.cpp \
     Info/switchinfo.cpp \
     Info/snmpconfiginfo.cpp \
     converters.cpp \
     Info/deviceinfo.cpp \
-    devicelisthandler.cpp \
+    devicetablehandler.cpp \
     Info/dslaminfo.cpp \
     Info/boardinfo.cpp \
-    Models/boardlistmodel.cpp \
+    Models/boardtablemodel.cpp \
     portlistvalidator.cpp \
-    Models/switchportlistmodel.cpp \
+    Models/switchporttablemodel.cpp \
     Info/switchportinfo.cpp \
-    Models/boardlistdelegate.cpp \
-    Models/dslamportlistmodel.cpp \
+    Models/boardtabledelegate.cpp \
+    Models/dslamporttablemodel.cpp \
     Info/xdslportinfo.cpp \
     Info/shdslportinfo.cpp \
     Info/adslportinfo.cpp \
@@ -45,37 +45,37 @@ SOURCES += main.cpp\
     Pages/switchpagewidget.cpp \
     Pages/oltpagewidget.cpp \
     customsnmpfunctions.cpp \
-    Pages/editdslamboardlistpagewidget.cpp \
+    Pages/editdslamboardtablepagewidget.cpp \
     Pages/aboutpagewidget.cpp \
     Pages/settingspagewidget.cpp \
-    Pages/devicelistpagewidget.cpp \
+    Pages/devicetablepagewidget.cpp \
     Models/onttablemodel.cpp \
     Info/ontinfo.cpp \
     Info/nteinfo.cpp \
     Info/ntpinfo.cpp
 
 HEADERS  += mainwindow.h \
-    Models/maclistmodel.h \
+    Models/mactablemodel.h \
     Info/macinfo.h \
     snmpclient.h \
     constant.h \
     config.h \
     basicdialogs.h \
-    Models/devicelistmodel.h \
-    Models/devicelistdelegate.h \
+    Models/devicetablemodel.h \
+    Models/devicetabledelegate.h \
     Info/switchinfo.h \
     Info/snmpconfiginfo.h \
     converters.h \
     Info/deviceinfo.h \
-    devicelisthandler.h \
+    devicetablehandler.h \
     Info/dslaminfo.h \
     Info/boardinfo.h \
-    Models/boardlistmodel.h \
+    Models/boardtablemodel.h \
     portlistvalidator.h \
-    Models/switchportlistmodel.h \
+    Models/switchporttablemodel.h \
     Info/switchportinfo.h \
-    Models/boardlistdelegate.h \
-    Models/dslamportlistmodel.h \
+    Models/boardtabledelegate.h \
+    Models/dslamporttablemodel.h \
     Info/xdslportinfo.h \
     Info/shdslportinfo.h \
     Info/adslportinfo.h \
@@ -87,10 +87,10 @@ HEADERS  += mainwindow.h \
     Pages/switchpagewidget.h \
     Pages/oltpagewidget.h \
     customsnmpfunctions.h \
-    Pages/editdslamboardlistpagewidget.h \
+    Pages/editdslamboardtablepagewidget.h \
     Pages/aboutpagewidget.h \
     Pages/settingspagewidget.h \
-    Pages/devicelistpagewidget.h \
+    Pages/devicetablepagewidget.h \
     Models/onttablemodel.h \
     Info/ontinfo.h \
     Info/nteinfo.h \
@@ -100,10 +100,10 @@ FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \
     Pages/switchpagewidget.ui \
     Pages/oltpagewidget.ui \
-    Pages/editdslamboardlistpagewidget.ui \
+    Pages/editdslamboardtablepagewidget.ui \
     Pages/aboutpagewidget.ui \
     Pages/settingspagewidget.ui \
-    Pages/devicelistpagewidget.ui
+    Pages/devicetablepagewidget.ui
 
 RESOURCES += \
     resource.qrc

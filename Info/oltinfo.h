@@ -2,7 +2,6 @@
 #define OLTINFO_H
 
 #include <QtCore/QStringListModel>
-#include <memory>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include "deviceinfo.h"
@@ -11,8 +10,8 @@ class OltInfo : public DeviceInfo
 {
     Q_OBJECT
 public:
-    OltInfo();
-    OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel);
+    OltInfo(QObject *parent = 0);
+    OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent = 0);
     QString serviceProfile(int index);
     QString multicastProfile(int index);
     void addServiceProfile(int index, QString profileName);
@@ -23,7 +22,7 @@ public:
     QStringListModel *serviceProfileListModel(QObject *parent = 0);
     QStringListModel *multicastProfileListModel(QObject *parent = 0);
 
-    typedef std::shared_ptr<OltInfo> Ptr;
+    typedef QSharedPointer<OltInfo> Ptr;
 private:
     OltProfileMap mServiceProfileList;
     OltProfileMap mMulticastProfileList;

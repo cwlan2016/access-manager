@@ -1,4 +1,4 @@
-#include "devicelistdelegate.h"
+#include "devicetabledelegate.h"
 
 #include <QtWidgets/QComboBox>
 #ifdef _MSC_VER
@@ -7,12 +7,12 @@
 #include "constant.h"
 #endif
 
-DeviceListDelegate::DeviceListDelegate(QObject *parent) :
+DeviceTableDelegate::DeviceTableDelegate(QObject *parent) :
     QItemDelegate(parent)
 {
 }
 
-QWidget *DeviceListDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *DeviceTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.column() == mIndexDeviceModel) {
         return createComboBoxEditor(parent);
@@ -22,7 +22,7 @@ QWidget *DeviceListDelegate::createEditor(QWidget *parent, const QStyleOptionVie
     }
 }
 
-void DeviceListDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+void DeviceTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
     if (index.column() == mIndexDeviceModel) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
@@ -41,7 +41,7 @@ void DeviceListDelegate::setEditorData(QWidget *editor, const QModelIndex &index
     }
 }
 
-void DeviceListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+void DeviceTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                       const QModelIndex &index) const
 {
     if (index.column() == mIndexDeviceModel) {
@@ -57,7 +57,7 @@ void DeviceListDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
     }
 }
 
-void DeviceListDelegate::commitAndCloseComboBoxEditor(int index)
+void DeviceTableDelegate::commitAndCloseComboBoxEditor(int index)
 {
     Q_UNUSED(index);
 
@@ -66,17 +66,17 @@ void DeviceListDelegate::commitAndCloseComboBoxEditor(int index)
     emit closeEditor(editor);
 }
 
-int DeviceListDelegate::indexDeviceModel()
+int DeviceTableDelegate::indexDeviceModel()
 {
     return mIndexDeviceModel;
 }
 
-void DeviceListDelegate::setIndexDeviceModel(int index)
+void DeviceTableDelegate::setIndexDeviceModel(int index)
 {
     mIndexDeviceModel = index;
 }
 
-QStringListModel *DeviceListDelegate::fillDeviceModelComboBox() const
+QStringListModel *DeviceTableDelegate::fillDeviceModelComboBox() const
 {
     QStringList stringList;
 
@@ -87,11 +87,11 @@ QStringListModel *DeviceListDelegate::fillDeviceModelComboBox() const
     return new QStringListModel(stringList, (QObject *)this);
 }
 
-QWidget *DeviceListDelegate::createComboBoxEditor(QWidget *parent) const
+QWidget *DeviceTableDelegate::createComboBoxEditor(QWidget *parent) const
 {
     QComboBox *editor = new QComboBox(parent);
     connect(editor, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this, &DeviceListDelegate::commitAndCloseComboBoxEditor);
+            this, &DeviceTableDelegate::commitAndCloseComboBoxEditor);
     editor->setMinimumWidth(100);
     return editor;
 }

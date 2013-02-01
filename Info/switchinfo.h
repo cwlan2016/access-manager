@@ -15,7 +15,8 @@ public:
     void setIptvVlanTag(int vlanTag);
     bool getServiceDataFromDevice();
     bool saveConfig();
-    typedef std::shared_ptr<SwitchInfo> Ptr;
+
+    typedef QSharedPointer<SwitchInfo> Ptr;
 private:
     int mInetVlanTag;
     int mIptvVlanTag;

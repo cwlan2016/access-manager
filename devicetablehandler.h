@@ -1,25 +1,25 @@
-#ifndef DEVICELISTPARSER_H
-#define DEVICELISTPARSER_H
+#ifndef DEVICETABLEPARSER_H
+#define DEVICETABLEPARSER_H
 
 #include <QtXml/QXmlDefaultHandler>
 #include "Info/dslaminfo.h"
 #include "Info/oltinfo.h"
 #include "Info/switchinfo.h"
 
-class DeviceListHandler : public QXmlDefaultHandler
+class DeviceTableHandler : public QXmlDefaultHandler
 {
 public:
-    DeviceListHandler();
+    DeviceTableHandler();
     bool startElement(const QString &namespaceURI, const QString &localName,
                       const QString &qName, const QXmlAttributes &attributes);
     bool endElement(const QString &namespaceURI, const QString &localName,
                     const QString &qName);
     bool fatalError(const QXmlParseException &exception);
     QString errorString() const;
-    std::vector<DeviceInfo::Ptr> &deviceList();
+    QVector<DeviceInfo::Ptr> &deviceList();
 private:
     QString m_error;
-    std::vector<DeviceInfo::Ptr> m_deviceList;
+    QVector<DeviceInfo::Ptr> m_deviceList;
     DeviceInfo::Ptr m_currDeviceInfoElement;
     QHash<int, BoardInfo> m_boardList;
     void parseSwitchElement(const QXmlAttributes &attributes);
@@ -30,4 +30,4 @@ private:
     void parseMultOltProfileElement(const QXmlAttributes &attributes);
 };
 
-#endif // DEVICELISTPARSER_H
+#endif // DEVICETABLEPARSER_H

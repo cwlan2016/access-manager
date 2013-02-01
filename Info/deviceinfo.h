@@ -1,8 +1,8 @@
 #ifndef DEVICEINFO_H
 #define DEVICEINFO_H
 
-#include <QObject>
-#include <memory>
+#include <QtCore/QObject>
+#include <QtCore/QSharedPointer>
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #else
@@ -26,7 +26,7 @@ public:
     void setDeviceType(const DeviceType::Enum deviceType);
     virtual bool getServiceDataFromDevice();
 
-    typedef std::shared_ptr<DeviceInfo> Ptr;
+    typedef QSharedPointer<DeviceInfo> Ptr;
 protected:
     QString mName;
     QString mIp;

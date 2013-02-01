@@ -5,8 +5,9 @@
 
 class AdslPortInfo : public XdslPortInfo
 {
+    Q_OBJECT
 public:
-    AdslPortInfo();
+    AdslPortInfo(QObject *parent);
     int rxRate() const;
     int txRate() const;
     QString coding() const;
@@ -16,7 +17,7 @@ public:
     void setCoding(QString coding);
     void setLineType(QString lineType);
 
-    typedef std::shared_ptr<AdslPortInfo> Ptr;
+    typedef AdslPortInfo *Ptr;
 private:
     int mRxRate;
     int mTxRate;

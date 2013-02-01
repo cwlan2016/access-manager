@@ -22,7 +22,7 @@ int OntTableModel::rowCount(const QModelIndex &parentDevice) const
 {
     Q_UNUSED(parentDevice)
 
-    return mOntList.size();
+    return mList.size();
 }
 
 int OntTableModel::columnCount(const QModelIndex &parentDevice) const

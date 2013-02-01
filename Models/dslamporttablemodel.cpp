@@ -1,4 +1,4 @@
-#include "dslamportlistmodel.h"
+#include "dslamporttablemodel.h"
 #include <QtCore/QDateTime>
 #include <QtCore/QStringBuilder>
 #include <QtGui/QBrush>
@@ -23,22 +23,22 @@
 // invalidParentIndex - основная информация о порте, верхний уровень
 // > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
-DslamPortListModel::DslamPortListModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent) :
+DslamPortTableModel::DslamPortTableModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent) :
     QAbstractItemModel(parent), mIp(ip), mDeviceModel(deviceModel)
 {
 }
 
-int DslamPortListModel::rowCount(const QModelIndex &parent) const
+int DslamPortTableModel::rowCount(const QModelIndex &parent) const
 {
     if (!parent.isValid())
-        return mPortList.size();
+        return mList.size();
     else if (parent.internalId() == invalidParentIndex)
         return 7;
     else
         return 0;
 }
 
-int DslamPortListModel::columnCount(const QModelIndex &parent) const
+int DslamPortTableModel::columnCount(const QModelIndex &parent) const
 {
     if (!parent.isValid())
         return 5;
@@ -48,7 +48,7 @@ int DslamPortListModel::columnCount(const QModelIndex &parent) const
         return 0;
 }
 
-QVariant DslamPortListModel::data(const QModelIndex &index, int role) const
+QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -64,13 +64,13 @@ QVariant DslamPortListModel::data(const QModelIndex &index, int role) const
         } else
             return QVariant();
     } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == invalidParentIndex)) {
-        if (mPortList[index.row()]->state() == "Activating") {
+        if (mList[index.row()]->state() == "Activating") {
             return QBrush(QColor(223, 255, 252));
-        } else if (mPortList[index.row()]->state() == "Up") {
+        } else if (mList[index.row()]->state() == "Up") {
             return QBrush(QColor(200, 255, 200));
-        } else if (mPortList[index.row()]->state() == "Down") {
+        } else if (mList[index.row()]->state() == "Down") {
             return QBrush(QColor(255, 145, 148));
-        } else if (mPortList[index.row()]->state() == "Defective") {
+        } else if (mList[index.row()]->state() == "Defective") {
             return QBrush(QColor(255, 70, 74));
         } else
             return QVariant();
@@ -78,7 +78,7 @@ QVariant DslamPortListModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-QVariant DslamPortListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
@@ -106,14 +106,14 @@ QVariant DslamPortListModel::headerData(int section, Qt::Orientation orientation
         return QVariant();
 }
 
-Qt::ItemFlags DslamPortListModel::flags(const QModelIndex &index) const
+Qt::ItemFlags DslamPortTableModel::flags(const QModelIndex &index) const
 {
     Q_UNUSED(index);
 
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QModelIndex DslamPortListModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex DslamPortTableModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
         return createIndex(row, column, invalidParentIndex);
@@ -123,7 +123,7 @@ QModelIndex DslamPortListModel::index(int row, int column, const QModelIndex &pa
         return QModelIndex();
 }
 
-QModelIndex DslamPortListModel::parent(const QModelIndex &child) const
+QModelIndex DslamPortTableModel::parent(const QModelIndex &child) const
 {
     if (!child.isValid())
         return QModelIndex();
@@ -136,32 +136,32 @@ QModelIndex DslamPortListModel::parent(const QModelIndex &child) const
         return QModelIndex();
 }
 
-QString DslamPortListModel::error() const
+QString DslamPortTableModel::error() const
 {
     return mError;
 }
 
-BoardType::Enum DslamPortListModel::boardType()
+BoardType::Enum DslamPortTableModel::boardType()
 {
     return mBoardType;
 }
 
-void DslamPortListModel::setBoardType(BoardType::Enum boardType)
+void DslamPortTableModel::setBoardType(BoardType::Enum boardType)
 {
     mBoardType = boardType;
 }
 
-void DslamPortListModel::setFirstPair(int pair)
+void DslamPortTableModel::setFirstPair(int pair)
 {
     mFirstPair = pair;
 }
 
-void DslamPortListModel::setBoardNumber(int boardNum)
+void DslamPortTableModel::setBoardNumber(int boardNum)
 {
     mBoardNumber = boardNum;
 }
 
-bool DslamPortListModel::load()
+bool DslamPortTableModel::load()
 {
     beginResetModel();
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
@@ -182,7 +182,7 @@ bool DslamPortListModel::load()
 
     long numInterface;
 
-    int size = mPortList.size();
+    int size = mList.size();
     for (int i = 0; i < size; ++i) {
         snmp->createPdu(SNMP_MSG_GET);
 
@@ -220,26 +220,26 @@ bool DslamPortListModel::load()
                     || (mDeviceModel == DeviceModel::MA5300)) {
                 netsnmp_variable_list *vars = snmp->varList();
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setName(toQString(vars->val.string, vars->val_len));
+                    mList[i]->setName(toQString(vars->val.string, vars->val_len));
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setState(dslamStatePortString(*vars->val.integer));
+                    mList[i]->setState(dslamStatePortString(*vars->val.integer));
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setDesc(toQString(vars->val.string, vars->val_len));
+                    mList[i]->setDesc(toQString(vars->val.string, vars->val_len));
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
+                    mList[i]->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
                 }
             } else if ((mDeviceModel == DeviceModel::MXA64)
                        || (mDeviceModel == DeviceModel::MXA32)) {
-                mPortList[i]->setName("adsl " % QString::number(numInterface));
+                mList[i]->setName("adsl " % QString::number(numInterface));
 
                 netsnmp_variable_list *vars = snmp->varList();
 
@@ -258,17 +258,17 @@ bool DslamPortListModel::load()
                     else
                         resultStatus = "Other";
 
-                    mPortList[i]->setState(resultStatus);
+                    mList[i]->setState(resultStatus);
                 }
 
                 vars = vars->next_variable->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setDesc(toQString(vars->val.string, vars->val_len));
+                    mList[i]->setDesc(toQString(vars->val.string, vars->val_len));
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mPortList[i]->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
+                    mList[i]->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
                 }
             } else {
                 mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
@@ -286,33 +286,33 @@ bool DslamPortListModel::load()
     return true;
 }
 
-void DslamPortListModel::createList()
+void DslamPortTableModel::createList()
 {
     int count = countPorts(mDeviceModel, mBoardType);
 
     if ((mBoardType == BoardType::AnnexA)
             || (mBoardType == BoardType::AnnexB)) {
-        mPortList.clear();
+        mList.clear();
 
         for (int i = 0; i < count; ++i) {
-            AdslPortInfo::Ptr portInfo = std::make_shared<AdslPortInfo>();
+            AdslPortInfo::Ptr portInfo = new AdslPortInfo(this);
 
-            mPortList.push_back(std::move(portInfo));
-            mPortList[i]->setPair(mFirstPair + i);
+            mList.push_back(portInfo);
+            mList[i]->setPair(mFirstPair + i);
         }
     } else if (mBoardType == BoardType::Shdsl) {
-        mPortList.clear();
+        mList.clear();
 
         for (int i = 0; i < count; ++i) {
-            ShdslPortInfo::Ptr portInfo = std::make_shared<ShdslPortInfo>();
+            ShdslPortInfo::Ptr portInfo = new ShdslPortInfo(this);
 
-            mPortList.push_back(portInfo);
-            mPortList[i]->setPair(mFirstPair + i);
+            mList.push_back(portInfo);
+            mList[i]->setPair(mFirstPair + i);
         }
     }
 }
 
-bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
+bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
@@ -410,7 +410,7 @@ bool DslamPortListModel::updatePortInfo(QModelIndex portIndex)
 //PortState values
 //1 - set up
 //2 - set down
-bool DslamPortListModel::changePortState(int portIndex, QString portState)
+bool DslamPortTableModel::changePortState(int portIndex, QString portState)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
@@ -444,7 +444,7 @@ bool DslamPortListModel::changePortState(int portIndex, QString portState)
     return snmp->sendRequest();
 }
 
-bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profileName)
+bool DslamPortTableModel::changePortProfile(QModelIndex portIndex, QString profileName)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
@@ -485,23 +485,23 @@ bool DslamPortListModel::changePortProfile(QModelIndex portIndex, QString profil
     return snmp->sendRequest();
 }
 
-QVariant DslamPortListModel::topLevelData(QModelIndex index) const
+QVariant DslamPortTableModel::topLevelData(QModelIndex index) const
 {
     if (index.column() == 0)
-        return mPortList[index.row()]->pair();
+        return mList[index.row()]->pair();
     else if (index.column() == 1)
-        return mPortList[index.row()]->name();
+        return mList[index.row()]->name();
     else if (index.column() == 2)
-        return mPortList[index.row()]->state();
+        return mList[index.row()]->state();
     else if (index.column() == 3)
-        return mPortList[index.row()]->desc();
+        return mList[index.row()]->desc();
     else if (index.column() == 4)
-        return mPortList[index.row()]->profile();
+        return mList[index.row()]->profile();
     else
         return QVariant();
 }
 
-QVariant DslamPortListModel::secondLevelData(QModelIndex index) const
+QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
 {
     if (index.column() == 0) {
         if (index.row() == 0)
@@ -521,47 +521,50 @@ QVariant DslamPortListModel::secondLevelData(QModelIndex index) const
         else
             return QVariant();
     } else if (index.column() == 1) {
+        AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[index.parent().row()]);
+
         if (index.row() == 0)
-            return std::static_pointer_cast<AdslPortInfo>(mPortList[index.parent().row()])->lineType();
+            return portInfo->lineType();
         else if (index.row() == 1)
-            return std::static_pointer_cast<AdslPortInfo>(mPortList[index.parent().row()])->txRate();
+            return portInfo->txRate();
         else if (index.row() == 2)
-            return std::static_pointer_cast<AdslPortInfo>(mPortList[index.parent().row()])->rxRate();
+            return portInfo->rxRate();
         else if (index.row() == 3)
-            return mPortList[index.parent().row()]->txAttenuation();
+            return portInfo->txAttenuation();
         else if (index.row() == 4)
-            return mPortList[index.parent().row()]->rxAttenuation();
+            return portInfo->rxAttenuation();
         else if (index.row() == 5)
-            return mPortList[index.parent().row()]->timeLastChange();
+            return portInfo->timeLastChange();
         else if (index.row() == 6)
-            return std::static_pointer_cast<AdslPortInfo>(mPortList[index.parent().row()])->coding();
+            return portInfo->coding();
         else
             return QVariant();
     } else
         return QVariant();
 }
 
-bool DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortTableModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
+    AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
 
-    mPortList[portIndex.row()]->setState(dslamStatePortString(*vars->val.integer));
+    portInfo->setState(dslamStatePortString(*vars->val.integer));
 
-    if (mPortList[portIndex.row()]->state() == "Up") {
+    if (portInfo->state() == "Up") {
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(*vars->val.integer / 1000);
+        portInfo->setTxRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(*vars->val.integer / 1000);
+        portInfo->setRxRate(*vars->val.integer / 1000);
     } else {
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(0);
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(0);
+        portInfo->setTxRate(0);
+        portInfo->setRxRate(0);
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
@@ -572,35 +575,35 @@ bool DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<Snmp
     if (!isValidSnmpValue(vars))
         return false;
 
-    std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setCoding(codingString(*vars->val.integer));
+    portInfo->setCoding(codingString(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setLineType(typeLineString(*vars->val.integer));
+    portInfo->setLineType(typeLineString(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mPortList[portIndex.row()]->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
+    portInfo->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
 
-    if (mPortList[portIndex.row()]->state() == "Up") {
+    if (portInfo->state() == "Up") {
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mPortList[portIndex.row()]->setTxAttenuation(QString::number(*vars->val.integer / 10.0));
+        portInfo->setTxAttenuation(QString::number(*vars->val.integer / 10.0));
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mPortList[portIndex.row()]->setRxAttenuation(QString::number(*vars->val.integer / 10.0));
+        portInfo->setRxAttenuation(QString::number(*vars->val.integer / 10.0));
     } else {
-        mPortList[portIndex.row()]->setTxAttenuation("");
-        mPortList[portIndex.row()]->setRxAttenuation("");
+        portInfo->setTxAttenuation("");
+        portInfo->setRxAttenuation("");
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
@@ -613,13 +616,14 @@ bool DslamPortListModel::updatePortMA(QModelIndex portIndex, QScopedPointer<Snmp
     QDateTime date = QDateTime::currentDateTime();
     date = date.addSecs(-*vars->val.integer / 100);
 
-    mPortList[portIndex.row()]->setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
+    portInfo->setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
 
     return true;
 }
 
-bool DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortTableModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
 {
+    AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
 
     if (isValidSnmpValue(vars)
@@ -637,14 +641,14 @@ bool DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<Snm
         else
             resultStatus = "Other";
 
-        mPortList[portIndex.row()]->setState(resultStatus);
+        portInfo->setState(resultStatus);
     }
 
-    if (mPortList[portIndex.row()]->state() != "Up") {
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(0);
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(0);
-        mPortList[portIndex.row()]->setTxAttenuation("");
-        mPortList[portIndex.row()]->setRxAttenuation("");
+    if (portInfo->state() != "Up") {
+        portInfo->setTxRate(0);
+        portInfo->setRxRate(0);
+        portInfo->setTxAttenuation("");
+        portInfo->setRxAttenuation("");
         vars = vars->next_variable->next_variable->next_variable->next_variable->next_variable;
     }
     else {
@@ -652,37 +656,37 @@ bool DslamPortListModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<Snm
         if (!isValidSnmpValue(vars))
             return false;
 
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setTxRate(*vars->val.integer / 1000);
+        portInfo->setTxRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        std::static_pointer_cast<AdslPortInfo>(mPortList[portIndex.row()])->setRxRate(*vars->val.integer / 1000);
+        portInfo->setRxRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mPortList[portIndex.row()]->setTxAttenuation(QString::number(*vars->val.integer));
+        portInfo->setTxAttenuation(QString::number(*vars->val.integer));
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mPortList[portIndex.row()]->setRxAttenuation(QString::number(*vars->val.integer));
+        portInfo->setRxAttenuation(QString::number(*vars->val.integer));
     }
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mPortList[portIndex.row()]->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
+    portInfo->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
 
     return true;
 }
 
-int DslamPortListModel::currentPort(QModelIndex index)
+int DslamPortTableModel::currentPort(QModelIndex index)
 {
     if (!index.isValid())
         return -1;

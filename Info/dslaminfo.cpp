@@ -1,17 +1,18 @@
 #include "dslaminfo.h"
 
-DslamInfo::DslamInfo()
+DslamInfo::DslamInfo(QObject *parent) :
+    DeviceInfo(parent)
 {
     setDeviceModel(DeviceModel::MA5600);
-    mBoardListModel = new BoardListModel(this);
+    mBoardListModel = new BoardTableModel(this);
     mBoardListModel->setAutoFill(1);
     mBoardListModel->setAutoNumeringBoard(1);
 }
 
-DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
-    DeviceInfo(name, ip, deviceModel)
+DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+    DeviceInfo(name, ip, deviceModel, parent)
 {
-    mBoardListModel = new BoardListModel(this);
+    mBoardListModel = new BoardTableModel(this);
     mBoardListModel->setAutoFill(1);
     mBoardListModel->setAutoNumeringBoard(1);
 }
@@ -36,7 +37,7 @@ void DslamInfo::setAutoNumeringBoard(short autoNumeringBoard)
     mBoardListModel->setAutoNumeringBoard(autoNumeringBoard);
 }
 
-BoardListModel *DslamInfo::boardListModel()
+BoardTableModel *DslamInfo::boardListModel()
 {
     return mBoardListModel;
 }

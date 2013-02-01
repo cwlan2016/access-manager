@@ -1,6 +1,7 @@
 #include "ontinfo.h"
 
-OntInfo::OntInfo()
+OntInfo::OntInfo(QObject *parent) :
+    QObject(parent)
 {
 }
 

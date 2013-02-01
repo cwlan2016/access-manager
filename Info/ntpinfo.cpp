@@ -1,6 +1,7 @@
 #include "ntpinfo.h"
 
-NtpInfo::NtpInfo()
+NtpInfo::NtpInfo(QObject *parent) :
+    OntInfo(parent)
 {
 }
 

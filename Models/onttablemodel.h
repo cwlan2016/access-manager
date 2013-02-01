@@ -1,6 +1,7 @@
 #ifndef ONTTABLEMODEL_H
 #define ONTTABLEMODEL_H
 
+#include <QtCore/QAbstractTableModel>
 #ifdef _MSC_VER
 #include "../Info/ontinfo.h"
 #include "../Info/oltinfo.h"
@@ -23,7 +24,7 @@ public:
     bool updateOntInfo(QString id);
     QString error() const;
 private:
-    std::vector<OntInfo::Ptr> mOntList;
+    QVector<OntInfo::Ptr> mList;
     QString mError;
     QString mIp;
     OltInfo::Ptr mOltInfo;

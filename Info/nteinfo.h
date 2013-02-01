@@ -5,11 +5,12 @@
 
 class NteInfo : public OntInfo
 {
+    Q_OBJECT
 public:
-    NteInfo();
+    NteInfo(QObject *parent);
     void Reconfigure();
 
-    typedef std::shared_ptr<NteInfo> Ptr;
+    typedef NteInfo *Ptr;
 };
 
 #endif // NTEINFO_H

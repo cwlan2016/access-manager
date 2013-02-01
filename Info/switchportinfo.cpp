@@ -1,6 +1,7 @@
 #include "switchportinfo.h"
 
-SwitchPortInfo::SwitchPortInfo()
+SwitchPortInfo::SwitchPortInfo(QObject *parent) :
+    QObject(parent)
 {
 }
 

@@ -1,6 +1,7 @@
 #include "xdslportinfo.h"
 
-XdslPortInfo::XdslPortInfo()
+XdslPortInfo::XdslPortInfo(QObject *parent) :
+    QObject(parent)
 {
 
 }

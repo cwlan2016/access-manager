@@ -7,14 +7,14 @@
 #include "../basicdialogs.h"
 #include "../constant.h"
 #include "../Info/switchinfo.h"
-#include "../Models/maclistmodel.h"
-#include "../Models/switchportlistmodel.h"
+#include "../Models/mactablemodel.h"
+#include "../Models/switchporttablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "Info/switchinfo.h"
-#include "Models/maclistmodel.h"
-#include "Models/switchportlistmodel.h"
+#include "Models/mactablemodel.h"
+#include "Models/switchporttablemodel.h"
 #endif
 
 SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
@@ -57,9 +57,9 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
             this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
-    SwitchInfo::Ptr switchInfo = std::static_pointer_cast<SwitchInfo>(mDeviceInfo);
+    SwitchInfo::Ptr switchInfo = mDeviceInfo.objectCast<SwitchInfo>();
 
-    SwitchPortListModel *portListModel = new SwitchPortListModel(switchInfo, this);
+    SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
 
     portListModel->updateInfoAllPort();
 
@@ -69,7 +69,7 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
     ui->portListTableView->setColumnWidth(2, 145);
 
     //Инициализация модели таблицы mac-адресов
-    MacListModel *macListModel = new MacListModel(switchInfo, this);
+    MacTableModel *macListModel = new MacTableModel(switchInfo, this);
 
     if (!macListModel->update())
         BasicDialogs::error(this, BasicDialogTitle::Error, macListModel->error());
@@ -98,7 +98,7 @@ SwitchPageWidget::~SwitchPageWidget()
 
 void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
     QModelIndex portIndex = portListModel->index(index.row(), 0);
@@ -127,7 +127,7 @@ void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
 
 void SwitchPageWidget::saveSwitchConfig()
 {
-    bool result = std::static_pointer_cast<SwitchInfo>(mDeviceInfo)->saveConfig();
+    bool result = mDeviceInfo.objectCast<SwitchInfo>()->saveConfig();
 
     if (result)
         BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Запрос на сохранение конфигурации коммутатора отправлен."));
@@ -137,7 +137,7 @@ void SwitchPageWidget::saveSwitchConfig()
 
 void SwitchPageWidget::showPortInfoGroupBox()
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
 
@@ -161,7 +161,7 @@ void SwitchPageWidget::showPortInfoGroupBox()
 
 void SwitchPageWidget::refreshPortInfo()
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
     QModelIndex portIndex = portListModel->index(index.row(), 0);
@@ -185,7 +185,7 @@ void SwitchPageWidget::refreshPortInfo()
 
 void SwitchPageWidget::refreshAllPortInfo()
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     ui->portInfoGroupBox->setChecked(false);
 
@@ -199,7 +199,7 @@ void SwitchPageWidget::refreshAllPortInfo()
 void SwitchPageWidget::refreshMacTable()
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
-    MacListModel *macListModel = static_cast<MacListModel *>(proxyModel->sourceModel());
+    MacTableModel *macListModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
 
     if (!macListModel->update()) {
         BasicDialogs::error(this, BasicDialogTitle::Error, macListModel->error());
@@ -249,7 +249,7 @@ void SwitchPageWidget::removePortFromMulticastVlan()
 
 void SwitchPageWidget::setPortInternetService()
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
     QModelIndex portIndex = portListModel->index(index.row(), 0);
@@ -278,7 +278,7 @@ void SwitchPageWidget::setPortInternetService()
 
 void SwitchPageWidget::setPortInternetWithStbService()
 {
-    SwitchPortListModel *portListModel = static_cast<SwitchPortListModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
     QModelIndex portIndex = portListModel->index(index.row(), 0);
