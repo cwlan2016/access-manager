@@ -1,4 +1,4 @@
-#include "boardlistmodel.h"
+#include "boardtablemodel.h"
 
 #include <QtGui/QFont>
 #include <QtWidgets/QApplication>
@@ -20,12 +20,12 @@
 // 1 - type_board
 // 2 - range pairs
 
-BoardListModel::BoardListModel(QObject *parent) :
+BoardTableModel::BoardTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
 }
 
-int BoardListModel::rowCount(const QModelIndex &parent) const
+int BoardTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
@@ -39,14 +39,14 @@ int BoardListModel::rowCount(const QModelIndex &parent) const
         return 0;
 }
 
-int BoardListModel::columnCount(const QModelIndex &parent) const
+int BoardTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
     return 3;
 }
 
-QVariant BoardListModel::data(const QModelIndex &index, int role) const
+QVariant BoardTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
@@ -59,20 +59,20 @@ QVariant BoardListModel::data(const QModelIndex &index, int role) const
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (index.column() == 0)
             return index.row();
-        else if ((index.column() == 1) && mBoardList.contains(index.row()))
-            return BoardType::toString(mBoardList[index.row()].type());
-        else if ((index.column() == 2) && mBoardList.contains(index.row())) {
+        else if ((index.column() == 1) && mList.contains(index.row()))
+            return BoardType::toString(mList[index.row()].type());
+        else if ((index.column() == 2) && mList.contains(index.row())) {
             if (role == Qt::DisplayRole) {
-                return rangePairs(mBoardList[index.row()].firstPair(), mBoardList[index.row()].type());
+                return rangePairs(mList[index.row()].firstPair(), mList[index.row()].type());
             } else {
-                return mBoardList[index.row()].firstPair();
+                return mList[index.row()].firstPair();
             }
         } else
             return "";
     } else if (role == Qt::UserRole) {
         if (index.column() == 1) {
-            if (mBoardList.contains(index.row())) {
-                return (short)mBoardList[index.row()].type();
+            if (mList.contains(index.row())) {
+                return (short)mList[index.row()].type();
             } else {
                 return (short)BoardType::Other;
             }
@@ -83,23 +83,23 @@ QVariant BoardListModel::data(const QModelIndex &index, int role) const
 }
 
 
-bool BoardListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool BoardTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
 
-    if ((!mBoardList.contains(index.row())) && !value.isNull()) {
-        mBoardList.insert(index.row(), BoardInfo());
-        mBoardList[index.row()].setNumber(index.row());
+    if ((!mList.contains(index.row())) && !value.isNull()) {
+        mList.insert(index.row(), BoardInfo());
+        mList[index.row()].setNumber(index.row());
     }
 
     if (index.column() == 1) {
-        mBoardList[index.row()].setType(BoardType::from(value.toString()));
+        mList[index.row()].setType(BoardType::from(value.toString()));
         emit dataChanged(index, index);
 
         return true;
     } else if (index.column() == 2) {
-        mBoardList[index.row()].setFirstPair(value.toInt());
+        mList[index.row()].setFirstPair(value.toInt());
         emit dataChanged(index, index);
 
         return true;
@@ -108,7 +108,7 @@ bool BoardListModel::setData(const QModelIndex &index, const QVariant &value, in
     return false;
 }
 
-QVariant BoardListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant BoardTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
@@ -133,7 +133,7 @@ QVariant BoardListModel::headerData(int section, Qt::Orientation orientation, in
     return QVariant();
 }
 
-Qt::ItemFlags BoardListModel::flags(const QModelIndex &index) const
+Qt::ItemFlags BoardTableModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 
@@ -155,70 +155,70 @@ Qt::ItemFlags BoardListModel::flags(const QModelIndex &index) const
     return flags;
 }
 
-bool BoardListModel::removeRow(int row, const QModelIndex &parent)
+bool BoardTableModel::removeRow(int row, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row);
 
-    if (mBoardList.contains(row))
-        mBoardList.remove(row);
+    if (mList.contains(row))
+        mList.remove(row);
 
     endRemoveRows();
 
     return true;
 }
 
-QHash<int, BoardInfo> BoardListModel::boardList() const
+QHash<int, BoardInfo> BoardTableModel::boardList() const
 {
-    return mBoardList;
+    return mList;
 }
 
-short BoardListModel::autoFill() const
+short BoardTableModel::autoFill() const
 {
     return mAutoFill;
 }
 
-short BoardListModel::autoNumeringBoard() const
+short BoardTableModel::autoNumeringBoard() const
 {
     return mAutoNumeringBoard;
 }
 
-DeviceInfo::Ptr BoardListModel::parentDevice()
+DeviceInfo::Ptr BoardTableModel::parentDevice()
 {
     return mParentDevice;
 }
 
-void BoardListModel::setBoardList(QHash<int, BoardInfo> &boardList)
+void BoardTableModel::setBoardList(QHash<int, BoardInfo> &boardList)
 {
     beginResetModel();
 
-    mBoardList.clear();
+    mList.clear();
 
     QHashIterator<int, BoardInfo> i(boardList);
 
     while (i.hasNext()) {
         i.next();
-        mBoardList.insert(i.key(), i.value());
+        mList.insert(i.key(), i.value());
     }
 
     endResetModel();
 }
 
-void BoardListModel::setAutoFill(short autoFill)
+void BoardTableModel::setAutoFill(short autoFill)
 {
     mAutoFill = autoFill;
 }
 
-void BoardListModel::setAutoNumeringBoard(short autoNumeringBoard)
+void BoardTableModel::setAutoNumeringBoard(short autoNumeringBoard)
 {
     mAutoNumeringBoard = autoNumeringBoard;
 }
 
-void BoardListModel::setParentDevice(const DeviceInfo::Ptr &parent)
+void BoardTableModel::setParentDevice(const DeviceInfo::Ptr &parent)
 {
     mParentDevice = parent;
 }
 
-bool BoardListModel::getBoardListFromDevice()
+bool BoardTableModel::getBoardListFromDevice()
 {
     if (mParentDevice->deviceModel() != DeviceModel::MA5600) {
         mError = QString::fromUtf8("Автоматическое обновление списка досок невозможно для данной модели дслама.");
@@ -252,7 +252,7 @@ bool BoardListModel::getBoardListFromDevice()
     if (snmp->sendRequest()) {
         beginResetModel();
 
-        mBoardList.clear();
+        mList.clear();
 
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable) {
@@ -275,7 +275,7 @@ bool BoardListModel::getBoardListFromDevice()
             BoardInfo info;
             info.setNumber(boardIndex);
             info.setType(boardTypeFromBoardName(boardName));
-            mBoardList.insert(boardIndex, info);
+            mList.insert(boardIndex, info);
         }
 
     } else {
@@ -289,7 +289,7 @@ bool BoardListModel::getBoardListFromDevice()
     return true;
 }
 
-void BoardListModel::renumeringPairList()
+void BoardTableModel::renumeringPairList()
 {
     int adslStep = countPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
     int shdslStep = countPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
@@ -301,29 +301,29 @@ void BoardListModel::renumeringPairList()
         if ((i == 7) || (i == 8))
             continue;
 
-        if (!mBoardList.contains(i))
+        if (!mList.contains(i))
             continue;
 
-        if ((mBoardList[i].type() == BoardType::AnnexA) || (mBoardList[i].type() == BoardType::AnnexB)) {
-            mBoardList[i].setFirstPair(firstAdslPair);
+        if ((mList[i].type() == BoardType::AnnexA) || (mList[i].type() == BoardType::AnnexB)) {
+            mList[i].setFirstPair(firstAdslPair);
             firstAdslPair += adslStep;
-        } else if (mBoardList[i].type() == BoardType::Shdsl) {
-            mBoardList[i].setFirstPair(firstShdslPair);
+        } else if (mList[i].type() == BoardType::Shdsl) {
+            mList[i].setFirstPair(firstShdslPair);
             firstShdslPair += shdslStep;
         }
     }
 
     QModelIndex first = index(0, 2);
-    QModelIndex last = index(mBoardList.count() - 1, 2);
+    QModelIndex last = index(mList.count() - 1, 2);
     emit dataChanged(first, last);
 }
 
-QString BoardListModel::error() const
+QString BoardTableModel::error() const
 {
     return mError;
 }
 
-QString BoardListModel::rangePairs(int firstPair, BoardType::Enum typeBoard) const
+QString BoardTableModel::rangePairs(int firstPair, BoardType::Enum typeBoard) const
 {
     return QString("%1-%2")
            .arg(firstPair)

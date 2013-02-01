@@ -1,13 +1,14 @@
 #ifndef XDSLPORTINFO_H
 #define XDSLPORTINFO_H
 
+#include <QtCore/QObject>
 #include <QtCore/QString>
-#include <memory>
 
-class XdslPortInfo
+class XdslPortInfo : public QObject
 {
+    Q_OBJECT
 public:
-    XdslPortInfo();
+    XdslPortInfo(QObject *parent);
     int pair() const;
     QString name() const;
     QString state() const;
@@ -25,7 +26,7 @@ public:
     void setRxAttenuation(QString rxAttenuation);
     void setTxAttenuation(QString txAttenuation);
 
-    typedef std::shared_ptr<XdslPortInfo> Ptr;
+    typedef XdslPortInfo *Ptr;
 protected:
     int mPair;
     QString mName;

@@ -1,29 +1,29 @@
-#ifndef DEVICELISTPAGEWIDGET_H
-#define DEVICELISTPAGEWIDGET_H
+#ifndef DEVICETABLEPAGEWIDGET_H
+#define DEVICETABLEPAGEWIDGET_H
 
 #include <QtCore/QSortFilterProxyModel>
 #include <QtWidgets/QTableWidget>
 #ifdef _MSC_VER
-#include "../Models/devicelistmodel.h"
+#include "../Models/devicetablemodel.h"
 #else
-#include "Models/devicelistmodel.h"
+#include "Models/devicetablemodel.h"
 #endif
 
 namespace Ui
 {
-class DeviceListPageWidget;
+class DeviceTablePageWidget;
 }
 
-class DeviceListPageWidget : public QWidget
+class DeviceTablePageWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit DeviceListPageWidget(QTabWidget *mParentTabWidget,
+    explicit DeviceTablePageWidget(QTabWidget *mParentTabWidget,
                                   QVector<PageType::Enum> *typePageList,
                                   QHash<QString, QWidget *> *pageList, QWidget *parent = 0);
-    ~DeviceListPageWidget();
-    DeviceListModel *deviceListModel()  const;
+    ~DeviceTablePageWidget();
+    DeviceTableModel *deviceListModel()  const;
     QSortFilterProxyModel *proxyModel() const;
     QModelIndex currentDeviceListItem() const;
     void clearSelection();
@@ -53,12 +53,12 @@ private:
     void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
     void batchUpdate(DeviceType::Enum updatingDeviceType);
 
-    Ui::DeviceListPageWidget   *ui;
-    DeviceListModel            *mDeviceListModel;
+    Ui::DeviceTablePageWidget   *ui;
+    DeviceTableModel           *mDeviceListModel;
     QSortFilterProxyModel      *mProxyModel;
     QVector<PageType::Enum>    *mTypePageList;
     QHash<QString, QWidget *>  *mPageList;
     QTabWidget                 *mParentTabWidget;
 };
 
-#endif // DEVICELISTPAGEWIDGET_H
+#endif // DEVICETABLEPAGEWIDGET_H

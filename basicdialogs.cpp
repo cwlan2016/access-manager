@@ -3,7 +3,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
-#include <memory>
 
 namespace BasicDialogs
 {

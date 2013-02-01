@@ -1,5 +1,5 @@
-#ifndef MACLISTMODEL_H
-#define MACLISTMODEL_H
+#ifndef MACTABLEMODEL_H
+#define MACTABLEMODEL_H
 
 #include <QtCore/QAbstractTableModel>
 #ifdef _MSC_VER
@@ -12,11 +12,12 @@
 #include "snmpclient.h"
 #endif
 
-class MacListModel : public QAbstractTableModel
+class MacTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit MacListModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
+    explicit MacTableModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
+    ~MacTableModel();
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
@@ -27,8 +28,8 @@ public:
 private:
     void updateMacInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag, QString vlanName);
     QString mError;
-    QVector<MacInfo::Ptr> mMacList;
+    QVector<MacInfo::Ptr> *mList;
     SwitchInfo::Ptr mParentDevice;
 };
 
-#endif // MACLISTMODEL_H
+#endif // MACTABLEMODEL_H

@@ -91,6 +91,7 @@ DeviceType::Enum from(DeviceModel::Enum deviceModel)
     case DeviceModel::LTE8ST:
         return DeviceType::Olt;
     case DeviceModel::Other:
+    case DeviceModel::Count:
         return DeviceType::Other;
     }
 

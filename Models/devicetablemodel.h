@@ -1,5 +1,5 @@
-#ifndef DEVICELISTMODEL_H
-#define DEVICELISTMODEL_H
+#ifndef DEVICETABLEMODEL_H
+#define DEVICETABLEMODEL_H
 
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QXmlStreamWriter>
@@ -13,11 +13,11 @@
 #include "Info/oltinfo.h"
 #endif
 
-class DeviceListModel : public QAbstractTableModel
+class DeviceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit DeviceListModel(QObject *parentDevice = 0);
+    explicit DeviceTableModel(QObject *parentDevice = 0);
     int rowCount(const QModelIndex &parentDevice) const;
     int columnCount(const QModelIndex &parentDevice) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -26,9 +26,9 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool insertRow(int row, const QModelIndex &parentDevice);
     bool removeRow(int row, const QModelIndex &parentDevice);
-    std::vector<DeviceInfo::Ptr> &deviceList();
+    QVector<DeviceInfo::Ptr> &deviceList();
     void setModified(bool state);
-    BoardListModel *boardListModel(QModelIndex index);
+    BoardTableModel *boardListModel(QModelIndex index);
     //file operations
     bool load();
     bool save();
@@ -46,7 +46,7 @@ public:
     //error
     QString error() const;
 private:
-    std::vector<DeviceInfo::Ptr> mDeviceList;
+    QVector<DeviceInfo::Ptr> mList;
     QString mError;
     QString mDeviceListPath;
     QString mDeviceListBackupPath;
@@ -61,4 +61,4 @@ private:
                               QString typeElem);
 };
 
-#endif // DEVICELISTMODEL_H
+#endif // DEVICETABLEMODEL_H

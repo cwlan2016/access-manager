@@ -1,6 +1,7 @@
 #include "nteinfo.h"
 
-NteInfo::NteInfo()
+NteInfo::NteInfo(QObject *parent) :
+    OntInfo(parent)
 {
 }
 

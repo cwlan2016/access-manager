@@ -1,40 +1,40 @@
-#include "editdslamboardlistpagewidget.h"
-#include "ui_editdslamboardlistpagewidget.h"
+#include "editdslamboardtablepagewidget.h"
+#include "ui_editdslamboardtablepagewidget.h"
 
 #include <QtWidgets/QMenu>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
 #include "../Info/dslaminfo.h"
-#include "../Models/boardlistdelegate.h"
+#include "../Models/boardtabledelegate.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "Info/dslaminfo.h"
-#include "Models/boardlistdelegate.h"
+#include "Models/boardtabledelegate.h"
 #endif
 
-EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr deviceInfo, DeviceListModel *deviceListModel, QWidget *parent) :
+EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo, DeviceTableModel *deviceListModel, QWidget *parent) :
     PageWidget(deviceInfo, parent),
-    ui(new Ui::EditDslamBoardListPageWidget),
+    ui(new Ui::EditDslamBoardTablePageWidget),
     mDeviceListModel(deviceListModel)
 {
     ui->setupUi(this);
 
     connect(ui->editBoardAction, &QAction::triggered,
-            this, &EditDslamBoardListPageWidget::editBoard);
+            this, &EditDslamBoardTablePageWidget::editBoard);
     connect(ui->removeBoardAction, &QAction::triggered,
-            this, &EditDslamBoardListPageWidget::removeBoard);
+            this, &EditDslamBoardTablePageWidget::removeBoard);
     connect(ui->getBoardListAction, &QAction::triggered,
-            this, &EditDslamBoardListPageWidget::getBoardList);
+            this, &EditDslamBoardTablePageWidget::getBoardList);
     connect(ui->renumeringBoardPairsAction, &QAction::triggered,
-            this, &EditDslamBoardListPageWidget::renumeringBoardPairs);
+            this, &EditDslamBoardTablePageWidget::renumeringBoardPairs);
 
-    BoardListModel *boardListModel = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *boardListModel = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
     ui->editDslamBoardListTableView->setModel(boardListModel);
 
-    BoardListDelegate *boardListDelegate = new BoardListDelegate(mDeviceInfo->deviceModel(), this);
+    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo->deviceModel(), this);
     boardListDelegate->setIndexTypeBoard(1);
     boardListDelegate->setIndexFirstPair(2);
 
@@ -45,19 +45,19 @@ EditDslamBoardListPageWidget::EditDslamBoardListPageWidget(DeviceInfo::Ptr devic
     ui->autoNumeringPairCheckBox->setCheckState(boardListModel->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
     //Привязка действий
     connect(ui->editDslamBoardListTableView, &QTableView::customContextMenuRequested,
-            this, &EditDslamBoardListPageWidget::editBoardViewRequestContextMenu);
+            this, &EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu);
     connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
-            this, &EditDslamBoardListPageWidget::autoUpdateBoardListStateChanged);
+            this, &EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged);
     connect(ui->autoNumeringPairCheckBox, &QCheckBox::toggled,
-            this, &EditDslamBoardListPageWidget::autoNumeringPairsStateChanged);
+            this, &EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged);
 }
 
-EditDslamBoardListPageWidget::~EditDslamBoardListPageWidget()
+EditDslamBoardTablePageWidget::~EditDslamBoardTablePageWidget()
 {
     delete ui;
 }
 
-void EditDslamBoardListPageWidget::editBoardViewRequestContextMenu(QPoint point)
+void EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu(QPoint point)
 {
     bool isEnabled = ui->autoUpdateBoardListCheckBox->checkState() == Qt::Checked;
 
@@ -75,17 +75,17 @@ void EditDslamBoardListPageWidget::editBoardViewRequestContextMenu(QPoint point)
     contextMenu.exec(ui->editDslamBoardListTableView->mapToGlobal(point));
 }
 
-void EditDslamBoardListPageWidget::renumeringBoardPairs()
+void EditDslamBoardTablePageWidget::renumeringBoardPairs()
 {
-    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
     model->renumeringPairList();
     mDeviceListModel->setModified(true);
 }
 
-void EditDslamBoardListPageWidget::getBoardList()
+void EditDslamBoardTablePageWidget::getBoardList()
 {
-    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
     if (!model->getBoardListFromDevice())
         BasicDialogs::error(this, BasicDialogTitle::Error, model->error());
@@ -93,21 +93,21 @@ void EditDslamBoardListPageWidget::getBoardList()
     mDeviceListModel->setModified(true);
 }
 
-void EditDslamBoardListPageWidget::editBoard()
+void EditDslamBoardTablePageWidget::editBoard()
 {
     ui->editDslamBoardListTableView->setFocus();
     ui->editDslamBoardListTableView->edit(ui->editDslamBoardListTableView->currentIndex());
     mDeviceListModel->setModified(true);
 }
 
-void EditDslamBoardListPageWidget::removeBoard()
+void EditDslamBoardTablePageWidget::removeBoard()
 {
     QModelIndex index = ui->editDslamBoardListTableView->currentIndex();
 
     if (!index.isValid())
         return;
 
-    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
     QString num = model->data(model->index(index.row(), 0)).toString();
     QString type = model->data(model->index(index.row(), 1)).toString();
 
@@ -119,18 +119,18 @@ void EditDslamBoardListPageWidget::removeBoard()
     mDeviceListModel->setModified(true);
 }
 
-void EditDslamBoardListPageWidget::autoUpdateBoardListStateChanged(bool state)
+void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
 {
-    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
     model->setAutoFill(state ? 1 : 0);
     mDeviceListModel->setModified(true);
     ui->autoNumeringPairCheckBox->setEnabled(state);
 }
 
-void EditDslamBoardListPageWidget::autoNumeringPairsStateChanged(bool state)
+void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
 {
-    BoardListModel *model = std::static_pointer_cast<DslamInfo>(mDeviceInfo)->boardListModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
     model->setAutoNumeringBoard(state ? 1 : 0);
     mDeviceListModel->setModified(true);

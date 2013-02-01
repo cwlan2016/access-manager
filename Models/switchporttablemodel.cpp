@@ -1,4 +1,4 @@
-#include "switchportlistmodel.h"
+#include "switchporttablemodel.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtGui/QFont>
@@ -22,7 +22,7 @@
 // 2 - speed/duplex
 // 3 - description
 
-SwitchPortListModel::SwitchPortListModel(SwitchInfo::Ptr parentDevice, QObject *parent) :
+SwitchPortTableModel::SwitchPortTableModel(SwitchInfo::Ptr parentDevice, QObject *parent) :
     QAbstractTableModel(parent),
     mParentDevice(parentDevice)
 {
@@ -48,21 +48,21 @@ SwitchPortListModel::SwitchPortListModel(SwitchInfo::Ptr parentDevice, QObject *
     mMulticastVlanMember.fill(false, countBit);
 }
 
-int SwitchPortListModel::rowCount(const QModelIndex &parent) const
+int SwitchPortTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
     return mList.size();
 }
 
-int SwitchPortListModel::columnCount(const QModelIndex &parent) const
+int SwitchPortTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
     return 4;
 }
 
-QVariant SwitchPortListModel::data(const QModelIndex &index, int role) const
+QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) {
         return QVariant();
@@ -99,7 +99,7 @@ QVariant SwitchPortListModel::data(const QModelIndex &index, int role) const
     }
 }
 
-QVariant SwitchPortListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
@@ -126,13 +126,13 @@ QVariant SwitchPortListModel::headerData(int section, Qt::Orientation orientatio
     return QVariant();
 }
 
-void SwitchPortListModel::sort(int column, Qt::SortOrder order)
+void SwitchPortTableModel::sort(int column, Qt::SortOrder order)
 {
     beginResetModel();
 
-    std::sort(mList.begin(), mList.end(),
-              [&](const SwitchPortInfo::Ptr &first,
-    const SwitchPortInfo::Ptr &second) -> bool {
+    qSort(mList.begin(), mList.end(),
+              [&](const SwitchPortInfo::Ptr first,
+    const SwitchPortInfo::Ptr second) -> bool {
         if (column == 0)
             return order == Qt::AscendingOrder ? (first->number() < second->number()) : (first->number() > second->number());
         else if (column == 1)
@@ -147,23 +147,23 @@ void SwitchPortListModel::sort(int column, Qt::SortOrder order)
     endResetModel();
 }
 
-Qt::ItemFlags SwitchPortListModel::flags(const QModelIndex &index) const
+Qt::ItemFlags SwitchPortTableModel::flags(const QModelIndex &index) const
 {
     Q_UNUSED(index);
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QString SwitchPortListModel::error() const
+QString SwitchPortTableModel::error() const
 {
     return mError;
 }
 
-bool SwitchPortListModel::memberMulticastVlan(int port)
+bool SwitchPortTableModel::memberMulticastVlan(int port)
 {
     return mMulticastVlanMember.at(port - 1);
 }
 
-VlanState::Enum SwitchPortListModel::memberInetVlan(int port)
+VlanState::Enum SwitchPortTableModel::memberInetVlan(int port)
 {
     if (mInetVlanUntagMember.at(port - 1)) {
         return VlanState::Untag;
@@ -174,7 +174,7 @@ VlanState::Enum SwitchPortListModel::memberInetVlan(int port)
     }
 }
 
-VlanState::Enum SwitchPortListModel::memberIptvVlan(int port)
+VlanState::Enum SwitchPortTableModel::memberIptvVlan(int port)
 {
     if (mIptvUnicastVlanUntagMember.at(port - 1)) {
         return VlanState::Untag;
@@ -185,7 +185,7 @@ VlanState::Enum SwitchPortListModel::memberIptvVlan(int port)
     }
 }
 
-bool SwitchPortListModel::setMemberMulticastVlan(int port, bool value)
+bool SwitchPortTableModel::setMemberMulticastVlan(int port, bool value)
 {
     if (!getMulticastVlanSettings()) {
         return false;
@@ -220,7 +220,7 @@ bool SwitchPortListModel::setMemberMulticastVlan(int port, bool value)
     return sendVlanSetting(oidList, arrayList, true);
 }
 
-bool SwitchPortListModel::setMemberInternetService(int port)
+bool SwitchPortTableModel::setMemberInternetService(int port)
 {
     bool result = getUnicastVlanSettings(createOid(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()),
                                          14, mInetVlanAllMember, "Inet");
@@ -277,7 +277,7 @@ bool SwitchPortListModel::setMemberInternetService(int port)
     return sendVlanSetting(oidList, arrayList, false);
 }
 
-bool SwitchPortListModel::setMemberInternetWithIptvStbService(int port)
+bool SwitchPortTableModel::setMemberInternetWithIptvStbService(int port)
 {
     bool result = getUnicastVlanSettings(createOid(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()),
                                          14, mInetVlanAllMember, "Inet");
@@ -333,7 +333,7 @@ bool SwitchPortListModel::setMemberInternetWithIptvStbService(int port)
     return sendVlanSetting(oidList, arrayList, false);
 }
 
-bool SwitchPortListModel::updateInfoPort(int indexPort)
+bool SwitchPortTableModel::updateInfoPort(int indexPort)
 {
     QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
@@ -363,7 +363,7 @@ bool SwitchPortListModel::updateInfoPort(int indexPort)
     return updateInfoPort(snmpClient, currentPort);
 }
 
-bool SwitchPortListModel::updateInfoAllPort()
+bool SwitchPortTableModel::updateInfoAllPort()
 {
     getVlanSettings();
 
@@ -394,7 +394,7 @@ bool SwitchPortListModel::updateInfoAllPort()
     return true;
 }
 
-bool SwitchPortListModel::getVlanSettings()
+bool SwitchPortTableModel::getVlanSettings()
 {
     QString allErrors;
 
@@ -429,7 +429,7 @@ bool SwitchPortListModel::getVlanSettings()
     return true;
 }
 
-bool SwitchPortListModel::updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
+bool SwitchPortTableModel::updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
                                          SwitchPortInfo::Ptr updatingPort)
 {
     int indexPort = updatingPort->number();
@@ -498,20 +498,21 @@ bool SwitchPortListModel::updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
     return true;
 }
 
-void SwitchPortListModel::createList()
+void SwitchPortTableModel::createList()
 {
     int count = countPorts(mParentDevice->deviceModel());
 
     mList.clear();
 
     for (int i = 0; i < count; ++i) {
-        SwitchPortInfo::Ptr portInfo = SwitchPortInfo::Ptr(new SwitchPortInfo());
+        SwitchPortInfo::Ptr portInfo = new SwitchPortInfo(this);
+        portInfo->setNumber(i + 1);
+
         mList.push_back(portInfo);
-        mList[i]->setNumber(i + 1);
     }
 }
 
-bool SwitchPortListModel::getUnicastVlanSettings(const oid *oidVlan, int oidVlanLen, QBitArray &vlanPortArray, QString vlanName)
+bool SwitchPortTableModel::getUnicastVlanSettings(const oid *oidVlan, int oidVlanLen, QBitArray &vlanPortArray, QString vlanName)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
@@ -558,7 +559,7 @@ bool SwitchPortListModel::getUnicastVlanSettings(const oid *oidVlan, int oidVlan
     return result;
 }
 
-bool SwitchPortListModel::getMulticastVlanSettings()
+bool SwitchPortTableModel::getMulticastVlanSettings()
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
@@ -638,7 +639,7 @@ bool SwitchPortListModel::getMulticastVlanSettings()
     return result;
 }
 
-bool SwitchPortListModel::sendVlanSetting(QVector<OidPair> &oidList, QList<QBitArray> &arrayList, bool ismv)
+bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList, QList<QBitArray> &arrayList, bool ismv)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 

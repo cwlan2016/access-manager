@@ -21,7 +21,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
 
     ui->userSettingsGroupBox->setVisible(false);
 
-    OntTableModel *ontTableModel = new OntTableModel(std::static_pointer_cast<OltInfo>(deviceInfo), this);
+    OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<OltInfo>(), this);
 
     if (!ontTableModel->load()) {
         BasicDialogs::error(parent, BasicDialogTitle::Error, ontTableModel->error());

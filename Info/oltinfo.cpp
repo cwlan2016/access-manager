@@ -9,13 +9,13 @@
 #include "snmpclient.h"
 #endif
 
-OltInfo::OltInfo() :
-    DeviceInfo()
+OltInfo::OltInfo(QObject *parent) :
+    DeviceInfo(parent)
 {
 }
 
-OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel) :
-    DeviceInfo(name, ip, deviceModel)
+OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+    DeviceInfo(name, ip, deviceModel, parent)
 {
 }
 

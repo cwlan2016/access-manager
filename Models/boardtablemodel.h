@@ -1,8 +1,7 @@
-#ifndef BOARDLISTMODEL_H
-#define BOARDLISTMODEL_H
+#ifndef BOARDTABLEMODEL_H
+#define BOARDTABLEMODEL_H
 
 #include <QtCore/QAbstractTableModel>
-
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../Info/boardinfo.h"
@@ -14,11 +13,11 @@
 #endif
 
 
-class BoardListModel : public QAbstractTableModel
+class BoardTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit BoardListModel(QObject *parent = 0);
+    explicit BoardTableModel(QObject *parent = 0);
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -39,7 +38,7 @@ public:
     void renumeringPairList();
     QString error() const;
 private:
-    QHash<int, BoardInfo> mBoardList;
+    QHash<int, BoardInfo> mList;
     QString mError;
     //TODO: Remove this 2 fields. its consist mParentDevice
     short mAutoFill;
@@ -48,4 +47,4 @@ private:
     QString rangePairs(int firstPair, BoardType::Enum typeBoard) const;
 };
 
-#endif // BOARDLISTMODEL_H
+#endif // BOARDTABLEMODEL_H

@@ -1,13 +1,14 @@
 #ifndef MACINFO_H
 #define MACINFO_H
 
+#include <QtCore/QObject>
 #include <QtCore/QString>
-#include <QtCore/QSharedPointer>
 
-class MacInfo
+class MacInfo : public QObject
 {
+    Q_OBJECT
 public:
-    MacInfo();
+    MacInfo(QObject *parent);
     int numberPort() const;
     QString mac() const;
     QString vlanName() const;
@@ -15,7 +16,7 @@ public:
     void setMac(QString mac);
     void setVlanName(QString vlanName);
 
-    typedef QSharedPointer<MacInfo> Ptr;
+    typedef MacInfo *Ptr;
 private:
     QString mMac;
     int mNumberPort;
