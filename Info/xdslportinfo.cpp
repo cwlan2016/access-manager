@@ -11,44 +11,14 @@ int XdslPortInfo::pair() const
     return mPair;
 }
 
-QString XdslPortInfo::name() const
-{
-    return mName;
-}
-
-QString XdslPortInfo::state() const
-{
-    return mState;
-}
-
-QString XdslPortInfo::desc() const
-{
-    return mDesc;
-}
-
-QString XdslPortInfo::profile() const
-{
-    return mProfile;
-}
-
-QString XdslPortInfo::timeLastChange() const
-{
-    return mTimeLastChange;
-}
-
-QString XdslPortInfo::rxAttenuation() const
-{
-    return mRxAttenuation;
-}
-
-QString XdslPortInfo::txAttenuation() const
-{
-    return mTxAttenuation;
-}
-
 void XdslPortInfo::setPair(int pair)
 {
     mPair = pair;
+}
+
+QString XdslPortInfo::name() const
+{
+    return mName;
 }
 
 void XdslPortInfo::setName(QString name)
@@ -56,14 +26,19 @@ void XdslPortInfo::setName(QString name)
     mName = name;
 }
 
+QString XdslPortInfo::state() const
+{
+    return mState;
+}
+
 void XdslPortInfo::setState(QString state)
 {
     mState = state;
 }
 
-void XdslPortInfo::setDesc(QString desc)
+QString XdslPortInfo::profile() const
 {
-    mDesc = desc;
+    return mProfile;
 }
 
 void XdslPortInfo::setProfile(QString profile)
@@ -71,9 +46,19 @@ void XdslPortInfo::setProfile(QString profile)
     mProfile = profile;
 }
 
-void XdslPortInfo::setTimeLastChange(QString lastChange)
+QString XdslPortInfo::description() const
 {
-    mTimeLastChange = lastChange;
+    return mDescription;
+}
+
+void XdslPortInfo::setDescription(QString desc)
+{
+    mDescription = desc;
+}
+
+QString XdslPortInfo::rxAttenuation() const
+{
+    return mRxAttenuation;
 }
 
 void XdslPortInfo::setRxAttenuation(QString rxAttenuation)
@@ -81,7 +66,22 @@ void XdslPortInfo::setRxAttenuation(QString rxAttenuation)
     mRxAttenuation = rxAttenuation;
 }
 
+QString XdslPortInfo::txAttenuation() const
+{
+    return mTxAttenuation;
+}
+
 void XdslPortInfo::setTxAttenuation(QString txAttenuation)
 {
     mTxAttenuation = txAttenuation;
+}
+
+QString XdslPortInfo::timeLastChange() const
+{
+    return mTimeLastChange;
+}
+
+void XdslPortInfo::setTimeLastChange(QString lastChange)
+{
+    mTimeLastChange = lastChange;
 }

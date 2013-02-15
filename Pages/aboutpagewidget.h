@@ -1,7 +1,11 @@
 #ifndef ABOUTPAGEWIDGET_H
 #define ABOUTPAGEWIDGET_H
 
-#include "QtWidgets/QWidget"
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
+#include "stdafx.h"
+#endif
 
 namespace Ui
 {
@@ -15,6 +19,7 @@ class AboutPageWidget : public QWidget
 public:
     explicit AboutPageWidget(QWidget *parent = 0);
     ~AboutPageWidget();
+
 private:
     Ui::AboutPageWidget *ui;
 };

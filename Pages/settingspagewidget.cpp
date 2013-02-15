@@ -18,6 +18,8 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
     ui->setupUi(this);
 
     ui->readComEdit->setText(SnmpConfigInfo::readCommunity());
+
+    ui->readComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+")));
     ui->writeComEdit->setText(SnmpConfigInfo::writeCommunity());
     ui->timeoutEdit->setText(QString::number(SnmpConfigInfo::timeout()));
     ui->timeoutEdit->setValidator(new QIntValidator(0, 100000));
@@ -52,10 +54,10 @@ void SettingsPageWidget::saveSetting()
     SnmpConfigInfo::setRetries(ui->retriesEdit->text().toUInt());
 
     if (!Config::save()) {
-        BasicDialogs::error(this, BasicDialogTitle::Error, Config::errorString(), "");
+        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error(), "");
         return;
     } else {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Настройки программы сохранены."), "");
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки программы сохранены."), "");
         return;
     }
 }
@@ -63,38 +65,37 @@ void SettingsPageWidget::saveSetting()
 bool SettingsPageWidget::validateSettingsData()
 {
     if (ui->readComEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите комьюнити для чтения!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для чтения!"));
         ui->readComEdit->setFocus();
         return false;
     }
 
     if (ui->writeComEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите комьюнити для записи!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для записи!"));
         ui->writeComEdit->setFocus();
         return false;
     }
 
-
     if (ui->timeoutEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите значение таймаута!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута!"));
         ui->timeoutEdit->setFocus();
         return false;
     }
 
     if (ui->saveTimeoutEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите значение таймаута сохранения конфигурации на коммутаторе!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута сохранения конфигурации на коммутаторе!"));
         ui->saveTimeoutEdit->setFocus();
         return false;
     }
 
     if (ui->portEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите значение TCP порта!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение TCP порта!"));
         ui->portEdit->setFocus();
         return false;
     }
 
     if (ui->retriesEdit->text().trimmed() == "") {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Введите значение количества повторов!"));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение количества повторов!"));
         ui->retriesEdit->setFocus();
         return false;
     }

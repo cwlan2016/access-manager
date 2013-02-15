@@ -5,9 +5,14 @@ MacInfo::MacInfo(QObject *parent) :
 {
 }
 
-int MacInfo::numberPort() const
+int MacInfo::port() const
 {
-    return mNumberPort;
+    return mPort;
+}
+
+void MacInfo::setPort(int number)
+{
+    mPort = number;
 }
 
 QString MacInfo::mac() const
@@ -15,19 +20,14 @@ QString MacInfo::mac() const
     return mMac;
 }
 
-QString MacInfo::vlanName() const
-{
-    return mVlanName;
-}
-
-void MacInfo::setNumberPort(int number)
-{
-    mNumberPort = number;
-}
-
 void MacInfo::setMac(QString mac)
 {
     mMac = mac;
+}
+
+QString MacInfo::vlanName() const
+{
+    return mVlanName;
 }
 
 void MacInfo::setVlanName(QString vlanName)

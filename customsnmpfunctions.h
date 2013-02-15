@@ -1,8 +1,9 @@
 #ifndef CUSTOMSNMPFUNCTIONS_H
 #define CUSTOMSNMPFUNCTIONS_H
 
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
+#include "stdafx.h"
+
+#include "customtypes.h"
 
 inline bool isValidSnmpValue(netsnmp_variable_list *vars)
 {
@@ -41,6 +42,23 @@ inline oid *createOid(const oid constOid[], int oidLen)
     memcpy(newOid, constOid, oidLen * sizeof(oid));
 
     return newOid;
+}
+
+inline OidPair createOidPair(const oid constOid[], int oidLen)
+{
+    oid *newOid = new oid[oidLen];
+    memcpy(newOid, constOid, oidLen * sizeof(oid));
+
+    return qMakePair(newOid, oidLen);
+}
+
+inline OidPair createOidPair(const oid constOid[], int oidLen, long index)
+{
+    oid *newOid = new oid[oidLen + 1];
+    memcpy(newOid, constOid, (oidLen) * sizeof(oid));
+    newOid[oidLen] = index;
+
+    return qMakePair(newOid, oidLen + 1);
 }
 
 #endif // CUSTOMSNMPFUNCTIONS_H

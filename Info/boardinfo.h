@@ -11,16 +11,20 @@ class BoardInfo
 {
 public:
     BoardInfo();
+
+    int index() const;
+    void setIndex(int index);
+
     BoardType::Enum type() const;
-    int number() const;
-    int firstPair() const;
     void setType(BoardType::Enum type);
-    void setNumber(int number);
+
+    int firstPair() const;
     void setFirstPair(int firstPair);
+
 private:
-    BoardType::Enum mType;
     int mNumber;
     int mFirstPair;
+    BoardType::Enum mType;
 };
 
 #endif // BOARDINFO_H

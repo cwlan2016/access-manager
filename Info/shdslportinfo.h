@@ -12,6 +12,4 @@ public:
     typedef ShdslPortInfo *Ptr;
 };
 
-
-
 #endif // SHDSLPORTINFO_H

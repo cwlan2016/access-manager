@@ -17,22 +17,28 @@ class SwitchPageWidget : public PageWidget
 public:
     explicit SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
     ~SwitchPageWidget();
+
     void saveSwitchConfig();
+
 private:
-    void showPortInfoGroupBox();
     void refreshPortInfo();
     void refreshAllPortInfo();
     void refreshMacTable();
-    void portViewRequestContextMenu(QPoint point);
-    void macTableViewRequestContextMenu(QPoint point);
+
     void addPortToMulticastVlan();
     void removePortFromMulticastVlan();
+    void changeStateSwitchPortInMulticastVlan(bool state);
+
     void setPortInternetService();
     void setPortInternetWithStbService();
+
     void filterMacAddressByPorts();
     void macLineEditTextChanged(QString text);
     void macRadioButtonChangeState(bool checked);
-    void changeStateSwitchPortInMulticastVlan(bool state);
+
+    void showPortInfoGroupBox();
+    void portViewRequestContextMenu(QPoint point);
+    void macTableViewRequestContextMenu(QPoint point);
 
     Ui::SwitchPageWidget *ui;
 };

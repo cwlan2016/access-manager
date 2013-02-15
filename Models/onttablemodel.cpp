@@ -1,7 +1,5 @@
 #include "onttablemodel.h"
 
-#include <QtGui/QFont>
-#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../Info/nteinfo.h"
@@ -40,26 +38,26 @@ QVariant OntTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QVariant OntTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant OntTableModel::headerData(int section, Qt::Orientation orientation,
+                                   int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0)
-            return OntTableModelColumn::Id;
-        else if (section == 1)
-            return OntTableModelColumn::Model;
-        else if (section == 2)
-            return OntTableModelColumn::State;
-        else if (section == 3)
-            return OntTableModelColumn::Description;
-        else if (section == 4)
-            return OntTableModelColumn::ServiceProfile;
-        else if (section == 5)
-            return OntTableModelColumn::MulticastProfile;
-        else
-            return QVariant();
+        if (section == 0) {
+            return OntTableModelStrings::Id;
+        } else if (section == 1) {
+            return OntTableModelStrings::Model;
+        } else if (section == 2) {
+            return OntTableModelStrings::State;
+        } else if (section == 3) {
+            return OntTableModelStrings::Description;
+        } else if (section == 4) {
+            return OntTableModelStrings::ServiceProfile;
+        } else if (section == 5) {
+            return OntTableModelStrings::MulticastProfile;
+        }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {

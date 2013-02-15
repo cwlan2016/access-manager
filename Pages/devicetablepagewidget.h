@@ -1,8 +1,6 @@
 #ifndef DEVICETABLEPAGEWIDGET_H
 #define DEVICETABLEPAGEWIDGET_H
 
-#include <QtCore/QSortFilterProxyModel>
-#include <QtWidgets/QTableWidget>
 #ifdef _MSC_VER
 #include "../Models/devicetablemodel.h"
 #else
@@ -20,44 +18,56 @@ class DeviceTablePageWidget : public QWidget
 
 public:
     explicit DeviceTablePageWidget(QTabWidget *mParentTabWidget,
-                                  QVector<PageType::Enum> *typePageList,
-                                  QHash<QString, QWidget *> *pageList, QWidget *parent = 0);
+                                   QVector<PageType::Enum> *typePageList,
+                                   QHash<QString, QWidget *> *pageList,
+                                   QWidget *parent = 0);
     ~DeviceTablePageWidget();
-    DeviceTableModel *deviceListModel()  const;
-    QSortFilterProxyModel *proxyModel() const;
-    QModelIndex currentDeviceListItem() const;
-    void clearSelection();
+
     void loadDeviceList();
     void saveDeviceList();
+
     void openDevice();
     void addDevice();
     void editDevice();
     void removeDevice();
+
     void updateVlanInfoSwitch();
     void updateBoardInfoDslam();
     void updateProfileInfoOlt();
-    void batchUpdateBoardsInfoDslam();
-    void batchUpdateVlanInfoSwitch();
-    void batchUpdateProfileOlt();
+
+    void batchUpdateBoardsDslam();
+    void batchUpdateVlansSwitch();
+    void batchUpdateProfilesOlt();
     void batchUpdateInfoAllDevices();
+
     void showEditDslamBoardListPage();
     void showVlanInfoGroupBox();
     void showProfileInfoGroupBox();
+
+    void clearSelection();
+
+    DeviceTableModel *deviceTableModel() const;
+    QSortFilterProxyModel *proxyModel() const;
+    QModelIndex currentDeviceListItem() const;
+
 signals:
     void changedActiveItem(QModelIndex index);
+
 private:
-    void filterDeviceTextChanged(QString text);
-    void deviceViewRequestContextMenu(QPoint point);
-    void vlanInfoGBoxStateChanged(bool state);
-    void profileInfoGboxStateChanged(bool state);
-    void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
     void batchUpdate(DeviceType::Enum updatingDeviceType);
 
-    Ui::DeviceTablePageWidget   *ui;
-    DeviceTableModel           *mDeviceListModel;
+    void filterDeviceTextChanged(QString text);
+    void vlanInfoGBoxStateChanged(bool state);
+    void profileInfoGboxStateChanged(bool state);
+
+    void deviceViewRequestContextMenu(QPoint point);
+    void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);
+
+    Ui::DeviceTablePageWidget  *ui;
+    DeviceTableModel           *mDeviceTableModel;
     QSortFilterProxyModel      *mProxyModel;
-    QVector<PageType::Enum>    *mTypePageList;
     QHash<QString, QWidget *>  *mPageList;
+    QVector<PageType::Enum>    *mTypePageList;
     QTabWidget                 *mParentTabWidget;
 };
 

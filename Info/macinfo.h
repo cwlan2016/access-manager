@@ -1,25 +1,32 @@
 #ifndef MACINFO_H
 #define MACINFO_H
 
-#include <QtCore/QObject>
-#include <QtCore/QString>
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
+#include "stdafx.h"
+#endif
 
 class MacInfo : public QObject
 {
     Q_OBJECT
 public:
     MacInfo(QObject *parent);
-    int numberPort() const;
+
+    int port() const;
+    void setPort(int port);
+
     QString mac() const;
-    QString vlanName() const;
-    void setNumberPort(int numberPort);
     void setMac(QString mac);
+
+    QString vlanName() const;
     void setVlanName(QString vlanName);
 
     typedef MacInfo *Ptr;
+
 private:
+    int mPort;
     QString mMac;
-    int mNumberPort;
     QString mVlanName;
 };
 

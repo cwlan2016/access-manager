@@ -10,8 +10,11 @@
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
 
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QToolButton>
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
+#include "stdafx.h"
+#endif
 
 class LineEdit : public QLineEdit
 {
@@ -19,8 +22,10 @@ class LineEdit : public QLineEdit
 
 public:
     LineEdit(QWidget *parent = 0);
+
 protected:
     void resizeEvent(QResizeEvent *);
+
 private:
     void updateCloseButton(const QString &text);
 

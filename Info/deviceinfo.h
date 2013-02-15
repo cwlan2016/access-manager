@@ -1,8 +1,6 @@
 #ifndef DEVICEINFO_H
 #define DEVICEINFO_H
 
-#include <QtCore/QObject>
-#include <QtCore/QSharedPointer>
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #else
@@ -14,25 +12,33 @@ class DeviceInfo : public QObject
     Q_OBJECT
 public:
     DeviceInfo(QObject *parent = 0);
-    DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent = 0);
+    DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
+               QObject *parent = 0);
+
     QString name() const;
-    QString ip() const;
-    DeviceModel::Enum deviceModel() const;
-    DeviceType::Enum deviceType() const;
-    QString error() const;
     void setName(const QString name);
-    void setIP(const QString ip);
+
+    QString ip() const;
+    void setIp(const QString ip);
+
+    DeviceModel::Enum deviceModel() const;
     void setDeviceModel(const DeviceModel::Enum deviceModel);
+
+    DeviceType::Enum deviceType() const;
     void setDeviceType(const DeviceType::Enum deviceType);
+
+    QString error() const;
+
     virtual bool getServiceDataFromDevice();
 
     typedef QSharedPointer<DeviceInfo> Ptr;
+
 protected:
-    QString mName;
     QString mIp;
+    QString mName;
+    QString mError;
     DeviceType::Enum mDeviceType;
     DeviceModel::Enum mDeviceModel;
-    QString mError;
 };
 
 

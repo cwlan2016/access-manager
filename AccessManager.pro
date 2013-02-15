@@ -9,6 +9,12 @@ QT       += core gui xml xmlpatterns widgets
 TARGET = AccessManager
 TEMPLATE = app
 
+PRECOMPILED_HEADER = stdafx.h
+
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+ DEFINES += USING_PCH
+}
+
 RC_FILE = AccessManager.rc
 
 SOURCES += main.cpp\
@@ -94,7 +100,8 @@ HEADERS  += mainwindow.h \
     Models/onttablemodel.h \
     Info/ontinfo.h \
     Info/nteinfo.h \
-    Info/ntpinfo.h
+    Info/ntpinfo.h \
+    lineedit.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \
@@ -108,18 +115,17 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-win32
+win32:debug
 {
-debug {
 LIBS += -lnetsnmpd
 }
 
-release {
+win32:release {
 LIBS += -lnetsnmp
 }
-}
 
-win32 {
+win32
+{
 LIBS += -lwsock32
 LIBS += -ladvapi32
 }
@@ -173,4 +179,7 @@ OTHER_FILES += \
     SchemaDeviceList.xsd
 
 HEADERS += \
-    lineedit.h
+    stdafx.h
+
+SOURCES += \
+    stdafx.cpp

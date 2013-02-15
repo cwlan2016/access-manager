@@ -1,9 +1,5 @@
 #include "dslamporttablemodel.h"
-#include <QtCore/QDateTime>
-#include <QtCore/QStringBuilder>
-#include <QtGui/QBrush>
-#include <QtGui/QFont>
-#include <QtWidgets/QApplication>
+
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -23,29 +19,32 @@
 // invalidParentIndex - основная информация о порте, верхний уровень
 // > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
-DslamPortTableModel::DslamPortTableModel(DeviceModel::Enum deviceModel, QString ip, QObject *parent) :
+DslamPortTableModel::DslamPortTableModel(DeviceModel::Enum deviceModel,
+                                         QString ip, QObject *parent) :
     QAbstractItemModel(parent), mIp(ip), mDeviceModel(deviceModel)
 {
 }
 
 int DslamPortTableModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if (!parent.isValid()) {
         return mList.size();
-    else if (parent.internalId() == invalidParentIndex)
+    } else if (parent.internalId() == invalidParentIndex) {
         return 7;
-    else
+    } else {
         return 0;
+    }
 }
 
 int DslamPortTableModel::columnCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if (!parent.isValid()) {
         return 5;
-    else if (parent.internalId() == invalidParentIndex)
+    } else if (parent.internalId() == invalidParentIndex) {
         return 2;
-    else
+    } else {
         return 0;
+    }
 }
 
 QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
@@ -56,14 +55,13 @@ QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-
         if (index.internalId() == invalidParentIndex) {
             return topLevelData(index);
         } else if (index.internalId() < invalidParentIndex) {
             return secondLevelData(index);
-        } else
-            return QVariant();
-    } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == invalidParentIndex)) {
+        }
+    } else if ((role == Qt::BackgroundColorRole)
+               && (index.internalId() == invalidParentIndex)) {
         if (mList[index.row()]->state() == "Activating") {
             return QBrush(QColor(223, 255, 252));
         } else if (mList[index.row()]->state() == "Up") {
@@ -72,38 +70,38 @@ QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
             return QBrush(QColor(255, 145, 148));
         } else if (mList[index.row()]->state() == "Defective") {
             return QBrush(QColor(255, 70, 74));
-        } else
-            return QVariant();
-    } else
-        return QVariant();
+        }
+    }
+
+    return QVariant();
 }
 
-QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientation,
+                                         int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
 
     if (role == Qt::DisplayRole) {
         if (section == 0)
-            return DslamPortListModelColumn::Pair;
+            return DslamPortTableModelStrings::Pair;
         else if (section == 1)
-            return DslamPortListModelColumn::Port;
+            return DslamPortTableModelStrings::Port;
         else if (section == 2)
-            return DslamPortListModelColumn::State;
+            return DslamPortTableModelStrings::State;
         else if (section == 3)
-            return DslamPortListModelColumn::Desc;
+            return DslamPortTableModelStrings::Desc;
         else if (section == 4)
-            return DslamPortListModelColumn::Profile;
-        else
-            return QVariant();
+            return DslamPortTableModelStrings::Profile;
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {
         QFont font(qApp->font());
         font.setBold(true);
         return font;
-    } else
-        return QVariant();
+    }
+
+    return QVariant();
 }
 
 Qt::ItemFlags DslamPortTableModel::flags(const QModelIndex &index) const
@@ -113,14 +111,16 @@ Qt::ItemFlags DslamPortTableModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QModelIndex DslamPortTableModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex DslamPortTableModel::index(int row, int column,
+                                       const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
         return createIndex(row, column, invalidParentIndex);
     } else if (parent.internalId() == invalidParentIndex) {
         return createIndex(row, column, parent.row());
-    } else
-        return QModelIndex();
+    }
+
+    return QModelIndex();
 }
 
 QModelIndex DslamPortTableModel::parent(const QModelIndex &child) const
@@ -132,13 +132,9 @@ QModelIndex DslamPortTableModel::parent(const QModelIndex &child) const
         return QModelIndex();
     } else if (child.internalId() < invalidParentIndex) {
         return createIndex((int)child.internalId(), 0, invalidParentIndex);
-    } else
-        return QModelIndex();
-}
+    }
 
-QString DslamPortTableModel::error() const
-{
-    return mError;
+    return QModelIndex();
 }
 
 BoardType::Enum DslamPortTableModel::boardType()
@@ -156,26 +152,26 @@ void DslamPortTableModel::setFirstPair(int pair)
     mFirstPair = pair;
 }
 
-void DslamPortTableModel::setBoardNumber(int boardNum)
+void DslamPortTableModel::setBoardIndex(int boardIndex)
 {
-    mBoardNumber = boardNum;
+    mBoardIndex = boardIndex;
 }
 
 bool DslamPortTableModel::load()
 {
     beginResetModel();
-    QScopedPointer<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmpClient->setIp(mIp);
 
-    if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrors::SetupSession;
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         endResetModel();
         return false;
     }
 
-    if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         endResetModel();
         return false;
     }
@@ -183,42 +179,43 @@ bool DslamPortTableModel::load()
     long numInterface;
 
     int size = mList.size();
+    //TODO: Refactoring on GET_NEXT request
     for (int i = 0; i < size; ++i) {
-        snmp->createPdu(SNMP_MSG_GET);
+        snmpClient->createPdu(SNMP_MSG_GET);
 
-        numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, i);
+        numInterface = snmpInterfaceNumber(mDeviceModel, mBoardIndex, i);
 
         if ((mDeviceModel == DeviceModel::MA5600)
                 || (mDeviceModel == DeviceModel::MA5300)) {
             if (mDeviceModel == DeviceModel::MA5300) {
-                snmp->addOid(createOid(Mib::ifDescr, 10, numInterface), 11);
+                snmpClient->addOid(createOidPair(Mib::ifDescr, 10, numInterface));
             } else {
-                snmp->addOid(createOid(Mib::ifName, 11, numInterface), 12);
+                snmpClient->addOid(createOidPair(Mib::ifName, 11, numInterface));
             }
 
-            snmp->addOid(createOid(Mib::ifOperStatus, 10, numInterface), 11);
-            snmp->addOid(createOid(Mib::ifAlias, 11, numInterface), 12);
-            snmp->addOid(createOid(Mib::adslLineConfProfile, 13, numInterface), 14);
+            snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, numInterface));
+            snmpClient->addOid(createOidPair(Mib::ifAlias, 11, numInterface));
+            snmpClient->addOid(createOidPair(Mib::adslLineConfProfile, 13, numInterface));
         } else if (mDeviceModel == DeviceModel::MXA64) {
-            snmp->addOid(createOid(Mib::mxa64DslPortOperStatus, 13,  numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa64DslPortName, 13, numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 14);
+            snmpClient->addOid(createOidPair(Mib::mxa64DslPortOperStatus, 13,  numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa64DslPortAdminStatus, 13, numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa64DslPortName, 13, numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa64DslPortActiveProfile, 13, numInterface));
         } else if (mDeviceModel == DeviceModel::MXA32) {
-            snmp->addOid(createOid(Mib::mxa32DslPortOperStatus, 13, numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa32DslPortName, 13, numInterface), 14);
-            snmp->addOid(createOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 14);
+            snmpClient->addOid(createOidPair(Mib::mxa32DslPortOperStatus, 13, numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa32DslPortAdminStatus, 13, numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa32DslPortName, 13, numInterface));
+            snmpClient->addOid(createOidPair(Mib::mxa32DslPortActiveProfile, 13, numInterface));
         } else {
             mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
             endResetModel();
             return false;
         }
 
-        if (snmp->sendRequest()) {
+        if (snmpClient->sendRequest()) {
             if ((mDeviceModel == DeviceModel::MA5600)
                     || (mDeviceModel == DeviceModel::MA5300)) {
-                netsnmp_variable_list *vars = snmp->varList();
+                netsnmp_variable_list *vars = snmpClient->varList();
                 if (isValidSnmpValue(vars)) {
                     mList[i]->setName(toQString(vars->val.string, vars->val_len));
                 }
@@ -230,18 +227,20 @@ bool DslamPortTableModel::load()
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mList[i]->setDesc(toQString(vars->val.string, vars->val_len));
+                    QString desc = toQString(vars->val.string, vars->val_len);
+                    mList[i]->setDescription(desc);
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mList[i]->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
+                    QString profile = toQString(vars->val.string, vars->val_len);
+                    mList[i]->setProfile(profileExtName(mDeviceModel, profile));
                 }
             } else if ((mDeviceModel == DeviceModel::MXA64)
                        || (mDeviceModel == DeviceModel::MXA32)) {
-                mList[i]->setName("adsl " % QString::number(numInterface));
+                mList[i]->setName(QString("adsl %1").arg(numInterface));
 
-                netsnmp_variable_list *vars = snmp->varList();
+                netsnmp_variable_list *vars = snmpClient->varList();
 
                 if (isValidSnmpValue(vars)
                         && isValidSnmpValue(vars->next_variable)) {
@@ -263,12 +262,14 @@ bool DslamPortTableModel::load()
 
                 vars = vars->next_variable->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mList[i]->setDesc(toQString(vars->val.string, vars->val_len));
+                    QString desc = toQString(vars->val.string, vars->val_len);
+                    mList[i]->setDescription(desc);
                 }
 
                 vars = vars->next_variable;
                 if (isValidSnmpValue(vars)) {
-                    mList[i]->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
+                    QString profile = QString::number(*vars->val.integer);
+                    mList[i]->setProfile(profileExtName(mDeviceModel, profile));
                 }
             } else {
                 mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама.");
@@ -276,7 +277,7 @@ bool DslamPortTableModel::load()
                 return false;
             }
         } else {
-            mError = SnmpErrors::GetInfo;
+            mError = SnmpErrorStrings::GetInfo;
             endResetModel();
             return false;
         }
@@ -289,10 +290,11 @@ bool DslamPortTableModel::load()
 void DslamPortTableModel::createList()
 {
     int count = countPorts(mDeviceModel, mBoardType);
+    mList.reserve(count);
 
     if ((mBoardType == BoardType::AnnexA)
             || (mBoardType == BoardType::AnnexB)) {
-        mList.clear();
+        //mList.clear();
 
         for (int i = 0; i < count; ++i) {
             AdslPortInfo::Ptr portInfo = new AdslPortInfo(this);
@@ -301,7 +303,7 @@ void DslamPortTableModel::createList()
             mList[i]->setPair(mFirstPair + i);
         }
     } else if (mBoardType == BoardType::Shdsl) {
-        mList.clear();
+        //mList.clear();
 
         for (int i = 0; i < count; ++i) {
             ShdslPortInfo::Ptr portInfo = new ShdslPortInfo(this);
@@ -314,21 +316,21 @@ void DslamPortTableModel::createList()
 
 bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
 {
-    QScopedPointer<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmpClient->setIp(mIp);
 
-    if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrors::SetupSession;
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
-    if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
-    snmp->createPdu(SNMP_MSG_GET);
+    snmpClient->createPdu(SNMP_MSG_GET);
 
     long numInterface;
 
@@ -339,49 +341,49 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
         return false;
     }
 
-    numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
+    numInterface = snmpInterfaceNumber(mDeviceModel, mBoardIndex, currPort);
 
     if ((mDeviceModel == DeviceModel::MA5600)
             || (mDeviceModel  == DeviceModel::MA5300)) {
-        snmp->addOid(createOid(Mib::ifOperStatus, 10, numInterface), 11);
-        snmp->addOid(createOid(Mib::adslAtucChanCurrTxRate, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslAturChanCurrTxRate, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslLineCoding, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslLineType, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslLineConfProfile, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslAtucCurrAtn, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::adslAturCurrAtn, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::ifLastChange, 10, numInterface), 11);
+        snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslAtucChanCurrTxRate, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslAturChanCurrTxRate, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslLineCoding, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslLineType, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslLineConfProfile, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslAtucCurrAtn, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::adslAturCurrAtn, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::ifLastChange, 10, numInterface));
     } else if (mDeviceModel == DeviceModel::MXA64) {
-        snmp->addOid(createOid(Mib::mxa64DslPortOperStatus, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::mxa64DslBandActualRateTx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa64DslBandActualRateRx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa64DslBandLineAttenuationTx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa64DslBandLineAttenuationRx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 14);
+        snmpClient->addOid(createOidPair(Mib::mxa64DslPortOperStatus, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslPortAdminStatus, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslBandActualRateTx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslBandActualRateRx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslBandLineAttenuationTx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslBandLineAttenuationRx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa64DslPortActiveProfile, 13, numInterface));
     } else if (mDeviceModel == DeviceModel::MXA32) {
-        snmp->addOid(createOid(Mib::mxa32DslPortOperStatus, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 14);
-        snmp->addOid(createOid(Mib::mxa32DslBandActualRateTx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa32DslBandActualRateRx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa32DslBandLineAttenuationTx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa32DslBandLineAttenuationRx, 14, numInterface), 15);
-        snmp->addOid(createOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 14);
+        snmpClient->addOid(createOidPair(Mib::mxa32DslPortOperStatus, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslPortAdminStatus, 13, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslBandActualRateTx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslBandActualRateRx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslBandLineAttenuationTx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslBandLineAttenuationRx, 14, numInterface));
+        snmpClient->addOid(createOidPair(Mib::mxa32DslPortActiveProfile, 13, numInterface));
     } else {
-        mError =  QString::fromUtf8("Ошибка: Неизвестный тип дслама!");
+        mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама!");
         return false;
     }
 
     bool result = true;
 
-    if (snmp->sendRequest()) {
+    if (snmpClient->sendRequest()) {
         if ((mDeviceModel == DeviceModel::MA5600)
                 || (mDeviceModel == DeviceModel::MA5300))
-            result = updatePortMA(portIndex, snmp);
+            result = updatePortMA(portIndex, snmpClient);
         else if ((mDeviceModel == DeviceModel::MXA64)
                  || (mDeviceModel == DeviceModel::MXA32))
-            result = updatePortMXA(portIndex, snmp);
+            result = updatePortMXA(portIndex, snmpClient);
         else {
             mError = QString::fromUtf8("Ошибка: Неизвестный тип дслама!");
             return false;
@@ -389,7 +391,7 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
 
         if (!result)
         {
-            mError = SnmpErrors::GetInfo;
+            mError = SnmpErrorStrings::GetInfo;
             return false;
         }
 
@@ -400,7 +402,7 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
         QModelIndex endTopIndex = index(portIndex.row(), 3, QModelIndex());
         emit dataChanged(beginTopIndex, endTopIndex);
     } else {
-        mError = SnmpErrors::GetInfo;
+        mError = SnmpErrorStrings::GetInfo;
         return false;
     }
 
@@ -412,55 +414,60 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
 //2 - set down
 bool DslamPortTableModel::changePortState(int portIndex, QString portState)
 {
-    QScopedPointer<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmpClient->setIp(mIp);
 
-    if (!snmp->setupSession(SessionType::WriteSession)) {
-        mError = SnmpErrors::SetupSession;
+    if (!snmpClient->setupSession(SessionType::WriteSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
-    if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
-    snmp->createPdu(SNMP_MSG_SET);
+    snmpClient->createPdu(SNMP_MSG_SET);
 
-    long numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, portIndex);
+    long numInterface = snmpInterfaceNumber(mDeviceModel, mBoardIndex, portIndex);
 
-    if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
-        snmp->addOid(createOid(Mib::ifAdminStatus, 10, numInterface), 11, portState, 'i');
-    else if (mDeviceModel == DeviceModel::MXA64)
-        snmp->addOid(createOid(Mib::mxa64DslPortAdminStatus, 13, numInterface), 14, portState, 'i');
-    else if (mDeviceModel == DeviceModel::MXA32)
-        snmp->addOid(createOid(Mib::mxa32DslPortAdminStatus, 13, numInterface), 14, portState, 'i');
-    else {
+    OidPair statusOid;
+    if ((mDeviceModel == DeviceModel::MA5600)
+            || (mDeviceModel == DeviceModel::MA5300)) {
+        statusOid = createOidPair(Mib::ifAdminStatus, 10, numInterface);
+    } else if (mDeviceModel == DeviceModel::MXA64) {
+        statusOid = createOidPair(Mib::mxa64DslPortAdminStatus, 13, numInterface);
+    } else if (mDeviceModel == DeviceModel::MXA32) {
+        statusOid = createOidPair(Mib::mxa32DslPortAdminStatus, 13, numInterface);
+    } else {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама.");
         return false;
     }
 
-    return snmp->sendRequest();
+    snmpClient->addOid(statusOid, portState, 'i');
+
+    return snmpClient->sendRequest();
 }
 
-bool DslamPortTableModel::changePortProfile(QModelIndex portIndex, QString profileName)
+bool DslamPortTableModel::changePortProfile(QModelIndex portIndex,
+                                            QString profileName)
 {
-    QScopedPointer<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmpClient->setIp(mIp);
 
-    if (!snmp->setupSession(SessionType::WriteSession)) {
-        mError = SnmpErrors::SetupSession;
+    if (!snmpClient->setupSession(SessionType::WriteSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
-    if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
-    snmp->createPdu(SNMP_MSG_SET);
+    snmpClient->createPdu(SNMP_MSG_SET);
 
     int currPort = currentPort(portIndex);
 
@@ -469,81 +476,107 @@ bool DslamPortTableModel::changePortProfile(QModelIndex portIndex, QString profi
         return false;
     }
 
-    long numInterface = snmpInterfaceNumber(mDeviceModel, mBoardNumber, currPort);
+    long indexPort = snmpInterfaceNumber(mDeviceModel, mBoardIndex, currPort);
 
-    if ((mDeviceModel == DeviceModel::MA5600) || (mDeviceModel == DeviceModel::MA5300))
-        snmp->addOid(createOid(Mib::adslLineConfProfile, 13, numInterface), 14, profileName, 's');
-    else if (mDeviceModel == DeviceModel::MXA64)
-        snmp->addOid(createOid(Mib::mxa64DslPortActiveProfile, 13, numInterface), 14, profileName, 'i');
-    else if (mDeviceModel == DeviceModel::MXA32)
-        snmp->addOid(createOid(Mib::mxa32DslPortActiveProfile, 13, numInterface), 14, profileName, 'i');
-    else {
+    OidPair profileOid;
+    char type;
+    if ((mDeviceModel == DeviceModel::MA5600)
+            || (mDeviceModel == DeviceModel::MA5300)) {
+        profileOid = createOidPair(Mib::adslLineConfProfile, 13, indexPort);
+        type = 's';
+    } else if (mDeviceModel == DeviceModel::MXA64) {
+        profileOid = createOidPair(Mib::mxa64DslPortActiveProfile, 13, indexPort);
+        type = 'i';
+    } else if (mDeviceModel == DeviceModel::MXA32) {
+        profileOid =createOidPair(Mib::mxa32DslPortActiveProfile, 13, indexPort);
+        type = 'i';
+    } else {
         mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");
         return false;
     }
 
-    return snmp->sendRequest();
+    snmpClient->addOid(profileOid, profileName, type);
+
+    return snmpClient->sendRequest();
+}
+
+QString DslamPortTableModel::error() const
+{
+    return mError;
+}
+
+int DslamPortTableModel::currentPort(QModelIndex index)
+{
+    if (!index.isValid())
+        return -1;
+
+    if (index.internalId() == invalidParentIndex) {
+        return index.row();
+    } else {
+        return index.parent().row();
+    }
 }
 
 QVariant DslamPortTableModel::topLevelData(QModelIndex index) const
 {
-    if (index.column() == 0)
-        return mList[index.row()]->pair();
-    else if (index.column() == 1)
-        return mList[index.row()]->name();
-    else if (index.column() == 2)
-        return mList[index.row()]->state();
-    else if (index.column() == 3)
-        return mList[index.row()]->desc();
-    else if (index.column() == 4)
-        return mList[index.row()]->profile();
-    else
-        return QVariant();
+    if (index.column() == 0) {
+        return mList.at(index.row())->pair();
+    } else if (index.column() == 1) {
+        return mList.at(index.row())->name();
+    } else if (index.column() == 2) {
+        return mList.at(index.row())->state();
+    } else if (index.column() == 3) {
+        return mList.at(index.row())->description();
+    } else if (index.column() == 4) {
+        return mList.at(index.row())->profile();
+    }
+
+    return QVariant();
 }
 
 QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
 {
     if (index.column() == 0) {
-        if (index.row() == 0)
-            return DslamPortListModelColumn::LineType;
-        else if (index.row() == 1)
-            return DslamPortListModelColumn::RxRate;
-        else if (index.row() == 2)
-            return DslamPortListModelColumn::TxRate;
-        else if (index.row() == 3)
-            return DslamPortListModelColumn::RxAttenuation;
-        else if (index.row() == 4)
-            return DslamPortListModelColumn::TxAttenuation;
-        else if (index.row() == 5)
-            return DslamPortListModelColumn::LastChange;
-        else if (index.row() == 6)
-            return DslamPortListModelColumn::Coding;
-        else
-            return QVariant();
+        if (index.row() == 0) {
+            return DslamPortTableModelStrings::LineType;
+        } else if (index.row() == 1) {
+            return DslamPortTableModelStrings::RxRate;
+        } else if (index.row() == 2) {
+            return DslamPortTableModelStrings::TxRate;
+        } else if (index.row() == 3) {
+            return DslamPortTableModelStrings::RxAttenuation;
+        } else if (index.row() == 4) {
+            return DslamPortTableModelStrings::TxAttenuation;
+        } else if (index.row() == 5) {
+            return DslamPortTableModelStrings::LastChange;
+        } else if (index.row() == 6) {
+            return DslamPortTableModelStrings::Coding;
+        }
     } else if (index.column() == 1) {
-        AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[index.parent().row()]);
+        AdslPortInfo::Ptr portInfo = qobject_cast<AdslPortInfo *>(mList.at(index.parent().row()));
 
-        if (index.row() == 0)
+        if (index.row() == 0) {
             return portInfo->lineType();
-        else if (index.row() == 1)
+        } else if (index.row() == 1) {
             return portInfo->txRate();
-        else if (index.row() == 2)
+        } else if (index.row() == 2) {
             return portInfo->rxRate();
-        else if (index.row() == 3)
+        } else if (index.row() == 3) {
             return portInfo->txAttenuation();
-        else if (index.row() == 4)
+        } else if (index.row() == 4) {
             return portInfo->rxAttenuation();
-        else if (index.row() == 5)
+        } else if (index.row() == 5) {
             return portInfo->timeLastChange();
-        else if (index.row() == 6)
+        } else if (index.row() == 6) {
             return portInfo->coding();
-        else
-            return QVariant();
-    } else
-        return QVariant();
+        }
+    }
+
+    return QVariant();
 }
 
-bool DslamPortTableModel::updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortTableModel::updatePortMA(QModelIndex portIndex,
+                                       QScopedPointer<SnmpClient> &snmp)
 {
     AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
@@ -587,7 +620,8 @@ bool DslamPortTableModel::updatePortMA(QModelIndex portIndex, QScopedPointer<Snm
     if (!isValidSnmpValue(vars))
         return false;
 
-    portInfo->setProfile(profileExtName(mDeviceModel, toQString(vars->val.string, vars->val_len)));
+    QString profile = toQString(vars->val.string, vars->val_len);
+    portInfo->setProfile(profileExtName(mDeviceModel, profile));
 
     if (portInfo->state() == "Up") {
         vars = vars->next_variable;
@@ -621,7 +655,8 @@ bool DslamPortTableModel::updatePortMA(QModelIndex portIndex, QScopedPointer<Snm
     return true;
 }
 
-bool DslamPortTableModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp)
+bool DslamPortTableModel::updatePortMXA(QModelIndex portIndex,
+                                        QScopedPointer<SnmpClient> &snmp)
 {
     AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
@@ -681,19 +716,8 @@ bool DslamPortTableModel::updatePortMXA(QModelIndex portIndex, QScopedPointer<Sn
     if (!isValidSnmpValue(vars))
         return false;
 
-    portInfo->setProfile(profileExtName(mDeviceModel, QString::number(*vars->val.integer)));
+    QString profile = QString::number(*vars->val.integer);
+    portInfo->setProfile(profileExtName(mDeviceModel, profile));
 
     return true;
-}
-
-int DslamPortTableModel::currentPort(QModelIndex index)
-{
-    if (!index.isValid())
-        return -1;
-
-    if (index.internalId() == invalidParentIndex) {
-        return index.row();
-    } else {
-        return index.parent().row();
-    }
 }

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     splash.show();
     a.processEvents();
 
-    splash.showMessage(LoadProgramString::LoadLocale);
+    splash.showMessage(LoadProgramStrings::LoadLocale);
     QTranslator *qt_translator = new QTranslator;
 
     if (qt_translator->load(":tr/qtbase_ru.qm")) {
@@ -29,19 +29,19 @@ int main(int argc, char *argv[])
 
     a.processEvents();
 
-    splash.showMessage(LoadProgramString::CreateWindow);
+    splash.showMessage(LoadProgramStrings::CreateWindow);
     MainWindow *w = new MainWindow();
     a.processEvents();
 
-    splash.showMessage(LoadProgramString::CreateDeviceListPage);
+    splash.showMessage(LoadProgramStrings::CreateDeviceListPage);
     w->createDeviceListPage();
     a.processEvents();
 
-    splash.showMessage(LoadProgramString::LoadList);
+    splash.showMessage(LoadProgramStrings::LoadList);
     w->loadDeviceList();
     a.processEvents();
 
-    splash.showMessage(LoadProgramString::LoadConfig);
+    splash.showMessage(LoadProgramStrings::LoadConfig);
     w->loadProgramSettings();
     a.processEvents();
 

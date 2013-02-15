@@ -1,23 +1,26 @@
 #include "editdslamboardtablepagewidget.h"
 #include "ui_editdslamboardtablepagewidget.h"
 
-#include <QtWidgets/QMenu>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
 #include "../Info/dslaminfo.h"
 #include "../Models/boardtabledelegate.h"
+#include "../Models/boardtablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "Info/dslaminfo.h"
 #include "Models/boardtabledelegate.h"
+#include "Models/boardtablemodel.h"
 #endif
 
-EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo, DeviceTableModel *deviceListModel, QWidget *parent) :
+EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+                                                             DeviceTableModel *deviceListModel,
+                                                             QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::EditDslamBoardTablePageWidget),
-    mDeviceListModel(deviceListModel)
+    mDeviceTableModel(deviceListModel)
 {
     ui->setupUi(this);
 
@@ -30,9 +33,10 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
     connect(ui->renumeringBoardPairsAction, &QAction::triggered,
             this, &EditDslamBoardTablePageWidget::renumeringBoardPairs);
 
-    BoardTableModel *boardListModel = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
+    DslamInfo::Ptr dslamInfo = mDeviceInfo.objectCast<DslamInfo>();
+    BoardTableModel *boardTableModel = dslamInfo->boardTableModel();
 
-    ui->editDslamBoardListTableView->setModel(boardListModel);
+    ui->editDslamBoardListTableView->setModel(boardTableModel);
 
     BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo->deviceModel(), this);
     boardListDelegate->setIndexTypeBoard(1);
@@ -40,9 +44,9 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
 
     ui->editDslamBoardListTableView->setItemDelegate(boardListDelegate);
 
-    ui->autoUpdateBoardListCheckBox->setCheckState(boardListModel->autoFill() == 1 ? Qt::Checked : Qt::Unchecked);
-    ui->autoNumeringPairCheckBox->setEnabled(boardListModel->autoFill());
-    ui->autoNumeringPairCheckBox->setCheckState(boardListModel->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
+    ui->autoUpdateBoardListCheckBox->setCheckState(dslamInfo->autoFill() == 1 ? Qt::Checked : Qt::Unchecked);
+    ui->autoNumeringPairCheckBox->setEnabled(dslamInfo->autoFill());
+    ui->autoNumeringPairCheckBox->setCheckState(dslamInfo->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
     //Привязка действий
     connect(ui->editDslamBoardListTableView, &QTableView::customContextMenuRequested,
             this, &EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu);
@@ -55,6 +59,63 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
 EditDslamBoardTablePageWidget::~EditDslamBoardTablePageWidget()
 {
     delete ui;
+}
+
+void EditDslamBoardTablePageWidget::editBoard()
+{
+    ui->editDslamBoardListTableView->setFocus();
+    ui->editDslamBoardListTableView->edit(ui->editDslamBoardListTableView->currentIndex());
+    mDeviceTableModel->setModified(true);
+}
+
+void EditDslamBoardTablePageWidget::removeBoard()
+{
+    QModelIndex index = ui->editDslamBoardListTableView->currentIndex();
+
+    if (!index.isValid())
+        return;
+
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+    QString num = model->data(model->index(index.row(), 0)).toString();
+    QString type = model->data(model->index(index.row(), 1)).toString();
+
+    if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление доски"),
+                                  QString::fromUtf8("Вы действительно хотите удалить доску №%1(%2)?").arg(num, type)))
+        return;
+
+    model->removeRow(index.row(), QModelIndex());
+    mDeviceTableModel->setModified(true);
+}
+
+void EditDslamBoardTablePageWidget::getBoardList()
+{
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+
+    if (!model->getBoardListFromDevice())
+        BasicDialogs::error(this, BasicDialogStrings::Error, model->error());
+
+    mDeviceTableModel->setModified(true);
+}
+
+void EditDslamBoardTablePageWidget::renumeringBoardPairs()
+{
+    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+
+    model->renumeringPairList();
+    mDeviceTableModel->setModified(true);
+}
+
+void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
+{
+    mDeviceInfo.objectCast<DslamInfo>()->setAutoFill(state ? 1 : 0);
+    mDeviceTableModel->setModified(true);
+    ui->autoNumeringPairCheckBox->setEnabled(state);
+}
+
+void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
+{
+    mDeviceInfo.objectCast<DslamInfo>()->setAutoNumeringBoard(state ? 1 : 0);
+    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu(QPoint point)
@@ -75,63 +136,4 @@ void EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu(QPoint point
     contextMenu.exec(ui->editDslamBoardListTableView->mapToGlobal(point));
 }
 
-void EditDslamBoardTablePageWidget::renumeringBoardPairs()
-{
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
 
-    model->renumeringPairList();
-    mDeviceListModel->setModified(true);
-}
-
-void EditDslamBoardTablePageWidget::getBoardList()
-{
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
-
-    if (!model->getBoardListFromDevice())
-        BasicDialogs::error(this, BasicDialogTitle::Error, model->error());
-
-    mDeviceListModel->setModified(true);
-}
-
-void EditDslamBoardTablePageWidget::editBoard()
-{
-    ui->editDslamBoardListTableView->setFocus();
-    ui->editDslamBoardListTableView->edit(ui->editDslamBoardListTableView->currentIndex());
-    mDeviceListModel->setModified(true);
-}
-
-void EditDslamBoardTablePageWidget::removeBoard()
-{
-    QModelIndex index = ui->editDslamBoardListTableView->currentIndex();
-
-    if (!index.isValid())
-        return;
-
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
-    QString num = model->data(model->index(index.row(), 0)).toString();
-    QString type = model->data(model->index(index.row(), 1)).toString();
-
-    if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление доски"),
-                                  QString::fromUtf8("Вы действительно хотите удалить доску №%1(%2)?").arg(num, type)))
-        return;
-
-    model->removeRow(index.row(), QModelIndex());
-    mDeviceListModel->setModified(true);
-}
-
-void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
-{
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
-
-    model->setAutoFill(state ? 1 : 0);
-    mDeviceListModel->setModified(true);
-    ui->autoNumeringPairCheckBox->setEnabled(state);
-}
-
-void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
-{
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
-
-    model->setAutoNumeringBoard(state ? 1 : 0);
-    mDeviceListModel->setModified(true);
-}

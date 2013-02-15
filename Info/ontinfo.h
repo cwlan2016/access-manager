@@ -1,7 +1,6 @@
 #ifndef ONTINFO_H
 #define ONTINFO_H
 
-#include <QtCore/QObject>
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #else
@@ -13,29 +12,38 @@ class OntInfo : public QObject
     Q_OBJECT
 public:
     OntInfo(QObject *parent);
+
     QString id();
-    QString state();
-    QString description();
-    OntType::Enum type();
-    QString model();
-    int serviceProfile();
-    int multicastProfile();
     void setId(QString id);
+
+    QString state();
     void setState(QString state);
+
+    QString description();
     void setDescription(QString description);
-    void setType(OntType::Enum type);
+
+    QString model();
     void setModel(QString model);
+
+    OntType::Enum type();
+    void setType(OntType::Enum type);
+
+    int serviceProfile();
     void setServiceProfile(int index);
+
+    int multicastProfile();
     void setMulticastProfile(int index);
+
     virtual void Reconfigure();
 
     typedef OntInfo *Ptr;
+
 protected:
     QString mId;    //Mac or Serial
     QString mState;
+    QString mModel;
     QString mDescription;
     OntType::Enum mType;
-    QString mModel;
     int     mServiceProfile;
     int     mMulticastProfile;
 };

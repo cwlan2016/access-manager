@@ -5,9 +5,14 @@ SwitchPortInfo::SwitchPortInfo(QObject *parent) :
 {
 }
 
-int SwitchPortInfo::number() const
+int SwitchPortInfo::index() const
 {
-    return mNumber;
+    return mIndex;
+}
+
+void SwitchPortInfo::setIndex(int index)
+{
+    mIndex = index;
 }
 
 QString SwitchPortInfo::state() const
@@ -15,29 +20,24 @@ QString SwitchPortInfo::state() const
     return mState;
 }
 
-QString SwitchPortInfo::desc() const
-{
-    return mDesc;
-}
-
-QString SwitchPortInfo::speedDuplex() const
-{
-    return mSpeedDuplex;
-}
-
-void SwitchPortInfo::setNumber(int number)
-{
-    mNumber = number;
-}
-
 void SwitchPortInfo::setState(QString state)
 {
     mState = state;
 }
 
-void SwitchPortInfo::setDesc(QString desc)
+QString SwitchPortInfo::description() const
+{
+    return mDesc;
+}
+
+void SwitchPortInfo::setDescription(QString desc)
 {
     mDesc = desc;
+}
+
+QString SwitchPortInfo::speedDuplex() const
+{
+    return mSpeedDuplex;
 }
 
 void SwitchPortInfo::setSpeedDuplex(QString speedDuplex)

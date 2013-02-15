@@ -1,6 +1,5 @@
 #include "converters.h"
 
-#include <QtCore/QRegExp>
 #include "constant.h"
 
 int snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
@@ -20,105 +19,110 @@ int snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
 
 QString dslamStatePortString(long state)
 {
-    if (state == 1)
+    if (state == 1) {
         return "Up";
-    else if ((state == 2) || (state == 6))
+    } else if ((state == 2) || (state == 6)) {
         return "Down";
-    else if ((state == 5) || (state == 65536))
+    } else if ((state == 5) || (state == 65536)) {
         return "Activating";
-    else if (state == 65548)
+    } else if (state == 65548) {
         return "Defective";
-    else
+    } else {
         return "Other";
+    }
 }
 
 QString switchStatePortString(long state)
 {
-    if (state == 1)
+    if (state == 1) {
         return "Up";
-    else if (state == 2)
+    } else if (state == 2) {
         return "Down";
-    else
+    } else {
         return "Other";
+    }
 }
 
 QString speedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
 {
     if ((deviceModel == DeviceModel::DES3526)
             || (deviceModel == DeviceModel::DES3550)) {
-        if (speedDuplex == 2)
+        if (speedDuplex == 2) {
             return "Auto";
-        else if (speedDuplex == 6)
+        } else if (speedDuplex == 6) {
             return "100Mbps/Full";
-        else if (speedDuplex == 5)
+        } else if (speedDuplex == 5) {
             return "100Mbps/Half";
-        else if (speedDuplex == 8)
+        } else if (speedDuplex == 8) {
             return "1Gbps/Full";
-        else if (speedDuplex == 4)
+        } else if (speedDuplex == 4) {
             return "10Mbps/Full";
-        else if (speedDuplex == 3)
+        } else if (speedDuplex == 3) {
             return "10Mbps/Half";
-        else if (speedDuplex == 7)
+        } else if (speedDuplex == 7) {
             return "1Gbps/Half";
-        else
+        } else {
             return "Unknown";
+        }
     } else if (deviceModel == DeviceModel::DES3528) {
-        if (speedDuplex == 0)
+        if (speedDuplex == 0) {
             return "Down";
-        else if (speedDuplex == 6)
+        } else if (speedDuplex == 6) {
             return "100Mbps/Full";
-        else if (speedDuplex == 8)
+        } else if (speedDuplex == 8) {
             return "100Mbps/Half";
-        else if (speedDuplex == 10)
+        } else if (speedDuplex == 10) {
             return "1Gbps/Full";
-        else if (speedDuplex == 2)
+        } else if (speedDuplex == 2) {
             return "10Mbps/Full";
-        else if (speedDuplex == 4)
+        } else if (speedDuplex == 4) {
             return "10Mbps/Half";
-        else if (speedDuplex == 12)
+        } else if (speedDuplex == 12) {
             return "1Gbps/Half";
-        else
+        } else {
             return "Unknown";
-    } else
+        }
+    } else {
         return "Unknown";
+    }
 }
 
 BoardType::Enum boardTypeFromBoardName(QString boardName)
 {
-    if (boardName.contains("ADEF", Qt::CaseInsensitive))
+    if (boardName.contains("ADEF", Qt::CaseInsensitive)) {
         return BoardType::AnnexA;
-    else if (boardName.contains("ADBF", Qt::CaseInsensitive))
+    } else if (boardName.contains("ADBF", Qt::CaseInsensitive)) {
         return BoardType::AnnexB;
-    else if (boardName.contains("SHEA", Qt::CaseInsensitive))
+    } else if (boardName.contains("SHEA", Qt::CaseInsensitive)) {
         return BoardType::Shdsl;
-    else
+    } else {
         return BoardType::Other;
+    }
 }
 
 int countPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
 {
     if (deviceModel == DeviceModel::MA5600) {
         if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB))
+                || (boardType == BoardType::AnnexB)) {
             return 64;
-        else if (boardType == BoardType::Shdsl)
+        } else if (boardType == BoardType::Shdsl) {
             return 32;
-        else
-            return 0;
+        }
     } else if (deviceModel == DeviceModel::MA5300) {
         if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB))
+                || (boardType == BoardType::AnnexB)) {
             return 48;
-        else if (boardType == BoardType::Shdsl)
+        } else if (boardType == BoardType::Shdsl) {
             return 24;
-        else
-            return 0;
+        }
     } else if (deviceModel == DeviceModel::MXA64) {
         return 64;
     } else if (deviceModel == DeviceModel::MXA32) {
         return 32;
-    } else
-        return 0;
+    }
+
+    return 0;
 }
 
 int countPorts(DeviceModel::Enum deviceModel)
@@ -129,8 +133,9 @@ int countPorts(DeviceModel::Enum deviceModel)
     } else if ((deviceModel == DeviceModel::DES3550)
                || (deviceModel == DeviceModel::DES3552)) {
         return 50;
-    } else
-        return 0;
+    }
+
+    return 0;
 }
 
 QString decMacAddressToHex(oid *macAddressOid, int length)
@@ -138,10 +143,11 @@ QString decMacAddressToHex(oid *macAddressOid, int length)
     QString tempStr = "";
 
     for (int i = 14; i < length; ++i) {
-        if (i != 14)
+        if (i != 14) {
             tempStr = QString("%1-%2").arg(tempStr).arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
-        else
+        } else {
             tempStr = QString("%1").arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
+        }
     }
 
     return tempStr.toUpper();
@@ -161,10 +167,11 @@ QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
     int countBits = 0;
 
     if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3528))
+            || (deviceModel == DeviceModel::DES3528)) {
         countBits = 32;
-    else if (deviceModel == DeviceModel::DES3550)
+    } else if (deviceModel == DeviceModel::DES3550) {
         countBits = 56;
+    }
 
     QBitArray array(countBits, false);
 
@@ -213,9 +220,8 @@ QString qbitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &arr
     if ((deviceModel == DeviceModel::DES3528) && ismv) {
         // Значение MembersISMV в DES-3528 имеет размер 64 байта
         // Дополняем HEX-строку до 64 байт.
-        for (int i = 0; i < 60; ++i) {
+        for (int i = 0; i < 60; ++i)
             tempStr.push_back(QString(" 00"));
-        }
     }
 
     return tempStr.trimmed().toUpper();
@@ -223,24 +229,26 @@ QString qbitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &arr
 
 QString typeLineString(int type)
 {
-    if (type == 2)
+    if (type == 2) {
         return "Fast";
-    else if (type == 3)
+    } else if (type == 3) {
         return "Interleave";
-    else
+    } else {
         return "другой";
+    }
 }
 
 QString codingString(int coding)
 {
-    if (coding == 2)
+    if (coding == 2) {
         return "dmt";
-    else if (coding == 3)
+    } else if (coding == 3) {
         return "cap";
-    else if (coding == 4)
+    } else if (coding == 4) {
         return "cam";
-    else
+    } else {
         return "другой";
+    }
 }
 
 QString profileExtName(DeviceModel::Enum deviceModel, QString profile)
@@ -282,53 +290,51 @@ QString profileExtName(DeviceModel::Enum deviceModel, QString profile)
             return "Other";
         }
     } else {
-        return "";
+        return QString();
     }
 }
 
 QString displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString profile)
 {
     if (deviceModel == DeviceModel::MA5600) {
-        if (profile == AdslProfileDisplayName::AdslFast)
+        if (profile == AdslProfileDisplayName::AdslFast) {
             return AdslProfileDslamName::MA5600::AdslFast;
-        else if (profile == AdslProfileDisplayName::AdslInterleave)
+        } else if (profile == AdslProfileDisplayName::AdslInterleave) {
             return AdslProfileDslamName::MA5600::AdslInterleave;
-        else if (profile == AdslProfileDisplayName::Adsl2Interleave)
+        } else if (profile == AdslProfileDisplayName::Adsl2Interleave) {
             return AdslProfileDslamName::MA5600::Adsl2Interleave;
-        else if (profile == AdslProfileDisplayName::AdslGLite)
+        } else if (profile == AdslProfileDisplayName::AdslGLite) {
             return AdslProfileDslamName::MA5600::AdslGLite;
-        else if (profile == AdslProfileDisplayName::AdslFast8Mb)
+        } else if (profile == AdslProfileDisplayName::AdslFast8Mb) {
             return AdslProfileDslamName::MA5600::AdslFast8Mb;
-        else if (profile == AdslProfileDisplayName::Adsl2Fast10Mb)
+        } else if (profile == AdslProfileDisplayName::Adsl2Fast10Mb) {
             return AdslProfileDslamName::MA5600::Adsl2Fast10Mb;
-        else if (profile == AdslProfileDisplayName::Adsl2Fast14Mb)
+        } else if (profile == AdslProfileDisplayName::Adsl2Fast14Mb) {
             return AdslProfileDslamName::MA5600::Adsl2Fast14Mb;
-        else if (profile == AdslProfileDisplayName::Adsl2Fast18Mb)
+        } else if (profile == AdslProfileDisplayName::Adsl2Fast18Mb) {
             return AdslProfileDslamName::MA5600::Adsl2Fast18Mb;
-        else
-            return "";
+        }
     } else if (deviceModel == DeviceModel::MA5300) {
-        if (profile == AdslProfileDisplayName::AdslFast)
+        if (profile == AdslProfileDisplayName::AdslFast) {
             return AdslProfileDslamName::MA5300::AdslFast;
-        else if (profile == AdslProfileDisplayName::AdslInterleave)
+        } else if (profile == AdslProfileDisplayName::AdslInterleave) {
             return AdslProfileDslamName::MA5300::AdslInterleave;
-        else if (profile == AdslProfileDisplayName::Adsl2Interleave)
+        } else if (profile == AdslProfileDisplayName::Adsl2Interleave) {
             return AdslProfileDslamName::MA5300::Adsl2Interleave;
-        else
-            return "";
+        }
     } else if ((deviceModel == DeviceModel::MXA64)
                || (deviceModel == DeviceModel::MXA32)) {
-        if (profile == AdslProfileDisplayName::AdslInterleave)
+        if (profile == AdslProfileDisplayName::AdslInterleave) {
             return AdslProfileDslamName::MXA::AdslInterleave;
-        else if (profile == AdslProfileDisplayName::Adsl2Interleave)
+        } else if (profile == AdslProfileDisplayName::Adsl2Interleave) {
             return AdslProfileDslamName::MXA::Adsl2Interleave;
-        else if (profile == AdslProfileDisplayName::AdslGLite)
+        } else if (profile == AdslProfileDisplayName::AdslGLite) {
             return AdslProfileDslamName::MXA::AdslGLite;
-        else
-            return "";
-    } else {
-        return "";
+        }
     }
+
+    return QString();
+
 }
 
 QString toQString(u_char *string, int str_len)

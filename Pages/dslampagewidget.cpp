@@ -1,7 +1,6 @@
 #include "dslampagewidget.h"
 #include "ui_dslampagewidget.h"
 
-#include <QtWidgets/QMenu>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
@@ -60,17 +59,17 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
 
     if ((mDeviceInfo->deviceModel() == DeviceModel::MA5600)
             || (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
-        ui->dslamTreeView->setModel(mDeviceInfo.objectCast<DslamInfo>()->boardListModel());
+        ui->dslamTreeView->setModel(mDeviceInfo.objectCast<DslamInfo>()->boardTableModel());
     } else {
         DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo->deviceModel(), mDeviceInfo->ip(), this);
 
         portListModel->setBoardType(BoardType::AnnexA);
         portListModel->setFirstPair(1);
-        portListModel->setBoardNumber(1);
+        portListModel->setBoardIndex(1);
         portListModel->createList();
 
         if (!portListModel->load()) {
-            BasicDialogs::error(this, BasicDialogTitle::Error, portListModel->error());
+            BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
         }
 
         ui->dslamTreeView->setModel(portListModel);
@@ -80,6 +79,127 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
 DslamPageWidget::~DslamPageWidget()
 {
     delete ui;
+}
+
+void DslamPageWidget::upDslPort()
+{
+    QModelIndex currentPort = currentDslamXdslPort();
+
+    if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
+        return;
+
+    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+
+    if (portListModel->changePortState(currentPort.row(), "1")) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт активирован."));
+        portListModel->updatePortInfo(currentPort);
+    } else {
+        BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Порт активировать не удалось."));
+    }
+}
+
+void DslamPageWidget::downDslPort()
+{
+    QModelIndex currentPort = currentDslamXdslPort();
+
+    //if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
+    //    return;
+    if (ui->dslamTreeView->model()->metaObject()->className() != "DslamPortTableModel")
+        return;
+
+    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+
+    if (portListModel->changePortState(currentPort.row(), "2")) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт деактивирован."));
+        portListModel->updatePortInfo(currentPort);
+    } else {
+        BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Порт деактивировать не удалось."));
+    }
+}
+
+void DslamPageWidget::showPortListModel()
+{
+    if (!ui->boardNameLabel->isHidden())
+        return;
+
+    if (!ui->dslamTreeView->currentIndex().isValid())
+        return;
+
+    //if (typeid(BoardTableModel) != typeid(*ui->dslamTreeView->model()))
+    //    return;
+    if (ui->dslamTreeView->model()->metaObject()->className() != "BoardTableModel")
+        return;
+
+    BoardTableModel *boardListModel = static_cast<BoardTableModel *>(ui->dslamTreeView->model());
+
+    QModelIndex indexTypeBoard = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 1);
+    BoardType::Enum typeBoard = (BoardType::Enum)boardListModel->data(indexTypeBoard, Qt::UserRole).toInt();
+
+    if (typeBoard == BoardType::Other) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите существующую доску."));
+        return;
+    }
+
+    if (typeBoard == BoardType::Shdsl) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация доступна только по ADSL доскам."));
+        return;
+    }
+
+    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo->deviceModel(), mDeviceInfo->ip());//new DslamPortListModel(boardListModel->parentDevice());
+
+    QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
+    QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
+
+    portListModel->setBoardType(typeBoard);
+    portListModel->setFirstPair(pair.toInt());
+    portListModel->setBoardIndex(indexPairRange.row());
+    portListModel->createList();
+
+    if (!portListModel->load())
+        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+
+    ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
+                                .arg(indexPairRange.row())
+                                .arg(BoardType::toString(typeBoard)));
+    ui->boardNameLabel->setVisible(true);
+    ui->backToBoardListButton->setVisible(true);
+    ui->dslamTreeView->setModel(portListModel);
+    ui->dslamTreeView->setColumnWidth(0, 220);
+    ui->dslamTreeView->setColumnWidth(1, 120);
+    ui->dslamTreeView->setColumnWidth(2, 100);
+    ui->dslamTreeView->setColumnWidth(3, 120);
+}
+
+void DslamPageWidget::backToBoardListModel()
+{
+    ui->boardNameLabel->setVisible(false);
+    ui->backToBoardListButton->setVisible(false);
+    ui->selectProfileGroupBox->setChecked(false);
+
+    DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    BoardTableModel *boardTableModel = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+
+    ui->dslamTreeView->setModel(boardTableModel);
+
+    delete portTableModel;
+}
+
+void DslamPageWidget::showSelectProfileGBox()
+{
+    DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+
+    DeviceModel::Enum deviceModel = mDeviceInfo->deviceModel();
+
+    if ((portTableModel->boardType() == BoardType::AnnexA)
+            && (deviceModel == DeviceModel::MA5600)) {
+        if (ui->profileListComboBox->count() <= 7)
+            ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslGLite);
+    } else {
+        if (ui->profileListComboBox->count() == 8)
+            ui->profileListComboBox->removeItem(7);
+    }
+
+    ui->selectProfileGroupBox->setChecked(true);
 }
 
 void DslamPageWidget::fillSelectProfileComboBox()
@@ -104,49 +224,50 @@ void DslamPageWidget::fillSelectProfileComboBox()
     }
 }
 
-QModelIndex DslamPageWidget::currentDslamXdslPort()
+void DslamPageWidget::applyDslProfile()
 {
     if (!ui->dslamTreeView->currentIndex().isValid())
-        return QModelIndex();
+        return;
 
-    if (ui->dslamTreeView->currentIndex().internalId() == invalidParentIndex) {
-        return ui->dslamTreeView->currentIndex();
+    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите порт для изменения профиля."));
+        return;
+    }
+
+    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    QString profileName = displayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
+
+    bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
+
+    if (result) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Профиль на порту изменен."));
+        portListModel->updatePortInfo(ui->dslamTreeView->currentIndex());
     } else {
-        return ui->dslamTreeView->currentIndex().parent();
+        BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Профиль на порту изменить не удалось!"));
     }
 }
 
-void DslamPageWidget::upDslPort()
+void DslamPageWidget::refreshPortInfo()
 {
-    QModelIndex currentPort = currentDslamXdslPort();
-
-    if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
+    if (!ui->dslamTreeView->currentIndex().isValid())
         return;
 
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-
-    if (portListModel->changePortState(currentPort.row(), "1")) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Порт активирован."));
-        portListModel->updatePortInfo(currentPort);
-    } else {
-        BasicDialogs::warning(this, BasicDialogTitle::Warning, QString::fromUtf8("Порт активировать не удалось."));
+    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите порт для обновления информации."));
+        return;
     }
+
+    portListExpandedNode(ui->dslamTreeView->currentIndex());
 }
 
-void DslamPageWidget::downDslPort()
+void DslamPageWidget::refreshAllPortInfo()
 {
-    QModelIndex currentPort = currentDslamXdslPort();
-
-    if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
-        return;
-
     DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (portListModel->changePortState(currentPort.row(), "2")) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Порт деактивирован."));
-        portListModel->updatePortInfo(currentPort);
+    if (!portListModel->load()) {
+        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
     } else {
-        BasicDialogs::warning(this, BasicDialogTitle::Warning, QString::fromUtf8("Порт деактивировать не удалось."));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по портам обновлена."));
     }
 }
 
@@ -170,137 +291,6 @@ void DslamPageWidget::viewRequestContextMenu(QPoint point)
     contextMenu.exec(ui->dslamTreeView->mapToGlobal(point));
 }
 
-void DslamPageWidget::showPortListModel()
-{
-    if (!ui->boardNameLabel->isHidden())
-        return;
-
-    if (!ui->dslamTreeView->currentIndex().isValid())
-        return;
-
-    if (typeid(BoardTableModel) != typeid(*ui->dslamTreeView->model()))
-        return;
-
-    BoardTableModel *boardListModel = static_cast<BoardTableModel *>(ui->dslamTreeView->model());
-
-    QModelIndex indexTypeBoard = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 1);
-    BoardType::Enum typeBoard = (BoardType::Enum)boardListModel->data(indexTypeBoard, Qt::UserRole).toInt();
-
-    if (typeBoard == BoardType::Other) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите существующую доску."));
-        return;
-    }
-
-    if (typeBoard == BoardType::Shdsl) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация доступна только по ADSL доскам."));
-        return;
-    }
-
-    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo->deviceModel(), mDeviceInfo->ip());//new DslamPortListModel(boardListModel->parentDevice());
-
-    QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
-    QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
-
-    portListModel->setBoardType(typeBoard);
-    portListModel->setFirstPair(pair.toInt());
-    portListModel->setBoardNumber(indexPairRange.row());
-    portListModel->createList();
-
-    if (!portListModel->load()) {
-        BasicDialogs::error(this, BasicDialogTitle::Error, portListModel->error());
-    }
-
-    ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
-                                .arg(indexPairRange.row())
-                                .arg(BoardType::toString(typeBoard)));
-    ui->boardNameLabel->setVisible(true);
-    ui->backToBoardListButton->setVisible(true);
-    ui->dslamTreeView->setModel(portListModel);
-    ui->dslamTreeView->setColumnWidth(0, 220);
-    ui->dslamTreeView->setColumnWidth(1, 120);
-    ui->dslamTreeView->setColumnWidth(2, 100);
-    ui->dslamTreeView->setColumnWidth(3, 120);
-}
-
-void DslamPageWidget::backToBoardListModel()
-{
-    ui->boardNameLabel->setVisible(false);
-    ui->backToBoardListButton->setVisible(false);
-    ui->selectProfileGroupBox->setChecked(false);
-
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-    BoardTableModel *boardListModel = mDeviceInfo.objectCast<DslamInfo>()->boardListModel();
-
-    ui->dslamTreeView->setModel(boardListModel);
-
-    delete portListModel;
-}
-
-void DslamPageWidget::showSelectProfileGBox()
-{
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-
-    DeviceModel::Enum deviceModel = mDeviceInfo->deviceModel();
-
-    if ((portListModel->boardType() == BoardType::AnnexA)
-            && (deviceModel == DeviceModel::MA5600)) {
-        if (ui->profileListComboBox->count() <= 7)
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslGLite);
-    } else {
-        if (ui->profileListComboBox->count() == 8)
-            ui->profileListComboBox->removeItem(7);
-    }
-
-    ui->selectProfileGroupBox->setChecked(true);
-}
-
-void DslamPageWidget::applyDslProfile()
-{
-    if (!ui->dslamTreeView->currentIndex().isValid())
-        return;
-
-    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите порт для изменения профиля."));
-        return;
-    }
-
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-    QString profileName = displayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
-
-    bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
-
-    if (result) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Профиль на порту изменен."));
-        portListModel->updatePortInfo(ui->dslamTreeView->currentIndex());
-    } else {
-        BasicDialogs::warning(this, BasicDialogTitle::Warning, QString::fromUtf8("Профиль на порту изменить не удалось!"));
-    }
-}
-
-void DslamPageWidget::refreshPortInfo()
-{
-    if (!ui->dslamTreeView->currentIndex().isValid())
-        return;
-
-    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Выберите порт для обновления информации."));
-        return;
-    }
-
-    portListExpandedNode(ui->dslamTreeView->currentIndex());
-}
-
-void DslamPageWidget::refreshAllPortInfo()
-{
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-
-    if (!portListModel->load()) {
-        BasicDialogs::error(this, BasicDialogTitle::Error, portListModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogTitle::Info, QString::fromUtf8("Информация по портам обновлена."));
-    }
-}
-
 void DslamPageWidget::portListExpandedNode(QModelIndex index)
 {
     if (!index.isValid())
@@ -312,5 +302,17 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
     DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
     if (!portListModel->updatePortInfo(index))
-        BasicDialogs::error(this, BasicDialogTitle::Error, portListModel->error());
+        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+}
+
+QModelIndex DslamPageWidget::currentDslamXdslPort()
+{
+    if (!ui->dslamTreeView->currentIndex().isValid())
+        return QModelIndex();
+
+    if (ui->dslamTreeView->currentIndex().internalId() == invalidParentIndex) {
+        return ui->dslamTreeView->currentIndex();
+    } else {
+        return ui->dslamTreeView->currentIndex().parent();
+    }
 }

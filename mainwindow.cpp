@@ -1,9 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QtGui/QCloseEvent>
-#include <QtWidgets/QMessageBox>
-
+#include "basicdialogs.h"
 #include "config.h"
 #include "constant.h"
 #include "converters.h"
@@ -96,13 +94,13 @@ void MainWindow::createDeviceListPage()
     connect(ui->updateProfilesOltAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::updateProfileInfoOlt);
     connect(ui->updateVlanAllSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::batchUpdateVlanInfoSwitch);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateVlansSwitch);
     connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::batchUpdateBoardsInfoDslam);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateBoardsDslam);
     connect(ui->updateInfoAllDevicesAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::batchUpdateInfoAllDevices);
     connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::batchUpdateProfileOlt);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateProfilesOlt);
     connect(ui->editDslamBoardListAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::showEditDslamBoardListPage);
     connect(ui->showVlanSwitchAction, &QAction::triggered,
@@ -125,14 +123,133 @@ void MainWindow::loadDeviceList()
 void MainWindow::loadProgramSettings()
 {
     if (!Config::load()) {
-        BasicDialogs::error(this, BasicDialogTitle::Error, Config::errorString());
+        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error());
     }
+}
+
+void MainWindow::upDslPort()
+{
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage) {
+        return;
+    }
+
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
+
+    dslamPageWidget->upDslPort();
+}
+
+void MainWindow::downDslPort()
+{
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
+        return;
+
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
+
+    dslamPageWidget->downDslPort();
+}
+
+void MainWindow::saveSwitchConfig()
+{
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage) {
+        return;
+    }
+
+    SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
+
+    switchPageWidget->saveSwitchConfig();
+}
+
+void MainWindow::showAboutProgramPage()
+{
+    if (mPageList->contains("aboutTab")) {
+        ui->tabWidget->setCurrentWidget(mPageList->value("aboutTab"));
+        return;
+    }
+
+    AboutPageWidget *aboutTab = new AboutPageWidget(this);
+    aboutTab->setObjectName(QString::fromUtf8("aboutTab"));
+
+    mPageList->insert(aboutTab->objectName(), aboutTab);
+    mTypePageList->push_back(PageType::AboutPage);
+
+    ui->tabWidget->addTab(aboutTab, QString::fromUtf8("О программе"));
+    ui->tabWidget->setCurrentWidget(aboutTab);
+}
+
+void MainWindow::showSettingsPage()
+{
+    if (mPageList->contains("settingsTab")) {
+        ui->tabWidget->setCurrentWidget(mPageList->value("settingsTab"));
+        return;
+    }
+
+    SettingsPageWidget *settingsTab = new SettingsPageWidget(this);
+    settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
+
+    mPageList->insert(settingsTab->objectName(), settingsTab);
+    mTypePageList->push_back(PageType::SettingsPage);
+
+    ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
+    ui->tabWidget->setCurrentWidget(settingsTab);
+}
+
+void MainWindow::tabCurrentChanged(int index)
+{
+    PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
+
+    ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
+    ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
+    ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
+    ui->openDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->addDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->editDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->removeDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+
+    if (index != 0) {
+        ui->menuDslam->setEnabled(false);
+        ui->menuSwitch->setEnabled(false);
+        ui->menuOlt->setEnabled(false);
+    } else {
+        DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+        deviceListPage->clearSelection();
+    }
+}
+
+void MainWindow::tabCloseRequested(int index)
+{
+    if (index != 0) {
+        QWidget *deletedWidget = ui->tabWidget->widget(index);
+        ui->tabWidget->removeTab(index);
+        mPageList->remove(deletedWidget->objectName());
+        mTypePageList->remove(index);
+
+        delete deletedWidget;
+    }
+}
+
+void MainWindow::deviceViewActivatedItem(QModelIndex index)
+{
+    if (!index.isValid())
+        return;
+
+    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+
+    DeviceTableModel *deviceListModel = deviceListPage->deviceTableModel();
+    index = deviceListPage->proxyModel()->mapToSource(index);
+
+    QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
+    QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
+    DeviceType::Enum deviceType = DeviceType::from(deviceTypeString);
+
+    ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
+    ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
+    ui->menuOlt->setEnabled(deviceType == DeviceType::Olt);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
-    DeviceTableModel *deviceListModel = deviceListPage->deviceListModel();
+    DeviceTableModel *deviceListModel = deviceListPage->deviceTableModel();
 
     if (!deviceListModel->isModified()) {
         event->accept();
@@ -161,123 +278,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
         event->accept();
     }
-}
-
-void MainWindow::showAboutProgramPage()
-{
-    if (mPageList->contains("aboutTab")) {
-        ui->tabWidget->setCurrentWidget(mPageList->value("aboutTab"));
-        return;
-    }
-
-    AboutPageWidget *aboutTab = new AboutPageWidget();
-    aboutTab->setObjectName(QString::fromUtf8("aboutTab"));
-
-    mPageList->insert(aboutTab->objectName(), aboutTab);
-    mTypePageList->push_back(PageType::AboutPage);
-
-    ui->tabWidget->addTab(aboutTab, QString::fromUtf8("О программе"));
-    ui->tabWidget->setCurrentWidget(aboutTab);
-}
-
-void MainWindow::showSettingsPage()
-{
-    if (mPageList->contains("settingsTab")) {
-        ui->tabWidget->setCurrentWidget(mPageList->value("settingsTab"));
-        return;
-    }
-
-    SettingsPageWidget *settingsTab = new SettingsPageWidget();
-    settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
-
-    mPageList->insert(settingsTab->objectName(), settingsTab);
-    mTypePageList->push_back(PageType::SettingsPage);
-
-    ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
-    ui->tabWidget->setCurrentWidget(settingsTab);
-}
-
-void MainWindow::tabCloseRequested(int index)
-{
-    if (index != 0) {
-        QWidget *deletedWidget = ui->tabWidget->widget(index);
-        ui->tabWidget->removeTab(index);
-        mPageList->remove(deletedWidget->objectName());
-        mTypePageList->remove(index);
-
-        delete deletedWidget;
-    }
-}
-
-void MainWindow::tabCurrentChanged(int index)
-{
-    PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
-
-    ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
-    ui->openDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->addDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->editDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->removeDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
-    ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
-
-    if (index != 0) {
-        ui->menuDslam->setEnabled(false);
-        ui->menuSwitch->setEnabled(false);
-        ui->menuOlt->setEnabled(false);
-    } else {
-        DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
-        deviceListPage->clearSelection();
-    }
-}
-
-void MainWindow::deviceViewActivatedItem(QModelIndex index)
-{
-    if (!index.isValid())
-        return;
-
-    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
-
-    DeviceTableModel *deviceListModel = deviceListPage->deviceListModel();
-    index = deviceListPage->proxyModel()->mapToSource(index);
-
-    QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
-    QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
-    DeviceType::Enum deviceType = DeviceType::from(deviceTypeString);
-
-    ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
-    ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
-    ui->menuOlt->setEnabled(deviceType == DeviceType::Olt);
-}
-
-void MainWindow::saveSwitchConfig()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage) {
-        return;
-    }
-
-    SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
-
-    switchPageWidget->saveSwitchConfig();
-}
-
-void MainWindow::upDslPort()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage) {
-        return;
-    }
-
-    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
-
-    dslamPageWidget->upDslPort();
-}
-
-void MainWindow::downDslPort()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
-        return;
-
-    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
-
-    dslamPageWidget->downDslPort();
 }

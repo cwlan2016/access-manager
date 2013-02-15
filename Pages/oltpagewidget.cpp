@@ -1,8 +1,6 @@
 #include "oltpagewidget.h"
 #include "ui_oltpagewidget.h"
 
-#include <QtCore/QSortFilterProxyModel>
-#include <QtCore/QStringBuilder>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
@@ -24,7 +22,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<OltInfo>(), this);
 
     if (!ontTableModel->load()) {
-        BasicDialogs::error(parent, BasicDialogTitle::Error, ontTableModel->error());
+        BasicDialogs::error(parent, BasicDialogStrings::Error, ontTableModel->error());
     }
 
     QSortFilterProxyModel *ontTableFilterProxyModel = new QSortFilterProxyModel(this);
@@ -36,7 +34,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     ui->ontListTableView->setModel(ontTableFilterProxyModel);
 
     connect(ui->filterOntComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this, &OltPageWidget::filterOntCBoxIndexChanged);
+            this, &OltPageWidget::filterOntComboBoxIndexChanged);
     connect(ui->filterOntLineEdit, &QLineEdit::textChanged,
             this, &OltPageWidget::filterOntEditTextChanged);
 }
@@ -46,7 +44,7 @@ OltPageWidget::~OltPageWidget()
     delete ui;
 }
 
-void OltPageWidget::filterOntCBoxIndexChanged(int index)
+void OltPageWidget::filterOntComboBoxIndexChanged(int index)
 {
     ui->filterOntLineEdit->clear();
     QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *>(ui->ontListTableView->model());

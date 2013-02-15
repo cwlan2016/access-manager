@@ -1,11 +1,14 @@
 #include "oltinfo.h"
 
-#include <QtCore/QStringBuilder>
 #ifdef _MSC_VER
 #include "../constant.h"
+#include "../converters.h"
+#include "../customsnmpfunctions.h"
 #include "../snmpclient.h"
 #else
 #include "constant.h"
+#include "converters.h"
+#include "customsnmpfunctions.h"
 #include "snmpclient.h"
 #endif
 
@@ -14,7 +17,8 @@ OltInfo::OltInfo(QObject *parent) :
 {
 }
 
-OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
+                 QObject *parent) :
     DeviceInfo(name, ip, deviceModel, parent)
 {
 }
@@ -27,6 +31,11 @@ QString OltInfo::serviceProfile(int index)
     return mServiceProfileList[index];
 }
 
+void OltInfo::addServiceProfile(int index, QString profileName)
+{
+    mServiceProfileList.insert(index, profileName);
+}
+
 QString OltInfo::multicastProfile(int index)
 {
     if (mMulticastProfileList.find(index) == mMulticastProfileList.end())
@@ -35,32 +44,9 @@ QString OltInfo::multicastProfile(int index)
     return mMulticastProfileList[index];
 }
 
-void OltInfo::addServiceProfile(int index, QString profileName)
-{
-    mServiceProfileList.insert(OltProfileMap::value_type(index, profileName));
-}
-
 void OltInfo::addMulticastProfile(int index, QString profileName)
 {
-    mMulticastProfileList.insert(OltProfileMap::value_type(index, profileName));
-}
-
-bool OltInfo::getServiceDataFromDevice()
-{
-    mError.clear();
-    bool result = false;
-
-    if (mDeviceModel == DeviceModel::LTP8X) {
-        result = getProfileList(mServiceProfileList, Mib::ltp8xONTServicesName, 14);
-        result |= getProfileList(mMulticastProfileList, Mib::ltp8xONTMulticastName, 14);
-    } else if (mDeviceModel == DeviceModel::LTE8ST) {
-        result = getProfileList(mServiceProfileList, Mib::lte8stProfilesRulesDescription, 14);
-        result |= getProfileList(mMulticastProfileList, Mib::lte8stProfilesIpMulticastDescription, 14);
-    } else {
-        return false;
-    }
-
-    return result;
+    mMulticastProfileList.insert(index, profileName);
 }
 
 OltProfileMap &OltInfo::serviceProfileList()
@@ -68,91 +54,125 @@ OltProfileMap &OltInfo::serviceProfileList()
     return mServiceProfileList;
 }
 
+QStringListModel *OltInfo::serviceProfileListModel(QObject *parent)
+{
+    return createStringListModel(mServiceProfileList, parent);
+}
+
 OltProfileMap &OltInfo::multicastProfileList()
 {
     return mMulticastProfileList;
 }
 
-QStringListModel *OltInfo::serviceProfileListModel(QObject *parent)
-{
-    return createStringListModelFromMap(mServiceProfileList, parent);
-}
-
 QStringListModel *OltInfo::multicastProfileListModel(QObject *parent)
 {
-    return createStringListModelFromMap(mMulticastProfileList, parent);
+    return createStringListModel(mMulticastProfileList, parent);
 }
 
-bool OltInfo::getProfileList(OltProfileMap &profileList, const oid *oidProfileName, int oidLen)
+bool OltInfo::getServiceDataFromDevice()
 {
-    profileList.clear();
+    mError.clear();
+    bool result = false;
 
+    OidPair serviceProfileOid;
+    OidPair multicastProfileOid;
+    if (mDeviceModel == DeviceModel::LTP8X) {
+        serviceProfileOid = createOidPair(Mib::ltp8xONTServicesName, 13);
+        multicastProfileOid = createOidPair(Mib::ltp8xONTMulticastName, 13);
+    } else if (mDeviceModel == DeviceModel::LTE8ST) {
+        serviceProfileOid = createOidPair(Mib::lte8stProfilesRulesDescription, 13);
+        multicastProfileOid = createOidPair(Mib::lte8stProfilesIpMulticastDescription, 13);
+    } else {
+        return false;
+    }
+
+    result = getProfileList(mServiceProfileList, serviceProfileOid);
+    result |= getProfileList(mMulticastProfileList, multicastProfileOid);
+
+    return result;
+}
+
+bool OltInfo::getProfileList(OltProfileMap &profileList,
+                             OidPair oid)
+{
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIp(mIp);
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError += SnmpErrors::SetupSession % "\n";
+        mError += SnmpErrorStrings::SetupSession % "\n";
         return false;
     }
 
     if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession % "\n";
+        mError = SnmpErrorStrings::OpenSession % "\n";
         return false;
     }
 
-    int profileNameOidLen = oidLen - 1;
-    oid *profileNameOid = new oid[profileNameOidLen];
+    profileList.clear();
 
-    memcpy(profileNameOid, oidProfileName, profileNameOidLen * sizeof(oid));
+//    int profileNameOidLen = oidLen - 1;
+//    oid *profileNameOid = new oid[profileNameOidLen];
 
-    size_t nextOidLen = oidLen;
-    oid *nextOid = new oid[nextOidLen];
+//    memcpy(profileNameOid, oidProfileName, profileNameOidLen * sizeof(oid));
 
-    memcpy(nextOid, oidProfileName, nextOidLen * sizeof(oid));
+//    size_t nextOidLen = oidLen;
+//    oid *nextOid = new oid[nextOidLen];
+
+//    memcpy(nextOid, oidProfileName, nextOidLen * sizeof(oid));
+
+    snmp->createPdu(SNMP_MSG_GETNEXT);
+    snmp->addOid(oid);
+    //snmp->addOid(nextOid, nextOidLen);
 
     while (true) {
-        snmp->createPdu(SNMP_MSG_GETNEXT);
-        snmp->addOid(nextOid, nextOidLen);
-
         if (!snmp->sendRequest()) {
-            mError += SnmpErrors::GetInfo % "\n";
+            mError += SnmpErrorStrings::GetInfo % "\n";
             return false;
         }
 
         netsnmp_variable_list *vars = snmp->varList();
 
-        if (snmp_oid_ncompare(profileNameOid, profileNameOidLen, vars->name, vars->name_length, oidLen - 1) != 0)
+        if (snmp_oid_ncompare(oid.first, oid.second, vars->name,
+                              vars->name_length, oid.second) != 0)
+        //    if (snmp_oid_ncompare(profileNameOid, profileNameOidLen, vars->name,
+        //                          vars->name_length, oidLen - 1) != 0)
             break;
 
-        QString profileName = QString::fromLatin1((char *)vars->val.string, vars->val_len);
+        QString profileName = toQString(vars->val.string, vars->val_len);
         int profileIndex = vars->name[vars->name_length - 1];
 
-        profileList.insert(OltProfileMap::value_type(profileIndex, profileName));
+        profileList.insert(profileIndex, profileName);
 
-        delete[] nextOid;
+        snmp->createPduFromResponse(SNMP_MSG_GETNEXT);
+        //delete[] nextOid;
 
-        nextOid = new oid[vars->name_length];
-        memmove(nextOid, vars->name, vars->name_length * sizeof(oid));
-        nextOidLen = vars->name_length;
+        //nextOid = new oid[vars->name_length];
+       // memmove(nextOid, vars->name, vars->name_length * sizeof(oid));
+       // nextOidLen = vars->name_length;
 
-        snmp->clearResponsePdu();
+        //snmp->clearResponse();
     }
 
-    delete[] nextOid;
-    delete[] profileNameOid;
+//    snmp->clearResponse();
+    //delete[] nextOid;
+    //delete[] profileNameOid;
 
     return true;
 }
 
-QStringListModel *OltInfo::createStringListModelFromMap(OltProfileMap &profileList, QObject *parent)
+QStringListModel *OltInfo::createStringListModel(OltProfileMap &profileList,
+                                                        QObject *parent)
 {
     QStringList stringList;
 
-    auto it = profileList.cbegin();
-    auto end = profileList.cend();
+    auto it = profileList.constBegin();
+    auto end = profileList.constEnd();
     for (; it != end; ++it) {
-        stringList.push_front(QString::number((*it).first) % ". " % (*it).second);
+        QString item = QString("%1. %2")
+                .arg(it.key())
+                .arg(it.value());
+        stringList.push_back(item);
     }
 
     return new QStringListModel(stringList, parent);

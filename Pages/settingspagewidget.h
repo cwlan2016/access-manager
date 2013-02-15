@@ -1,7 +1,11 @@
 #ifndef SETTINGSPAGEWIDGET_H
 #define SETTINGSPAGEWIDGET_H
 
-#include <QtWidgets/QWidget>
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
+#include "stdafx.h"
+#endif
 
 namespace Ui
 {
@@ -15,6 +19,7 @@ class SettingsPageWidget : public QWidget
 public:
     explicit SettingsPageWidget(QWidget *parent = 0);
     ~SettingsPageWidget();
+
 private:
     void saveSetting();
     bool validateSettingsData();

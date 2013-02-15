@@ -1,14 +1,10 @@
 #ifndef CUSTOMTYPES_H
 #define CUSTOMTYPES_H
 
-#include <QtCore/QPair>
-#include <QtCore/QString>
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <unordered_map>
+#include "stdafx.h"
 
 typedef QPair<oid *, int> OidPair;
-typedef std::unordered_map<int, QString> OltProfileMap;
+typedef QMap<int, QString> OltProfileMap;
 
 namespace BoardType
 {
@@ -20,7 +16,8 @@ enum Enum {
     Count =     4
 };
 
-const QString BoardTypeName[] = { "ADSL Annex A", "ADSL Annex B", "SHDSL", "Other" };
+const QString BoardTypeName[] = { "ADSL Annex A", "ADSL Annex B", "SHDSL",
+                                  "Other" };
 
 BoardType::Enum from(QString boardType);
 QString         toString(BoardType::Enum boardType);
@@ -79,7 +76,8 @@ enum Enum {
     Other =         5
 };
 
-const QString DslPortStateName[] = { "Up", "Down", "Activating", "Defective", "Other"};
+const QString DslPortStateName[] = { "Up", "Down", "Activating", "Defective",
+                                     "Other"};
 
 DslPortState::Enum  from(QString dslPortState);
 QString             toString(DslPortState::Enum dslPortState);

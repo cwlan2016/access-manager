@@ -1,50 +1,53 @@
 #include "dslaminfo.h"
 
+#ifdef _MSC_VER
+#include "../Models/boardtablemodel.h"
+#else
+#include "Models/boardtablemodel.h"
+#endif
+
 DslamInfo::DslamInfo(QObject *parent) :
     DeviceInfo(parent)
 {
     setDeviceModel(DeviceModel::MA5600);
-    mBoardListModel = new BoardTableModel(this);
-    mBoardListModel->setAutoFill(1);
-    mBoardListModel->setAutoNumeringBoard(1);
+    InitializeBoardTableModel();
 }
 
-DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+DslamInfo::DslamInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
+                     QObject *parent) :
     DeviceInfo(name, ip, deviceModel, parent)
 {
-    mBoardListModel = new BoardTableModel(this);
-    mBoardListModel->setAutoFill(1);
-    mBoardListModel->setAutoNumeringBoard(1);
+    InitializeBoardTableModel();
 }
 
 short DslamInfo::autoFill() const
 {
-    return mBoardListModel->autoFill();
-}
-
-short DslamInfo::autoNumeringBoard() const
-{
-    return mBoardListModel->autoNumeringBoard();
+    return mAutoFill;
 }
 
 void DslamInfo::setAutoFill(short autoFill)
 {
-    mBoardListModel->setAutoFill(autoFill);
+    mAutoFill = autoFill;
+}
+
+short DslamInfo::autoNumeringBoard() const
+{
+    return mAutoNumeringBoard;
 }
 
 void DslamInfo::setAutoNumeringBoard(short autoNumeringBoard)
 {
-    mBoardListModel->setAutoNumeringBoard(autoNumeringBoard);
+    mAutoNumeringBoard = autoNumeringBoard;
 }
 
-BoardTableModel *DslamInfo::boardListModel()
+BoardTableModel *DslamInfo::boardTableModel()
 {
     return mBoardListModel;
 }
 
 bool DslamInfo::getServiceDataFromDevice()
 {
-    if (mBoardListModel == nullptr)
+    if (mBoardListModel == 0)
         return false;
 
     bool result = mBoardListModel->getBoardListFromDevice();
@@ -53,4 +56,11 @@ bool DslamInfo::getServiceDataFromDevice()
         mError = mBoardListModel->error();
 
     return result;
+}
+
+void DslamInfo::InitializeBoardTableModel()
+{
+    mBoardListModel = new BoardTableModel(this);
+    setAutoFill(1);
+    setAutoNumeringBoard(1);
 }

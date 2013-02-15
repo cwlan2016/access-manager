@@ -1,9 +1,20 @@
 #include "boardinfo.h"
 
-BoardInfo::BoardInfo()
+BoardInfo::BoardInfo() :
+    mFirstPair(1),
+    mType(BoardType::AnnexA)
+
 {
-    mType = BoardType::AnnexA;
-    mFirstPair = 1;
+}
+
+int BoardInfo::index() const
+{
+    return mNumber;
+}
+
+void BoardInfo::setIndex(int number)
+{
+    mNumber = number;
 }
 
 BoardType::Enum BoardInfo::type() const
@@ -11,9 +22,9 @@ BoardType::Enum BoardInfo::type() const
     return mType;
 }
 
-int BoardInfo::number() const
+void BoardInfo::setType(BoardType::Enum type)
 {
-    return mNumber;
+    mType = type;
 }
 
 int BoardInfo::firstPair() const
@@ -21,18 +32,7 @@ int BoardInfo::firstPair() const
     return mFirstPair;
 }
 
-void BoardInfo::setType(BoardType::Enum type)
-{
-    mType = type;
-}
-
-void BoardInfo::setNumber(int number)
-{
-    mNumber = number;
-}
-
 void BoardInfo::setFirstPair(int firstPair)
 {
     mFirstPair = firstPair;
 }
-

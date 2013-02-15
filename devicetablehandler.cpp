@@ -1,6 +1,10 @@
 #include "devicetablehandler.h"
 
 #include "converters.h"
+#include "Info/dslaminfo.h"
+#include "Info/oltinfo.h"
+#include "Info/switchinfo.h"
+#include "Models/boardtablemodel.h"
 
 DeviceTableHandler::DeviceTableHandler() :
     QXmlDefaultHandler()
@@ -36,11 +40,13 @@ bool DeviceTableHandler::endElement(const QString &namespaceURI, const QString &
 
     if ((qName == "switch")
             || (qName == "olt")) {
-        m_deviceList.push_back(m_currDeviceInfoElement);
+        mDeviceList.push_back(mCurrDeviceInfo);
     } else if (qName == "dslam") {
-        m_currDeviceInfoElement.objectCast<DslamInfo>()->boardListModel()->setBoardList(m_boardList);
-        m_currDeviceInfoElement.objectCast<DslamInfo>()->boardListModel()->setParentDevice(m_currDeviceInfoElement);
-        m_deviceList.push_back(m_currDeviceInfoElement);
+        DslamInfo::Ptr dslamInfo = mCurrDeviceInfo.objectCast<DslamInfo>();
+        BoardTableModel *boardTableModel = dslamInfo->boardTableModel();
+        boardTableModel->setBoardList(mBoardList);
+        boardTableModel->setParentDevice(dslamInfo);
+        mDeviceList.push_back(mCurrDeviceInfo);
     }
 //    else if(qName == "board")
 //    {
@@ -69,7 +75,7 @@ QString DeviceTableHandler::errorString() const
 
 QVector<DeviceInfo::Ptr> &DeviceTableHandler::deviceList()
 {
-    return m_deviceList;
+    return mDeviceList;
 }
 
 void DeviceTableHandler::parseSwitchElement(const QXmlAttributes &attributes)
@@ -77,9 +83,9 @@ void DeviceTableHandler::parseSwitchElement(const QXmlAttributes &attributes)
     QString name = attributes.value("name");
     QString ip = attributes.value("ip");
     DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
-    m_currDeviceInfoElement = DeviceInfo::Ptr(new SwitchInfo(name, ip, deviceModel));
-    m_currDeviceInfoElement.objectCast<SwitchInfo>()->setInetVlanTag(attributes.value("inetVlan").toUInt());
-    m_currDeviceInfoElement.objectCast<SwitchInfo>()->setIptvVlanTag(attributes.value("iptvVlan").toUInt());
+    mCurrDeviceInfo = DeviceInfo::Ptr(new SwitchInfo(name, ip, deviceModel));
+    mCurrDeviceInfo.objectCast<SwitchInfo>()->setInetVlanTag(attributes.value("inetVlan").toUInt());
+    mCurrDeviceInfo.objectCast<SwitchInfo>()->setIptvVlanTag(attributes.value("iptvVlan").toUInt());
 }
 
 void DeviceTableHandler::parseDslamElement(const QXmlAttributes &attributes)
@@ -88,12 +94,13 @@ void DeviceTableHandler::parseDslamElement(const QXmlAttributes &attributes)
     QString ip = attributes.value("ip");
     DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
 
-    m_currDeviceInfoElement = DslamInfo::Ptr(new DslamInfo(name, ip, deviceModel));
-    m_currDeviceInfoElement.objectCast<DslamInfo>()->boardListModel()->setParentDevice(m_currDeviceInfoElement);
-    m_boardList.clear();
+    mCurrDeviceInfo = DeviceInfo::Ptr(new DslamInfo(name, ip, deviceModel));
+    DslamInfo::Ptr dslamInfo = mCurrDeviceInfo.objectCast<DslamInfo>();
+    dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
+    mBoardList.clear();
 
-    m_currDeviceInfoElement.objectCast<DslamInfo>()->setAutoFill(attributes.value("autofill").toUInt());
-    m_currDeviceInfoElement.objectCast<DslamInfo>()->setAutoNumeringBoard(attributes.value("autonumeringboard").toUInt());
+    dslamInfo->setAutoFill(attributes.value("autofill").toUInt());
+    dslamInfo->setAutoNumeringBoard(attributes.value("autonumeringboard").toUInt());
 }
 
 void DeviceTableHandler::parseBoardElement(const QXmlAttributes &attributes)
@@ -102,8 +109,8 @@ void DeviceTableHandler::parseBoardElement(const QXmlAttributes &attributes)
     info.setType(BoardType::from(attributes.value("type")));
     info.setFirstPair(attributes.value("firstpair").toUInt());
     int number = attributes.value("number").toUInt();
-    info.setNumber(number);
-    m_boardList.insert(number, info);
+    info.setIndex(number);
+    mBoardList.insert(number, info);
 }
 
 void DeviceTableHandler::parseOltElement(const QXmlAttributes &attributes)
@@ -112,7 +119,7 @@ void DeviceTableHandler::parseOltElement(const QXmlAttributes &attributes)
     QString ip = attributes.value("ip");
     DeviceModel::Enum deviceModel = DeviceModel::from(attributes.value("model"));
 
-    m_currDeviceInfoElement = OltInfo::Ptr(new OltInfo(name, ip, deviceModel));
+    mCurrDeviceInfo = DeviceInfo::Ptr(new OltInfo(name, ip, deviceModel));
 }
 
 void DeviceTableHandler::parseUniOltProfileElement(const QXmlAttributes &attributes)
@@ -120,7 +127,7 @@ void DeviceTableHandler::parseUniOltProfileElement(const QXmlAttributes &attribu
     int index = attributes.value("index").toInt();
     QString name = attributes.value("name");
 
-    m_currDeviceInfoElement.objectCast<OltInfo>()->addServiceProfile(index, name);
+    mCurrDeviceInfo.objectCast<OltInfo>()->addServiceProfile(index, name);
 }
 
 void DeviceTableHandler::parseMultOltProfileElement(const QXmlAttributes &attributes)
@@ -128,5 +135,5 @@ void DeviceTableHandler::parseMultOltProfileElement(const QXmlAttributes &attrib
     int index = attributes.value("index").toInt();
     QString name = attributes.value("name");
 
-    m_currDeviceInfoElement.objectCast<OltInfo>()->addMulticastProfile(index, name);
+    mCurrDeviceInfo.objectCast<OltInfo>()->addMulticastProfile(index, name);
 }

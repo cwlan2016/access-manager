@@ -14,24 +14,14 @@ int AdslPortInfo::rxRate() const
     return mRxRate;
 }
 
-int AdslPortInfo::txRate() const
-{
-    return mTxRate;
-}
-
-QString AdslPortInfo::coding() const
-{
-    return mCoding;
-}
-
-QString AdslPortInfo::lineType() const
-{
-    return mLineType;
-}
-
 void AdslPortInfo::setRxRate(int rxRate)
 {
     mRxRate = rxRate;
+}
+
+int AdslPortInfo::txRate() const
+{
+    return mTxRate;
 }
 
 void AdslPortInfo::setTxRate(int txRate)
@@ -39,9 +29,19 @@ void AdslPortInfo::setTxRate(int txRate)
     mTxRate = txRate;
 }
 
+QString AdslPortInfo::coding() const
+{
+    return mCoding;
+}
+
 void AdslPortInfo::setCoding(QString coding)
 {
     mCoding = coding;
+}
+
+QString AdslPortInfo::lineType() const
+{
+    return mLineType;
 }
 
 void AdslPortInfo::setLineType(QString lineType)

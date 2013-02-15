@@ -1,7 +1,5 @@
 #include "boardtabledelegate.h"
 
-#include <QtWidgets/QComboBox>
-
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -10,31 +8,35 @@
 #include "converters.h"
 #endif
 
-BoardTableDelegate::BoardTableDelegate(DeviceModel::Enum deviceModel, QObject *parent) :
+BoardTableDelegate::BoardTableDelegate(DeviceModel::Enum deviceModel,
+                                       QObject *parent) :
     QItemDelegate(parent)
 {
     mDeviceModel = deviceModel;
 }
 
-QWidget *BoardTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *BoardTableDelegate::createEditor(QWidget *parent,
+                                          const QStyleOptionViewItem &option,
+                                          const QModelIndex &index) const
 {
-    if ((index.column() == mIndexTypeBoard) || (index.column() == mIndexFirstPair)) {
+    if ((index.column() == mIndexTypeBoard)
+            || (index.column() == mIndexFirstPair)) {
         return createComboBoxEditor(parent);
     } else {
-        //Делегат по умолчанию
         return QItemDelegate::createEditor(parent, option, index);
     }
 }
 
-void BoardTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+void BoardTableDelegate::setEditorData(QWidget *editor,
+                                       const QModelIndex &index) const
 {
     if (index.column() == mIndexTypeBoard) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
-        //запоминаем текст от предыдущего редактирвоания
+
         QString text = index.model()->data(index).toString();
 
         comboBox->setModel(fillTypeBoardComboBox());
-        //ищем запомненный итем в новой коллекции
+
         int indexFind = comboBox->findData(text, Qt::DisplayRole);
         comboBox->setCurrentIndex(indexFind);
 
@@ -42,25 +44,25 @@ void BoardTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index
     } else if (index.column() == mIndexFirstPair) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
         comboBox->setEditable(false);
-        //запоминаем текст от предыдущего редактирования
+
         QString text = index.model()->data(index).toString();
 
-        QModelIndex indexTypeBoard = index.model()->index(index.row(), mIndexTypeBoard);
+        QModelIndex indexTypeBoard = index.model()->index(index.row(),
+                                                          mIndexTypeBoard);
         QString typeBoard = index.model()->data(indexTypeBoard).toString();
         comboBox->setModel(fillFirstPairComboBox(mDeviceModel, typeBoard));
 
-        //ищем запомненный итем в новой коллекции
         if (!text.isEmpty()) {
             int indexFind = comboBox->findData(text, Qt::DisplayRole);
             comboBox->setCurrentIndex(indexFind);
         }
     } else {
-        //Делегат по умолчанию
         QItemDelegate::setEditorData(editor, index);
     }
 }
 
-void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                                      const QModelIndex &index) const
 {
     if (index.column() == mIndexTypeBoard) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
@@ -77,14 +79,14 @@ void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 
         QString firstPair = comboBox->currentText();
 
-        if (!firstPair.isEmpty())
+        if (!firstPair.isEmpty()) {
             firstPair = firstPair.split("-").at(0);
-        else
+        } else {
             return;
+        }
 
         model->setData(index, firstPair, Qt::EditRole);
     } else {
-        //Делегат по умолчанию
         QItemDelegate::setModelData(editor, model, index);
     }
 }
@@ -94,14 +96,14 @@ int BoardTableDelegate::indexTypeBoard()
     return mIndexTypeBoard;
 }
 
-int BoardTableDelegate::indexFirstPair()
-{
-    return mIndexFirstPair;
-}
-
 void BoardTableDelegate::setIndexTypeBoard(int index)
 {
     mIndexTypeBoard = index;
+}
+
+int BoardTableDelegate::indexFirstPair()
+{
+    return mIndexFirstPair;
 }
 
 void BoardTableDelegate::setIndexFirstPair(int index)
@@ -109,35 +111,40 @@ void BoardTableDelegate::setIndexFirstPair(int index)
     mIndexFirstPair = index;
 }
 
+QWidget *BoardTableDelegate::createComboBoxEditor(QWidget *parent) const
+{
+    QComboBox *editor = new QComboBox(parent);
+
+    connect(editor,
+            static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
+            this,
+            &BoardTableDelegate::commitAndCloseComboBoxEditor);
+
+    return editor;
+}
+
 void BoardTableDelegate::commitAndCloseComboBoxEditor(int index)
 {
     Q_UNUSED(index);
 
     QComboBox *editor = qobject_cast<QComboBox *>(sender());
+
     emit commitData(editor);
     emit closeEditor(editor);
-}
-
-QWidget *BoardTableDelegate::createComboBoxEditor(QWidget *parent) const
-{
-    QComboBox *editor = new QComboBox(parent);
-    connect(editor, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this, &BoardTableDelegate::commitAndCloseComboBoxEditor);
-    return editor;
 }
 
 QStringListModel *BoardTableDelegate::fillTypeBoardComboBox() const
 {
     QStringList stringList;
 
-    for (int i = 0; i < BoardType::Count; ++i) {
+    for (int i = 0; i < BoardType::Count; ++i)
         stringList.push_back(BoardType::BoardTypeName[i]);
-    }
 
     return new QStringListModel(stringList, (QObject *)this);
 }
 
-QStringListModel *BoardTableDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel, QString boardType) const
+QStringListModel *BoardTableDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel,
+                                                            QString boardType) const
 {
     int countPairs = countPorts(deviceModel, BoardType::from(boardType));
     int countBoards = 0;

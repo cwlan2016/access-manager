@@ -1,9 +1,7 @@
 #ifndef CONSTANT_H
 #define CONSTANT_H
 
-#include "QtCore/QString"
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
+#include "stdafx.h"
 
 const quint64 invalidParentIndex = 111111111;
 
@@ -86,8 +84,8 @@ const oid ltp8xONTStateReconfigure[] =                  { 1, 3, 6, 1, 4, 1, 3526
 const oid ltp8xONTStateReset[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 1, 1, 22, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 const oid ltp8xONTStateResetToDefaults[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 1, 1, 23, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0 };
 //last 1 number is index
-const oid ltp8xONTServicesName[] =                      { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 8, 1, 3, 0 };
-const oid ltp8xONTMulticastName[] =                     { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 7, 1, 3, 0 };
+const oid ltp8xONTServicesName[] =                      { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 8, 1, 3 };
+const oid ltp8xONTMulticastName[] =                     { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 7, 1, 3 };
 //MIBs для LTE-8ST
 //last 6 numbers is mac-address of device in decimal representation
 const oid lte8stONTConfigMAC[] =                        { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 16, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0 };
@@ -98,11 +96,11 @@ const oid lte8stONTConfigRulesProfile[] =               { 1, 3, 6, 1, 4, 1, 3526
 const oid lte8stONTConfigIpMulticastProfile[] =         { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 16, 1, 1, 4, 6, 0, 0, 0, 0, 0, 0 };
 const oid lte8stONTStateReconfigure[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 6, 1, 1, 9, 6, 0, 0, 0, 0, 0, 0 };
 //last 1 number is index
-const oid lte8stProfilesRulesDescription[] =            { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 20, 3, 1, 2, 0 };
-const oid lte8stProfilesIpMulticastDescription[] =      { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 20, 4, 1, 2, 0 };
+const oid lte8stProfilesRulesDescription[] =            { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 20, 3, 1, 2 };
+const oid lte8stProfilesIpMulticastDescription[] =      { 1, 3, 6, 1, 4, 1, 35265, 1, 21, 20, 4, 1, 2 };
 }
 
-namespace LoadProgramString
+namespace LoadProgramStrings
 {
 const QString LoadLocale =              QString::fromUtf8("Загрузка локализации...");
 const QString CreateWindow =            QString::fromUtf8("Создание окна программы...");
@@ -111,7 +109,7 @@ const QString LoadList =                QString::fromUtf8("Загрузка да
 const QString LoadConfig =              QString::fromUtf8("Загрузка конфигурации...");
 }
 
-namespace BasicDialogTitle
+namespace BasicDialogStrings
 {
 const QString Error =           QString::fromUtf8("Ошибка");
 const QString Info =            QString::fromUtf8("Информация");
@@ -119,7 +117,7 @@ const QString Warning =         QString::fromUtf8("Предупреждение"
 const QString Question =        QString::fromUtf8("Подтверждение");
 }
 
-namespace DeviceListModelColumn
+namespace DeviceTableModelStrings
 {
 const QString Name =            QString::fromUtf8("Название");
 const QString DeviceModel =     QString::fromUtf8("Модель");
@@ -127,7 +125,7 @@ const QString IP =              QString::fromUtf8("IP");
 const QString DeviceType =      QString::fromUtf8("Тип устройства");
 }
 
-namespace SwitchPortListModelColumn
+namespace SwitchPortTableModelStrings
 {
 const QString Number =          QString::fromUtf8("№");
 const QString State =           QString::fromUtf8("Статус");
@@ -135,7 +133,7 @@ const QString SpeedDuplex =     QString::fromUtf8("Скорость/Дуплек
 const QString Desc =            QString::fromUtf8("Описание");
 }
 
-namespace DslamPortListModelColumn
+namespace DslamPortTableModelStrings
 {
 const QString Pair =            QString::fromUtf8("Пара");
 const QString Port =            QString::fromUtf8("Порт");
@@ -151,21 +149,21 @@ const QString LastChange =      QString::fromUtf8("Последнее измен
 const QString Coding =          QString::fromUtf8("Кодирование");
 }
 
-namespace MacListModelColumn
+namespace MacTableModelStrings
 {
 const QString Port =            QString::fromUtf8("Порт");
 const QString Vlan =            QString::fromUtf8("Влан");
 const QString MacAddress =      QString::fromUtf8("Mac-адрес");
 }
 
-namespace BoardListModelColumn
+namespace BoardTableModelStrings
 {
 const QString Number =          QString::fromUtf8("№");
 const QString TypeBoard =       QString::fromUtf8("Тип доски");
 const QString Pairs =           QString::fromUtf8("Пары");
 }
 
-namespace OntTableModelColumn
+namespace OntTableModelStrings
 {
 const QString Id =                  QString::fromUtf8("Mac/Serial");
 const QString Model =               QString::fromUtf8("Модель");
@@ -175,7 +173,7 @@ const QString ServiceProfile =      QString::fromUtf8("Сервисный про
 const QString MulticastProfile =    QString::fromUtf8("Мультикастовый профиль");
 }
 
-namespace SnmpErrors
+namespace SnmpErrorStrings
 {
 const QString SetupSession =    QString::fromUtf8("Ошибка: Не удалось настроить SNMP сессию.");
 const QString OpenSession =     QString::fromUtf8("Ошибка: Не удалось открыть SNMP сессию.");
@@ -223,7 +221,7 @@ const QString AdslGLite =       QString::fromUtf8("2");
 }
 }
 
-namespace BatchUpdateLabel
+namespace BatchUpdateStrings
 {
 const QString Dslam =           QString::fromUtf8("Обновление данных о досках дсламов");
 const QString Switch =          QString::fromUtf8("Обновление данных о вланах коммутатора");
@@ -231,7 +229,7 @@ const QString Olt =             QString::fromUtf8("Обновление данн
 const QString AllDevices =      QString::fromUtf8("Обновление данных о всех устройствах");
 }
 
-namespace SnmpSettingsString
+namespace SnmpSettingsStrings
 {
 const QString port =                QString::fromUtf8("port");
 const QString readCommunity =       QString::fromUtf8("readCommunity");

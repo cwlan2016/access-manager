@@ -1,6 +1,5 @@
 #include "portlistvalidator.h"
 
-#include <QtCore/QStringList>
 #include "converters.h"
 
 PortListValidator::PortListValidator(DeviceModel::Enum deviceModel)
@@ -17,9 +16,9 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
         return Invalid;
 
     if (input[pos - 1] == '-' || input[pos - 1] == ',') {
-        if (input[pos - 2] == '-' || input[pos - 2] == ',')
+        if (input[pos - 2] == '-' || input[pos - 2] == ',') {
             return Invalid;
-        else if (input[pos - 1] == '-') {
+        } else if (input[pos - 1] == '-') {
             int posComma = input.lastIndexOf(",");
             int posDash = input.lastIndexOf(QRegExp("-[0-9]"));
 
@@ -46,13 +45,11 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
                     || (valueStringList.at(1).toInt() > count))
                 return Invalid;
 
-            if (valueStringList.at(1).toInt() < valueStringList.at(0).toInt()) {
+            if (valueStringList.at(1).toInt() < valueStringList.at(0).toInt())
                 return Intermediate;
-            }
         } else {
-            if (valueStringList.at(0).toInt() > count) {
+            if (valueStringList.at(0).toInt() > count)
                 return Invalid;
-            }
         }
     }
 

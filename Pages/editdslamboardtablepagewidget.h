@@ -18,19 +18,24 @@ class EditDslamBoardTablePageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo, DeviceTableModel *deviceListModel, QWidget *parent = 0);
+    explicit EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+                                           DeviceTableModel *deviceListModel,
+                                           QWidget *parent = 0);
     ~EditDslamBoardTablePageWidget();
+
 private:
-    void editBoardViewRequestContextMenu(QPoint point);
-    void renumeringBoardPairs();
-    void getBoardList();
     void editBoard();
     void removeBoard();
+
+    void getBoardList();
+    void renumeringBoardPairs();
+
     void autoUpdateBoardListStateChanged(bool state);
     void autoNumeringPairsStateChanged(bool state);
+    void editBoardViewRequestContextMenu(QPoint point);
 
     Ui::EditDslamBoardTablePageWidget *ui;
-    DeviceTableModel *mDeviceListModel;
+    DeviceTableModel *mDeviceTableModel;
 };
 
 #endif // EDITDSLAMBOARDTABLEPAGEWIDGET_H

@@ -1,28 +1,36 @@
 #ifndef SWITCHPORTINFO_H
 #define SWITCHPORTINFO_H
 
-#include <QtCore/QObject>
-#include <QtCore/QString>
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
+#include "stdafx.h"
+#endif
 
 class SwitchPortInfo : public QObject
 {
     Q_OBJECT
 public:
     SwitchPortInfo(QObject *parent);
-    int number() const;
+
+    int index() const;
+    void setIndex(int index);
+
     QString state() const;
-    QString desc() const;
-    QString speedDuplex() const;
-    void setNumber(int number);
     void setState(QString state);
-    void setDesc(QString desc);
+
+    QString speedDuplex() const;
     void setSpeedDuplex(QString speedDuplex);
 
+    QString description() const;
+    void setDescription(QString description);
+
     typedef SwitchPortInfo *Ptr;
+
 protected:
-    int mNumber;
-    QString mState;
+    int mIndex;
     QString mDesc;
+    QString mState;
     QString mSpeedDuplex;
 };
 

@@ -1,8 +1,6 @@
 #ifndef SWITCHPORTTABLEMODEL_H
 #define SWITCHPORTTABLEMODEL_H
 
-#include <QtCore/QAbstractTableModel>
-#include <QtCore/QBitArray>
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #include "../snmpclient.h"
@@ -19,43 +17,58 @@ class SwitchPortTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit SwitchPortTableModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
+    explicit SwitchPortTableModel(SwitchInfo::Ptr parentDevice,
+                                  QObject *parent = 0);
+
     int rowCount(const QModelIndex &parentDevice) const;
     int columnCount(const QModelIndex &parentDevice) const;
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    void sort(int column, Qt::SortOrder order);
+
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    //инициализация
-    QString error() const;
-    //информация по порту
+
+    void sort(int column, Qt::SortOrder order);
+
     bool memberMulticastVlan(int port);
+    bool setMemberMulticastVlan(int port, bool value);
+
     VlanState::Enum memberInetVlan(int port);
     VlanState::Enum memberIptvVlan(int port);
-    //настройка порта
-    bool setMemberMulticastVlan(int port, bool value);
+
     bool setMemberInternetService(int port);
     bool setMemberInternetWithIptvStbService(int port);
-    //обновление информации
+
     bool updateInfoPort(int indexPort);
     bool updateInfoAllPort();
+
     bool getVlanSettings();
+
+    QString error() const;
+
 private:
-    bool updateInfoPort(QScopedPointer<SnmpClient> &snmpClient, SwitchPortInfo::Ptr updatingPort);
     void createList();
-    bool getUnicastVlanSettings(const oid *oidVlan, int oidVlanLen, QBitArray &vlanPortArray, QString vlanName);
+
+    bool updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
+                        SwitchPortInfo::Ptr updatingPort);
+
+    bool getUnicastVlanSettings(OidPair oidVlan,
+                                QBitArray &vlanPortArray, QString vlanName);
     bool getMulticastVlanSettings();
-    bool sendVlanSetting(QVector<OidPair> &oidStringList, QList<QBitArray> &arrayList, bool ismv);
+
+    bool sendVlanSetting(QVector<OidPair> &oidStringList,
+                         QList<QBitArray> &arrayList, bool ismv);
 
     QString mError;
+    int mIptvMultVlanTag;
+    SwitchInfo::Ptr mParentDevice;
     QBitArray mInetVlanAllMember;
     QBitArray mInetVlanUntagMember;
-    int mIptvMultVlanTag;
+    QBitArray mMulticastVlanMember;
     QBitArray mIptvUnicastVlanAllMember;
     QBitArray mIptvUnicastVlanUntagMember;
     QVector<SwitchPortInfo::Ptr> mList;
-    QBitArray mMulticastVlanMember;
-    SwitchInfo::Ptr mParentDevice;
 };
 
 #endif // SWITCHPORTABLEMODEL_H

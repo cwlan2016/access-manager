@@ -9,8 +9,6 @@
 
 #include "lineedit.h"
 
-#include <QtWidgets/QStyle>
-
 LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
@@ -22,10 +20,12 @@ LineEdit::LineEdit(QWidget *parent)
     clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     clearButton->setToolTip(QString::fromUtf8("Очистить текст"));
     clearButton->hide();
+
     connect(clearButton, &QToolButton::clicked,
             this, &LineEdit::clear);
     connect(this, &LineEdit::textChanged,
             this, &LineEdit::updateCloseButton);
+
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
 #ifdef Q_WS_MAC
     setAttribute(Qt::WA_MacShowFocusRect, 0);
@@ -49,6 +49,7 @@ void LineEdit::updateCloseButton(const QString &text)
     if (!inputMask().isEmpty()) {
         QString temp = text;
         clearButton->setVisible(!temp.remove('-').isEmpty());
-    } else
+    } else {
         clearButton->setVisible(!text.isEmpty());
+    }
 }

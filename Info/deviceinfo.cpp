@@ -12,7 +12,8 @@ DeviceInfo::DeviceInfo(QObject *parent) :
     setDeviceModel(DeviceModel::Other);
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent) :
+DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
+                       QObject *parent) :
     QObject(parent)
 {
     mName = name;
@@ -25,34 +26,24 @@ QString DeviceInfo::name() const
     return mName;
 }
 
-QString DeviceInfo::ip() const
-{
-    return mIp;
-}
-
-DeviceModel::Enum DeviceInfo::deviceModel() const
-{
-    return mDeviceModel;
-}
-
-DeviceType::Enum DeviceInfo::deviceType() const
-{
-    return mDeviceType;
-}
-
-QString DeviceInfo::error() const
-{
-    return mError;
-}
-
 void DeviceInfo::setName(const QString name)
 {
     mName = name;
 }
 
-void DeviceInfo::setIP(const QString ip)
+QString DeviceInfo::ip() const
+{
+    return mIp;
+}
+
+void DeviceInfo::setIp(const QString ip)
 {
     mIp = ip;
+}
+
+DeviceModel::Enum DeviceInfo::deviceModel() const
+{
+    return mDeviceModel;
 }
 
 void DeviceInfo::setDeviceModel(const DeviceModel::Enum deviceModel)
@@ -61,9 +52,19 @@ void DeviceInfo::setDeviceModel(const DeviceModel::Enum deviceModel)
     mDeviceType = DeviceType::from(mDeviceModel);
 }
 
+DeviceType::Enum DeviceInfo::deviceType() const
+{
+    return mDeviceType;
+}
+
 void DeviceInfo::setDeviceType(const DeviceType::Enum deviceType)
 {
     mDeviceType = deviceType;
+}
+
+QString DeviceInfo::error() const
+{
+    return mError;
 }
 
 bool DeviceInfo::getServiceDataFromDevice()

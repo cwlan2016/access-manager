@@ -1,9 +1,6 @@
 #ifndef OLTINFO_H
 #define OLTINFO_H
 
-#include <QtCore/QStringListModel>
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
 #include "deviceinfo.h"
 
 class OltInfo : public DeviceInfo
@@ -11,23 +8,32 @@ class OltInfo : public DeviceInfo
     Q_OBJECT
 public:
     OltInfo(QObject *parent = 0);
-    OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel, QObject *parent = 0);
+    OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
+            QObject *parent = 0);
+
     QString serviceProfile(int index);
-    QString multicastProfile(int index);
     void addServiceProfile(int index, QString profileName);
+
+    QString multicastProfile(int index);
     void addMulticastProfile(int index, QString profileName);
-    bool getServiceDataFromDevice();
+
     OltProfileMap &serviceProfileList();
-    OltProfileMap &multicastProfileList();
     QStringListModel *serviceProfileListModel(QObject *parent = 0);
+
+    OltProfileMap &multicastProfileList();
     QStringListModel *multicastProfileListModel(QObject *parent = 0);
 
+    bool getServiceDataFromDevice();
+
     typedef QSharedPointer<OltInfo> Ptr;
+
 private:
+    bool getProfileList(OltProfileMap &profileList, OidPair oid);
+    QStringListModel *createStringListModel(OltProfileMap &profileList,
+                                                   QObject *parent);
+
     OltProfileMap mServiceProfileList;
     OltProfileMap mMulticastProfileList;
-    bool getProfileList(OltProfileMap &profileList, const oid *oidProfileName, int oidLen);
-    QStringListModel *createStringListModelFromMap(OltProfileMap &profileList, QObject *parent);
 };
 
 

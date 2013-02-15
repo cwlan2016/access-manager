@@ -1,11 +1,5 @@
 #include "devicetablemodel.h"
 
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtCore/QStringBuilder>
-#include <QtXmlPatterns/QXmlSchema>
-#include <QtXmlPatterns/QXmlSchemaValidator>
-#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../config.h"
@@ -14,6 +8,7 @@
 #include "../devicetablehandler.h"
 #include "../snmpclient.h"
 #include "../Info/boardinfo.h"
+#include "../Models/boardtablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "config.h"
@@ -22,6 +17,7 @@
 #include "devicetablehandler.h"
 #include "snmpclient.h"
 #include "Info/boardinfo.h"
+#include "Models/boardtablemodel.h"
 #endif
 
 // Columns
@@ -56,26 +52,28 @@ QVariant DeviceTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0)
-            return int(Qt::AlignLeft | Qt::AlignVCenter); //имя слева
-        else
-            return int(Qt::AlignCenter | Qt::AlignVCenter); //ip и type в центре
+        if (index.column() == 0) {
+            return int(Qt::AlignLeft | Qt::AlignVCenter);
+        } else {
+            return int(Qt::AlignCenter | Qt::AlignVCenter);
+        }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0)
-            return mList[index.row()]->name();
-        else if (index.column() == 1)
-            return DeviceModel::toString(mList[index.row()]->deviceModel());
-        else if (index.column() == 2)
-            return mList[index.row()]->ip();
-        else if (index.column() == 3)
-            return DeviceType::toString(mList[index.row()]->deviceType());
-        else
-            return QVariant();
-    } else
-        return QVariant();
+        if (index.column() == 0) {
+            return mList.at(index.row())->name();
+        } else if (index.column() == 1) {
+            return DeviceModel::toString(mList.at(index.row())->deviceModel());
+        }  else if (index.column() == 2) {
+            return mList.at(index.row())->ip();
+        } else if (index.column() == 3) {
+            return DeviceType::toString(mList.at(index.row())->deviceType());
+        }
+    }
+
+    return QVariant();
 }
 
-bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
+                               int role)
 {
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
@@ -85,15 +83,14 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, 
             mList[index.row()]->setName(value.toString().trimmed());
             emit dataChanged(index, index);
             mModified = true;
-
             return true;
         } else if (index.column() == 1) {
-            DeviceModel::Enum newModel = DeviceModel::from(value.toString().trimmed());
+            DeviceModel::Enum newModel = DeviceModel::from(value.toString());
             DeviceType::Enum newType = DeviceType::from(newModel);
 
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
 
-            if (mList[index.row()]->deviceType() == DeviceType::Other) {
+            if (mList.at(index.row())->deviceType() == DeviceType::Other) {
                 //device only now added
                 DeviceInfo::Ptr deviceInfo;
 
@@ -101,7 +98,8 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, 
                     deviceInfo = DeviceInfo::Ptr(new SwitchInfo(this));
                 } else if (newType == DeviceType::Dslam) {
                     deviceInfo = DeviceInfo::Ptr(new DslamInfo(this));
-                    deviceInfo.objectCast<DslamInfo>()->boardListModel()->setParentDevice(deviceInfo);
+                    DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+                    dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
                 } else if (newType == DeviceType::Olt) {
                     deviceInfo = DeviceInfo::Ptr(new OltInfo(this));
                 } else {
@@ -109,12 +107,13 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, 
                 }
 
                 deviceInfo->setName(mList[index.row()]->name());
-                deviceInfo->setIP(mList[index.row()]->ip());
+                deviceInfo->setIp(mList[index.row()]->ip());
                 deviceInfo->setDeviceModel(newModel);
 
                 mList[index.row()] = deviceInfo;
             } else if (mList[index.row()]->deviceType() != newType) {
-                BasicDialogs::information(NULL, BasicDialogTitle::Info, QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
+                BasicDialogs::information(0, BasicDialogStrings::Info,
+                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
                 return false;
             } else {
                 mList[index.row()]->setDeviceModel(newModel);
@@ -127,11 +126,12 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, 
             return true;
         } else if (index.column() == 2) {
             if (!validIpAddress(value.toString())) {
-                BasicDialogs::information(NULL, trUtf8("Редактирование IP адреса"), trUtf8("Некорректный IP адрес."));
+                BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
+                                          trUtf8("Некорректный IP адрес."));
                 return false;
             }
 
-            mList[index.row()]->setIP(value.toString().trimmed());
+            mList[index.row()]->setIp(value.toString().trimmed());
             emit dataChanged(index, index);
             mModified = true;
 
@@ -142,20 +142,22 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value, 
     return false;
 }
 
-QVariant DeviceTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DeviceTableModel::headerData(int section, Qt::Orientation orientation,
+                                      int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0)
-            return DeviceListModelColumn::Name;
-        else if (section == 1)
-            return DeviceListModelColumn::DeviceModel;
-        else if (section == 2)
-            return DeviceListModelColumn::IP;
-        else if (section == 3)
-            return DeviceListModelColumn::DeviceType;
+        if (section == 0) {
+            return DeviceTableModelStrings::Name;
+        } else if (section == 1) {
+            return DeviceTableModelStrings::DeviceModel;
+        } else if (section == 2) {
+            return DeviceTableModelStrings::IP;
+        } else if (section == 3) {
+            return DeviceTableModelStrings::DeviceType;
+        }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {
@@ -200,9 +202,9 @@ bool DeviceTableModel::removeRow(int row, const QModelIndex &parent)
     return true;
 }
 
-QVector<DeviceInfo::Ptr> &DeviceTableModel::deviceList()
+bool DeviceTableModel::isModified()
 {
-    return mList;
+    return mModified;
 }
 
 void DeviceTableModel::setModified(bool state)
@@ -210,22 +212,17 @@ void DeviceTableModel::setModified(bool state)
     mModified = state;
 }
 
-BoardTableModel *DeviceTableModel::boardListModel(QModelIndex index)
-{
-    return mList.at(index.row()).objectCast<DslamInfo>()->boardListModel();
-}
-
 bool DeviceTableModel::load()
 {
     beginResetModel();
 
+    mList.clear();
+
     if (!exist()) {
-        mList.clear();
         endResetModel();
+
         return true;
     }
-
-    mList.clear();
 
     QFile file(mDeviceListPath);
 
@@ -234,10 +231,9 @@ bool DeviceTableModel::load()
                  .arg(file.fileName())
                  .arg(file.errorString());
         endResetModel();
+
         return false;
     }
-
-    //проверка схемы списка устройств
 
     QXmlSchema schema;
     QFile schemaFile(QString::fromUtf8(":/xsd/devicelist.xsd"));
@@ -248,6 +244,7 @@ bool DeviceTableModel::load()
         mError = QString::fromUtf8("Файл схемы содержит ошибки.");
         file.close();
         endResetModel();
+
         return false;
     }
 
@@ -260,7 +257,6 @@ bool DeviceTableModel::load()
         return false;
     }
 
-    //парсинг списка устройств
     file.seek(0);
     DeviceTableHandler handler;
     QXmlSimpleReader reader;
@@ -293,15 +289,13 @@ bool DeviceTableModel::save()
     QFile file(mDeviceListPath);
     QFileInfo fileInfo(mDeviceListPath);
 
-    if (!fileInfo.dir().exists()) {
+    if (!fileInfo.dir().exists())
         fileInfo.dir().mkpath(fileInfo.dir().path());
-    }
 
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         mError = QString::fromUtf8("Ошибка: невозможно открыть файл на запись %1: %2")
                  .arg(file.fileName())
                  .arg(file.errorString());
-
         return false;
     }
 
@@ -313,8 +307,8 @@ bool DeviceTableModel::save()
 
     writer.writeStartElement("devicelist");
 
-    auto it = mList.cbegin();
-    auto end = mList.cend();
+    auto it = mList.constBegin();
+    auto end = mList.constEnd();
     for (; it != end; ++it) {
         if ((*it)->deviceType() == DeviceType::Switch) {
             createSwitchElement(writer, (*it).objectCast<SwitchInfo>());
@@ -334,9 +328,14 @@ bool DeviceTableModel::save()
     return true;
 }
 
-bool DeviceTableModel::isModified()
+QVector<DeviceInfo::Ptr> &DeviceTableModel::deviceList()
 {
-    return mModified;
+    return mList;
+}
+
+BoardTableModel *DeviceTableModel::boardListModel(QModelIndex index)
+{
+    return mList.at(index.row()).objectCast<DslamInfo>()->boardTableModel();
 }
 
 int DeviceTableModel::inetVlan(QModelIndex index)
@@ -395,13 +394,13 @@ bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
     }
 
     DslamInfo::Ptr deviceInfo = mList.at(index.row()).objectCast<DslamInfo>();
-    bool result = deviceInfo->boardListModel()->getBoardListFromDevice();
+    bool result = deviceInfo->boardTableModel()->getBoardListFromDevice();
 
     if (deviceInfo->autoNumeringBoard())
-        deviceInfo->boardListModel()->renumeringPairList();
+        deviceInfo->boardTableModel()->renumeringPairList();
 
     if (!result) {
-        mError = deviceInfo->boardListModel()->error();
+        mError = deviceInfo->boardTableModel()->error();
         return false;
     } else {
         mModified = true;
@@ -470,7 +469,8 @@ void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer, const DslamInfo::Ptr &deviceInfo)
+void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
+                                          const DslamInfo::Ptr &deviceInfo)
 {
     writer.writeStartElement("dslam");
 
@@ -480,12 +480,12 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer, const DslamI
     writer.writeAttribute("autofill", QString::number(deviceInfo->autoFill()));
     writer.writeAttribute("autonumeringboard", QString::number(deviceInfo->autoNumeringBoard()));
 
-    auto it = deviceInfo->boardListModel()->boardList().constBegin();
-    auto end = deviceInfo->boardListModel()->boardList().constEnd();
+    auto it = deviceInfo->boardTableModel()->boardList().constBegin();
+    auto end = deviceInfo->boardTableModel()->boardList().constEnd();
     for (; it != end; ++it) {
         writer.writeStartElement("board");
 
-        writer.writeAttribute("number", QString::number((*it).number()));
+        writer.writeAttribute("number", QString::number((*it).index()));
         writer.writeAttribute("firstpair", QString::number((*it).firstPair()));
         writer.writeAttribute("type", BoardType::toString((*it).type()));
 
@@ -495,7 +495,8 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer, const DslamI
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createOltElement(QXmlStreamWriter &writer, const OltInfo::Ptr &deviceInfo)
+void DeviceTableModel::createOltElement(QXmlStreamWriter &writer,
+                                        const OltInfo::Ptr &deviceInfo)
 {
     writer.writeStartElement("olt");
 
@@ -509,15 +510,17 @@ void DeviceTableModel::createOltElement(QXmlStreamWriter &writer, const OltInfo:
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createOltProfileList(QXmlStreamWriter &writer, const OltProfileMap &profileMap, QString typeElem)
+void DeviceTableModel::createOltProfileList(QXmlStreamWriter &writer,
+                                            const OltProfileMap &profileMap,
+                                            QString typeElem)
 {
-    auto it = profileMap.cbegin();
-    auto end = profileMap.cend();
+    auto it = profileMap.constBegin();
+    auto end = profileMap.constEnd();
     for (; it != end; ++it) {
         writer.writeStartElement(typeElem);
 
-        writer.writeAttribute("index", QString::number((*it).first));
-        writer.writeAttribute("name", (*it).second);
+        writer.writeAttribute("index", QString::number(it.key()));
+        writer.writeAttribute("name", it.value());
 
         writer.writeEndElement();
     }

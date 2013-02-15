@@ -1,12 +1,9 @@
 #include "basicdialogs.h"
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QPushButton>
-
 namespace BasicDialogs
 {
-bool okToDelete(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
+bool okToDelete(QWidget *parent, const QString &title, const QString &text,
+                const QString detailedText)
 {
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -14,7 +11,8 @@ bool okToDelete(QWidget *parent, const QString &title, const QString &text, cons
         messageBox ->setWindowModality(Qt::WindowModal);
 
     messageBox->setIcon(QMessageBox::Question);
-    messageBox->setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), title));
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(qApp->applicationName(), title));
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
@@ -22,7 +20,8 @@ bool okToDelete(QWidget *parent, const QString &title, const QString &text, cons
 
     QAbstractButton *deleteButton = messageBox->addButton(QString::fromUtf8("Удалить"),
                                     QMessageBox::AcceptRole);
-    messageBox->addButton(QString::fromUtf8("Не удалять"), QMessageBox::RejectRole);
+    messageBox->addButton(QString::fromUtf8("Не удалять"),
+                          QMessageBox::RejectRole);
     messageBox->setDefaultButton(qobject_cast<QPushButton *>(deleteButton));
 
     messageBox->exec();
@@ -30,21 +29,21 @@ bool okToDelete(QWidget *parent, const QString &title, const QString &text, cons
     return messageBox->clickedButton() == deleteButton;
 }
 
-void error(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
+void error(QWidget *parent, const QString &title, const QString &text,
+           const QString detailedText)
 {
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
-    if (parent) {
+    if (parent)
         messageBox->setWindowModality(Qt::WindowModal);
-    }
 
     messageBox->setIcon(QMessageBox::Critical);
-    messageBox->setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), title));
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(qApp->applicationName(), title));
     messageBox->setText(text);
 
-    if (!detailedText.isEmpty()) {
+    if (!detailedText.isEmpty())
         messageBox->setDetailedText(detailedText);
-    }
 
     messageBox->addButton(QMessageBox::Ok);
 
@@ -52,7 +51,7 @@ void error(QWidget *parent, const QString &title, const QString &text, const QSt
 }
 
 void information(QWidget *parent, const QString &title, const QString &text,
-                 const QString &detailedText)
+                 const QString detailedText)
 {
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -60,7 +59,8 @@ void information(QWidget *parent, const QString &title, const QString &text,
         messageBox->setWindowModality(Qt::WindowModal);
 
     messageBox->setIcon(QMessageBox::Information);
-    messageBox->setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), title));
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(qApp->applicationName(), title));
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
@@ -72,7 +72,7 @@ void information(QWidget *parent, const QString &title, const QString &text,
 }
 
 void warning(QWidget *parent, const QString &title, const QString &text,
-             const QString &detailedText)
+             const QString detailedText)
 {
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -80,7 +80,8 @@ void warning(QWidget *parent, const QString &title, const QString &text,
         messageBox->setWindowModality(Qt::WindowModal);
 
     messageBox->setIcon(QMessageBox::Warning);
-    messageBox->setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), title));
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(qApp->applicationName(), title));
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())
@@ -92,7 +93,7 @@ void warning(QWidget *parent, const QString &title, const QString &text,
 }
 
 bool question(QWidget *parent, const QString &title, const QString &text,
-              const QString &detailedText)
+              const QString detailedText)
 {
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 
@@ -100,7 +101,8 @@ bool question(QWidget *parent, const QString &title, const QString &text,
         messageBox->setWindowModality(Qt::WindowModal);
 
     messageBox->setIcon(QMessageBox::Question);
-    messageBox->setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), title));
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(qApp->applicationName(), title));
     messageBox->setText(text);
 
     if (!detailedText.isEmpty())

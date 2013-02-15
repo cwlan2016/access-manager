@@ -1,8 +1,5 @@
 #include "mactablemodel.h"
 
-#include <QtCore/QStringBuilder>
-#include <QtGui/QFont>
-#include <QtWidgets/QApplication>
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -32,6 +29,13 @@ MacTableModel::~MacTableModel()
         delete mList;
 }
 
+int MacTableModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+
+    return mList->size();
+}
+
 int MacTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
@@ -52,33 +56,30 @@ QVariant MacTableModel::data(const QModelIndex &index, int role) const
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (index.column() == 0) {
-            return mList->at(index.row())->numberPort();
+            return mList->at(index.row())->port();
         } else if (index.column() == 1) {
             return mList->at(index.row())->vlanName();
         } else if (index.column() == 2) {
             return mList->at(index.row())->mac();
-        } else {
-            return QVariant();
         }
     }
 
     return QVariant();
 }
 
-QVariant MacTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant MacTableModel::headerData(int section, Qt::Orientation orientation,
+                                   int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
 
     if (role == Qt::DisplayRole) {
         if (section == 0) {
-            return MacListModelColumn::Port;
+            return MacTableModelStrings::Port;
         } else if (section == 1) {
-            return MacListModelColumn::Vlan;
+            return MacTableModelStrings::Vlan;
         } else if (section == 2) {
-            return MacListModelColumn::MacAddress;
-        } else {
-            return QVariant();
+            return MacTableModelStrings::MacAddress;
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -98,18 +99,6 @@ Qt::ItemFlags MacTableModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-int MacTableModel::rowCount(const QModelIndex &parent) const
-{
-    Q_UNUSED(parent);
-
-    return mList->size();
-}
-
-QString MacTableModel::error() const
-{
-    return mError;
-}
-
 bool MacTableModel::update()
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
@@ -117,12 +106,12 @@ bool MacTableModel::update()
     snmp->setIp(mParentDevice->ip());
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrors::SetupSession;
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
     if (!snmp->openSession()) {
-        mError = SnmpErrors::OpenSession;
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
@@ -132,17 +121,24 @@ bool MacTableModel::update()
         delete mList;
 
     mList = new QVector<MacInfo::Ptr>();
+    mList->reserve(26);
 
     //TODO: Make handling errors
-    updateMacInVlan(snmp, mParentDevice->inetVlanTag(), "Inet");
-    updateMacInVlan(snmp, mParentDevice->iptvVlanTag(), "IPTV Unicast");
+    updateMacsInVlan(snmp, mParentDevice->inetVlanTag(), "Inet");
+    updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(), "IPTV Unicast");
 
     endResetModel();
 
     return true;
 }
 
-void MacTableModel::updateMacInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag, QString vlanName)
+QString MacTableModel::error() const
+{
+    return mError;
+}
+
+void MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
+                                     long vlanTag, QString vlanName)
 {
     oid *vlanMacOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
     size_t lenVlanNameOid = 14;
@@ -153,11 +149,12 @@ void MacTableModel::updateMacInVlan(QScopedPointer<SnmpClient> &snmpClient, long
     while (snmpClient->sendRequest()) {
         netsnmp_variable_list *vars = snmpClient->varList();
 
-        if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name, vars->name_length, lenVlanNameOid) != 0)
+        if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name,
+                              vars->name_length, lenVlanNameOid) != 0)
             break;
 
         MacInfo::Ptr macInfo = new MacInfo(this);
-        macInfo->setNumberPort(*(vars->val.integer));
+        macInfo->setPort(*(vars->val.integer));
         macInfo->setVlanName(vlanName);
         macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));
 
