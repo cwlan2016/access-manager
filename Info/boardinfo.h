@@ -2,15 +2,18 @@
 #define BOARDINFO_H
 
 #ifdef _MSC_VER
+#include "../stdafx.h"
 #include "../customtypes.h"
 #else
+#include "stdafx.h"
 #include "customtypes.h"
 #endif
 
-class BoardInfo
+class BoardInfo : public QObject
 {
+    Q_OBJECT
 public:
-    BoardInfo();
+    BoardInfo(QObject *parent = 0);
 
     int index() const;
     void setIndex(int index);
@@ -20,6 +23,8 @@ public:
 
     int firstPair() const;
     void setFirstPair(int firstPair);
+
+    typedef BoardInfo *Ptr;
 
 private:
     int mNumber;

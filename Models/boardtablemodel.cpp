@@ -18,8 +18,9 @@
 // 1 - type_board
 // 2 - range pairs
 
-BoardTableModel::BoardTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+BoardTableModel::BoardTableModel(DslamInfo *parentDevice, QObject *parent) :
+    QAbstractTableModel(parent),
+    mParentDevice(parentDevice)
 {
 }
 
@@ -61,19 +62,19 @@ QVariant BoardTableModel::data(const QModelIndex &index, int role) const
         if (index.column() == 0) {
             return index.row();
         } else if ((index.column() == 1) && mList.contains(index.row())) {
-            return BoardType::toString(mList[index.row()].type());
+            return BoardType::toString(mList[index.row()]->type());
         } else if ((index.column() == 2) && mList.contains(index.row())) {
             if (role == Qt::DisplayRole) {
-                return rangePairs(mList[index.row()].firstPair(),
-                        mList[index.row()].type());
+                return rangePairs(mList[index.row()]->firstPair(),
+                        mList[index.row()]->type());
             } else {
-                return mList[index.row()].firstPair();
+                return mList[index.row()]->firstPair();
             }
         }
     } else if (role == Qt::UserRole) {
         if (index.column() == 1) {
             if (mList.contains(index.row())) {
-                return mList[index.row()].type();
+                return mList[index.row()]->type();
             } else {
                 return BoardType::Other;
             }
@@ -90,17 +91,17 @@ bool BoardTableModel::setData(const QModelIndex &index, const QVariant &value,
         return false;
 
     if ((!mList.contains(index.row())) && !value.isNull()) {
-        mList.insert(index.row(), BoardInfo());
-        mList[index.row()].setIndex(index.row());
+        mList.insert(index.row(), new BoardInfo(this));
+        mList[index.row()]->setIndex(index.row());
     }
 
     if (index.column() == 1) {
-        mList[index.row()].setType(BoardType::from(value.toString()));
+        mList[index.row()]->setType(BoardType::from(value.toString()));
         emit dataChanged(index, index);
 
         return true;
     } else if (index.column() == 2) {
-        mList[index.row()].setFirstPair(value.toInt());
+        mList[index.row()]->setFirstPair(value.toInt());
         emit dataChanged(index, index);
 
         return true;
@@ -172,34 +173,31 @@ bool BoardTableModel::removeRow(int row, const QModelIndex &parent)
     return true;
 }
 
-QHash<int, BoardInfo> BoardTableModel::boardList() const
+QHash<int, BoardInfo::Ptr> BoardTableModel::boardList() const
 {
     return mList;
 }
 
-void BoardTableModel::setBoardList(QHash<int, BoardInfo> &boardList)
+void BoardTableModel::addBoard(int index, BoardType::Enum type,
+                               int firstPair)
 {
-    beginResetModel();
+    BoardInfo::Ptr boardInfo = new BoardInfo(this);
+    boardInfo->setIndex(index);
+    boardInfo->setType(type);
+    boardInfo->setFirstPair(firstPair);
 
-    mList.clear();
-
-    auto it = boardList.constBegin();
-    auto end = boardList.constEnd();
-    for (; it != end; ++it)
-        mList.insert(it.key(), it.value());
-
-    endResetModel();
+    mList.insert(index, boardInfo);
 }
 
-DslamInfo::Ptr BoardTableModel::parentDevice()
+DslamInfo *BoardTableModel::parentDevice()
 {
     return mParentDevice;
 }
 
-void BoardTableModel::setParentDevice(const DslamInfo::Ptr &parent)
-{
-    mParentDevice = parent;
-}
+//void BoardTableModel::setParentDevice(const DslamInfo::Ptr &parent)
+//{
+//    mParentDevice = parent;
+//}
 
 bool BoardTableModel::getBoardListFromDevice()
 {
@@ -255,11 +253,12 @@ bool BoardTableModel::getBoardListFromDevice()
             if ((boardIndex == 7) || (boardIndex == 8))
                 continue;
 
-            BoardInfo info;
-            info.setIndex(boardIndex);
-            info.setType(boardTypeFromBoardName(boardName));
+            addBoard(boardIndex, boardTypeFromBoardName(boardName), 1);
+            //BoardInfo::Ptr info = new BoardInfo(this);
+            //info->setIndex(boardIndex);
+            //info->setType(boardTypeFromBoardName(boardName));
 
-            mList.insert(boardIndex, info);
+            //mList.insert(boardIndex, info);
         }
     } else {
         mError = SnmpErrorStrings::GetInfo;
@@ -287,12 +286,12 @@ void BoardTableModel::renumeringPairList()
         if (!mList.contains(i))
             continue;
 
-        if ((mList[i].type() == BoardType::AnnexA)
-                || (mList[i].type() == BoardType::AnnexB)) {
-            mList[i].setFirstPair(firstAdslPair);
+        if ((mList[i]->type() == BoardType::AnnexA)
+                || (mList[i]->type() == BoardType::AnnexB)) {
+            mList[i]->setFirstPair(firstAdslPair);
             firstAdslPair += adslStep;
-        } else if (mList[i].type() == BoardType::Shdsl) {
-            mList[i].setFirstPair(firstShdslPair);
+        } else if (mList[i]->type() == BoardType::Shdsl) {
+            mList[i]->setFirstPair(firstShdslPair);
             firstShdslPair += shdslStep;
         }
     }

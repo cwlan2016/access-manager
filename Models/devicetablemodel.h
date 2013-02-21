@@ -52,9 +52,18 @@ public:
     QString error() const;
 
 private:
-
     bool exist();
     bool backup();
+
+    void readNextElement(QXmlStreamReader &reader);
+
+    void parseSwitchElement(QXmlStreamReader &reader);
+    void parseDslamElement(QXmlStreamReader &reader);
+    void parseDslamBoardList(QXmlStreamReader &reader,
+                             DeviceInfo::Ptr deviceInfo);
+    void parseOltElement(QXmlStreamReader &reader);
+    void parseOltProfileList(QXmlStreamReader &reader,
+                             DeviceInfo::Ptr deviceInfo);
 
     void createSwitchElement(QXmlStreamWriter &writer,
                              const SwitchInfo::Ptr &deviceInfo);

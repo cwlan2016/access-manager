@@ -9,16 +9,15 @@
 DeviceInfo::DeviceInfo(QObject *parent) :
     QObject(parent)
 {
-    setDeviceModel(DeviceModel::Other);
+    //setDeviceModel(DeviceModel::Other);
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
-                       QObject *parent) :
+DeviceInfo::DeviceInfo(QString name, QString ip, QObject *parent) :
     QObject(parent)
 {
     mName = name;
     mIp = ip;
-    setDeviceModel(deviceModel);
+    //setDeviceModel(deviceModel);
 }
 
 QString DeviceInfo::name() const
@@ -43,23 +42,12 @@ void DeviceInfo::setIp(const QString ip)
 
 DeviceModel::Enum DeviceInfo::deviceModel() const
 {
-    return mDeviceModel;
-}
-
-void DeviceInfo::setDeviceModel(const DeviceModel::Enum deviceModel)
-{
-    mDeviceModel = deviceModel;
-    mDeviceType = DeviceType::from(mDeviceModel);
+    return DeviceModel::Other;
 }
 
 DeviceType::Enum DeviceInfo::deviceType() const
 {
-    return mDeviceType;
-}
-
-void DeviceInfo::setDeviceType(const DeviceType::Enum deviceType)
-{
-    mDeviceType = deviceType;
+    return DeviceType::Other;
 }
 
 QString DeviceInfo::error() const
@@ -70,4 +58,15 @@ QString DeviceInfo::error() const
 bool DeviceInfo::getServiceDataFromDevice()
 {
     return false;
+}
+
+void DeviceInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+{
+    Q_UNUSED(snmpClient)
+    Q_UNUSED(portIndex)
+}
+
+void DeviceInfo::parsePdu(SnmpClient::Ptr snmpClient)
+{
+    Q_UNUSED(snmpClient)
 }

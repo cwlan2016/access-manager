@@ -15,7 +15,7 @@ class BoardTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit BoardTableModel(QObject *parent = 0);
+    explicit BoardTableModel(DslamInfo *parentDevice, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -28,11 +28,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool removeRow(int row, const QModelIndex &parent);
 
-    QHash<int, BoardInfo> boardList() const;
-    void setBoardList(QHash<int, BoardInfo> &boardList);
+    QHash<int, BoardInfo::Ptr> boardList() const;
+    void addBoard(int index, BoardType::Enum type, int firstPair);
 
-    DslamInfo::Ptr parentDevice();
-    void setParentDevice(const DslamInfo::Ptr &parent);
+    DslamInfo *parentDevice();
 
     bool getBoardListFromDevice();
     void renumeringPairList();
@@ -43,8 +42,9 @@ private:
     QString rangePairs(int firstPair, BoardType::Enum typeBoard) const;
 
     QString mError;
-    DslamInfo::Ptr mParentDevice;
-    QHash<int, BoardInfo> mList;
+    //TODO: Check access to this member on isNull.
+    DslamInfo *mParentDevice;
+    QHash<int, BoardInfo::Ptr> mList;
 };
 
 #endif // BOARDTABLEMODEL_H

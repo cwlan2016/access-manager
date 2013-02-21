@@ -5,18 +5,34 @@
 #include "../config.h"
 #include "../constant.h"
 #include "../converters.h"
-#include "../devicetablehandler.h"
 #include "../snmpclient.h"
 #include "../Info/boardinfo.h"
+#include "../Info/dslaminfoma5300.h"
+#include "../Info/dslaminfoma5600.h"
+#include "../Info/dslaminfomxa32.h"
+#include "../Info/dslaminfomxa64.h"
+#include "../Info/oltinfolte8st.h"
+#include "../Info/oltinfoltp8x.h"
+#include "../Info/switchinfodes3526.h"
+#include "../Info/switchinfodes3528.h"
+#include "../Info/switchinfodes3550.h"
 #include "../Models/boardtablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "config.h"
 #include "constant.h"
 #include "converters.h"
-#include "devicetablehandler.h"
 #include "snmpclient.h"
 #include "Info/boardinfo.h"
+#include "Info/dslaminfoma5300.h"
+#include "Info/dslaminfoma5600.h"
+#include "Info/dslaminfomxa32.h"
+#include "Info/dslaminfomxa64.h"
+#include "Info/oltinfolte8st.h"
+#include "Info/oltinfoltp8x.h"
+#include "Info/switchinfodes3526.h"
+#include "Info/switchinfodes3528.h"
+#include "Info/switchinfodes3550.h"
 #include "Models/boardtablemodel.h"
 #endif
 
@@ -98,8 +114,9 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
                     deviceInfo = DeviceInfo::Ptr(new SwitchInfo(this));
                 } else if (newType == DeviceType::Dslam) {
                     deviceInfo = DeviceInfo::Ptr(new DslamInfo(this));
-                    DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
-                    dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
+                    //FIXME: Setup new type created device.
+                    //DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+                    //dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
                 } else if (newType == DeviceType::Olt) {
                     deviceInfo = DeviceInfo::Ptr(new OltInfo(this));
                 } else {
@@ -108,7 +125,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
                 deviceInfo->setName(mList[index.row()]->name());
                 deviceInfo->setIp(mList[index.row()]->ip());
-                deviceInfo->setDeviceModel(newModel);
+                //deviceInfo->setDeviceModel(newModel);
 
                 mList[index.row()] = deviceInfo;
             } else if (mList[index.row()]->deviceType() != newType) {
@@ -116,7 +133,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
                                           QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
                 return false;
             } else {
-                mList[index.row()]->setDeviceModel(newModel);
+                //mList[index.row()]->setDeviceModel(newModel);
             }
 
             emit dataChanged(index, index);
@@ -258,28 +275,38 @@ bool DeviceTableModel::load()
     }
 
     file.seek(0);
-    DeviceTableHandler handler;
-    QXmlSimpleReader reader;
-    reader.setContentHandler(&handler);
-    reader.setErrorHandler(&handler);
-    QXmlInputSource xmlInputSource(&file);
 
-    if (!reader.parse(xmlInputSource)) {
-        mError = reader.errorHandler()->errorString();
-        file.close();
+    QXmlStreamReader reader(&file);
 
-        return false;
+    reader.readNextStartElement(); //read root
+    reader.readNextStartElement(); //read first element
+
+    while (!reader.atEnd()) {
+        if (reader.name() == "dslam") {
+            parseDslamElement(reader);
+            continue;
+        } else if (reader.name() == "switch") {
+            parseSwitchElement(reader);
+            continue;
+        } else if (reader.name() == "olt") {
+            parseOltElement(reader);
+            continue;
+        } else {
+            reader.skipCurrentElement();
+            continue;
+        }
+
+        readNextElement(reader);
     }
 
     file.close();
-
-    mList = handler.deviceList();
 
     endResetModel();
     mModified = false;
 
     return true;
 }
+
 
 bool DeviceTableModel::save()
 {
@@ -455,6 +482,190 @@ bool DeviceTableModel::backup()
     return true;
 }
 
+void DeviceTableModel::readNextElement(QXmlStreamReader &reader)
+{
+    while (!reader.atEnd()) {
+        reader.readNext();
+
+        if (reader.isStartElement())
+            return;
+    }
+}
+
+void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
+{
+    QString modelString = reader.attributes().value("model").toString();
+    DeviceModel::Enum switchModel = DeviceModel::from(modelString);
+    DeviceInfo::Ptr switchInfo;
+
+    switch (switchModel)
+    {
+    case DeviceModel::DES3526:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(this));
+        break;
+    case DeviceModel::DES3528:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(this));
+        break;
+    case DeviceModel::DES3550:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(this));
+        break;
+    default:
+        reader.skipCurrentElement();
+        return;
+    }
+
+    if (switchInfo.isNull())
+        return;
+
+    int inetVlan = reader.attributes().value("inetVlan").toString().toInt();
+    int iptvVlan = reader.attributes().value("iptvVlan").toString().toInt();
+
+    switchInfo->setName(reader.attributes().value("name").toString());
+    switchInfo->setIp(reader.attributes().value("ip").toString());
+    switchInfo.objectCast<SwitchInfo>()->setInetVlanTag(inetVlan);
+    switchInfo.objectCast<SwitchInfo>()->setIptvVlanTag(iptvVlan);
+
+    readNextElement(reader);
+
+    mList.push_back(switchInfo);
+}
+
+void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
+{
+    QString modelString = reader.attributes().value("model").toString();
+    DeviceModel::Enum dslamModel = DeviceModel::from(modelString);
+    DeviceInfo::Ptr dslamInfo;
+
+    switch (dslamModel)
+    {
+    case DeviceModel::MA5600:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(this));
+        break;
+    case DeviceModel::MA5300:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(this));
+        break;
+    case DeviceModel::MXA32:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(this));
+        break;
+    case DeviceModel::MXA64:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(this));
+        break;
+    default:
+        reader.skipCurrentElement();
+        return;
+    }
+
+    if (dslamInfo.isNull())
+        return;
+
+    short autoFill = reader.attributes().value("autofill").toString().toInt();
+    short autoNumering = reader.attributes().value("autonumeringboard").toString().toInt();
+
+    dslamInfo->setName(reader.attributes().value("name").toString());
+    dslamInfo->setIp(reader.attributes().value("ip").toString());
+    dslamInfo.objectCast<DslamInfo>()->setAutoFill(autoFill);
+    dslamInfo.objectCast<DslamInfo>()->setAutoNumeringBoard(autoNumering);
+
+    readNextElement(reader);
+
+    if (reader.atEnd())
+        return;
+
+    if (reader.name() == "board")
+        parseDslamBoardList(reader, dslamInfo);
+
+    mList.push_back(dslamInfo);
+}
+
+void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
+                                           DeviceInfo::Ptr deviceInfo)
+{
+    DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+
+    int index;
+    int firstPair;
+    BoardType::Enum type;
+
+    while (reader.name() == "board") {
+        index = reader.attributes().value("number").toString().toInt();
+        firstPair = reader.attributes().value("firstpair").toString().toInt();
+        type = BoardType::from(reader.attributes().value("type").toString());
+        dslamInfo->boardTableModel()->addBoard(index, type, firstPair);
+
+        readNextElement(reader);
+
+        if (reader.atEnd())
+            return;
+    }
+}
+
+void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
+{
+    QString modelString = reader.attributes().value("model").toString();
+    DeviceModel::Enum oltModel = DeviceModel::from(modelString);
+    DeviceInfo::Ptr oltInfo;
+
+    switch (oltModel)
+    {
+    case DeviceModel::LTE8ST:
+        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(this));
+        break;
+    case DeviceModel::LTP8X:
+        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(this));
+        break;
+    default:
+        reader.skipCurrentElement();
+        return;
+    }
+
+    if (oltInfo.isNull())
+        return;
+
+    oltInfo->setName(reader.attributes().value("name").toString());
+    oltInfo->setIp(reader.attributes().value("ip").toString());
+
+    readNextElement(reader);
+
+    if (reader.atEnd())
+        return;
+
+    if ((reader.name() == "uniprofile") || (reader.name() == "multprofile"))
+        parseOltProfileList(reader, oltInfo);
+
+
+    mList.push_back(oltInfo);
+}
+
+void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
+                                           DeviceInfo::Ptr deviceInfo)
+{
+    OltInfo::Ptr oltInfo = deviceInfo.objectCast<OltInfo>();
+
+    int index;
+    QString name;
+
+    while (true) {
+        if (reader.name() == "uniprofile") {
+            index = reader.attributes().value("index").toString().toInt();
+            name = reader.attributes().value("name").toString();
+
+            oltInfo->addServiceProfile(index, name);
+        } else if (reader.name() == "multprofile") {
+            index = reader.attributes().value("index").toString().toInt();
+            name = reader.attributes().value("name").toString();
+
+            oltInfo->addMulticastProfile(index, name);
+        } else {
+            break;
+        }
+
+        readNextElement(reader);
+
+        if (reader.atEnd())
+            return;
+    }
+}
+
 void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
         const SwitchInfo::Ptr &deviceInfo)
 {
@@ -485,9 +696,9 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
     for (; it != end; ++it) {
         writer.writeStartElement("board");
 
-        writer.writeAttribute("number", QString::number((*it).index()));
-        writer.writeAttribute("firstpair", QString::number((*it).firstPair()));
-        writer.writeAttribute("type", BoardType::toString((*it).type()));
+        writer.writeAttribute("number", QString::number((*it)->index()));
+        writer.writeAttribute("firstpair", QString::number((*it)->firstPair()));
+        writer.writeAttribute("type", BoardType::toString((*it)->type()));
 
         writer.writeEndElement();
     }

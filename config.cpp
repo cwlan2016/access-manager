@@ -9,7 +9,7 @@ void Config::init()
                   % "\\Application Data\\" % qApp->organizationName() % "\\";
 #else
     mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
-                  % qApp->organizationName() "\\";
+                  % "/." % qApp->organizationName() % "/";
 #endif
 }
 

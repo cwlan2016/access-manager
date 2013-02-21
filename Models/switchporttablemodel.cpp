@@ -346,7 +346,7 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
         return false;
     }
 
-    SwitchPortInfo::Ptr currentPort;
+    SwitchPortInfo::Ptr currentPort = 0;
 
     auto it = mList.constBegin();
     auto end = mList.constEnd();
@@ -356,6 +356,9 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
             break;
         }
     }
+
+    if (!currentPort)
+        return false;
 
     return updateInfoPort(snmpClient, currentPort);
 }

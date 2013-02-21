@@ -4,12 +4,10 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
-#include "../snmpclient.h"
 #else
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
-#include "snmpclient.h"
 #endif
 
 SwitchInfo::SwitchInfo(QObject *parent) :
@@ -19,9 +17,8 @@ SwitchInfo::SwitchInfo(QObject *parent) :
 {
 }
 
-SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
-                       QObject *parent) :
-    DeviceInfo(name, ip, deviceModel, parent)
+SwitchInfo::SwitchInfo(QString name, QString ip, QObject *parent) :
+    DeviceInfo(name, ip, parent)
 {
 }
 
@@ -43,6 +40,11 @@ int SwitchInfo::iptvVlanTag() const
 void SwitchInfo::setIptvVlanTag(int vlanTag)
 {
     mIptvVlanTag = vlanTag;
+}
+
+DeviceType::Enum SwitchInfo::deviceType() const
+{
+    return DeviceType::Switch;
 }
 
 bool SwitchInfo::getServiceDataFromDevice()
@@ -134,8 +136,8 @@ bool SwitchInfo::saveConfig()
 
     snmp->setIp(mIp);
 
-    if ((mDeviceModel == DeviceModel::DES3526)
-            || (mDeviceModel == DeviceModel::DES3550)) {
+    if ((deviceModel() == DeviceModel::DES3526)
+            || (deviceModel() == DeviceModel::DES3550)) {
         if (!snmp->setupSession(SessionType::ReadSession)) {
             mError = SnmpErrorStrings::SetupSession;
             return false;
@@ -185,10 +187,10 @@ bool SwitchInfo::saveConfig()
 
     OidPair saveOid = createOidPair(Mib::agentSaveCfg, 12);
 
-    if ((mDeviceModel == DeviceModel::DES3526)
-            || (mDeviceModel == DeviceModel::DES3550)) {
+    if ((deviceModel() == DeviceModel::DES3526)
+            || (deviceModel() == DeviceModel::DES3550)) {
         snmp->addOid(saveOid, "3", 'i');
-    } else if (mDeviceModel == DeviceModel::DES3528) {
+    } else if (deviceModel() == DeviceModel::DES3528) {
         snmp->addOid(saveOid, "5", 'i');
     } else {
         mError = QString::fromUtf8("Неизвестная модель коммутатора.");

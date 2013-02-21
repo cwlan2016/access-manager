@@ -104,7 +104,7 @@ void DslamPageWidget::downDslPort()
 
     //if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
     //    return;
-    if (ui->dslamTreeView->model()->metaObject()->className() != "DslamPortTableModel")
+    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
     DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
@@ -127,7 +127,7 @@ void DslamPageWidget::showPortListModel()
 
     //if (typeid(BoardTableModel) != typeid(*ui->dslamTreeView->model()))
     //    return;
-    if (ui->dslamTreeView->model()->metaObject()->className() != "BoardTableModel")
+    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "BoardTableModel") != 0)
         return;
 
     BoardTableModel *boardListModel = static_cast<BoardTableModel *>(ui->dslamTreeView->model());

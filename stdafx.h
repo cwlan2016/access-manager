@@ -16,6 +16,7 @@
 #include <QtCore/QStringBuilder>
 #include <QtCore/QStringListModel>
 #include <QtCore/QVector>
+#include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
 #include <QtGui/QBrush>

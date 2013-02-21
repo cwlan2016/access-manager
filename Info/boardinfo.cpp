@@ -1,9 +1,8 @@
 #include "boardinfo.h"
 
-BoardInfo::BoardInfo() :
+BoardInfo::BoardInfo(QObject *parent) : QObject(parent),
     mFirstPair(1),
     mType(BoardType::AnnexA)
-
 {
 }
 

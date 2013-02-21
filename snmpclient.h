@@ -26,6 +26,9 @@ public:
     bool sendRequest();
 
     netsnmp_variable_list *varList();
+
+    typedef SnmpClient *Ptr;
+
 private:
     QString mIp;
 

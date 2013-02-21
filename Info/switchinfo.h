@@ -3,19 +3,26 @@
 
 #include "deviceinfo.h"
 
+#ifdef _MSC_VER
+#include "../snmpclient.h"
+#else
+#include "snmpclient.h"
+#endif
+
 class SwitchInfo : public DeviceInfo
 {
     Q_OBJECT
 public:
-    SwitchInfo(QObject *parent = 0);
-    SwitchInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
-               QObject *parent = 0);
+    explicit SwitchInfo(QObject *parent = 0);
+    SwitchInfo(QString name, QString ip, QObject *parent = 0);
 
     int inetVlanTag() const;
     void setInetVlanTag(int vlanTag);
 
     int iptvVlanTag() const;
     void setIptvVlanTag(int vlanTag);
+
+    DeviceType::Enum deviceType() const;
 
     bool getServiceDataFromDevice();
 

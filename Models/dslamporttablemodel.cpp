@@ -294,7 +294,6 @@ void DslamPortTableModel::createList()
 
     if ((mBoardType == BoardType::AnnexA)
             || (mBoardType == BoardType::AnnexB)) {
-        //mList.clear();
 
         for (int i = 0; i < count; ++i) {
             AdslPortInfo::Ptr portInfo = new AdslPortInfo(this);
@@ -303,7 +302,6 @@ void DslamPortTableModel::createList()
             mList[i]->setPair(mFirstPair + i);
         }
     } else if (mBoardType == BoardType::Shdsl) {
-        //mList.clear();
 
         for (int i = 0; i < count; ++i) {
             ShdslPortInfo::Ptr portInfo = new ShdslPortInfo(this);

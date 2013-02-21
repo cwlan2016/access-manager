@@ -17,9 +17,8 @@ OltInfo::OltInfo(QObject *parent) :
 {
 }
 
-OltInfo::OltInfo(QString name, QString ip, DeviceModel::Enum deviceModel,
-                 QObject *parent) :
-    DeviceInfo(name, ip, deviceModel, parent)
+OltInfo::OltInfo(QString name, QString ip, QObject *parent) :
+    DeviceInfo(name, ip, parent)
 {
 }
 
@@ -69,6 +68,11 @@ QStringListModel *OltInfo::multicastProfileListModel(QObject *parent)
     return createStringListModel(mMulticastProfileList, parent);
 }
 
+DeviceType::Enum OltInfo::deviceType() const
+{
+    return DeviceType::Olt;
+}
+
 bool OltInfo::getServiceDataFromDevice()
 {
     mError.clear();
@@ -76,10 +80,10 @@ bool OltInfo::getServiceDataFromDevice()
 
     OidPair serviceProfileOid;
     OidPair multicastProfileOid;
-    if (mDeviceModel == DeviceModel::LTP8X) {
+    if (deviceModel() == DeviceModel::LTP8X) {
         serviceProfileOid = createOidPair(Mib::ltp8xONTServicesName, 13);
         multicastProfileOid = createOidPair(Mib::ltp8xONTMulticastName, 13);
-    } else if (mDeviceModel == DeviceModel::LTE8ST) {
+    } else if (deviceModel() == DeviceModel::LTE8ST) {
         serviceProfileOid = createOidPair(Mib::lte8stProfilesRulesDescription, 13);
         multicastProfileOid = createOidPair(Mib::lte8stProfilesIpMulticastDescription, 13);
     } else {

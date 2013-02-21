@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml xmlpatterns widgets
+QT       += core gui xmlpatterns widgets
 
 TARGET = AccessManager
 TEMPLATE = app
@@ -31,7 +31,6 @@ SOURCES += main.cpp\
     Info/snmpconfiginfo.cpp \
     converters.cpp \
     Info/deviceinfo.cpp \
-    devicetablehandler.cpp \
     Info/dslaminfo.cpp \
     Info/boardinfo.cpp \
     Models/boardtablemodel.cpp \
@@ -58,7 +57,16 @@ SOURCES += main.cpp\
     Models/onttablemodel.cpp \
     Info/ontinfo.cpp \
     Info/nteinfo.cpp \
-    Info/ntpinfo.cpp
+    Info/ntpinfo.cpp \
+    Info/switchinfodes3526.cpp \
+    Info/switchinfodes3528.cpp \
+    Info/switchinfodes3550.cpp \
+    Info/dslaminfoma5600.cpp \
+    Info/dslaminfoma5300.cpp \
+    Info/dslaminfomxa32.cpp \
+    Info/dslaminfomxa64.cpp \
+    Info/oltinfolte8st.cpp \
+    Info/oltinfoltp8x.cpp
 
 HEADERS  += mainwindow.h \
     Models/mactablemodel.h \
@@ -73,7 +81,6 @@ HEADERS  += mainwindow.h \
     Info/snmpconfiginfo.h \
     converters.h \
     Info/deviceinfo.h \
-    devicetablehandler.h \
     Info/dslaminfo.h \
     Info/boardinfo.h \
     Models/boardtablemodel.h \
@@ -101,7 +108,16 @@ HEADERS  += mainwindow.h \
     Info/ontinfo.h \
     Info/nteinfo.h \
     Info/ntpinfo.h \
-    lineedit.h
+    lineedit.h \
+    Info/switchinfodes3526.h \
+    Info/switchinfodes3528.h \
+    Info/switchinfodes3550.h \
+    Info/dslaminfoma5600.h \
+    Info/dslaminfoma5300.h \
+    Info/dslaminfomxa32.h \
+    Info/dslaminfomxa64.h \
+    Info/oltinfolte8st.h \
+    Info/oltinfoltp8x.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \
@@ -115,20 +131,12 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-win32:debug
-{
-LIBS += -lnetsnmpd
-}
+win32:debug:LIBS += -lnetsnmpd
+win32:release:LIBS += -lnetsnmp
+!win32:LIBS += -lnetsnmp
 
-win32:release {
-LIBS += -lnetsnmp
-}
-
-win32
-{
-LIBS += -lwsock32
-LIBS += -ladvapi32
-}
+win32:LIBS+= -lwsock32
+win32:LIBS+= -ladvapi32
 
 OTHER_FILES += \
     images/up16.png \
