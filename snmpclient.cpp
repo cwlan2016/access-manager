@@ -1,6 +1,7 @@
 #include "snmpclient.h"
 
 #include "Info/snmpconfiginfo.h"
+#include "customsnmpfunctions.h"
 
 SnmpClient::SnmpClient()
 {
@@ -11,11 +12,19 @@ SnmpClient::SnmpClient()
 
 SnmpClient::~SnmpClient()
 {
+    freeOid(mGarbageCollector);
+
+    if (mBaseSession.community)
+        delete[] mBaseSession.community;
+
+    if (mBaseSession.peername)
+        delete[] mBaseSession.peername;
+
     if (mResponsePdu)
         snmp_free_pdu(mResponsePdu);
 
     if (mSnmpSession)
-        snmp_close(mSnmpSession);
+        snmp_close(mSnmpSession); //TODO: Check this function in source snmplib
 }
 
 void SnmpClient::setIp(QString ip)
@@ -99,16 +108,19 @@ void SnmpClient::clearResponse()
 
 void SnmpClient::addOid(const OidPair &oid)
 {
+    mGarbageCollector.push_back(oid.first);
     snmp_add_null_var(mPdu, oid.first, oid.second);
 }
 
 void SnmpClient::addOid(const OidPair &oid, QString value, char type)
 {
+    mGarbageCollector.push_back(oid.first);
     snmp_add_var(mPdu, oid.first, oid.second, type, value.toLatin1().data());
 }
 
 void SnmpClient::addOid(const oid *someOid, size_t size)
 {
+    mGarbageCollector.push_back(someOid);
     snmp_add_null_var(mPdu, someOid, size);
 }
 
@@ -124,6 +136,7 @@ void SnmpClient::addOid(const oid *someOid, size_t size)
 // b: BITS
 void SnmpClient::addOid(const oid *someOid, size_t size, QString value, char type)
 {
+    mGarbageCollector.push_back(someOid);
     snmp_add_var(mPdu, someOid, size, type, value.toLatin1().data());
 }
 

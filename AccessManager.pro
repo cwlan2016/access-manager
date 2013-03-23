@@ -66,7 +66,10 @@ SOURCES += main.cpp\
     Info/dslaminfomxa32.cpp \
     Info/dslaminfomxa64.cpp \
     Info/oltinfolte8st.cpp \
-    Info/oltinfoltp8x.cpp
+    Info/oltinfoltp8x.cpp \
+    Info/switchportinfodes3526.cpp \
+    Info/switchportinfodes3528.cpp \
+    Info/switchportinfodes3550.cpp
 
 HEADERS  += mainwindow.h \
     Models/mactablemodel.h \
@@ -117,7 +120,10 @@ HEADERS  += mainwindow.h \
     Info/dslaminfomxa32.h \
     Info/dslaminfomxa64.h \
     Info/oltinfolte8st.h \
-    Info/oltinfoltp8x.h
+    Info/oltinfoltp8x.h \
+    Info/switchportinfodes3526.h \
+    Info/switchportinfodes3528.h \
+    Info/switchportinfodes3550.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \

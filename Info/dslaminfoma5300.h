@@ -11,9 +11,6 @@ public:
     DslamInfoMa5300(QString name, QString ip, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
-
-    void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    void parsePdu(SnmpClient::Ptr snmpClient);
 };
 
 #endif // DSLAMINFOMA5300_H

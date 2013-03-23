@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
     a.processEvents();
 
     splash.showMessage(LoadProgramStrings::LoadLocale);
-    QTranslator *qt_translator = new QTranslator;
+    QTranslator translator;// = new QTranslator();
 
-    if (qt_translator->load(":tr/qtbase_ru.qm")) {
-        a.installTranslator(qt_translator);
+    if (translator.load(":tr/qtbase_ru.qm")) {
+        a.installTranslator(&translator);
     }
 
     a.processEvents();

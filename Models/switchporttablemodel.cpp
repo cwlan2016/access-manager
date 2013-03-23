@@ -5,11 +5,17 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
+#include "../Info/switchportinfodes3526.h"
+#include "../Info/switchportinfodes3528.h"
+#include "../Info/switchportinfodes3550.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
+#include "Info/switchportinfodes3526.h"
+#include "Info/switchportinfodes3528.h"
+#include "Info/switchportinfodes3550.h"
 #endif
 
 // Columns
@@ -192,7 +198,9 @@ bool SwitchPortTableModel::setMemberMulticastVlan(int port, bool value)
     QList<QBitArray> arrayList;
     arrayList.push_back(mMulticastVlanMember);
 
-    return sendVlanSetting(oidList, arrayList, true);
+    bool result = sendVlanSetting(oidList, arrayList, true);
+
+    return result;
 }
 
 VlanState::Enum SwitchPortTableModel::memberInetVlan(int port)
@@ -219,28 +227,28 @@ VlanState::Enum SwitchPortTableModel::memberIptvVlan(int port)
 
 bool SwitchPortTableModel::setMemberInternetService(int port)
 {
-    bool result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()),
-                                         mInetVlanAllMember, "Inet");
+    OidPair vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag());
+    bool result = getUnicastVlanSettings(vlanMemberOid, mInetVlanAllMember, "Inet");
 
     if (!result)
         return false;
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag()),
-                                    mInetVlanUntagMember, "Inet");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mInetVlanUntagMember, "Inet");
 
     if (!result)
         return false;
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanAllMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanAllMember, "IPTV Unicast");
 
     if (!result) {
         return false;
 
     }
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanUntagMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanUntagMember, "IPTV Unicast");
 
     if (!result) {
         return false;
@@ -276,26 +284,26 @@ bool SwitchPortTableModel::setMemberInternetService(int port)
 
 bool SwitchPortTableModel::setMemberInternetWithIptvStbService(int port)
 {
-    bool result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()),
-                                         mInetVlanAllMember, "Inet");
+    OidPair vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag());
+    bool result = getUnicastVlanSettings(vlanMemberOid, mInetVlanAllMember, "Inet");
 
     if (!result)
         return false;
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag()),
-                                    mInetVlanUntagMember, "Inet");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mInetVlanUntagMember, "Inet");
 
     if (!result)
         return false;
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanAllMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanAllMember, "IPTV Unicast");
 
     if (!result)
         return false;
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanUntagMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanUntagMember, "IPTV Unicast");
 
     if (!result)
         return false;
@@ -360,7 +368,20 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
     if (!currentPort)
         return false;
 
-    return updateInfoPort(snmpClient, currentPort);
+    snmpClient->createPdu(SNMP_MSG_GET);
+
+    currentPort->fillPdu(snmpClient.data());
+
+    if (snmpClient->sendRequest()) {
+        currentPort->parsePdu(snmpClient.data());
+
+        emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 3));
+    } else {
+        mError = SnmpErrorStrings::GetInfo;
+        return false;
+    }
+
+    return true;
 }
 
 bool SwitchPortTableModel::updateInfoAllPort()
@@ -382,14 +403,21 @@ bool SwitchPortTableModel::updateInfoAllPort()
     }
 
     int count = mList.size();
-    bool result = true;
 
-    for (int i = 0; i < count; ++i)
-        result &= updateInfoPort(snmpClient, mList[i]);
+    for (int indexPort = 0; indexPort < count; ++indexPort) {
+        snmpClient->createPdu(SNMP_MSG_GET);
+        mList[indexPort]->fillPdu(snmpClient.data());
 
-    if (!result)
-        BasicDialogs::error(0, BasicDialogStrings::Error,
-                            QString::fromUtf8("При получении информации по портам произошли ошибки."));
+        if (snmpClient->sendRequest()) {
+            mList[indexPort]->parsePdu(snmpClient.data());
+
+            emit dataChanged(index(indexPort, 1), index(indexPort, 3));
+            snmpClient->clearResponse();
+        } else {
+            mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
+            return false;
+        }
+    }
 
     return true;
 }
@@ -398,20 +426,20 @@ bool SwitchPortTableModel::getVlanSettings()
 {
     QString allErrors;
 
-    bool result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()),
-                                         mInetVlanAllMember, "Inet");
+    OidPair vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag());
+    bool result = getUnicastVlanSettings(vlanMemberOid, mInetVlanAllMember, "Inet");
 
-    result &= getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag()),
-                                    mInetVlanUntagMember, "Inet");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag());
+    result &= getUnicastVlanSettings(vlanMemberOid, mInetVlanUntagMember, "Inet");
 
     if (!result)
         allErrors += mError + "\n";
 
-    result = getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanAllMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag());
+    result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanAllMember, "IPTV Unicast");
 
-    result &= getUnicastVlanSettings(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag()),
-                                    mIptvUnicastVlanUntagMember, "IPTV Unicast");
+    vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag());
+    result &= getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanUntagMember, "IPTV Unicast");
 
     if (!result)
         allErrors += mError + "\n";
@@ -427,77 +455,6 @@ bool SwitchPortTableModel::getVlanSettings()
     return true;
 }
 
-bool SwitchPortTableModel::updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
-                                         SwitchPortInfo::Ptr updatingPort)
-{
-    int indexPort = updatingPort->index();
-
-    snmpClient->createPdu(SNMP_MSG_GET);
-    snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, indexPort));
-
-    if (mParentDevice->deviceModel() == DeviceModel::DES3526) {
-        snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3526, 15, indexPort));
-    } else if (mParentDevice->deviceModel() == DeviceModel::DES3528) {
-        long NumPort[] = {indexPort, 1};
-        snmpClient->addOid(createOid(Mib::swL2PortInfoNwayStatusDES3528, 15, NumPort, 2, 1), 17);
-
-        if (indexPort == 25 || indexPort == 26)
-            snmpClient->addOid(createOid(Mib::swL2PortInfoNwayStatusDES3528, 15, NumPort, 2, 1), 17);
-    } else if (mParentDevice->deviceModel() == DeviceModel::DES3550) {
-        snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3550, 15, indexPort));
-    } else {
-        snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3526, 15, indexPort));
-    }
-
-    snmpClient->addOid(createOidPair(Mib::ifAlias, 11, indexPort));
-
-    if (snmpClient->sendRequest()) {
-        netsnmp_variable_list *vars = snmpClient->varList();
-
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        updatingPort->setState(switchStatePortString(*vars->val.integer));
-        emit dataChanged(index(indexPort - 1, 0), index(indexPort - 1, 0));
-
-        vars = vars->next_variable;
-
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        if ((mParentDevice->deviceModel() == DeviceModel::DES3528) &&
-                (indexPort == 25 || indexPort == 26)) {
-            QString cupperState = speedDuplexString(mParentDevice->deviceModel(), *vars->val.integer);
-
-            vars = vars->next_variable;
-
-            if (!isValidSnmpValue(vars))
-                return false;
-
-            QString opticState = speedDuplexString(mParentDevice->deviceModel(), *(vars->val.integer));
-
-            updatingPort->setSpeedDuplex(opticState % " | " % cupperState);
-            emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 1));
-        } else {
-            updatingPort->setSpeedDuplex(speedDuplexString(mParentDevice->deviceModel(), *(vars->val.integer)));
-            emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 1));
-        }
-
-        vars = vars->next_variable;
-
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        updatingPort->setDescription(toQString(vars->val.string, vars->val_len));
-        emit dataChanged(index(indexPort - 1, 2), index(indexPort - 1, 2));
-    } else {
-        mError = SnmpErrorStrings::GetInfo;
-        return false;
-    }
-
-    return true;
-}
-
 QString SwitchPortTableModel::error() const
 {
     return mError;
@@ -509,14 +466,30 @@ void SwitchPortTableModel::createList()
     mList.reserve(count);
 
     for (int i = 1; i <= count; ++i) {
-        SwitchPortInfo::Ptr portInfo = new SwitchPortInfo(this);
+        SwitchPortInfo::Ptr portInfo = 0;
+
+        switch (mParentDevice->deviceModel())
+        {
+        case DeviceModel::DES3526:
+            portInfo = new SwitchPortInfoDes3526(this);
+            break;
+        case DeviceModel::DES3528:
+            portInfo = new SwitchPortInfoDes3528(this);
+            break;
+        case DeviceModel::DES3550:
+            portInfo = new SwitchPortInfoDes3550(this);
+            break;
+        default:
+            return;
+        }
+
         portInfo->setIndex(i);
 
         mList.push_back(portInfo);
     }
 }
 
-bool SwitchPortTableModel::getUnicastVlanSettings(OidPair oidVlan,
+bool SwitchPortTableModel::getUnicastVlanSettings(const OidPair &oidVlan,
                                                   QBitArray &vlanPortArray,
                                                   QString vlanName)
 {
@@ -526,18 +499,17 @@ bool SwitchPortTableModel::getUnicastVlanSettings(OidPair oidVlan,
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrorStrings::SetupSession;
+
         return false;
     }
 
     if (!snmp->openSession()) {
         mError = SnmpErrorStrings::OpenSession;
+
         return false;
     }
 
     snmp->createPdu(SNMP_MSG_GET);
-
-    //oid *portsVlanOid = createOid(oidVlan, oidVlanLen);
-    //size_t portsVlanOidLen = oidVlanLen;
 
     snmp->addOid(oidVlan);
 
@@ -552,6 +524,7 @@ bool SwitchPortTableModel::getUnicastVlanSettings(OidPair oidVlan,
                                    oidVlan.second) != 0)) {
             mError = QString::fromUtf8("Ошибка: Не удалось получить данные по влану %1.")
                      .arg(vlanName);
+
             return false;
         }
 
@@ -586,36 +559,13 @@ bool SwitchPortTableModel::getMulticastVlanSettings()
 
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
 
-    //size_t oidLen;
-
-//    if ((mParentDevice->deviceModel() == DeviceModel::DES3526)
-//            || (mParentDevice->deviceModel() == DeviceModel::DES3550)) {
-//        oidLen = 15;
-//    } else if (mParentDevice->deviceModel() == DeviceModel::DES3528) {
-//        oidLen = 13;
-//    } else {
-//        return false;
-//    }
-
-    //oid *multicastVlanOid;
-    //size_t multicastVlanOidLen = oidLen;
-
-    //oid *nextOid;
-    //size_t nextOidLen = oidLen;
-
     OidPair mvrMemberOid;
     if (mParentDevice->deviceModel() == DeviceModel::DES3526) {
         mvrMemberOid = createOidPair(Mib::swL2IGMPMulticastVlanMemberPortDES3526, 15);
-        //multicastVlanOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3526, oidLen);
-        //nextOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3526, oidLen);
     } else if (mParentDevice->deviceModel() == DeviceModel::DES3528) {
         mvrMemberOid = createOidPair(Mib::swL2IGMPMulticastVlanMemberPortDES3528, 13);
-        //multicastVlanOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3528, oidLen);
-        //nextOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3528, oidLen);
     } else if (mParentDevice->deviceModel() == DeviceModel::DES3550) {
         mvrMemberOid = createOidPair(Mib::swL2IGMPMulticastVlanMemberPortDES3550, 15);
-        //multicastVlanOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3550, oidLen);
-        //nextOid = createOid(Mib::swL2IGMPMulticastVlanMemberPortDES3550, oidLen);
     } else {
         return false;
     }
@@ -630,8 +580,7 @@ bool SwitchPortTableModel::getMulticastVlanSettings()
                                    vars->name, vars->name_length,
                                    mvrMemberOid.second) != 0)) {
             mError = QString::fromUtf8("Ошибка: Не удалось получить данные по Multicast влану.");
-            //delete[] nextOid;
-            //delete[] multicastVlanOid;
+
             return false;
         }
 
@@ -641,12 +590,9 @@ bool SwitchPortTableModel::getMulticastVlanSettings()
         return true;
     } else {
         mError = QString::fromUtf8("Ошибка: Не удалось получить данные по Multicast влану.");
+
         return false;
     }
-
-    //delete[] nextOid;
-    //delete[] multicastVlanOid;
-    //return result;
 }
 
 bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList,

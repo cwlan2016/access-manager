@@ -85,7 +85,7 @@ void DslamPageWidget::upDslPort()
 {
     QModelIndex currentPort = currentDslamXdslPort();
 
-    if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
+    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
     DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
@@ -102,8 +102,6 @@ void DslamPageWidget::downDslPort()
 {
     QModelIndex currentPort = currentDslamXdslPort();
 
-    //if (typeid(DslamPortTableModel) != typeid(*ui->dslamTreeView->model()))
-    //    return;
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
@@ -125,8 +123,6 @@ void DslamPageWidget::showPortListModel()
     if (!ui->dslamTreeView->currentIndex().isValid())
         return;
 
-    //if (typeid(BoardTableModel) != typeid(*ui->dslamTreeView->model()))
-    //    return;
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "BoardTableModel") != 0)
         return;
 
@@ -275,7 +271,7 @@ void DslamPageWidget::viewRequestContextMenu(QPoint point)
 {
     QMenu contextMenu(this);
 
-    if (typeid(BoardTableModel) == typeid(*ui->dslamTreeView->model())) {
+    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "BoardTableModel") == 0) {
         contextMenu.addAction(ui->showBoardAction);
     } else {
         contextMenu.addAction(ui->refreshPortInfoAction);

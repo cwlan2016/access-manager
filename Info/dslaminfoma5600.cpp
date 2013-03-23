@@ -1,5 +1,13 @@
 #include "dslaminfoma5600.h"
 
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../customsnmpfunctions.h"
+#else
+#include "constant.h"
+#include "customsnmpfunctions.h"
+#endif
+
 DslamInfoMa5600::DslamInfoMa5600(QObject *parent) :
     DslamInfo(parent)
 {
@@ -13,12 +21,4 @@ DslamInfoMa5600::DslamInfoMa5600(QString name, QString ip, QObject *parent) :
 DeviceModel::Enum DslamInfoMa5600::deviceModel() const
 {
     return DeviceModel::MA5600;
-}
-
-void DslamInfoMa5600::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
-{
-}
-
-void DslamInfoMa5600::parsePdu(SnmpClient::Ptr snmpClient)
-{
 }

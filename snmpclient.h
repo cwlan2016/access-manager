@@ -36,7 +36,9 @@ private:
     netsnmp_pdu *mResponsePdu;
 
     netsnmp_session *mSnmpSession;
-    netsnmp_session  mBaseSession;
+    netsnmp_session mBaseSession;
+
+    QVector<const oid *> mGarbageCollector;
 };
 
 #endif // SNMPCLIENT_H

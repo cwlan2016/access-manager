@@ -65,27 +65,14 @@ bool SwitchInfo::getServiceDataFromDevice()
         return false;
     }
 
-    //oid vlanNameOid[13];
-    //size_t vlanNameOidLen = 13;
-    //memcpy(&vlanNameOid, Mib::dot1qVlanStaticName, 13 * sizeof(oid));
-
-    //oid *nextOid = new oid[13];
-    //size_t nextOidLen = 13;
-    //memcpy(nextOid, Mib::dot1qVlanStaticName, 13 * sizeof(oid));
-
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    snmpClient->addOid(Mib::dot1qVlanStaticName, 13);
+    snmpClient->addOidPair(createOidPair(Mib::dot1qVlanStaticName, 13));
 
     bool findedInet, findedIptv;
     findedInet = false;
     findedIptv = false;
 
-    //while (true) {
     while (snmpClient->sendRequest()) {
-
-        //if (!snmp->sendRequest())
-        //    break;
-
         netsnmp_variable_list *vars = snmpClient->varList();
 
         if (snmp_oid_ncompare(Mib::dot1qVlanStaticName, 13, vars->name,
@@ -109,16 +96,7 @@ bool SwitchInfo::getServiceDataFromDevice()
         }
 
         snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
-//        delete[] nextOid;
-//        nextOid = new oid[vars->name_length];
-
-//        memcpy(nextOid, vars->name, vars->name_length * sizeof(oid));
-//        nextOidLen = vars->name_length;
-
-//        snmp->clearResponse();
     }
-
-//    delete[] nextOid;
 
     if (!findedInet && !findedInet)
         mError = QString::fromUtf8("Ошибка: вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(mName, mIp);

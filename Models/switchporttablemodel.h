@@ -50,10 +50,10 @@ public:
 private:
     void createList();
 
-    bool updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
-                        SwitchPortInfo::Ptr updatingPort);
+    //bool updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
+    //                    SwitchPortInfo::Ptr updatingPort);
 
-    bool getUnicastVlanSettings(OidPair oidVlan,
+    bool getUnicastVlanSettings(const OidPair &oidVlan,
                                 QBitArray &vlanPortArray, QString vlanName);
     bool getMulticastVlanSettings();
 

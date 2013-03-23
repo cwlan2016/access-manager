@@ -11,9 +11,6 @@ public:
     OltInfoLtp8x(QString name, QString ip, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
-
-    void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    void parsePdu(SnmpClient::Ptr snmpClient);
 };
 
 #endif // OLTINFOLTP8X_H

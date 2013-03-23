@@ -3,12 +3,6 @@
 
 #include "deviceinfo.h"
 
-#ifdef _MSC_VER
-#include "../snmpclient.h"
-#else
-#include "snmpclient.h"
-#endif
-
 class SwitchInfo : public DeviceInfo
 {
     Q_OBJECT

@@ -19,16 +19,16 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
 
     ui->readComEdit->setText(SnmpConfigInfo::readCommunity());
 
-    ui->readComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+")));
+    ui->readComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+"), this));
     ui->writeComEdit->setText(SnmpConfigInfo::writeCommunity());
     ui->timeoutEdit->setText(QString::number(SnmpConfigInfo::timeout()));
-    ui->timeoutEdit->setValidator(new QIntValidator(0, 100000));
+    ui->timeoutEdit->setValidator(new QIntValidator(0, 100000, this));
     ui->saveTimeoutEdit->setText(QString::number(SnmpConfigInfo::saveConfigTimeout()));
-    ui->saveTimeoutEdit->setValidator(new QIntValidator(0, 100000));
+    ui->saveTimeoutEdit->setValidator(new QIntValidator(0, 100000, this));
     ui->portEdit->setText(QString::number(SnmpConfigInfo::port()));
-    ui->portEdit->setValidator(new QIntValidator(0, 100000));
+    ui->portEdit->setValidator(new QIntValidator(0, 100000, this));
     ui->retriesEdit->setText(QString::number(SnmpConfigInfo::retries()));
-    ui->retriesEdit->setValidator(new QIntValidator(0, 100000));
+    ui->retriesEdit->setValidator(new QIntValidator(0, 100000, this));
 
     ui->stackedWidget->setCurrentWidget(ui->snmpPage);
 

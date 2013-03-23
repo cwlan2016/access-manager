@@ -61,4 +61,44 @@ inline OidPair createOidPair(const oid constOid[], int oidLen, long index)
     return qMakePair(newOid, oidLen + 1);
 }
 
+inline OidPair createOidPair(const oid *constOid, int oidLen, long *indexs,
+                      int indexCount = 1, int backOffset = 0)
+{
+    int fullLen = oidLen + indexCount;
+    oid *newOid = new oid[fullLen];
+    memcpy(newOid, constOid, oidLen * sizeof(oid));
+
+    oidLen += indexCount;
+    oidLen -= backOffset + 1;
+
+    for (int i = 0; i < indexCount; ++i)
+        newOid[oidLen + i] = indexs[i];
+
+    return qMakePair(newOid, fullLen);
+}
+
+inline void freeOidPair(const OidPair &oidPair)
+{
+    if (oidPair.first)
+        delete[] oidPair.first;
+}
+
+inline void freeOidPair(const QVector<OidPair> &oidPairList)
+{
+    int size = oidPairList.size();
+    for (int i = 0; i < size; ++i) {
+        if (oidPairList.at(i).first)
+            delete[] oidPairList.at(i).first;
+    }
+}
+
+inline void freeOid(const QVector<const oid *> &oidPairList)
+{
+    int size = oidPairList.size();
+    for (int i = 0; i < size; ++i) {
+        if (oidPairList.at(i))
+            delete[] oidPairList.at(i);
+    }
+}
+
 #endif // CUSTOMSNMPFUNCTIONS_H

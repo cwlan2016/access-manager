@@ -2,8 +2,10 @@
 #define SWITCHPORTINFO_H
 
 #ifdef _MSC_VER
+#include "../snmpclient.h"
 #include "../stdafx.h"
 #else
+#include "snmpclient.h"
 #include "stdafx.h"
 #endif
 
@@ -25,12 +27,15 @@ public:
     QString description() const;
     void setDescription(QString description);
 
+    virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual void parsePdu(SnmpClient::Ptr snmpClient);
+
     typedef SwitchPortInfo *Ptr;
 
 protected:
     int mIndex;
-    QString mDesc;
     QString mState;
+    QString mDescription;
     QString mSpeedDuplex;
 };
 
