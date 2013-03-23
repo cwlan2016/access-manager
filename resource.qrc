@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/tr">
-        <file>qt_ru.qm</file>
+        <file>qtbase_ru.qm</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="splash.png">images/splash.png</file>

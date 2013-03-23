@@ -1,34 +1,49 @@
 #include "config.h"
 
-bool Config::exist()
-{
-    QFileInfo fileInfo(mConfigPath % qApp->applicationName() % ".ini");
+#include "constant.h"
 
-    return fileInfo.exists();
-}
-
-void Config::toDefault()
+void Config::init()
 {
-    SnmpConfigInfo::toDefault();
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope,
-                        qApp->organizationName(), qApp->applicationName());
-    createSnmpGroup(settings);
+#ifdef Q_OS_WIN
+    mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+                  % "\\Application Data\\" % qApp->organizationName() % "\\";
+#else
+    mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+                  % "/." % qApp->organizationName() % "/";
+#endif
 }
 
 bool Config::load()
 {
-    if (!exist())
-    {
+    if (!exist()) {
         toDefault();
 
         return true;
     }
 
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope,
-                        qApp->organizationName(), qApp->applicationName());
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
     parseSnmpGroup(settings);
 
     return true;
+}
+
+bool Config::save()
+{
+    if (exist())
+        backup();
+
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
+    createSnmpGroup(settings);
+    settings.sync();
+
+    return true;
+}
+
+bool Config::exist()
+{
+    QFileInfo fileInfo(mConfigPath % qApp->applicationName() % ".ini");
+
+    return fileInfo.exists();
 }
 
 bool Config::backup()
@@ -43,25 +58,11 @@ bool Config::backup()
     return true;
 }
 
-bool Config::save()
+void Config::toDefault()
 {
-    if (exist())
-        backup();
-
-    QSettings settings (QSettings::IniFormat,QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    SnmpConfigInfo::toDefault();
+    QSettings settings(mConfigPath % qApp->applicationName() % ".ini", QSettings::IniFormat);
     createSnmpGroup(settings);
-
-    return true;
-}
-
-QString Config::errorString()
-{
-    return mError;
-}
-
-void Config::initializePath()
-{
-    mConfigPath = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)% "\\Application Data\\" %  qApp->organizationName() % "\\";
 }
 
 QString Config::path()
@@ -69,28 +70,36 @@ QString Config::path()
     return mConfigPath;
 }
 
-void Config::createSnmpGroup(QSettings& settings)
+QString Config::error()
 {
-    settings.beginGroup("snmp");
-    settings.setValue(SnmpSettingsString::port,SnmpConfigInfo::port());
-    settings.setValue(SnmpSettingsString::readCommunity,SnmpConfigInfo::readCommunity());
-    settings.setValue(SnmpSettingsString::writeCommunity,SnmpConfigInfo::writeCommunity());
-    settings.setValue(SnmpSettingsString::retries,SnmpConfigInfo::retries());
-    settings.setValue(SnmpSettingsString::timeout,SnmpConfigInfo::timeout());
-    settings.setValue(SnmpSettingsString::saveConfigTimeout,SnmpConfigInfo::saveConfigTimeout());
-    settings.endGroup();
-    settings.sync();
+    return mError;
 }
 
-void Config::parseSnmpGroup(QSettings& settings)
+void Config::createSnmpGroup(QSettings &settings)
 {
     settings.beginGroup("snmp");
+
+    settings.setValue(SnmpSettingsStrings::port, SnmpConfigInfo::port());
+    settings.setValue(SnmpSettingsStrings::readCommunity, SnmpConfigInfo::readCommunity());
+    settings.setValue(SnmpSettingsStrings::writeCommunity, SnmpConfigInfo::writeCommunity());
+    settings.setValue(SnmpSettingsStrings::retries, SnmpConfigInfo::retries());
+    settings.setValue(SnmpSettingsStrings::timeout, SnmpConfigInfo::timeout());
+    settings.setValue(SnmpSettingsStrings::saveConfigTimeout, SnmpConfigInfo::saveConfigTimeout());
+
+    settings.endGroup();
+}
+
+void Config::parseSnmpGroup(QSettings &settings)
+{
+    settings.beginGroup("snmp");
+
     SnmpConfigInfo::setPort(settings.value("port").toInt());
     SnmpConfigInfo::setReadCommunity(settings.value("readCommunity").toString());
     SnmpConfigInfo::setWriteCommunity(settings.value("writeCommunity").toString());
     SnmpConfigInfo::setRetries(settings.value("retries").toInt());
     SnmpConfigInfo::setTimeout(settings.value("timeout").toInt());
     SnmpConfigInfo::setSaveConfigTimeout(settings.value("saveConfigTimeout").toInt());
+
     settings.endGroup();
 }
 

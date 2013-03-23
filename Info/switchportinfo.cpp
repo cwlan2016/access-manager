@@ -1,12 +1,19 @@
 #include "switchportinfo.h"
 
-SwitchPortInfo::SwitchPortInfo()
+
+SwitchPortInfo::SwitchPortInfo(QObject *parent) :
+    QObject(parent)
 {
 }
 
-int SwitchPortInfo::number() const
+int SwitchPortInfo::index() const
 {
-    return mNumber;
+    return mIndex;
+}
+
+void SwitchPortInfo::setIndex(int index)
+{
+    mIndex = index;
 }
 
 QString SwitchPortInfo::state() const
@@ -14,29 +21,35 @@ QString SwitchPortInfo::state() const
     return mState;
 }
 
-QString SwitchPortInfo::desc() const
-{
-    return mDesc;
-}
-
-QString SwitchPortInfo::speedDuplex() const
-{
-    return mSpeedDuplex;
-}
-
-void SwitchPortInfo::setNumber(int number)
-{
-    mNumber = number;
-}
-
 void SwitchPortInfo::setState(QString state)
 {
     mState = state;
 }
 
-void SwitchPortInfo::setDesc(QString desc)
+QString SwitchPortInfo::description() const
 {
-    mDesc = desc;
+    return mDescription;
+}
+
+void SwitchPortInfo::setDescription(QString desc)
+{
+    mDescription = desc;
+}
+
+void SwitchPortInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+{
+    Q_UNUSED(snmpClient)
+    Q_UNUSED(portIndex)
+}
+
+void SwitchPortInfo::parsePdu(SnmpClient::Ptr snmpClient)
+{
+    Q_UNUSED(snmpClient)
+}
+
+QString SwitchPortInfo::speedDuplex() const
+{
+    return mSpeedDuplex;
 }
 
 void SwitchPortInfo::setSpeedDuplex(QString speedDuplex)

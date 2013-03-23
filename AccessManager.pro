@@ -4,122 +4,145 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml xmlpatterns
+QT       += core gui xmlpatterns widgets
 
 TARGET = AccessManager
 TEMPLATE = app
 
-RC_FILE = AccessManager.rc
-
 PRECOMPILED_HEADER = stdafx.h
 
-QMAKE_CXXFLAGS+="-std=c++11"
+precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+ DEFINES += USING_PCH
+}
 
-QMAKE_CXXFLAGS_RELEASE+="-O2"
+RC_FILE = AccessManager.rc
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    Models/maclistmodel.cpp \
+    Models/mactablemodel.cpp \
     Info/macinfo.cpp \
-    stdafx.cpp \
     snmpclient.cpp \
     constant.cpp \
     config.cpp \
     basicdialogs.cpp \
-    Models/devicelistmodel.cpp \
-    Models/devicelistdelegate.cpp \
+    Models/devicetablemodel.cpp \
+    Models/devicetabledelegate.cpp \
     Info/switchinfo.cpp \
     Info/snmpconfiginfo.cpp \
     converters.cpp \
     Info/deviceinfo.cpp \
-    devicelisthandler.cpp \
     Info/dslaminfo.cpp \
     Info/boardinfo.cpp \
-    Models/boardlistmodel.cpp \
+    Models/boardtablemodel.cpp \
     portlistvalidator.cpp \
-    Models/switchportlistmodel.cpp \
+    Models/switchporttablemodel.cpp \
     Info/switchportinfo.cpp \
-    Models/boardlistdelegate.cpp \
-    Models/dslamportlistmodel.cpp \
+    Models/boardtabledelegate.cpp \
+    Models/dslamporttablemodel.cpp \
     Info/xdslportinfo.cpp \
     Info/shdslportinfo.cpp \
     Info/adslportinfo.cpp \
     customtypes.cpp \
     Info/oltinfo.cpp \
-    lineedit.cpp \
+    Pages/lineedit.cpp \
     Pages/dslampagewidget.cpp \
     Pages/pagewidget.cpp \
     Pages/switchpagewidget.cpp \
     Pages/oltpagewidget.cpp \
     customsnmpfunctions.cpp \
-    Pages/editdslamboardlistpagewidget.cpp \
+    Pages/editdslamboardtablepagewidget.cpp \
     Pages/aboutpagewidget.cpp \
     Pages/settingspagewidget.cpp \
-    Pages/devicelistpagewidget.cpp
+    Pages/devicetablepagewidget.cpp \
+    Models/onttablemodel.cpp \
+    Info/ontinfo.cpp \
+    Info/nteinfo.cpp \
+    Info/ntpinfo.cpp \
+    Info/switchinfodes3526.cpp \
+    Info/switchinfodes3528.cpp \
+    Info/switchinfodes3550.cpp \
+    Info/dslaminfoma5600.cpp \
+    Info/dslaminfoma5300.cpp \
+    Info/dslaminfomxa32.cpp \
+    Info/dslaminfomxa64.cpp \
+    Info/oltinfolte8st.cpp \
+    Info/oltinfoltp8x.cpp \
+    Info/switchportinfodes3526.cpp \
+    Info/switchportinfodes3528.cpp \
+    Info/switchportinfodes3550.cpp
 
 HEADERS  += mainwindow.h \
-    Models/maclistmodel.h \
+    Models/mactablemodel.h \
     Info/macinfo.h \
-    stdafx.h \
     snmpclient.h \
     constant.h \
     config.h \
     basicdialogs.h \
-    Models/devicelistmodel.h \
-    Models/devicelistdelegate.h \
+    Models/devicetablemodel.h \
+    Models/devicetabledelegate.h \
     Info/switchinfo.h \
     Info/snmpconfiginfo.h \
     converters.h \
     Info/deviceinfo.h \
-    devicelisthandler.h \
     Info/dslaminfo.h \
     Info/boardinfo.h \
-    Models/boardlistmodel.h \
+    Models/boardtablemodel.h \
     portlistvalidator.h \
-    Models/switchportlistmodel.h \
+    Models/switchporttablemodel.h \
     Info/switchportinfo.h \
-    Models/boardlistdelegate.h \
-    Models/dslamportlistmodel.h \
+    Models/boardtabledelegate.h \
+    Models/dslamporttablemodel.h \
     Info/xdslportinfo.h \
     Info/shdslportinfo.h \
     Info/adslportinfo.h \
     customtypes.h \
     Info/oltinfo.h \
-    lineedit.h \
+    Pages/lineedit.h \
     Pages/dslampagewidget.h \
     Pages/pagewidget.h \
     Pages/switchpagewidget.h \
     Pages/oltpagewidget.h \
     customsnmpfunctions.h \
-    Pages/editdslamboardlistpagewidget.h \
+    Pages/editdslamboardtablepagewidget.h \
     Pages/aboutpagewidget.h \
     Pages/settingspagewidget.h \
-    Pages/devicelistpagewidget.h
+    Pages/devicetablepagewidget.h \
+    Models/onttablemodel.h \
+    Info/ontinfo.h \
+    Info/nteinfo.h \
+    Info/ntpinfo.h \
+    lineedit.h \
+    Info/switchinfodes3526.h \
+    Info/switchinfodes3528.h \
+    Info/switchinfodes3550.h \
+    Info/dslaminfoma5600.h \
+    Info/dslaminfoma5300.h \
+    Info/dslaminfomxa32.h \
+    Info/dslaminfomxa64.h \
+    Info/oltinfolte8st.h \
+    Info/oltinfoltp8x.h \
+    Info/switchportinfodes3526.h \
+    Info/switchportinfodes3528.h \
+    Info/switchportinfodes3550.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \
     Pages/switchpagewidget.ui \
     Pages/oltpagewidget.ui \
-    Pages/editdslamboardlistpagewidget.ui \
+    Pages/editdslamboardtablepagewidget.ui \
     Pages/aboutpagewidget.ui \
     Pages/settingspagewidget.ui \
-    Pages/devicelistpagewidget.ui
+    Pages/devicetablepagewidget.ui
 
 RESOURCES += \
     resource.qrc
 
-win32:debug {
-LIBS += -lnetsnmpd
-}
+win32:debug:LIBS += -lnetsnmpd
+win32:release:LIBS += -lnetsnmp
+!win32:LIBS += -lnetsnmp
 
-win32:release {
-LIBS += -lnetsnmp
-}
-
-win32 {
-LIBS += -lwsock32
-LIBS += -ladvapi32
-}
+win32:LIBS+= -lwsock32
+win32:LIBS+= -ladvapi32
 
 OTHER_FILES += \
     images/up16.png \
@@ -168,3 +191,9 @@ OTHER_FILES += \
     AccessManager.rc \
     images/clear_left.png \
     SchemaDeviceList.xsd
+
+HEADERS += \
+    stdafx.h
+
+SOURCES += \
+    stdafx.cpp

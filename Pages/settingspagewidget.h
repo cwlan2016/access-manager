@@ -1,29 +1,30 @@
 #ifndef SETTINGSPAGEWIDGET_H
 #define SETTINGSPAGEWIDGET_H
 
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
 #include "stdafx.h"
+#endif
 
-#include "config.h"
-#include "constant.h"
-#include "basicdialogs.h"
-
-namespace Ui {
+namespace Ui
+{
 class SettingsPageWidget;
 }
 
 class SettingsPageWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
-    explicit SettingsPageWidget(QWidget* parent = 0);
+    explicit SettingsPageWidget(QWidget *parent = 0);
     ~SettingsPageWidget();
-private slots:
-    void saveSetting();
+
 private:
+    void saveSetting();
     bool validateSettingsData();
 
-    Ui::SettingsPageWidget* ui;
+    Ui::SettingsPageWidget *ui;
 };
 
 #endif // SETTINGSPAGEWIDGET_H

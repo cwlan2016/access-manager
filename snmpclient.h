@@ -1,33 +1,44 @@
 #ifndef SNMPCLIENT_H
 #define SNMPCLIENT_H
 
-#include "stdafx.h"
-#include "Info/snmpconfiginfo.h"
-#include "converters.h"
+#include "customtypes.h"
 
 class SnmpClient
 {
 public:
     SnmpClient();
     ~SnmpClient();
-    void setIP(QString ip);
-    void createPdu(int pduType, int max_repetitions = 1);
-    void clearResponsePdu();
-    void addOid(QString oid_string);
-    void addOid(oid* _oid, size_t size);
-    void addOid(QString oidString, QString value, char type);
-    netsnmp_variable_list* varList();
-    bool sendRequest();
-    bool setupSession(SessionType sessionType);
-    bool openSession();
-    void closeSession();
+
+    void setIp(QString ip);
     void setTimeoutSaveConfig();
+    bool setupSession(SessionType::Enum sessionType);
+    bool openSession();
+
+    void createPdu(int pduType, int maxRepetitions = 1);
+    void createPduFromResponse(int pduType);
+    void clearResponse();
+
+    void addOid(const OidPair &oid);
+    void addOid(const OidPair &oid, QString value, char type);
+    void addOid(const oid *someOid, size_t size);
+    void addOid(const oid *someOid, size_t size, QString value, char type);
+
+    bool sendRequest();
+
+    netsnmp_variable_list *varList();
+
+    typedef SnmpClient *Ptr;
+
 private:
-    netsnmp_session *mSnmpSession;
-    netsnmp_session  mBaseSession;
+    QString mIp;
+
     netsnmp_pdu *mPdu;
     netsnmp_pdu *mResponsePdu;
-    QString mIp;
+
+    netsnmp_session *mSnmpSession;
+    netsnmp_session mBaseSession;
+
+    QVector<const oid *> mGarbageCollector;
 };
 
 #endif // SNMPCLIENT_H

@@ -1,29 +1,40 @@
 #ifndef OLTINFO_H
 #define OLTINFO_H
 
-#include "stdafx.h"
-#include "snmpclient.h"
 #include "deviceinfo.h"
-#include "constant.h"
 
 class OltInfo : public DeviceInfo
 {
+    Q_OBJECT
 public:
-    OltInfo();
-    OltInfo(QString name, QString ip, DeviceModel deviceModel);
-    QString serviceProfile(int index);
-    QString multicastProfile(int index);
-    void addServiceProfile(int index, QString profileName);
-    void addMulticastProfile(int index, QString profileName);
-    virtual bool getServiceDataFromDevice();
-    OltProfileMap& serviceProfileList();
-    OltProfileMap& multicastProfileList();
+    OltInfo(QObject *parent = 0);
+    OltInfo(QString name, QString ip, QObject *parent = 0);
 
-    typedef std::shared_ptr<OltInfo> Ptr;
+    QString serviceProfile(int index);
+    void addServiceProfile(int index, QString profileName);
+
+    QString multicastProfile(int index);
+    void addMulticastProfile(int index, QString profileName);
+
+    OltProfileMap &serviceProfileList();
+    QStringListModel *serviceProfileListModel(QObject *parent = 0);
+
+    OltProfileMap &multicastProfileList();
+    QStringListModel *multicastProfileListModel(QObject *parent = 0);
+
+    DeviceType::Enum deviceType() const;
+
+    bool getServiceDataFromDevice();
+
+    typedef QSharedPointer<OltInfo> Ptr;
+
 private:
+    bool getProfileList(OltProfileMap &profileList, OidPair oid);
+    QStringListModel *createStringListModel(OltProfileMap &profileList,
+                                                   QObject *parent);
+
     OltProfileMap mServiceProfileList;
     OltProfileMap mMulticastProfileList;
-    bool getProfileList(OltProfileMap& profileList, const oid* oidProfileName, int oidLen);
 };
 
 

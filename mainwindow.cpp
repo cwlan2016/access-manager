@@ -1,7 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget* parent) :
+#include "basicdialogs.h"
+#include "config.h"
+#include "constant.h"
+#include "converters.h"
+#include "Pages/devicetablepagewidget.h"
+#include "Pages/dslampagewidget.h"
+#include "Pages/settingspagewidget.h"
+#include "Pages/switchpagewidget.h"
+#include "Pages/aboutpagewidget.h"
+
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -11,32 +21,46 @@ MainWindow::MainWindow(QWidget* parent) :
     SOCK_STARTUP;
 
     //Menu Actions
-    connect(ui->exitAction, SIGNAL(triggered()), SLOT(close()));
-    connect(ui->aboutAction, SIGNAL(triggered()), SLOT(showAboutProgramPage()));
-    connect(ui->settingsAction, SIGNAL(triggered()), SLOT(showSettingsPage()));
-    connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), SLOT(tabCloseRequested(int)));
-    connect(ui->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabCurrentChanged(int)));
-    connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), SLOT(sUpdateVlanInfoAllSwitch()));
-    connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), SLOT(sUpdateBoardInfoAllDslam()));
-    connect(ui->editDslamBoardListAction, SIGNAL(triggered()), SLOT(showEditDslamBoardListPage()));
-    connect(ui->saveConfigSwitchAction, SIGNAL(triggered()), SLOT(saveSwitchConfig()));
-    connect(ui->upPortAction, SIGNAL(triggered()), SLOT(upDslPort()));
-    connect(ui->downPortAction, SIGNAL(triggered()), SLOT(downDslPort()));
+    connect(ui->exitAction, &QAction::triggered,
+            this, &MainWindow::close);
+    connect(ui->aboutAction, &QAction::triggered,
+            this, &MainWindow::showAboutProgramPage);
+    connect(ui->settingsAction, &QAction::triggered,
+            this, &MainWindow::showSettingsPage);
+    connect(ui->tabWidget, &QTabWidget::tabCloseRequested,
+            this, &MainWindow::tabCloseRequested);
+    connect(ui->tabWidget, &QTabWidget::currentChanged,
+            this, &MainWindow::tabCurrentChanged);
+    connect(ui->saveConfigSwitchAction, &QAction::triggered,
+            this, &MainWindow::saveSwitchConfig);
+    connect(ui->upPortAction, &QAction::triggered,
+            this, &MainWindow::upDslPort);
+    connect(ui->downPortAction, &QAction::triggered,
+            this, &MainWindow::downDslPort);
     //Panels actions
-    connect(ui->mainBarAction, SIGNAL(triggered(bool)), ui->mainToolBar, SLOT(setVisible(bool)));
-    connect(ui->mainToolBar, SIGNAL(visibilityChanged(bool)), ui->mainBarAction, SLOT(setChecked(bool)));
-    connect(ui->switchBarAction, SIGNAL(triggered(bool)), ui->switchToolBar, SLOT(setVisible(bool)));
-    connect(ui->switchToolBar, SIGNAL(visibilityChanged(bool)), ui->switchBarAction, SLOT(setChecked(bool)));
-    connect(ui->dslamBarAction, SIGNAL(triggered(bool)), ui->dslamToolBar, SLOT(setVisible(bool)));
-    connect(ui->dslamToolBar, SIGNAL(visibilityChanged(bool)), ui->dslamBarAction, SLOT(setChecked(bool)));
+    connect(ui->mainBarAction, &QAction::triggered,
+            ui->mainToolBar, &QToolBar::setVisible);
+    connect(ui->mainToolBar, &QToolBar::visibilityChanged,
+            ui->mainBarAction, &QAction::setChecked);
+    connect(ui->switchBarAction, &QAction::triggered,
+            ui->switchToolBar, &QToolBar::setVisible);
+    connect(ui->switchToolBar, &QToolBar::visibilityChanged,
+            ui->switchBarAction, &QAction::setChecked);
+    connect(ui->dslamBarAction, &QAction::triggered,
+            ui->dslamToolBar, &QToolBar::setVisible);
+    connect(ui->dslamToolBar, &QToolBar::visibilityChanged,
+            ui->dslamBarAction, &QAction::setChecked);
 
     ui->menuSwitch->setEnabled(false);
     ui->menuDslam->setEnabled(false);
+    ui->menuOlt->setEnabled(false);
+    //TODO: Temporary hidden
+    ui->menuOlt->setVisible(false);
 
     this->setWindowState(Qt::WindowMaximized);
 
-    mTypePageList = new QVector<PageType>();
-    mPageList = new QHash<QString, QWidget*>();
+    mTypePageList = new QVector<PageType::Enum>();
+    mPageList = new QHash<QString, QWidget *>();
 }
 
 MainWindow::~MainWindow()
@@ -48,23 +72,44 @@ MainWindow::~MainWindow()
 
 void MainWindow::createDeviceListPage()
 {
-    DeviceListPageWidget *deviceListPage = new DeviceListPageWidget(ui->tabWidget, mTypePageList, mPageList, this);
+    DeviceTablePageWidget *deviceListPage = new DeviceTablePageWidget(ui->tabWidget, mTypePageList, mPageList, this);
     deviceListPage->setObjectName(QString::fromUtf8("deviceListTab"));
 
-    connect(ui->addDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(addDevice()));
-    connect(ui->editDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(editDevice()));
-    connect(ui->removeDeviceAction, SIGNAL(triggered()), deviceListPage, SLOT(removeDevice()));
-    connect(ui->loadDeviceListAction, SIGNAL(triggered()), deviceListPage, SLOT(loadDeviceList()));
-    connect(ui->saveDeviceListAction, SIGNAL(triggered()), deviceListPage, SLOT(saveDeviceList()));
-    connect(ui->updateVlanSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(updateVlanInfoSwitch()));
-    connect(ui->updateDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(updateBoardInfoDslam()));
-    connect(ui->updateVlanAllSwitchAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateVlanInfoSwitch()));
-    connect(ui->updateAllDslamBoardsInfoAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateBoardsInfoDslam()));
-    connect(ui->updateInfoAllDevicesAction, SIGNAL(triggered()), deviceListPage, SLOT(batchUpdateInfoAllDevices()));
-    connect(deviceListPage, SIGNAL(changedActiveItem(QModelIndex)), SLOT(deviceViewActivatedItem(QModelIndex)));
+    connect(ui->openDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::openDevice);
+    connect(ui->addDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::addDevice);
+    connect(ui->editDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::editDevice);
+    connect(ui->removeDeviceAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::removeDevice);
+    connect(ui->loadDeviceListAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::loadDeviceList);
+    connect(ui->saveDeviceListAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::saveDeviceList);
+    connect(ui->updateVlanSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::updateVlanInfoSwitch);
+    connect(ui->updateDslamBoardsInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::updateBoardInfoDslam);
+    connect(ui->updateProfilesOltAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::updateProfileInfoOlt);
+    connect(ui->updateVlanAllSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::batchUpdateVlansSwitch);
+    connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::batchUpdateBoardsDslam);
+    connect(ui->updateInfoAllDevicesAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::batchUpdateInfoAllDevices);
+    connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::batchUpdateProfilesOlt);
+    connect(ui->editDslamBoardListAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::showEditDslamBoardListPage);
+    connect(ui->showVlanSwitchAction, &QAction::triggered,
+            deviceListPage, &DeviceTablePageWidget::showVlanInfoGroupBox);
+    connect(deviceListPage, &DeviceTablePageWidget::changedActiveItem,
+            this, &MainWindow::deviceViewActivatedItem);
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
-    mTypePageList->append(PageType::DeviceListPage);
+    mTypePageList->push_back(PageType::DeviceListPage);
 
     ui->tabWidget->addTab(deviceListPage, QString::fromUtf8("Оборудование"));
     ui->tabWidget->setCurrentWidget(deviceListPage);
@@ -77,24 +122,141 @@ void MainWindow::loadDeviceList()
 
 void MainWindow::loadProgramSettings()
 {
-    if (!Config::load())
-    {
-        BasicDialogs::error(this, BasicDialogTitle::Error, Config::errorString());
+    if (!Config::load()) {
+        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error());
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent* event)
+void MainWindow::upDslPort()
 {
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage) {
+        return;
+    }
 
-    if (!deviceListModel->isModified())
-    {
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
+
+    dslamPageWidget->upDslPort();
+}
+
+void MainWindow::downDslPort()
+{
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
+        return;
+
+    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
+
+    dslamPageWidget->downDslPort();
+}
+
+void MainWindow::saveSwitchConfig()
+{
+    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage) {
+        return;
+    }
+
+    SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
+
+    switchPageWidget->saveSwitchConfig();
+}
+
+void MainWindow::showAboutProgramPage()
+{
+    if (mPageList->contains("aboutTab")) {
+        ui->tabWidget->setCurrentWidget(mPageList->value("aboutTab"));
+        return;
+    }
+
+    AboutPageWidget *aboutTab = new AboutPageWidget(this);
+    aboutTab->setObjectName(QString::fromUtf8("aboutTab"));
+
+    mPageList->insert(aboutTab->objectName(), aboutTab);
+    mTypePageList->push_back(PageType::AboutPage);
+
+    ui->tabWidget->addTab(aboutTab, QString::fromUtf8("О программе"));
+    ui->tabWidget->setCurrentWidget(aboutTab);
+}
+
+void MainWindow::showSettingsPage()
+{
+    if (mPageList->contains("settingsTab")) {
+        ui->tabWidget->setCurrentWidget(mPageList->value("settingsTab"));
+        return;
+    }
+
+    SettingsPageWidget *settingsTab = new SettingsPageWidget(this);
+    settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
+
+    mPageList->insert(settingsTab->objectName(), settingsTab);
+    mTypePageList->push_back(PageType::SettingsPage);
+
+    ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
+    ui->tabWidget->setCurrentWidget(settingsTab);
+}
+
+void MainWindow::tabCurrentChanged(int index)
+{
+    PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
+
+    ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
+    ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
+    ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
+    ui->openDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->addDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->editDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+    ui->removeDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
+
+    if (index != 0) {
+        ui->menuDslam->setEnabled(false);
+        ui->menuSwitch->setEnabled(false);
+        ui->menuOlt->setEnabled(false);
+    } else {
+        DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+        deviceListPage->clearSelection();
+    }
+}
+
+void MainWindow::tabCloseRequested(int index)
+{
+    if (index != 0) {
+        QWidget *deletedWidget = ui->tabWidget->widget(index);
+        ui->tabWidget->removeTab(index);
+        mPageList->remove(deletedWidget->objectName());
+        mTypePageList->remove(index);
+
+        delete deletedWidget;
+    }
+}
+
+void MainWindow::deviceViewActivatedItem(QModelIndex index)
+{
+    if (!index.isValid())
+        return;
+
+    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+
+    DeviceTableModel *deviceListModel = deviceListPage->deviceTableModel();
+    index = deviceListPage->proxyModel()->mapToSource(index);
+
+    QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
+    QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
+    DeviceType::Enum deviceType = DeviceType::from(deviceTypeString);
+
+    ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
+    ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
+    ui->menuOlt->setEnabled(deviceType == DeviceType::Olt);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
+    DeviceTableModel *deviceListModel = deviceListPage->deviceTableModel();
+
+    if (!deviceListModel->isModified()) {
         event->accept();
         return;
     }
 
-    std::unique_ptr<QMessageBox> boxOnClose(new QMessageBox(this));
+    QScopedPointer<QMessageBox> boxOnClose(new QMessageBox(this));
     boxOnClose->setModal(true);
     boxOnClose->setIcon(QMessageBox::Question);
     boxOnClose->setWindowTitle(QString::fromUtf8("Запрос на сохранение"));
@@ -105,132 +267,15 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
     QMessageBox::ButtonRole result = boxOnClose->buttonRole(boxOnClose->clickedButton());
 
-    if (result == QMessageBox::RejectRole)
-    {
+    if (result == QMessageBox::RejectRole) {
         event->ignore();
-    }
-    else if (result == QMessageBox::YesRole)
-    {
-        if (!deviceListModel->save())
-        {
+    } else if (result == QMessageBox::YesRole) {
+        if (!deviceListModel->save()) {
             BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
+        } else {
+            BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
         }
 
         event->accept();
     }
-}
-
-void MainWindow::showAboutProgramPage()
-{
-    if (mPageList->contains("aboutTab"))
-    {
-        ui->tabWidget->setCurrentWidget(mPageList->value("aboutTab"));
-        return;
-    }
-
-    AboutPageWidget* aboutTab = new AboutPageWidget();
-    aboutTab->setObjectName(QString::fromUtf8("aboutTab"));
-
-    mPageList->insert(aboutTab->objectName(), aboutTab);
-    mTypePageList->append(PageType::AboutPage);
-
-    ui->tabWidget->addTab(aboutTab, QString::fromUtf8("О программе"));
-    ui->tabWidget->setCurrentWidget(aboutTab);
-}
-
-void MainWindow::showSettingsPage()
-{
-    if (mPageList->contains("settingsTab"))
-    {
-        ui->tabWidget->setCurrentWidget(mPageList->value("settingsTab"));
-        return;
-    }
-
-    SettingsPageWidget* settingsTab = new SettingsPageWidget();
-    settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
-
-    mPageList->insert(settingsTab->objectName(), settingsTab);
-    mTypePageList->append(PageType::SettingsPage);
-
-    ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
-    ui->tabWidget->setCurrentWidget(settingsTab);
-}
-
-void MainWindow::tabCloseRequested(int index)
-{
-    if (index != 0)
-    {
-        QWidget* deletedWidget = ui->tabWidget->widget(index);
-        ui->tabWidget->removeTab(index);
-        mPageList->remove(deletedWidget->objectName());
-        mTypePageList->remove(index);
-
-        delete deletedWidget;
-    }
-}
-
-void MainWindow::tabCurrentChanged(int index)
-{
-    PageType pageType = mTypePageList->at(ui->tabWidget->currentIndex());
-
-    ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
-    ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
-    ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
-
-    if (index != 0)
-    {
-        ui->menuDslam->setEnabled(false);
-        ui->menuSwitch->setEnabled(false);
-    }
-    else
-    {
-        DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
-        deviceListPage->clearSelection();
-    }
-}
-
-void MainWindow::deviceViewActivatedItem(QModelIndex index)
-{
-    if (!index.isValid())
-        return;
-
-    DeviceListPageWidget *deviceListPage = qobject_cast<DeviceListPageWidget*>(mPageList->value("deviceListTab"));
-
-    DeviceListModel *deviceListModel = deviceListPage->deviceListModel();
-    index = deviceListPage->proxyModel()->mapToSource(index);
-
-    DeviceType deviceType = DeviceTypeFromString(deviceListModel->data(deviceListModel->index(index.row(), 3)).toString());
-
-    ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
-    ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
-}
-
-void MainWindow::saveSwitchConfig()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage)
-        return;
-
-    SwitchPageWidget* switchPageWidget = qobject_cast<SwitchPageWidget*>(ui->tabWidget->currentWidget());
-
-    switchPageWidget->saveSwitchConfig();
-}
-
-void MainWindow::upDslPort()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
-        return;
-
-    DslamPageWidget* dslamPageWidget = qobject_cast<DslamPageWidget*>(ui->tabWidget->currentWidget());
-
-    dslamPageWidget->upDslPort();
-}
-
-void MainWindow::downDslPort()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
-        return;
-
-    DslamPageWidget* dslamPageWidget = qobject_cast<DslamPageWidget*>(ui->tabWidget->currentWidget());
-
-    dslamPageWidget->downDslPort();
 }

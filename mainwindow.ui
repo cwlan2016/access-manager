@@ -87,7 +87,7 @@
    </widget>
    <widget class="QMenu" name="menuConfiguration">
     <property name="title">
-     <string>&amp;Конфигурирование</string>
+     <string>Оборудование</string>
     </property>
     <widget class="QMenu" name="menuDslam">
      <property name="title">
@@ -103,23 +103,34 @@
      <addaction name="showVlanSwitchAction"/>
      <addaction name="updateVlanSwitchAction"/>
     </widget>
-    <widget class="QMenu" name="menu">
+    <widget class="QMenu" name="menuBatchUpdate">
      <property name="title">
-      <string>Пакетное обновление данных</string>
+      <string>Пакетное обновление</string>
      </property>
      <addaction name="updateAllDslamBoardsInfoAction"/>
      <addaction name="updateVlanAllSwitchAction"/>
+     <addaction name="updateAllProfileOltInfoAction"/>
+     <addaction name="separator"/>
      <addaction name="updateInfoAllDevicesAction"/>
     </widget>
+    <widget class="QMenu" name="menuOlt">
+     <property name="title">
+      <string>Олт</string>
+     </property>
+     <addaction name="showProfilesOltAction"/>
+     <addaction name="updateProfilesOltAction"/>
+    </widget>
+    <addaction name="openDeviceAction"/>
+    <addaction name="separator"/>
     <addaction name="addDeviceAction"/>
     <addaction name="editDeviceAction"/>
     <addaction name="removeDeviceAction"/>
     <addaction name="separator"/>
     <addaction name="menuDslam"/>
     <addaction name="menuSwitch"/>
-    <addaction name="menu"/>
+    <addaction name="menuOlt"/>
     <addaction name="separator"/>
-    <addaction name="settingsAction"/>
+    <addaction name="menuBatchUpdate"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -141,9 +152,16 @@
     </widget>
     <addaction name="barsMenu"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Конфигурация</string>
+    </property>
+    <addaction name="settingsAction"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConfiguration"/>
    <addaction name="viewMenu"/>
+   <addaction name="menu_2"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -171,7 +189,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="selectDeviceAction"/>
+   <addaction name="openDeviceAction"/>
    <addaction name="separator"/>
    <addaction name="addDeviceAction"/>
    <addaction name="editDeviceAction"/>
@@ -261,7 +279,7 @@
     <string>Редактировать</string>
    </property>
   </action>
-  <action name="selectDeviceAction">
+  <action name="openDeviceAction">
    <property name="icon">
     <iconset>
      <normalon>:/images/open.png</normalon>
@@ -297,7 +315,7 @@
   </action>
   <action name="updateDslamBoardsInfoAction">
    <property name="text">
-    <string>Обновить информацию о досках</string>
+    <string>Обновить данные о досках</string>
    </property>
    <property name="toolTip">
     <string>Обновить информацию о досках</string>
@@ -305,7 +323,7 @@
   </action>
   <action name="updateAllDslamBoardsInfoAction">
    <property name="text">
-    <string>Обновить информацию о досках на дсламах...</string>
+    <string>Досок на дсламах...</string>
    </property>
    <property name="toolTip">
     <string>Обновить информацию о досках на всех dslam'ах...</string>
@@ -321,7 +339,7 @@
   </action>
   <action name="updateVlanAllSwitchAction">
    <property name="text">
-    <string>Обновить информацию о вланах на коммутаторах...</string>
+    <string>Вланов на коммутаторах...</string>
    </property>
    <property name="toolTip">
     <string>Обновить информацию о вланах на всех коммутаторах...</string>
@@ -401,7 +419,22 @@
   </action>
   <action name="updateInfoAllDevicesAction">
    <property name="text">
-    <string>Обновить информацию на всех устройствах...</string>
+    <string>Информации на всех устройствах...</string>
+   </property>
+  </action>
+  <action name="updateAllProfileOltInfoAction">
+   <property name="text">
+    <string>Профилей на олт...</string>
+   </property>
+  </action>
+  <action name="updateProfilesOltAction">
+   <property name="text">
+    <string>Обновить данные о профилях</string>
+   </property>
+  </action>
+  <action name="showProfilesOltAction">
+   <property name="text">
+    <string>Профили</string>
    </property>
   </action>
  </widget>

@@ -1,33 +1,42 @@
 #ifndef DEVICEINFO_H
 #define DEVICEINFO_H
 
-#include "stdafx.h"
-#include "converters.h"
+#ifdef _MSC_VER
+#include "../customtypes.h"
+#include "../snmpclient.h"
+#else
 #include "customtypes.h"
+#include "snmpclient.h"
+#endif
 
-class DeviceInfo
+class DeviceInfo : public QObject
 {
+    Q_OBJECT
 public:
-    DeviceInfo();
-    DeviceInfo(QString name, QString ip, DeviceModel deviceModel);
-    virtual ~DeviceInfo();
+    DeviceInfo(QObject *parent = 0);
+    DeviceInfo(QString name, QString ip, QObject *parent = 0);
+
     QString name() const;
-    QString ip() const;
-    DeviceModel deviceModel() const;
-    DeviceType deviceType() const;
-    QString error() const;
     void setName(const QString name);
-    void setIP(const QString ip);
-    void setDeviceModel(const DeviceModel deviceModel);
-    void setDeviceType(const DeviceType deviceType);
+
+    QString ip() const;
+    void setIp(const QString ip);
+
+    virtual DeviceModel::Enum deviceModel() const;
+    virtual DeviceType::Enum deviceType() const;
+
+    QString error() const;
+
     virtual bool getServiceDataFromDevice();
 
-    typedef std::shared_ptr<DeviceInfo> Ptr;
+    virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual void parsePdu(SnmpClient::Ptr snmpClient);
+
+    typedef QSharedPointer<DeviceInfo> Ptr;
+
 protected:
-    QString mName;
     QString mIp;
-    DeviceType mDeviceType;
-    DeviceModel mDeviceModel;
+    QString mName;
     QString mError;
 };
 

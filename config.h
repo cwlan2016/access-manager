@@ -1,26 +1,30 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "stdafx.h"
 #include "Info/snmpconfiginfo.h"
-#include "constant.h"
 
 class Config
 {
 public:
-    static bool exist();
-    static void toDefault();
+    static void init();
+
     static bool load();
     static bool save();
+
+    static bool exist();
     static bool backup();
-    static QString errorString();
-    static void initializePath();
+
+    static void toDefault();
+
     static QString path();
+    static QString error();
+
 private:
-    static void createSnmpGroup(QSettings& settings);
-    static void parseSnmpGroup(QSettings& settings);
-    static QString mConfigPath;
+    static void createSnmpGroup(QSettings &settings);
+    static void parseSnmpGroup(QSettings &settings);
+
     static QString mError;
+    static QString mConfigPath;
 };
 
 #endif // CONFIG_H

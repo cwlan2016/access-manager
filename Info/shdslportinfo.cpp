@@ -1,6 +1,6 @@
 #include "shdslportinfo.h"
 
-ShdslPortInfo::ShdslPortInfo() :
-    XdslPortInfo()
+ShdslPortInfo::ShdslPortInfo(QObject *parent) :
+    XdslPortInfo(parent)
 {
 }

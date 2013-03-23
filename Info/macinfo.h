@@ -1,22 +1,31 @@
 #ifndef MACINFO_H
 #define MACINFO_H
 
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#else
 #include "stdafx.h"
+#endif
 
-class MacInfo
+class MacInfo : public QObject
 {
+    Q_OBJECT
 public:
-    MacInfo();
-    int numberPort() const;
+    MacInfo(QObject *parent);
+
+    int port() const;
+    void setPort(int port);
+
     QString mac() const;
-    QString vlanName() const;
-    void setNumberPort(int numberPort);
     void setMac(QString mac);
+
+    QString vlanName() const;
     void setVlanName(QString vlanName);
 
-    typedef std::shared_ptr<MacInfo> Ptr;
-protected:
-    int mNumberPort;
+    typedef MacInfo *Ptr;
+
+private:
+    int mPort;
     QString mMac;
     QString mVlanName;
 };

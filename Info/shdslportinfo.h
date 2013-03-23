@@ -5,12 +5,11 @@
 
 class ShdslPortInfo : public XdslPortInfo
 {
+    Q_OBJECT
 public:
-    ShdslPortInfo();
+    ShdslPortInfo(QObject *parent);
 
-    typedef std::shared_ptr<ShdslPortInfo> Ptr;
+    typedef ShdslPortInfo *Ptr;
 };
-
-
 
 #endif // SHDSLPORTINFO_H

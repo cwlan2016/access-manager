@@ -1,19 +1,23 @@
 #include "deviceinfo.h"
 
-DeviceInfo::DeviceInfo()
+#ifdef _MSC_VER
+#include "../converters.h"
+#else
+#include "converters.h"
+#endif
+
+DeviceInfo::DeviceInfo(QObject *parent) :
+    QObject(parent)
 {
-    setDeviceModel(DeviceModel::Other);
+    //setDeviceModel(DeviceModel::Other);
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, DeviceModel deviceModel)
+DeviceInfo::DeviceInfo(QString name, QString ip, QObject *parent) :
+    QObject(parent)
 {
     mName = name;
     mIp = ip;
-    setDeviceModel(deviceModel);
-}
-
-DeviceInfo::~DeviceInfo()
-{
+    //setDeviceModel(deviceModel);
 }
 
 QString DeviceInfo::name() const
@@ -21,19 +25,29 @@ QString DeviceInfo::name() const
     return mName;
 }
 
+void DeviceInfo::setName(const QString name)
+{
+    mName = name;
+}
+
 QString DeviceInfo::ip() const
 {
     return mIp;
 }
 
-DeviceModel DeviceInfo::deviceModel() const
+void DeviceInfo::setIp(const QString ip)
 {
-    return mDeviceModel;
+    mIp = ip;
 }
 
-DeviceType DeviceInfo::deviceType() const
+DeviceModel::Enum DeviceInfo::deviceModel() const
 {
-    return mDeviceType;
+    return DeviceModel::Other;
+}
+
+DeviceType::Enum DeviceInfo::deviceType() const
+{
+    return DeviceType::Other;
 }
 
 QString DeviceInfo::error() const
@@ -41,28 +55,18 @@ QString DeviceInfo::error() const
     return mError;
 }
 
-void DeviceInfo::setName(const QString name)
-{
-    mName = name;
-}
-
-void DeviceInfo::setIP(const QString ip)
-{
-    mIp = ip;
-}
-
-void DeviceInfo::setDeviceModel(const DeviceModel deviceModel)
-{
-    mDeviceModel = deviceModel;
-    mDeviceType = DeviceTypeFromDeviceModel(mDeviceModel);
-}
-
-void DeviceInfo::setDeviceType(const DeviceType deviceType)
-{
-    mDeviceType = deviceType;
-}
-
 bool DeviceInfo::getServiceDataFromDevice()
 {
     return false;
+}
+
+void DeviceInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+{
+    Q_UNUSED(snmpClient)
+    Q_UNUSED(portIndex)
+}
+
+void DeviceInfo::parsePdu(SnmpClient::Ptr snmpClient)
+{
+    Q_UNUSED(snmpClient)
 }

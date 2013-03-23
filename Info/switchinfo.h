@@ -1,29 +1,32 @@
 #ifndef SWITCHINFO_H
 #define SWITCHINFO_H
 
-#include "stdafx.h"
-#include "snmpclient.h"
 #include "deviceinfo.h"
-#include "constant.h"
-#include "customsnmpfunctions.h"
 
 class SwitchInfo : public DeviceInfo
 {
+    Q_OBJECT
 public:
-    SwitchInfo();
-    SwitchInfo(QString name, QString ip, DeviceModel deviceModel);
+    explicit SwitchInfo(QObject *parent = 0);
+    SwitchInfo(QString name, QString ip, QObject *parent = 0);
+
     int inetVlanTag() const;
-    int iptvVlanTag() const;
     void setInetVlanTag(int vlanTag);
+
+    int iptvVlanTag() const;
     void setIptvVlanTag(int vlanTag);
-    virtual bool getServiceDataFromDevice();
+
+    DeviceType::Enum deviceType() const;
+
+    bool getServiceDataFromDevice();
+
     bool saveConfig();
-    typedef std::shared_ptr<SwitchInfo> Ptr;
+
+    typedef QSharedPointer<SwitchInfo> Ptr;
+
 private:
     int mInetVlanTag;
     int mIptvVlanTag;
 };
-
-
 
 #endif // SWITCHINFO_H

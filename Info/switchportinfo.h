@@ -1,29 +1,42 @@
 #ifndef SWITCHPORTINFO_H
 #define SWITCHPORTINFO_H
 
+#ifdef _MSC_VER
+#include "../snmpclient.h"
+#include "../stdafx.h"
+#else
+#include "snmpclient.h"
 #include "stdafx.h"
+#endif
 
-class SwitchPortInfo
+class SwitchPortInfo : public QObject
 {
+    Q_OBJECT
 public:
-    SwitchPortInfo();
-    int number() const;
+    SwitchPortInfo(QObject *parent);
+
+    int index() const;
+    void setIndex(int index);
+
     QString state() const;
-    QString desc() const;
-    QString speedDuplex() const;
-    void setNumber(int number);
     void setState(QString state);
-    void setDesc(QString desc);
+
+    QString speedDuplex() const;
     void setSpeedDuplex(QString speedDuplex);
 
-    typedef std::shared_ptr<SwitchPortInfo> Ptr;
+    QString description() const;
+    void setDescription(QString description);
+
+    virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual void parsePdu(SnmpClient::Ptr snmpClient);
+
+    typedef SwitchPortInfo *Ptr;
+
 protected:
-    int mNumber;
+    int mIndex;
     QString mState;
-    QString mDesc;
+    QString mDescription;
     QString mSpeedDuplex;
 };
-
-
 
 #endif // SWITCHPORTINFO_H

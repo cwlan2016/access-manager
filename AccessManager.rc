@@ -23,10 +23,10 @@ VS_VERSION_INFO VERSIONINFO
                 BEGIN
                         BLOCK "040904B0"
                         BEGIN
-                                VALUE "CompanyName", "RosTelecom\0"
+                                VALUE "CompanyName", "rt.ru\0"
                                 VALUE "FileDescription", "Manage of access devices\0"
-                                VALUE "FileVersion", "0.2 unstable\0"
-                                VALUE "LegalCopyright", "Gudkov Konstantin © 2012\0"
+                                VALUE "FileVersion", "0.2\0"
+                                VALUE "LegalCopyright", "Gudkov Konstantin & Kuznetsov Vyacheslav © 2012\0"
                                 VALUE "OriginalFilename", "AccessManager.exe\0"
                                 VALUE "ProductName", "Access Manager\0"
                         END

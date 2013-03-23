@@ -1,13 +1,24 @@
 #include "switchinfo.h"
 
-SwitchInfo::SwitchInfo() :
-    DeviceInfo()
+#ifdef _MSC_VER
+#include "../constant.h"
+#include "../converters.h"
+#include "../customsnmpfunctions.h"
+#else
+#include "constant.h"
+#include "converters.h"
+#include "customsnmpfunctions.h"
+#endif
+
+SwitchInfo::SwitchInfo(QObject *parent) :
+    DeviceInfo(parent),
+    mInetVlanTag(0),
+    mIptvVlanTag(0)
 {
-    mInetVlanTag = mIptvVlanTag = 0;
 }
 
-SwitchInfo::SwitchInfo(QString name, QString ip, DeviceModel deviceModel) :
-    DeviceInfo(name, ip, deviceModel)
+SwitchInfo::SwitchInfo(QString name, QString ip, QObject *parent) :
+    DeviceInfo(name, ip, parent)
 {
 }
 
@@ -16,14 +27,14 @@ int SwitchInfo::inetVlanTag() const
     return mInetVlanTag;
 }
 
-int SwitchInfo::iptvVlanTag() const
-{
-    return mIptvVlanTag;
-}
-
 void SwitchInfo::setInetVlanTag(int vlanTag)
 {
     mInetVlanTag = vlanTag;
+}
+
+int SwitchInfo::iptvVlanTag() const
+{
+    return mIptvVlanTag;
 }
 
 void SwitchInfo::setIptvVlanTag(int vlanTag)
@@ -31,62 +42,52 @@ void SwitchInfo::setIptvVlanTag(int vlanTag)
     mIptvVlanTag = vlanTag;
 }
 
+DeviceType::Enum SwitchInfo::deviceType() const
+{
+    return DeviceType::Switch;
+}
+
 bool SwitchInfo::getServiceDataFromDevice()
 {
     mError.clear();
 
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmpClient->setIp(mIp);
 
-    if (!snmp->setupSession(SessionType::ReadSession))
-    {
-        mError = SnmpErrors::SetupSession;
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
-    if (!snmp->openSession())
-    {
-        mError = SnmpErrors::OpenSession;
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
-    oid vlanNameOid[13];
-    size_t vlanNameOidLen = 13;
-    memcpy(&vlanNameOid, Mib::dot1qVlanStaticName, 13 * sizeof(oid));
-
-    oid* nextOid = new oid[13];
-    size_t nextOidLen = 13;
-    memcpy(nextOid, Mib::dot1qVlanStaticName, 13 * sizeof(oid));
+    snmpClient->createPdu(SNMP_MSG_GETNEXT);
+    snmpClient->addOidPair(createOidPair(Mib::dot1qVlanStaticName, 13));
 
     bool findedInet, findedIptv;
-    findedInet = findedIptv = false;
+    findedInet = false;
+    findedIptv = false;
 
-    while (true)
-    {
-        snmp->createPdu(SNMP_MSG_GETNEXT);
-        snmp->addOid(nextOid, nextOidLen);
+    while (snmpClient->sendRequest()) {
+        netsnmp_variable_list *vars = snmpClient->varList();
 
-        if (!snmp->sendRequest())
+        if (snmp_oid_ncompare(Mib::dot1qVlanStaticName, 13, vars->name,
+                              vars->name_length, 13) != 0)
             break;
 
-        netsnmp_variable_list* vars = snmp->varList();
+        QString vlanName = toQString(vars->val.string, vars->val_len);
 
-        if (snmp_oid_ncompare(vlanNameOid, vlanNameOidLen, vars->name, vars->name_length, 13) != 0)
-            break;
-
-        QString vlanName = QString::fromLatin1((char*)vars->val.string, vars->val_len);
-
-        if (vlanName == "Inet")
-        {
+        if (vlanName == "Inet") {
             findedInet = true;
             mInetVlanTag = vars->name[13];
 
             if (findedIptv)
                 break;
-        }
-        else if (vlanName == "IPTV_Unicast")
-        {
+        } else if (vlanName == "IPTV_Unicast") {
             findedIptv = true;
             mIptvVlanTag = vars->name[13];
 
@@ -94,16 +95,8 @@ bool SwitchInfo::getServiceDataFromDevice()
                 break;
         }
 
-        delete[] nextOid;
-        nextOid = new oid[vars->name_length];
-
-        memcpy(nextOid, vars->name, vars->name_length * sizeof(oid));
-        nextOidLen = vars->name_length;
-
-        snmp->clearResponsePdu();
+        snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
-
-    delete[] nextOid;
 
     if (!findedInet && !findedInet)
         mError = QString::fromUtf8("Ошибка: вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(mName, mIp);
@@ -117,88 +110,72 @@ bool SwitchInfo::getServiceDataFromDevice()
 
 bool SwitchInfo::saveConfig()
 {
-    std::unique_ptr<SnmpClient> snmp(new SnmpClient());
+    QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIP(mIp);
+    snmp->setIp(mIp);
 
-    if ((mDeviceModel == DeviceModel::DES3526)
-            || (mDeviceModel == DeviceModel::DES3550))
-    {
-        if (!snmp->setupSession(SessionType::ReadSession))
-        {
-            mError = SnmpErrors::SetupSession;
+    if ((deviceModel() == DeviceModel::DES3526)
+            || (deviceModel() == DeviceModel::DES3550)) {
+        if (!snmp->setupSession(SessionType::ReadSession)) {
+            mError = SnmpErrorStrings::SetupSession;
             return false;
         }
 
-        if (!snmp->openSession())
-        {
-            mError = SnmpErrors::OpenSession;
+        if (!snmp->openSession()) {
+            mError = SnmpErrorStrings::OpenSession;
             return false;
         }
 
         snmp->createPdu(SNMP_MSG_GET);
 
-        snmp->addOid(Mib::agentStatusSaveCfg);
+        snmp->addOid(Mib::agentStatusSaveCfg, 12);
 
-        if (snmp->sendRequest())
-        {
-            netsnmp_variable_list* vars = snmp->varList();
+        if (snmp->sendRequest()) {
+            netsnmp_variable_list *vars = snmp->varList();
 
-            if (IsValidSnmpValue(vars))
-            {
-                if (*(vars->val.integer) == 2)
-                {
+            if (isValidSnmpValue(vars)) {
+                if (*(vars->val.integer) == 2) {
 
                     mError = QString::fromUtf8("Ошибка: В данный момент уже идет сохранение конфигурации коммутатора.");
                     return false;
                 }
-            }
-            else
-            {
+            } else {
                 mError = QString::fromUtf8("Ошибка: Запрошенная информация на коммутаторе не найдена.");
                 return false;
             }
-        }
-        else
-        {
+        } else {
             mError = QString::fromUtf8("Ошибка: Не удалось получить данные о текущем состоянии коммутатора.");
             return false;
         }
     }
 
-    if (!snmp->setupSession(SessionType::WriteSession))
-    {
-        mError = SnmpErrors::SetupSession;
+    if (!snmp->setupSession(SessionType::WriteSession)) {
+        mError = SnmpErrorStrings::SetupSession;
         return false;
     }
 
-    snmp->setTimeoutSaveConfig(); //устанавливаем длинный таймаут
+    snmp->setTimeoutSaveConfig();
 
-    if (!snmp->openSession())
-    {
-        mError = SnmpErrors::OpenSession;
+    if (!snmp->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
         return false;
     }
 
     snmp->createPdu(SNMP_MSG_SET);
 
-    if ((mDeviceModel == DeviceModel::DES3526)
-            || (mDeviceModel == DeviceModel::DES3550))
-    {
-        snmp->addOid(Mib::agentSaveCfg, "3", 'i');
-    }
-    else if (mDeviceModel == DeviceModel::DES3528)
-    {
-        snmp->addOid(Mib::agentSaveCfg, "5", 'i');
-    }
-    else
-    {
+    OidPair saveOid = createOidPair(Mib::agentSaveCfg, 12);
+
+    if ((deviceModel() == DeviceModel::DES3526)
+            || (deviceModel() == DeviceModel::DES3550)) {
+        snmp->addOid(saveOid, "3", 'i');
+    } else if (deviceModel() == DeviceModel::DES3528) {
+        snmp->addOid(saveOid, "5", 'i');
+    } else {
         mError = QString::fromUtf8("Неизвестная модель коммутатора.");
         return false;
     }
 
-    if (!snmp->sendRequest())
-    {
+    if (!snmp->sendRequest()) {
         mError = QString::fromUtf8("Ошибка: Не удалось отправить запрос на сохранение конфигурации коммутатора.");
         return false;
     }

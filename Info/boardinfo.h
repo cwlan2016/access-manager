@@ -1,22 +1,35 @@
 #ifndef BOARDINFO_H
 #define BOARDINFO_H
 
-#include "converters.h"
+#ifdef _MSC_VER
+#include "../stdafx.h"
+#include "../customtypes.h"
+#else
+#include "stdafx.h"
+#include "customtypes.h"
+#endif
 
-class BoardInfo
+class BoardInfo : public QObject
 {
+    Q_OBJECT
 public:
-    BoardInfo();
-    BoardType type() const;
-    int number() const;
+    BoardInfo(QObject *parent = 0);
+
+    int index() const;
+    void setIndex(int index);
+
+    BoardType::Enum type() const;
+    void setType(BoardType::Enum type);
+
     int firstPair() const;
-    void setType(BoardType type);
-    void setNumber(int number);
     void setFirstPair(int firstPair);
+
+    typedef BoardInfo *Ptr;
+
 private:
-    BoardType mType;
     int mNumber;
     int mFirstPair;
+    BoardType::Enum mType;
 };
 
 #endif // BOARDINFO_H
