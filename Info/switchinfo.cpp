@@ -66,7 +66,7 @@ bool SwitchInfo::getServiceDataFromDevice()
     }
 
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    snmpClient->addOidPair(createOidPair(Mib::dot1qVlanStaticName, 13));
+    snmpClient->addOid(createOidPair(Mib::dot1qVlanStaticName, 13));
 
     bool findedInet, findedIptv;
     findedInet = false;
