@@ -22,6 +22,11 @@ OltInfo::OltInfo(QString name, QString ip, QObject *parent) :
 {
 }
 
+OltInfo::OltInfo(DeviceInfo *source, QObject *parent) :
+    DeviceInfo(source, parent)
+{
+}
+
 QString OltInfo::serviceProfile(int index)
 {
     if (mServiceProfileList.find(index) == mServiceProfileList.end())

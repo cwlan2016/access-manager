@@ -14,7 +14,8 @@ AboutPageWidget::AboutPageWidget(QWidget *parent) :
     QString oxygenIcons = "<A HREF=\"http://www.oxygen-icons.org\">Oxygen</A>";
 
     ui->programVersionDescLabel->setText(qApp->applicationVersion());
-    ui->copyrightDescLabel->setText(qApp->organizationName());
+    QString developers = QString::fromUtf8("Гудков Константин и Кузнецов Вячеслав");
+    ui->copyrightDescLabel->setText(developers);
     ui->qtVersionDescLabel->setText(qtVersion);
     ui->netSnmpVersionDescLabel->setText(netSnmpVersion);
     ui->programIconsDescLabel->setText(oxygenIcons);

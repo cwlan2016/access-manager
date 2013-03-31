@@ -9,6 +9,7 @@ class DslamInfoMa5300 : public DslamInfo
 public:
     explicit DslamInfoMa5300(QObject *parent = 0);
     DslamInfoMa5300(QString name, QString ip, QObject *parent = 0);
+    DslamInfoMa5300(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
 };

@@ -9,7 +9,6 @@
 DslamInfo::DslamInfo(QObject *parent) :
     DeviceInfo(parent)
 {
-    //setDeviceModel(DeviceModel::MA5600);
     InitializeBoardTableModel();
 }
 
@@ -17,6 +16,18 @@ DslamInfo::DslamInfo(QString name, QString ip, QObject *parent) :
     DeviceInfo(name, ip, parent)
 {
     InitializeBoardTableModel();
+}
+
+DslamInfo::DslamInfo(DeviceInfo *source, QObject *parent) :
+    DeviceInfo(source, parent)
+{
+    InitializeBoardTableModel();
+
+    if (source->deviceType() == DeviceType::Dslam) {
+        mAutoFill = static_cast<DslamInfo *>(source)->autoFill();
+        mAutoNumeringBoard = static_cast<DslamInfo *>(source)->autoNumeringBoard();
+    }
+
 }
 
 short DslamInfo::autoFill() const

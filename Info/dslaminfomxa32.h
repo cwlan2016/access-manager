@@ -9,6 +9,7 @@ class DslamInfoMxa32 : public DslamInfo
 public:
     explicit DslamInfoMxa32(QObject *parent = 0);
     DslamInfoMxa32(QString name, QString ip, QObject *parent = 0);
+    DslamInfoMxa32(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
 };

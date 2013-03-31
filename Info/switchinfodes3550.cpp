@@ -10,6 +10,11 @@ SwitchInfoDes3550::SwitchInfoDes3550(QString name, QString ip, QObject *parent) 
 {
 }
 
+SwitchInfoDes3550::SwitchInfoDes3550(DeviceInfo *source, QObject *parent) :
+    SwitchInfo(source, parent)
+{
+}
+
 DeviceModel::Enum SwitchInfoDes3550::deviceModel() const
 {
     return DeviceModel::DES3550;

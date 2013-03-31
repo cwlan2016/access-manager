@@ -9,6 +9,7 @@ class OltInfoLtp8x : public OltInfo
 public:
     explicit OltInfoLtp8x(QObject *parent = 0);
     OltInfoLtp8x(QString name, QString ip, QObject *parent = 0);
+    OltInfoLtp8x(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
 };

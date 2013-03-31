@@ -9,7 +9,6 @@
 DeviceInfo::DeviceInfo(QObject *parent) :
     QObject(parent)
 {
-    //setDeviceModel(DeviceModel::Other);
 }
 
 DeviceInfo::DeviceInfo(QString name, QString ip, QObject *parent) :
@@ -17,7 +16,13 @@ DeviceInfo::DeviceInfo(QString name, QString ip, QObject *parent) :
 {
     mName = name;
     mIp = ip;
-    //setDeviceModel(deviceModel);
+}
+
+DeviceInfo::DeviceInfo(DeviceInfo *source, QObject *parent) :
+    QObject(parent)
+{
+    mName = source->name();
+    mIp = source->ip();
 }
 
 QString DeviceInfo::name() const

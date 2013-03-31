@@ -40,6 +40,8 @@ DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
 
     ui->deviceListTableView->setModel(mProxyModel);
     ui->deviceListTableView->setColumnWidth(0, 200);
+    ui->deviceListTableView->setColumnWidth(1, 100);
+    ui->deviceListTableView->setColumnWidth(2, 150);
     ui->deviceListTableView->setColumnWidth(3, 150);
 
     DeviceTableDelegate *deviceListDelegate = new DeviceTableDelegate(this);

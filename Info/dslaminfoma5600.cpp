@@ -18,6 +18,11 @@ DslamInfoMa5600::DslamInfoMa5600(QString name, QString ip, QObject *parent) :
 {
 }
 
+DslamInfoMa5600::DslamInfoMa5600(DeviceInfo *source, QObject *parent) :
+    DslamInfo(source, parent)
+{
+}
+
 DeviceModel::Enum DslamInfoMa5600::deviceModel() const
 {
     return DeviceModel::MA5600;

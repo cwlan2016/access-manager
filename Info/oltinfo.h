@@ -9,6 +9,7 @@ class OltInfo : public DeviceInfo
 public:
     OltInfo(QObject *parent = 0);
     OltInfo(QString name, QString ip, QObject *parent = 0);
+    OltInfo(DeviceInfo *source, QObject *parent = 0);
 
     QString serviceProfile(int index);
     void addServiceProfile(int index, QString profileName);

@@ -15,6 +15,7 @@ class DeviceInfo : public QObject
 public:
     DeviceInfo(QObject *parent = 0);
     DeviceInfo(QString name, QString ip, QObject *parent = 0);
+    DeviceInfo(DeviceInfo *source, QObject *parent = 0);
 
     QString name() const;
     void setName(const QString name);

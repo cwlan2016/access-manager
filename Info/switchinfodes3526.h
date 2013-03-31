@@ -9,6 +9,7 @@ class SwitchInfoDes3526 : public SwitchInfo
 public:
     explicit SwitchInfoDes3526(QObject *parent = 0);
     SwitchInfoDes3526(QString name, QString ip, QObject *parent = 0);
+    SwitchInfoDes3526(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
 };

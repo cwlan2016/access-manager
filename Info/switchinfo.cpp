@@ -20,8 +20,22 @@ SwitchInfo::SwitchInfo(QObject *parent) :
 }
 
 SwitchInfo::SwitchInfo(QString name, QString ip, QObject *parent) :
-    DeviceInfo(name, ip, parent)
+    DeviceInfo(name, ip, parent),
+    mInetVlanTag(0),
+    mIptvVlanTag(0)
 {
+}
+
+SwitchInfo::SwitchInfo(DeviceInfo *source, QObject *parent) :
+    DeviceInfo(source, parent)
+{
+    if (source->deviceType() == DeviceType::Switch) {
+        mInetVlanTag = static_cast<SwitchInfo *>(source)->inetVlanTag();
+        mIptvVlanTag = static_cast<SwitchInfo *>(source)->iptvVlanTag();
+    } else {
+        mInetVlanTag = 0;
+        mIptvVlanTag = 0;
+    }
 }
 
 int SwitchInfo::inetVlanTag() const

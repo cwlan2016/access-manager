@@ -18,6 +18,11 @@ DslamInfoMxa32::DslamInfoMxa32(QString name, QString ip, QObject *parent) :
 {
 }
 
+DslamInfoMxa32::DslamInfoMxa32(DeviceInfo *source, QObject *parent) :
+    DslamInfo(source, parent)
+{
+}
+
 DeviceModel::Enum DslamInfoMxa32::deviceModel() const
 {
     return DeviceModel::MXA32;

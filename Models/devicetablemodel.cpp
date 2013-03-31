@@ -106,35 +106,51 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
 
-            if (mList.at(index.row())->deviceType() == DeviceType::Other) {
-                //device only now added
-                DeviceInfo::Ptr deviceInfo;
-
-                if (newType == DeviceType::Switch) {
-                    deviceInfo = DeviceInfo::Ptr(new SwitchInfo(this));
-                } else if (newType == DeviceType::Dslam) {
-                    deviceInfo = DeviceInfo::Ptr(new DslamInfo(this));
-                    //FIXME: Setup new type created device.
-                    //DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
-                    //dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
-                } else if (newType == DeviceType::Olt) {
-                    deviceInfo = DeviceInfo::Ptr(new OltInfo(this));
-                } else {
-                    deviceInfo = DeviceInfo::Ptr(new DeviceInfo(this));
-                }
-
-                deviceInfo->setName(mList[index.row()]->name());
-                deviceInfo->setIp(mList[index.row()]->ip());
-                //deviceInfo->setDeviceModel(newModel);
-
-                mList[index.row()] = deviceInfo;
-            } else if (mList[index.row()]->deviceType() != newType) {
+            if ((mList.at(index.row())->deviceType() == DeviceType::Other)
+                    || (mList.at(index.row())->deviceType() == newType)) {
+                changeDeviceModel(index.row(), newType, newModel);
+            } else {
                 BasicDialogs::information(0, BasicDialogStrings::Info,
                                           QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
                 return false;
-            } else {
-                //mList[index.row()]->setDeviceModel(newModel);
             }
+            //}} else if (mList[index.row()]->deviceType() != newType) {
+            //                BasicDialogs::information(0, BasicDialogStrings::Info,
+            //                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
+            //                return false;
+            //            } else {
+            //                //mList[index.row()]->setDeviceModel(newModel);
+            //            }
+
+//            if (mList.at(index.row())->deviceType() == DeviceType::Other) {
+//                //device only now added
+//                DeviceInfo::Ptr deviceInfo;
+
+//                if (newType == DeviceType::Switch) {
+//                    deviceInfo = DeviceInfo::Ptr(new SwitchInfo(this));
+//                } else if (newType == DeviceType::Dslam) {
+//                    deviceInfo = DeviceInfo::Ptr(new DslamInfo(this));
+//                    //FIXME: Setup new type created device.
+//                    //DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+//                    //dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
+//                } else if (newType == DeviceType::Olt) {
+//                    deviceInfo = DeviceInfo::Ptr(new OltInfo(this));
+//                } else {
+//                    deviceInfo = DeviceInfo::Ptr(new DeviceInfo(this));
+//                }
+
+//                deviceInfo->setName(mList[index.row()]->name());
+//                deviceInfo->setIp(mList[index.row()]->ip());
+//                //deviceInfo->setDeviceModel(newModel);
+
+//                mList[index.row()] = deviceInfo;
+//            } else if (mList[index.row()]->deviceType() != newType) {
+//                BasicDialogs::information(0, BasicDialogStrings::Info,
+//                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
+//                return false;
+//            } else {
+//                //mList[index.row()]->setDeviceModel(newModel);
+//            }
 
             emit dataChanged(index, index);
             emit dataChanged(deviceTypeIndex, deviceTypeIndex);
@@ -498,8 +514,7 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
     DeviceModel::Enum switchModel = DeviceModel::from(modelString);
     DeviceInfo::Ptr switchInfo;
 
-    switch (switchModel)
-    {
+    switch (switchModel) {
     case DeviceModel::DES3526:
         switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(this));
         break;
@@ -514,9 +529,6 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
         return;
     }
 
-    if (switchInfo.isNull())
-        return;
-
     int inetVlan = reader.attributes().value("inetVlan").toString().toInt();
     int iptvVlan = reader.attributes().value("iptvVlan").toString().toInt();
 
@@ -525,9 +537,9 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
     switchInfo.objectCast<SwitchInfo>()->setInetVlanTag(inetVlan);
     switchInfo.objectCast<SwitchInfo>()->setIptvVlanTag(iptvVlan);
 
-    readNextElement(reader);
-
     mList.push_back(switchInfo);
+
+    readNextElement(reader);
 }
 
 void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
@@ -536,8 +548,7 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
     DeviceModel::Enum dslamModel = DeviceModel::from(modelString);
     DeviceInfo::Ptr dslamInfo;
 
-    switch (dslamModel)
-    {
+    switch (dslamModel) {
     case DeviceModel::MA5600:
         dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(this));
         break;
@@ -555,9 +566,6 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
         return;
     }
 
-    if (dslamInfo.isNull())
-        return;
-
     short autoFill = reader.attributes().value("autofill").toString().toInt();
     short autoNumering = reader.attributes().value("autonumeringboard").toString().toInt();
 
@@ -565,6 +573,8 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
     dslamInfo->setIp(reader.attributes().value("ip").toString());
     dslamInfo.objectCast<DslamInfo>()->setAutoFill(autoFill);
     dslamInfo.objectCast<DslamInfo>()->setAutoNumeringBoard(autoNumering);
+
+    mList.push_back(dslamInfo);
 
     readNextElement(reader);
 
@@ -574,7 +584,7 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
     if (reader.name() == "board")
         parseDslamBoardList(reader, dslamInfo);
 
-    mList.push_back(dslamInfo);
+
 }
 
 void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
@@ -605,8 +615,7 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
     DeviceModel::Enum oltModel = DeviceModel::from(modelString);
     DeviceInfo::Ptr oltInfo;
 
-    switch (oltModel)
-    {
+    switch (oltModel) {
     case DeviceModel::LTE8ST:
         oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(this));
         break;
@@ -618,11 +627,10 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
         return;
     }
 
-    if (oltInfo.isNull())
-        return;
-
     oltInfo->setName(reader.attributes().value("name").toString());
     oltInfo->setIp(reader.attributes().value("ip").toString());
+
+    mList.push_back(oltInfo);
 
     readNextElement(reader);
 
@@ -631,9 +639,6 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 
     if ((reader.name() == "uniprofile") || (reader.name() == "multprofile"))
         parseOltProfileList(reader, oltInfo);
-
-
-    mList.push_back(oltInfo);
 }
 
 void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
@@ -735,4 +740,87 @@ void DeviceTableModel::createOltProfileList(QXmlStreamWriter &writer,
 
         writer.writeEndElement();
     }
+}
+
+void DeviceTableModel::changeDeviceModel(int index, DeviceType::Enum deviceType,
+                                         DeviceModel::Enum deviceModel)
+{
+    switch (deviceType) {
+    case DeviceType::Dslam:
+        changeDslamModel(index, deviceModel);
+        break;
+    case DeviceType::Switch:
+        changeSwitchModel(index, deviceModel);
+        break;
+    case DeviceType::Olt:
+        changeOltModel(index, deviceModel);
+    default:
+        return;
+    }
+}
+
+void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceModel)
+{
+    DeviceInfo *currentInfo = mList.at(index).data();
+    DeviceInfo::Ptr switchInfo;
+
+    switch (deviceModel) {
+    case DeviceModel::DES3526:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(currentInfo, this));
+        break;
+    case DeviceModel::DES3528:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(currentInfo, this));
+        break;
+    case DeviceModel::DES3550:
+        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(currentInfo, this));
+        break;
+    default:
+        return;
+    }
+
+    mList[index] = switchInfo;
+}
+
+void DeviceTableModel::changeDslamModel(int index, DeviceModel::Enum deviceModel)
+{
+    DeviceInfo *currentInfo = mList.at(index).data();
+    DeviceInfo::Ptr dslamInfo;
+
+    switch (deviceModel) {
+    case DeviceModel::MA5600:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(currentInfo, this));
+        break;
+    case DeviceModel::MA5300:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(currentInfo, this));
+        break;
+    case DeviceModel::MXA32:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(currentInfo, this));
+        break;
+    case DeviceModel::MXA64:
+        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(currentInfo, this));
+        break;
+    default:
+        return;
+    }
+
+    mList[index] = dslamInfo;
+}
+
+void DeviceTableModel::changeOltModel(int index, DeviceModel::Enum deviceModel)
+{
+    DeviceInfo *currentInfo = mList.at(index).data();
+    DeviceInfo::Ptr oltInfo;
+
+    switch (deviceModel) {
+    case DeviceModel::LTE8ST:
+        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(currentInfo, this));
+        break;
+    case DeviceModel::LTP8X:
+        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(currentInfo, this));
+        break;
+    default:
+        return;
+    }
+
+    mList[index] = oltInfo;
 }

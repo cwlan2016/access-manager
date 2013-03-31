@@ -9,6 +9,7 @@ class SwitchInfo : public DeviceInfo
 public:
     explicit SwitchInfo(QObject *parent = 0);
     SwitchInfo(QString name, QString ip, QObject *parent = 0);
+    SwitchInfo(DeviceInfo *source, QObject *parent = 0);
 
     int inetVlanTag() const;
     void setInetVlanTag(int vlanTag);

@@ -74,6 +74,12 @@ private:
     void createOltProfileList(QXmlStreamWriter &writer,
                               const OltProfileMap &profileMap, QString typeElem);
 
+    void changeDeviceModel(int index, DeviceType::Enum deviceType,
+                           DeviceModel::Enum deviceModel);
+    void changeSwitchModel(int index, DeviceModel::Enum deviceModel);
+    void changeDslamModel(int index, DeviceModel::Enum deviceModel);
+    void changeOltModel(int index, DeviceModel::Enum deviceModel);
+
     bool mModified;
     QString mError;
     QString mDeviceListPath;

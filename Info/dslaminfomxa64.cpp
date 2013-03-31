@@ -18,6 +18,12 @@ DslamInfoMxa64::DslamInfoMxa64(QString name, QString ip, QObject *parent) :
 {
 }
 
+DslamInfoMxa64::DslamInfoMxa64(DeviceInfo *source, QObject *parent) :
+    DslamInfo(source, parent)
+{
+
+}
+
 DeviceModel::Enum DslamInfoMxa64::deviceModel() const
 {
     return DeviceModel::MXA64;

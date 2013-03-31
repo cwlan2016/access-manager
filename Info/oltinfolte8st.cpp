@@ -18,6 +18,11 @@ OltInfoLte8st::OltInfoLte8st(QString name, QString ip, QObject *parent) :
 {
 }
 
+OltInfoLte8st::OltInfoLte8st(DeviceInfo *source, QObject *parent) :
+    OltInfo(source, parent)
+{
+}
+
 DeviceModel::Enum OltInfoLte8st::deviceModel() const
 {
     return DeviceModel::LTE8ST;

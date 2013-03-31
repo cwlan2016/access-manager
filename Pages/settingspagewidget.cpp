@@ -34,6 +34,7 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
     ui->swIptvUnicastVlanEdit->setText(SwitchConfigInfo::iptvVlanName());
 
     ui->stackedWidget->setCurrentIndex(0);
+    ui->listWidget->setCurrentRow(0);
 
     connect(ui->saveSettingsButton, &QPushButton::pressed,
             this, &SettingsPageWidget::saveSetting);
