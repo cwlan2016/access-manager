@@ -236,4 +236,11 @@ const QString timeout =             QString::fromUtf8("timeout");
 const QString saveConfigTimeout =   QString::fromUtf8("saveConfigTimeout");
 const QString retries =             QString::fromUtf8("retries");
 }
+
+namespace SwitchSettingsStrings
+{
+const QString inetVlanName =        QString::fromUtf8("inetVlanName");
+const QString iptvUnicastVlanName = QString::fromUtf8("iptvUnicastVlanName");
+}
+
 #endif // CONSTANT_H

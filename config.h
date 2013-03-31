@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include "Info/snmpconfiginfo.h"
+#include "Info/switchconfiginfo.h"
 
 class Config
 {
@@ -22,6 +23,9 @@ public:
 private:
     static void createSnmpGroup(QSettings &settings);
     static void parseSnmpGroup(QSettings &settings);
+
+    static void createSwitchGroup(QSettings &settings);
+    static void parseSwitchGroup(QSettings &settings);
 
     static QString mError;
     static QString mConfigPath;

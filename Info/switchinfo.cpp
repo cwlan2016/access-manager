@@ -1,5 +1,7 @@
 #include "switchinfo.h"
 
+#include "switchconfiginfo.h"
+
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
@@ -81,13 +83,13 @@ bool SwitchInfo::getServiceDataFromDevice()
 
         QString vlanName = toQString(vars->val.string, vars->val_len);
 
-        if (vlanName == "Inet") {
+        if (vlanName == SwitchConfigInfo::inetVlanName()) {
             findedInet = true;
             mInetVlanTag = vars->name[13];
 
             if (findedIptv)
                 break;
-        } else if (vlanName == "IPTV_Unicast") {
+        } else if (vlanName == SwitchConfigInfo::iptvVlanName()) {
             findedIptv = true;
             mIptvVlanTag = vars->name[13];
 
@@ -98,12 +100,13 @@ bool SwitchInfo::getServiceDataFromDevice()
         snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
 
-    if (!findedInet && !findedInet)
-        mError = QString::fromUtf8("Ошибка: вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(mName, mIp);
-    else if (!findedInet)
-        mError = QString::fromUtf8("Ошибка: влан для интернета на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
-    else if (!findedIptv)
-        mError = QString::fromUtf8("Ошибка: влан для iptv на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
+    if (!findedInet && !findedInet) {
+        mError = QString::fromUtf8("Вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(mName, mIp);
+    } else if (!findedInet) {
+        mError = QString::fromUtf8("Влан для интернета на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
+    } else if (!findedIptv) {
+        mError = QString::fromUtf8("Влан для iptv на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
+    }
 
     return findedInet && findedIptv;
 }

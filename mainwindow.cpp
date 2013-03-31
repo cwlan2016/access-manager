@@ -54,8 +54,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuSwitch->setEnabled(false);
     ui->menuDslam->setEnabled(false);
     ui->menuOlt->setEnabled(false);
-    //TODO: Temporary hidden
-    ui->menuOlt->setVisible(false);
 
     this->setWindowState(Qt::WindowMaximized);
 

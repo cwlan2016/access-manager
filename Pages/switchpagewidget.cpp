@@ -22,6 +22,7 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
     ui->setupUi(this);
 
     ui->portInfoGroupBox->setVisible(false);
+    ui->portInfoGroupBox->setChecked(false);
 
     connect(ui->portListTableView, &QTableView::customContextMenuRequested,
             this, &SwitchPageWidget::portViewRequestContextMenu);
@@ -289,23 +290,11 @@ void SwitchPageWidget::macLineEditTextChanged(QString text)
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
 
+    text = ui->macLineEdit->displayText();
+    text.replace('_', "?");
+
     proxyModel->setFilterKeyColumn(2);
-
-    for (int i = 0; i < text.length() - 1; ++i) {
-        if ((text[i] == '-') && (text[i + 1] == '-')) {
-            if (i == 0) {
-                text = "[0-9A-F]";
-                break;
-            } else {
-                text.truncate(i);
-                text.prepend('^');
-                break;
-            }
-        }
-    }
-
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    proxyModel->setFilterRegExp(regExp);
+    proxyModel->setFilterWildcard(text);
 }
 
 void SwitchPageWidget::macRadioButtonChangeState(bool checked)

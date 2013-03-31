@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     Info/oltinfoltp8x.cpp \
     Info/switchportinfodes3526.cpp \
     Info/switchportinfodes3528.cpp \
-    Info/switchportinfodes3550.cpp
+    Info/switchportinfodes3550.cpp \
+    Info/switchconfiginfo.cpp
 
 HEADERS  += mainwindow.h \
     Models/mactablemodel.h \
@@ -123,7 +124,8 @@ HEADERS  += mainwindow.h \
     Info/oltinfoltp8x.h \
     Info/switchportinfodes3526.h \
     Info/switchportinfodes3528.h \
-    Info/switchportinfodes3550.h
+    Info/switchportinfodes3550.h \
+    Info/switchconfiginfo.h
 
 FORMS    += mainwindow.ui \
     Pages/dslampagewidget.ui \

@@ -24,7 +24,7 @@ SnmpClient::~SnmpClient()
         snmp_free_pdu(mResponsePdu);
 
     if (mSnmpSession)
-        snmp_close(mSnmpSession); //TODO: Check this function in source snmplib
+        snmp_close(mSnmpSession);
 }
 
 void SnmpClient::setIp(QString ip)

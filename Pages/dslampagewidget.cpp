@@ -26,6 +26,7 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     ui->boardNameLabel->setVisible(false);
     ui->backToBoardListButton->setVisible(false);
     ui->selectProfileGroupBox->setVisible(false);
+    ui->selectProfileGroupBox->setChecked(false);
 
     connect(ui->dslamTreeView, &QTreeView::customContextMenuRequested,
             this, &DslamPageWidget::viewRequestContextMenu);

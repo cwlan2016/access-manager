@@ -79,8 +79,8 @@ void SnmpConfigInfo::toDefault()
     mRetries = 3;
 }
 
-QString SnmpConfigInfo::mReadCommunity = "";
-QString SnmpConfigInfo::mWriteCommunity = "";
+QString SnmpConfigInfo::mReadCommunity = QString();
+QString SnmpConfigInfo::mWriteCommunity = QString();
 int SnmpConfigInfo::mTimeout = 0;
 int SnmpConfigInfo::mSaveConfigTimeout = 0;
 int SnmpConfigInfo::mPort = 0 ;

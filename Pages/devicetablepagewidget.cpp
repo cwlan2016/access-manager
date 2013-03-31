@@ -74,7 +74,9 @@ DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
             this, &DeviceTablePageWidget::showProfileInfoGroupBox);
 
     ui->vlanInfoGroupBox->setVisible(false);
+    ui->vlanInfoGroupBox->setChecked(false);
     ui->profileInfoGroupBox->setVisible(false);
+    ui->profileInfoGroupBox->setChecked(false);
 }
 
 DeviceTablePageWidget::~DeviceTablePageWidget()

@@ -30,10 +30,15 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
     ui->retriesEdit->setText(QString::number(SnmpConfigInfo::retries()));
     ui->retriesEdit->setValidator(new QIntValidator(0, 100000, this));
 
-    ui->stackedWidget->setCurrentWidget(ui->snmpPage);
+    ui->swInternetVlanEdit->setText(SwitchConfigInfo::inetVlanName());
+    ui->swIptvUnicastVlanEdit->setText(SwitchConfigInfo::iptvVlanName());
+
+    ui->stackedWidget->setCurrentIndex(0);
 
     connect(ui->saveSettingsButton, &QPushButton::pressed,
             this, &SettingsPageWidget::saveSetting);
+    connect(ui->listWidget, &QListWidget::currentRowChanged,
+            this, &SettingsPageWidget::currentItemChanged);
 }
 
 SettingsPageWidget::~SettingsPageWidget()
@@ -53,6 +58,9 @@ void SettingsPageWidget::saveSetting()
     SnmpConfigInfo::setPort(ui->portEdit->text().toUInt());
     SnmpConfigInfo::setRetries(ui->retriesEdit->text().toUInt());
 
+    SwitchConfigInfo::setInetVlanName(ui->swInternetVlanEdit->text().trimmed());
+    SwitchConfigInfo::setIptvVlanName(ui->swIptvUnicastVlanEdit->text().trimmed());
+
     if (!Config::save()) {
         BasicDialogs::error(this, BasicDialogStrings::Error, Config::error(), "");
         return;
@@ -64,41 +72,59 @@ void SettingsPageWidget::saveSetting()
 
 bool SettingsPageWidget::validateSettingsData()
 {
-    if (ui->readComEdit->text().trimmed() == "") {
+    if (ui->readComEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для чтения!"));
         ui->readComEdit->setFocus();
         return false;
     }
 
-    if (ui->writeComEdit->text().trimmed() == "") {
+    if (ui->writeComEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для записи!"));
         ui->writeComEdit->setFocus();
         return false;
     }
 
-    if (ui->timeoutEdit->text().trimmed() == "") {
+    if (ui->timeoutEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута!"));
         ui->timeoutEdit->setFocus();
         return false;
     }
 
-    if (ui->saveTimeoutEdit->text().trimmed() == "") {
+    if (ui->saveTimeoutEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута сохранения конфигурации на коммутаторе!"));
         ui->saveTimeoutEdit->setFocus();
         return false;
     }
 
-    if (ui->portEdit->text().trimmed() == "") {
+    if (ui->portEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение TCP порта!"));
         ui->portEdit->setFocus();
         return false;
     }
 
-    if (ui->retriesEdit->text().trimmed() == "") {
+    if (ui->retriesEdit->text().trimmed().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение количества повторов!"));
         ui->retriesEdit->setFocus();
         return false;
     }
 
+    if (ui->swInternetVlanEdit->text().trimmed().isEmpty()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите названия влана для интернет трафика!"));
+        ui->swInternetVlanEdit->setFocus();
+        return false;
+    }
+
+    if (ui->swIptvUnicastVlanEdit->text().trimmed().isEmpty()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите названия влана для юникастового IPTV трафика!"));
+        ui->swIptvUnicastVlanEdit->setFocus();
+        return false;
+    }
+
     return true;
 }
+
+void SettingsPageWidget::currentItemChanged(int item)
+{
+    ui->stackedWidget->setCurrentIndex(item);
+}
+

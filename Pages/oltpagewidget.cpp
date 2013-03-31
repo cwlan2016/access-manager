@@ -18,6 +18,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     ui->setupUi(this);
 
     ui->userSettingsGroupBox->setVisible(false);
+    ui->userSettingsGroupBox->setChecked(false);
 
     OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<OltInfo>(), this);
 

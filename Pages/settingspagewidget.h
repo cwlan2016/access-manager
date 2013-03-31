@@ -23,6 +23,7 @@ public:
 private:
     void saveSetting();
     bool validateSettingsData();
+    void currentItemChanged(int item);
 
     Ui::SettingsPageWidget *ui;
 };

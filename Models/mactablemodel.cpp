@@ -4,10 +4,12 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
+#include "../Info/switchconfiginfo.h"
 #else
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
+#include "Info/switchconfiginfo.h"
 #endif
 
 // Columns
@@ -124,8 +126,8 @@ bool MacTableModel::update()
     mList->reserve(26);
 
     //TODO: Make handling errors
-    updateMacsInVlan(snmp, mParentDevice->inetVlanTag(), "Inet");
-    updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(), "IPTV Unicast");
+    updateMacsInVlan(snmp, mParentDevice->inetVlanTag(), SwitchConfigInfo::inetVlanName());
+    updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(), SwitchConfigInfo::iptvVlanName());
 
     endResetModel();
 

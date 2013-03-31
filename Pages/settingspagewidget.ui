@@ -35,31 +35,18 @@
          <string>SNMP</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Устройства</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="viewPage">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QGroupBox" name="styleGroupBox">
-           <property name="title">
-            <string>Стиль</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="viewSettingsGroupBox">
-           <property name="title">
-            <string>Параметры отображения таблиц</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="snmpPage">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
@@ -133,6 +120,71 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="devicePage">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QTabWidget" name="deviceTabWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="switchTab">
+            <attribute name="title">
+             <string>Switch</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QGroupBox" name="swServiceVlanGroupBox">
+               <property name="title">
+                <string>Вланы для сервисов</string>
+               </property>
+               <layout class="QFormLayout" name="formLayout_2">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="swInternetVlanLabel">
+                  <property name="text">
+                   <string>Интернет</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="swIptvUnicastVlanLabel">
+                  <property name="text">
+                   <string>IPTV Unicast</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="swInternetVlanEdit"/>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="swIptvUnicastVlanEdit"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="viewPage">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="styleGroupBox">
+           <property name="title">
+            <string>Стиль</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="viewSettingsGroupBox">
+           <property name="title">
+            <string>Параметры отображения таблиц</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -153,11 +205,24 @@
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="defaultSettingButton">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>38</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>По  умолчанию</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="saveSettingsButton">
        <property name="minimumSize">
         <size>
          <width>80</width>
-         <height>30</height>
+         <height>38</height>
         </size>
        </property>
        <property name="text">
