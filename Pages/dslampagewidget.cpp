@@ -62,7 +62,7 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
             || (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
         ui->dslamTreeView->setModel(mDeviceInfo.objectCast<DslamInfo>()->boardTableModel());
     } else {
-        DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo->deviceModel(), mDeviceInfo->ip(), this);
+        DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<DslamInfo>(), this);
 
         portListModel->setBoardType(BoardType::AnnexA);
         portListModel->setFirstPair(1);
@@ -89,9 +89,9 @@ void DslamPageWidget::upDslPort()
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (portListModel->changePortState(currentPort.row(), "1")) {
+    if (portListModel->changePortState(currentPort.row(), DslPortState::Up)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт активирован."));
         portListModel->updatePortInfo(currentPort);
     } else {
@@ -106,9 +106,9 @@ void DslamPageWidget::downDslPort()
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (portListModel->changePortState(currentPort.row(), "2")) {
+    if (portListModel->changePortState(currentPort.row(), DslPortState::Down)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт деактивирован."));
         portListModel->updatePortInfo(currentPort);
     } else {
@@ -142,7 +142,7 @@ void DslamPageWidget::showPortListModel()
         return;
     }
 
-    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo->deviceModel(), mDeviceInfo->ip());//new DslamPortListModel(boardListModel->parentDevice());
+    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<DslamInfo>(), this);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
     QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
@@ -231,7 +231,7 @@ void DslamPageWidget::applyDslProfile()
         return;
     }
 
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
     QString profileName = displayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
 
     bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
@@ -259,7 +259,7 @@ void DslamPageWidget::refreshPortInfo()
 
 void DslamPageWidget::refreshAllPortInfo()
 {
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
     if (!portListModel->load()) {
         BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
@@ -296,7 +296,7 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
     if (index.internalId() != invalidParentIndex)
         return;
 
-    DslamPortTableModel *portListModel = static_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
     if (!portListModel->updatePortInfo(index))
         BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());

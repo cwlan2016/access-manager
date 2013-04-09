@@ -38,7 +38,7 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
 
     ui->editDslamBoardListTableView->setModel(boardTableModel);
 
-    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo->deviceModel(), this);
+    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo.objectCast<DslamInfo>(), this);
     boardListDelegate->setIndexTypeBoard(1);
     boardListDelegate->setIndexFirstPair(2);
 

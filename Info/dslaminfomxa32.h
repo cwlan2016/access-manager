@@ -12,6 +12,8 @@ public:
     DslamInfoMxa32(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
+    int countPorts(BoardType::Enum boardType);
+    long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
 };
 
 #endif // DSLAMINFOMXA32_H

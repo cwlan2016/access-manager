@@ -247,7 +247,7 @@ bool BoardTableModel::getBoardListFromDevice()
                                   vars->name, vars->name_length, 16) != 0)
                 break;
 
-            QString boardName = toQString(vars->val.string, vars->val_len);
+            QString boardName = toString(vars->val.string, vars->val_len);
             int boardIndex = vars->name[16];
 
             if ((boardIndex == 7) || (boardIndex == 8))
@@ -273,8 +273,8 @@ bool BoardTableModel::getBoardListFromDevice()
 
 void BoardTableModel::renumeringPairList()
 {
-    int adslStep = countPorts(mParentDevice->deviceModel(), BoardType::AnnexA);
-    int shdslStep = countPorts(mParentDevice->deviceModel(), BoardType::Shdsl);
+    int adslStep = mParentDevice->countPorts(BoardType::AnnexA);
+    int shdslStep = mParentDevice->countPorts(BoardType::Shdsl);
 
     int firstAdslPair = 1;
     int firstShdslPair = 1;
@@ -310,5 +310,5 @@ QString BoardTableModel::rangePairs(int firstPair, BoardType::Enum typeBoard) co
 {
     return QString("%1-%2")
            .arg(firstPair)
-           .arg(firstPair + countPorts(mParentDevice->deviceModel(), typeBoard) - 1);
+           .arg(firstPair + mParentDevice->countPorts(typeBoard) - 1);
 }

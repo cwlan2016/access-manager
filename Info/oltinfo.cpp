@@ -148,7 +148,7 @@ bool OltInfo::getProfileList(OltProfileMap &profileList,
         //                          vars->name_length, oidLen - 1) != 0)
             break;
 
-        QString profileName = toQString(vars->val.string, vars->val_len);
+        QString profileName = toString(vars->val.string, vars->val_len);
         int profileIndex = vars->name[vars->name_length - 1];
 
         profileList.insert(profileIndex, profileName);

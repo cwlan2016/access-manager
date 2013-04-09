@@ -18,8 +18,8 @@ public:
     int index() const;
     void setIndex(int index);
 
-    QString state() const;
-    void setState(QString state);
+    SwitchPortState::Enum state() const;
+    void setState(SwitchPortState::Enum state);
 
     QString speedDuplex() const;
     void setSpeedDuplex(QString speedDuplex);
@@ -33,10 +33,12 @@ public:
     typedef SwitchPortInfo *Ptr;
 
 protected:
+    virtual QString speedDuplexString(long snmpValue);
+
     int mIndex;
-    QString mState;
     QString mDescription;
     QString mSpeedDuplex;
+    SwitchPortState::Enum mState;
 };
 
 #endif // SWITCHPORTINFO_H

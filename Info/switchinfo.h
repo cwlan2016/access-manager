@@ -18,6 +18,7 @@ public:
     void setIptvVlanTag(int vlanTag);
 
     DeviceType::Enum deviceType() const;
+    virtual int countPorts();
 
     bool getServiceDataFromDevice();
 

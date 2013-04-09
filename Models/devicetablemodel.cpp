@@ -114,43 +114,6 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
                                           QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
                 return false;
             }
-            //}} else if (mList[index.row()]->deviceType() != newType) {
-            //                BasicDialogs::information(0, BasicDialogStrings::Info,
-            //                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
-            //                return false;
-            //            } else {
-            //                //mList[index.row()]->setDeviceModel(newModel);
-            //            }
-
-//            if (mList.at(index.row())->deviceType() == DeviceType::Other) {
-//                //device only now added
-//                DeviceInfo::Ptr deviceInfo;
-
-//                if (newType == DeviceType::Switch) {
-//                    deviceInfo = DeviceInfo::Ptr(new SwitchInfo(this));
-//                } else if (newType == DeviceType::Dslam) {
-//                    deviceInfo = DeviceInfo::Ptr(new DslamInfo(this));
-//                    //FIXME: Setup new type created device.
-//                    //DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
-//                    //dslamInfo->boardTableModel()->setParentDevice(dslamInfo);
-//                } else if (newType == DeviceType::Olt) {
-//                    deviceInfo = DeviceInfo::Ptr(new OltInfo(this));
-//                } else {
-//                    deviceInfo = DeviceInfo::Ptr(new DeviceInfo(this));
-//                }
-
-//                deviceInfo->setName(mList[index.row()]->name());
-//                deviceInfo->setIp(mList[index.row()]->ip());
-//                //deviceInfo->setDeviceModel(newModel);
-
-//                mList[index.row()] = deviceInfo;
-//            } else if (mList[index.row()]->deviceType() != newType) {
-//                BasicDialogs::information(0, BasicDialogStrings::Info,
-//                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
-//                return false;
-//            } else {
-//                //mList[index.row()]->setDeviceModel(newModel);
-//            }
 
             emit dataChanged(index, index);
             emit dataChanged(deviceTypeIndex, deviceTypeIndex);

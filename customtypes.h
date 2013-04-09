@@ -154,15 +154,15 @@ inline QString toString(DeviceType::Enum deviceType)
 namespace DslPortState
 {
 enum Enum {
+    Other =         0,
     Up =            1,
     Down =          2,
     Activating =    3,
-    Defective =     4,
-    Other =         5
+    Defective =     4
 };
 
-const QString DslPortStateName[] = { "Up", "Down", "Activating", "Defective",
-                                     "Other"};
+const QString DslPortStateName[] = {"Other", "Up", "Down", "Activating",
+                                    "Defective" };
 
 inline DslPortState::Enum from(QString dslPortState)
 {
@@ -175,6 +175,24 @@ inline DslPortState::Enum from(QString dslPortState)
     } else if (dslPortState == DslPortStateName[DslPortState::Defective]) {
         return DslPortState::Defective;
     } else {
+        return DslPortState::Other;
+    }
+}
+
+inline DslPortState::Enum from(long snmpValue)
+{
+    switch (snmpValue) {
+    case 1:
+        return DslPortState::Up;
+    case 2:
+    case 6:
+        return DslPortState::Down;
+    case 5:
+    case 65536:
+        return DslPortState::Activating;
+    case 65548:
+        return DslPortState::Defective;
+    default:
         return DslPortState::Other;
     }
 }
@@ -277,6 +295,45 @@ enum Enum {
     ReadSession,
     WriteSession
 };
+}
+
+namespace SwitchPortState
+{
+enum Enum {
+    Other =         0,
+    Up =            1,
+    Down =          2
+};
+
+const QString SwitchPortStateName[] = { "Other", "Up", "Down" };
+
+inline SwitchPortState::Enum from(QString switchPortState)
+{
+    if (switchPortState == SwitchPortStateName[SwitchPortState::Up]) {
+        return SwitchPortState::Up;
+    } else if (switchPortState == SwitchPortStateName[SwitchPortState::Down]) {
+        return SwitchPortState::Down;
+    } else {
+        return SwitchPortState::Other;
+    }
+}
+
+inline SwitchPortState::Enum from(long snmpValue)
+{
+    switch (snmpValue) {
+    case 1:
+        return SwitchPortState::Up;
+    case 2:
+        return SwitchPortState::Down;
+    default:
+        return SwitchPortState::Other;
+    }
+}
+
+inline QString toString(SwitchPortState::Enum state)
+{
+    return SwitchPortStateName[state];
+}
 }
 
 namespace VlanState

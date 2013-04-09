@@ -8,11 +8,11 @@
 #include "converters.h"
 #endif
 
-BoardTableDelegate::BoardTableDelegate(DeviceModel::Enum deviceModel,
+BoardTableDelegate::BoardTableDelegate(DslamInfo::Ptr dslamInfo,
                                        QObject *parent) :
-    QItemDelegate(parent)
+    QItemDelegate(parent),
+    mDslamInfo(dslamInfo)
 {
-    mDeviceModel = deviceModel;
 }
 
 QWidget *BoardTableDelegate::createEditor(QWidget *parent,
@@ -50,7 +50,7 @@ void BoardTableDelegate::setEditorData(QWidget *editor,
         QModelIndex indexTypeBoard = index.model()->index(index.row(),
                                                           mIndexTypeBoard);
         QString typeBoard = index.model()->data(indexTypeBoard).toString();
-        comboBox->setModel(fillFirstPairComboBox(mDeviceModel, typeBoard));
+        comboBox->setModel(fillFirstPairComboBox(typeBoard));
 
         if (!text.isEmpty()) {
             int indexFind = comboBox->findData(text, Qt::DisplayRole);
@@ -143,14 +143,13 @@ QStringListModel *BoardTableDelegate::fillTypeBoardComboBox() const
     return new QStringListModel(stringList, (QObject *)this);
 }
 
-QStringListModel *BoardTableDelegate::fillFirstPairComboBox(DeviceModel::Enum deviceModel,
-                                                            QString boardType) const
+QStringListModel *BoardTableDelegate::fillFirstPairComboBox(QString boardType) const
 {
-    int countPairs = countPorts(deviceModel, BoardType::from(boardType));
+    int countPairs = mDslamInfo->countPorts(BoardType::from(boardType));
     int countBoards = 0;
 
-    if ((deviceModel == DeviceModel::MA5600)
-            || (deviceModel == DeviceModel::MA5300)) {
+    if ((mDslamInfo->deviceModel() == DeviceModel::MA5600)
+            || (mDslamInfo->deviceModel() == DeviceModel::MA5300)) {
         countBoards = 14;
     }
 

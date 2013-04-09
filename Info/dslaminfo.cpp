@@ -55,6 +55,23 @@ DeviceType::Enum DslamInfo::deviceType() const
     return DeviceType::Dslam;
 }
 
+int DslamInfo::countPorts(BoardType::Enum boardType)
+{
+    Q_UNUSED(boardType)
+
+    return 0;
+}
+
+long DslamInfo::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+                                   int port)
+{
+    Q_UNUSED(boardType)
+    Q_UNUSED(slot)
+    Q_UNUSED(port)
+
+    return 0;
+}
+
 BoardTableModel *DslamInfo::boardTableModel()
 {
     return mBoardListModel;

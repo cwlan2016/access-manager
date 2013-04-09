@@ -16,12 +16,12 @@ void SwitchPortInfo::setIndex(int index)
     mIndex = index;
 }
 
-QString SwitchPortInfo::state() const
+SwitchPortState::Enum SwitchPortInfo::state() const
 {
     return mState;
 }
 
-void SwitchPortInfo::setState(QString state)
+void SwitchPortInfo::setState(SwitchPortState::Enum state)
 {
     mState = state;
 }
@@ -45,6 +45,13 @@ void SwitchPortInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
 void SwitchPortInfo::parsePdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
+}
+
+QString SwitchPortInfo::speedDuplexString(long snmpValue)
+{
+    Q_UNUSED(snmpValue)
+
+    return "Unknown";
 }
 
 QString SwitchPortInfo::speedDuplex() const

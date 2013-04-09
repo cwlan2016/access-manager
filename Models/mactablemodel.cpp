@@ -126,8 +126,10 @@ bool MacTableModel::update()
     mList->reserve(26);
 
     //TODO: Make handling errors
-    updateMacsInVlan(snmp, mParentDevice->inetVlanTag(), SwitchConfigInfo::inetVlanName());
-    updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(), SwitchConfigInfo::iptvVlanName());
+    updateMacsInVlan(snmp, mParentDevice->inetVlanTag(),
+                     SwitchConfigInfo::inetVlanName());
+    updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(),
+                     SwitchConfigInfo::iptvVlanName());
 
     endResetModel();
 

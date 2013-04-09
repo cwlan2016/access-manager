@@ -26,12 +26,12 @@ void XdslPortInfo::setName(QString name)
     mName = name;
 }
 
-QString XdslPortInfo::state() const
+DslPortState::Enum XdslPortInfo::state() const
 {
     return mState;
 }
 
-void XdslPortInfo::setState(QString state)
+void XdslPortInfo::setState(DslPortState::Enum state)
 {
     mState = state;
 }

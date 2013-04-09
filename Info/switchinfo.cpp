@@ -63,6 +63,11 @@ DeviceType::Enum SwitchInfo::deviceType() const
     return DeviceType::Switch;
 }
 
+int SwitchInfo::countPorts()
+{
+    return 0;
+}
+
 bool SwitchInfo::getServiceDataFromDevice()
 {
     mError.clear();
@@ -95,7 +100,7 @@ bool SwitchInfo::getServiceDataFromDevice()
                               vars->name_length, 13) != 0)
             break;
 
-        QString vlanName = toQString(vars->val.string, vars->val_len);
+        QString vlanName = toString(vars->val.string, vars->val_len);
 
         if (vlanName == SwitchConfigInfo::inetVlanName()) {
             findedInet = true;

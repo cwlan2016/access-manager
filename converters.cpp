@@ -2,91 +2,6 @@
 
 #include "constant.h"
 
-int snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
-{
-    if (model == DeviceModel::MA5600) {
-        return 201326592 + 8192 * slot + 64 * port;
-    } else if (model == DeviceModel::MA5300) {
-        return 201326592 + 65536 * slot + 64 * port;
-    } else if ((model == DeviceModel::MXA64)
-               || (model == DeviceModel::MXA32)) {
-        return port + 1;
-    } else {
-        return 0;
-    }
-
-}
-
-QString dslamStatePortString(long state)
-{
-    if (state == 1) {
-        return "Up";
-    } else if ((state == 2) || (state == 6)) {
-        return "Down";
-    } else if ((state == 5) || (state == 65536)) {
-        return "Activating";
-    } else if (state == 65548) {
-        return "Defective";
-    } else {
-        return "Other";
-    }
-}
-
-QString switchStatePortString(long state)
-{
-    if (state == 1) {
-        return "Up";
-    } else if (state == 2) {
-        return "Down";
-    } else {
-        return "Other";
-    }
-}
-
-QString speedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
-{
-    if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3550)) {
-        if (speedDuplex == 2) {
-            return "Auto";
-        } else if (speedDuplex == 6) {
-            return "100Mbps/Full";
-        } else if (speedDuplex == 5) {
-            return "100Mbps/Half";
-        } else if (speedDuplex == 8) {
-            return "1Gbps/Full";
-        } else if (speedDuplex == 4) {
-            return "10Mbps/Full";
-        } else if (speedDuplex == 3) {
-            return "10Mbps/Half";
-        } else if (speedDuplex == 7) {
-            return "1Gbps/Half";
-        } else {
-            return "Unknown";
-        }
-    } else if (deviceModel == DeviceModel::DES3528) {
-        if (speedDuplex == 0) {
-            return "Down";
-        } else if (speedDuplex == 6) {
-            return "100Mbps/Full";
-        } else if (speedDuplex == 8) {
-            return "100Mbps/Half";
-        } else if (speedDuplex == 10) {
-            return "1Gbps/Full";
-        } else if (speedDuplex == 2) {
-            return "10Mbps/Full";
-        } else if (speedDuplex == 4) {
-            return "10Mbps/Half";
-        } else if (speedDuplex == 12) {
-            return "1Gbps/Half";
-        } else {
-            return "Unknown";
-        }
-    } else {
-        return "Unknown";
-    }
-}
-
 BoardType::Enum boardTypeFromBoardName(QString boardName)
 {
     if (boardName.contains("ADEF", Qt::CaseInsensitive)) {
@@ -98,44 +13,6 @@ BoardType::Enum boardTypeFromBoardName(QString boardName)
     } else {
         return BoardType::Other;
     }
-}
-
-int countPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
-{
-    if (deviceModel == DeviceModel::MA5600) {
-        if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB)) {
-            return 64;
-        } else if (boardType == BoardType::Shdsl) {
-            return 32;
-        }
-    } else if (deviceModel == DeviceModel::MA5300) {
-        if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB)) {
-            return 48;
-        } else if (boardType == BoardType::Shdsl) {
-            return 24;
-        }
-    } else if (deviceModel == DeviceModel::MXA64) {
-        return 64;
-    } else if (deviceModel == DeviceModel::MXA32) {
-        return 32;
-    }
-
-    return 0;
-}
-
-int countPorts(DeviceModel::Enum deviceModel)
-{
-    if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3528)) {
-        return 26;
-    } else if ((deviceModel == DeviceModel::DES3550)
-               || (deviceModel == DeviceModel::DES3552)) {
-        return 50;
-    }
-
-    return 0;
 }
 
 QString decMacAddressToHex(oid *macAddressOid, int length)
@@ -337,7 +214,7 @@ QString displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString pro
 
 }
 
-QString toQString(u_char *string, int str_len)
+QString toString(u_char *string, int str_len)
 {
     return QString::fromLatin1(reinterpret_cast<char *>(string), str_len);
 }

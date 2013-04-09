@@ -3,15 +3,17 @@
 
 #ifdef _MSC_VER
 #include "../customtypes.h"
+#include "../Info/dslaminfo.h"
 #else
 #include "customtypes.h"
+#include "Info/dslaminfo.h"
 #endif
 
 class BoardTableDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    BoardTableDelegate(DeviceModel::Enum deviceModel, QObject *parent = 0);
+    BoardTableDelegate(DslamInfo::Ptr dslamInfo, QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
@@ -30,12 +32,11 @@ private:
     void commitAndCloseComboBoxEditor(int index);
 
     QStringListModel *fillTypeBoardComboBox() const;
-    QStringListModel *fillFirstPairComboBox(DeviceModel::Enum deviceModel,
-                                            QString boardType) const;
+    QStringListModel *fillFirstPairComboBox(QString boardType) const;
 
     int mIndexTypeBoard;
     int mIndexFirstPair;
-    DeviceModel::Enum mDeviceModel;
+    DslamInfo::Ptr mDslamInfo;
 };
 
 #endif // BOARDTABLEDELEGATE_H

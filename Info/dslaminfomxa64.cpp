@@ -28,3 +28,19 @@ DeviceModel::Enum DslamInfoMxa64::deviceModel() const
 {
     return DeviceModel::MXA64;
 }
+
+int DslamInfoMxa64::countPorts(BoardType::Enum boardType)
+{
+    Q_UNUSED(boardType)
+
+    return 64;
+}
+
+long DslamInfoMxa64::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+                                        int port)
+{
+    Q_UNUSED(boardType)
+    Q_UNUSED(slot)
+
+    return port + 1;
+}

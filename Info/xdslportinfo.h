@@ -3,8 +3,10 @@
 
 #ifdef _MSC_VER
 #include "../stdafx.h"
+#include "../customtypes.h"
 #else
 #include "stdafx.h"
+#include "customtypes.h"
 #endif
 
 class XdslPortInfo : public QObject
@@ -19,8 +21,8 @@ public:
     QString name() const;
     void setName(QString name);
 
-    QString state() const;
-    void setState(QString state);
+    DslPortState::Enum state() const;
+    void setState(DslPortState::Enum state);
 
     QString profile() const;
     void setProfile(QString profile);
@@ -42,12 +44,12 @@ public:
 protected:
     int mPair;
     QString mName;
-    QString mState;
     QString mProfile;
     QString mDescription;
     QString mRxAttenuation;
     QString mTxAttenuation;
     QString mTimeLastChange;
+    DslPortState::Enum mState;
 };
 
 #endif // PORTINFO_H

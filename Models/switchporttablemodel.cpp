@@ -81,16 +81,16 @@ QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
         if (index.column() == 0) {
             return mList.at(index.row())->index();
         } else if (index.column() == 1) {
-            return mList.at(index.row())->state();
+            return SwitchPortState::toString(mList.at(index.row())->state());
         } else if (index.column() == 2) {
             return mList.at(index.row())->speedDuplex();
         } else if (index.column() == 3) {
             return mList.at(index.row())->description();
         }
     } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == 0)) {
-        if (mList.at(index.row())->state() == "Down") {
+        if (mList.at(index.row())->state() == SwitchPortState::Down) {
             return QBrush(QColor(223, 255, 252));
-        } else if (mList.at(index.row())->state() == "Up") {
+        } else if (mList.at(index.row())->state() == SwitchPortState::Up) {
             return QBrush(QColor(200, 255, 200));
         }
     }
@@ -462,7 +462,7 @@ QString SwitchPortTableModel::error() const
 
 void SwitchPortTableModel::createList()
 {
-    int count = countPorts(mParentDevice->deviceModel());
+    int count = mParentDevice->countPorts();
     mList.reserve(count);
 
     for (int i = 1; i <= count; ++i) {

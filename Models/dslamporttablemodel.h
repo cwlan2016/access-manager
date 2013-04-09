@@ -4,10 +4,12 @@
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #include "../snmpclient.h"
+#include "../Info/dslaminfo.h"
 #include "../Info/xdslportinfo.h"
 #else
 #include "customtypes.h"
 #include "snmpclient.h"
+#include "Info/dslaminfo.h"
 #include "Info/xdslportinfo.h"
 #endif
 
@@ -15,7 +17,7 @@ class DslamPortTableModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit DslamPortTableModel(DeviceModel::Enum deviceModel, QString ip,
+    explicit DslamPortTableModel(DslamInfo::Ptr parentDevice,
                                  QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
@@ -40,7 +42,7 @@ public:
     void createList();
 
     bool updatePortInfo(QModelIndex index);
-    bool changePortState(int portIndex, QString portState);
+    bool changePortState(int portIndex, int portState);
     bool changePortProfile(QModelIndex portIndex, QString profileName);
 
     QString error() const;
@@ -52,12 +54,11 @@ private:
     bool updatePortMA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
     bool updatePortMXA(QModelIndex portIndex, QScopedPointer<SnmpClient> &snmp);
 
-    QString mIp;
     QString mError;
     int mFirstPair;
     int mBoardIndex;
     BoardType::Enum mBoardType;
-    DeviceModel::Enum mDeviceModel;
+    DslamInfo::Ptr mParentDevice;
     QVector<XdslPortInfo::Ptr> mList;
 };
 

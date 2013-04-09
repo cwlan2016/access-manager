@@ -31,17 +31,39 @@ void SwitchPortInfoDes3526::parsePdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return;
 
-    mState = switchStatePortString(*vars->val.integer);
+    mState = SwitchPortState::from(*vars->val.integer);
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return;
 
-    mSpeedDuplex = speedDuplexString(DeviceModel::DES3526, *(vars->val.integer));
+    mSpeedDuplex = speedDuplexString(*(vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return;
 
-    mDescription = toQString(vars->val.string, vars->val_len);
+    mDescription = toString(vars->val.string, vars->val_len);
+}
+
+QString SwitchPortInfoDes3526::speedDuplexString(long snmpValue)
+{
+    switch (snmpValue) {
+    case 2:
+        return "Auto";
+    case 6:
+        return "100Mbps/Full";
+    case 5:
+        return "100Mbps/Half";
+    case 8:
+        return "1Gbps/Full";
+    case 4:
+        return "10Mbps/Full";
+    case 3:
+        return "10Mbps/Half";
+    case 7:
+        return "1Gbps/Half";
+    default:
+        return "Unknown";
+    }
 }

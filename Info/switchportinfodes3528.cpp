@@ -39,29 +39,52 @@ void SwitchPortInfoDes3528::parsePdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return;
 
-    mState = switchStatePortString(*vars->val.integer);
+    mState = SwitchPortState::from(*vars->val.integer);
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return;
 
     if (mIndex == 25 || mIndex == 26) {
-        QString cupperState = speedDuplexString(DeviceModel::DES3528, *vars->val.integer);
+        QString cupperState = speedDuplexString(*vars->val.integer);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return;
 
-        QString opticState = speedDuplexString(DeviceModel::DES3528, *(vars->val.integer));
+        QString opticState = speedDuplexString(*vars->val.integer);
 
         mSpeedDuplex = opticState % " | " % cupperState;
     } else {
-        mSpeedDuplex = speedDuplexString(DeviceModel::DES3528, *(vars->val.integer));
+        mSpeedDuplex = speedDuplexString(*vars->val.integer);
     }
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return;
 
-    mDescription = toQString(vars->val.string, vars->val_len);
+    mDescription = toString(vars->val.string, vars->val_len);
 }
+
+QString SwitchPortInfoDes3528::speedDuplexString(long snmpValue)
+{
+    switch (snmpValue) {
+    case 0:
+        return "Down";
+    case 6:
+        return "100Mbps/Full";
+    case 8:
+        return "100Mbps/Half";
+    case 10:
+        return "1Gbps/Full";
+    case 2:
+        return "10Mbps/Full";
+    case 4:
+        return "10Mbps/Half";
+    case 12:
+        return "1Gbps/Half";
+    default:
+        return "Unknown";
+    }
+}
+

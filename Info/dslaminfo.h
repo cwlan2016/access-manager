@@ -24,6 +24,8 @@ public:
     void setAutoNumeringBoard(short autoNumeringBoard);
 
     DeviceType::Enum deviceType() const;
+    virtual int countPorts(BoardType::Enum boardType);
+    virtual long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
 
     BoardTableModel *boardTableModel();
 

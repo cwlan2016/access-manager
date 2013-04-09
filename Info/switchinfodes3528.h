@@ -12,6 +12,7 @@ public:
     SwitchInfoDes3528(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
+    int countPorts();
 };
 
 #endif // SWITCHINFODES3528_H

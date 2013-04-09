@@ -12,6 +12,8 @@ public:
     DslamInfoMa5600(DeviceInfo *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
+    int countPorts(BoardType::Enum boardType);
+    long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
 };
 
 #endif // DSLAMINFOMA5600_H

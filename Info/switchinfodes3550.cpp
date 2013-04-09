@@ -19,3 +19,8 @@ DeviceModel::Enum SwitchInfoDes3550::deviceModel() const
 {
     return DeviceModel::DES3550;
 }
+
+int SwitchInfoDes3550::countPorts()
+{
+    return 50;
+}
