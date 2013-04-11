@@ -1,36 +1,36 @@
-#include "macinfo.h"
+#include "mac.h"
 
-MacInfo::MacInfo(QObject *parent) :
+Mac::Mac(QObject *parent) :
     QObject(parent)
 {
 }
 
-int MacInfo::port() const
+int Mac::port() const
 {
     return mPort;
 }
 
-void MacInfo::setPort(int number)
+void Mac::setPort(int number)
 {
     mPort = number;
 }
 
-QString MacInfo::mac() const
+QString Mac::mac() const
 {
     return mMac;
 }
 
-void MacInfo::setMac(QString mac)
+void Mac::setMac(QString mac)
 {
     mMac = mac;
 }
 
-QString MacInfo::vlanName() const
+QString Mac::vlanName() const
 {
     return mVlanName;
 }
 
-void MacInfo::setVlanName(QString vlanName)
+void Mac::setVlanName(QString vlanName)
 {
     mVlanName = vlanName;
 }

@@ -1,66 +1,66 @@
-#include "snmpconfiginfo.h"
+#include "snmpconfig.h"
 
-QString SnmpConfigInfo::readCommunity()
+QString SnmpConfig::readCommunity()
 {
     return mReadCommunity;
 }
 
-void SnmpConfigInfo::setReadCommunity(QString readCommunity)
+void SnmpConfig::setReadCommunity(QString readCommunity)
 {
     mReadCommunity = readCommunity;
 }
 
-QString SnmpConfigInfo::writeCommunity()
+QString SnmpConfig::writeCommunity()
 {
     return mWriteCommunity;
 }
 
-void SnmpConfigInfo::setWriteCommunity(QString writeCommunity)
+void SnmpConfig::setWriteCommunity(QString writeCommunity)
 {
     mWriteCommunity = writeCommunity;
 }
 
-int SnmpConfigInfo::timeout()
+int SnmpConfig::timeout()
 {
     return mTimeout;
 }
 
-void SnmpConfigInfo::setTimeout(int timeout)
+void SnmpConfig::setTimeout(int timeout)
 {
     mTimeout = timeout;
 }
 
-int SnmpConfigInfo::saveConfigTimeout()
+int SnmpConfig::saveConfigTimeout()
 {
     return mSaveConfigTimeout;
 }
 
-void SnmpConfigInfo::setSaveConfigTimeout(int timeout)
+void SnmpConfig::setSaveConfigTimeout(int timeout)
 {
     mSaveConfigTimeout = timeout;
 }
 
-int SnmpConfigInfo::port()
+int SnmpConfig::port()
 {
     return mPort;
 }
 
-void SnmpConfigInfo::setPort(int port)
+void SnmpConfig::setPort(int port)
 {
     mPort = port;
 }
 
-int SnmpConfigInfo::retries()
+int SnmpConfig::retries()
 {
     return mRetries;
 }
 
-void SnmpConfigInfo::setRetries(int retries)
+void SnmpConfig::setRetries(int retries)
 {
     mRetries = retries;
 }
 
-void SnmpConfigInfo::clear()
+void SnmpConfig::clear()
 {
     mReadCommunity = "";
     mWriteCommunity = "";
@@ -69,7 +69,7 @@ void SnmpConfigInfo::clear()
     mPort = 161;
 }
 
-void SnmpConfigInfo::toDefault()
+void SnmpConfig::toDefault()
 {
     mReadCommunity = "public";
     mWriteCommunity = "private";
@@ -79,9 +79,9 @@ void SnmpConfigInfo::toDefault()
     mRetries = 3;
 }
 
-QString SnmpConfigInfo::mReadCommunity = QString();
-QString SnmpConfigInfo::mWriteCommunity = QString();
-int SnmpConfigInfo::mTimeout = 0;
-int SnmpConfigInfo::mSaveConfigTimeout = 0;
-int SnmpConfigInfo::mPort = 0 ;
-int SnmpConfigInfo::mRetries = 0;
+QString SnmpConfig::mReadCommunity = QString();
+QString SnmpConfig::mWriteCommunity = QString();
+int SnmpConfig::mTimeout = 0;
+int SnmpConfig::mSaveConfigTimeout = 0;
+int SnmpConfig::mPort = 0 ;
+int SnmpConfig::mRetries = 0;

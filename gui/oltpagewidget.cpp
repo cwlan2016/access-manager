@@ -4,14 +4,14 @@
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
-#include "../Models/onttablemodel.h"
+#include "../models/onttablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
-#include "Models/onttablemodel.h"
+#include "models/onttablemodel.h"
 #endif
 
-OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::OltPageWidget)
 {
@@ -20,7 +20,7 @@ OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
     ui->userSettingsGroupBox->setVisible(false);
     ui->userSettingsGroupBox->setChecked(false);
 
-    OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<OltInfo>(), this);
+    OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<Olt>(), this);
 
     if (!ontTableModel->load()) {
         BasicDialogs::error(parent, BasicDialogStrings::Error, ontTableModel->error());

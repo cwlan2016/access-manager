@@ -4,12 +4,12 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
-#include "../Info/switchconfiginfo.h"
+#include "../configs/switchconfig.h"
 #else
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
-#include "Info/switchconfiginfo.h"
+#include "configs/switchconfig.h"
 #endif
 
 // Columns
@@ -18,7 +18,7 @@
 // 1 - vlan name
 // 2 - mac
 
-MacTableModel::MacTableModel(SwitchInfo::Ptr parentDevice, QObject *parent) :
+MacTableModel::MacTableModel(Switch::Ptr parentDevice, QObject *parent) :
     QAbstractTableModel(parent),
     mList(0),
     mParentDevice(parentDevice)
@@ -122,14 +122,14 @@ bool MacTableModel::update()
     if (mList)
         delete mList;
 
-    mList = new QVector<MacInfo::Ptr>();
+    mList = new QVector<Mac::Ptr>();
     mList->reserve(26);
 
     //TODO: Make handling errors
     updateMacsInVlan(snmp, mParentDevice->inetVlanTag(),
-                     SwitchConfigInfo::inetVlanName());
+                     SwitchConfig::inetVlanName());
     updateMacsInVlan(snmp, mParentDevice->iptvVlanTag(),
-                     SwitchConfigInfo::iptvVlanName());
+                     SwitchConfig::iptvVlanName());
 
     endResetModel();
 
@@ -157,7 +157,7 @@ void MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
                               vars->name_length, lenVlanNameOid) != 0)
             break;
 
-        MacInfo::Ptr macInfo = new MacInfo(this);
+        Mac::Ptr macInfo = new Mac(this);
         macInfo->setPort(*(vars->val.integer));
         macInfo->setVlanName(vlanName);
         macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));

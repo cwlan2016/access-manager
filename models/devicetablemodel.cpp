@@ -6,34 +6,34 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../snmpclient.h"
-#include "../Info/boardinfo.h"
-#include "../Info/dslaminfoma5300.h"
-#include "../Info/dslaminfoma5600.h"
-#include "../Info/dslaminfomxa32.h"
-#include "../Info/dslaminfomxa64.h"
-#include "../Info/oltinfolte8st.h"
-#include "../Info/oltinfoltp8x.h"
-#include "../Info/switchinfodes3526.h"
-#include "../Info/switchinfodes3528.h"
-#include "../Info/switchinfodes3550.h"
-#include "../Models/boardtablemodel.h"
+#include "../other-data/dslamboard.h"
+#include "../devices/dslamma5300.h"
+#include "../devices/dslamma5600.h"
+#include "../devices/dslammxa32.h"
+#include "../devices/dslammxa64.h"
+#include "../devices/oltlte8st.h"
+#include "../devices/oltltp8x.h"
+#include "../devices/switchdes3526.h"
+#include "../devices/switchdes3528.h"
+#include "../devices/switchdes3550.h"
+#include "../models/boardtablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "config.h"
 #include "constant.h"
 #include "converters.h"
 #include "snmpclient.h"
-#include "Info/boardinfo.h"
-#include "Info/dslaminfoma5300.h"
-#include "Info/dslaminfoma5600.h"
-#include "Info/dslaminfomxa32.h"
-#include "Info/dslaminfomxa64.h"
-#include "Info/oltinfolte8st.h"
-#include "Info/oltinfoltp8x.h"
-#include "Info/switchinfodes3526.h"
-#include "Info/switchinfodes3528.h"
-#include "Info/switchinfodes3550.h"
-#include "Models/boardtablemodel.h"
+#include "other-data/dslamboard.h"
+#include "devices/dslamma5300.h"
+#include "devices/dslamma5600.h"
+#include "devices/dslammxa32.h"
+#include "devices/dslammxa64.h"
+#include "devices/oltlte8st.h"
+#include "devices/oltltp8x.h"
+#include "devices/switchdes3526.h"
+#include "devices/switchdes3528.h"
+#include "devices/switchdes3550.h"
+#include "models/boardtablemodel.h"
 #endif
 
 // Columns
@@ -178,7 +178,7 @@ Qt::ItemFlags DeviceTableModel::flags(const QModelIndex &index) const
 bool DeviceTableModel::insertRow(int row, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row);
-    DeviceInfo::Ptr element = DeviceInfo::Ptr(new DeviceInfo(this));
+    Device::Ptr element = Device::Ptr(new Device(this));
     mList.push_back(element);
     endInsertRows();
 
@@ -317,11 +317,11 @@ bool DeviceTableModel::save()
     auto end = mList.constEnd();
     for (; it != end; ++it) {
         if ((*it)->deviceType() == DeviceType::Switch) {
-            createSwitchElement(writer, (*it).objectCast<SwitchInfo>());
+            createSwitchElement(writer, (*it).objectCast<Switch>());
         } else if ((*it)->deviceType() == DeviceType::Dslam) {
-            createDslamElement(writer, (*it).objectCast<DslamInfo>());
+            createDslamElement(writer, (*it).objectCast<Dslam>());
         } else if ((*it)->deviceType() == DeviceType::Olt) {
-            createOltElement(writer, (*it).objectCast<OltInfo>());
+            createOltElement(writer, (*it).objectCast<Olt>());
         }
     }
 
@@ -334,34 +334,34 @@ bool DeviceTableModel::save()
     return true;
 }
 
-QVector<DeviceInfo::Ptr> &DeviceTableModel::deviceList()
+QVector<Device::Ptr> &DeviceTableModel::deviceList()
 {
     return mList;
 }
 
 BoardTableModel *DeviceTableModel::boardListModel(QModelIndex index)
 {
-    return mList.at(index.row()).objectCast<DslamInfo>()->boardTableModel();
+    return mList.at(index.row()).objectCast<Dslam>()->boardTableModel();
 }
 
 int DeviceTableModel::inetVlan(QModelIndex index)
 {
-    return mList.at(index.row()).objectCast<SwitchInfo>()->inetVlanTag();
+    return mList.at(index.row()).objectCast<Switch>()->inetVlanTag();
 }
 
 int DeviceTableModel::iptvVlan(QModelIndex index)
 {
-    return mList.at(index.row()).objectCast<SwitchInfo>()->iptvVlanTag();
+    return mList.at(index.row()).objectCast<Switch>()->iptvVlanTag();
 }
 
 QStringListModel *DeviceTableModel::serviceProfileOltListModel(QModelIndex index)
 {
-    return mList.at(index.row()).objectCast<OltInfo>()->serviceProfileListModel(this);
+    return mList.at(index.row()).objectCast<Olt>()->serviceProfileListModel(this);
 }
 
 QStringListModel *DeviceTableModel::multicastProfileOltListModel(QModelIndex index)
 {
-    return mList.at(index.row()).objectCast<OltInfo>()->multicastProfileListModel(this);
+    return mList.at(index.row()).objectCast<Olt>()->multicastProfileListModel(this);
 }
 
 bool DeviceTableModel::getVlanTagFromDevice(QModelIndex index)
@@ -399,7 +399,7 @@ bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
         return false;
     }
 
-    DslamInfo::Ptr deviceInfo = mList.at(index.row()).objectCast<DslamInfo>();
+    Dslam::Ptr deviceInfo = mList.at(index.row()).objectCast<Dslam>();
     bool result = deviceInfo->boardTableModel()->getBoardListFromDevice();
 
     if (deviceInfo->autoNumeringBoard())
@@ -426,7 +426,7 @@ bool DeviceTableModel::getProfilesFromDevice(QModelIndex index)
         return false;
     }
 
-    OltInfo::Ptr deviceInfo = mList.at(index.row()).objectCast<OltInfo>();
+    Olt::Ptr deviceInfo = mList.at(index.row()).objectCast<Olt>();
     bool result = deviceInfo->getServiceDataFromDevice();
 
     if (!result) {
@@ -475,17 +475,17 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum switchModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr switchInfo;
+    Device::Ptr switchInfo;
 
     switch (switchModel) {
     case DeviceModel::DES3526:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(this));
+        switchInfo = Device::Ptr(new SwitchDes3526(this));
         break;
     case DeviceModel::DES3528:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(this));
+        switchInfo = Device::Ptr(new SwitchDes3528(this));
         break;
     case DeviceModel::DES3550:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(this));
+        switchInfo = Device::Ptr(new SwitchDes3550(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -497,8 +497,8 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
 
     switchInfo->setName(reader.attributes().value("name").toString());
     switchInfo->setIp(reader.attributes().value("ip").toString());
-    switchInfo.objectCast<SwitchInfo>()->setInetVlanTag(inetVlan);
-    switchInfo.objectCast<SwitchInfo>()->setIptvVlanTag(iptvVlan);
+    switchInfo.objectCast<Switch>()->setInetVlanTag(inetVlan);
+    switchInfo.objectCast<Switch>()->setIptvVlanTag(iptvVlan);
 
     mList.push_back(switchInfo);
 
@@ -509,20 +509,20 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum dslamModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr dslamInfo;
+    Device::Ptr dslamInfo;
 
     switch (dslamModel) {
     case DeviceModel::MA5600:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(this));
+        dslamInfo = Device::Ptr(new DslamMa5600(this));
         break;
     case DeviceModel::MA5300:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(this));
+        dslamInfo = Device::Ptr(new DslamMa5300(this));
         break;
     case DeviceModel::MXA32:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(this));
+        dslamInfo = Device::Ptr(new DslamMxa32(this));
         break;
     case DeviceModel::MXA64:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(this));
+        dslamInfo = Device::Ptr(new DslamMxa64(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -534,8 +534,8 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
 
     dslamInfo->setName(reader.attributes().value("name").toString());
     dslamInfo->setIp(reader.attributes().value("ip").toString());
-    dslamInfo.objectCast<DslamInfo>()->setAutoFill(autoFill);
-    dslamInfo.objectCast<DslamInfo>()->setAutoNumeringBoard(autoNumering);
+    dslamInfo.objectCast<Dslam>()->setAutoFill(autoFill);
+    dslamInfo.objectCast<Dslam>()->setAutoNumeringBoard(autoNumering);
 
     mList.push_back(dslamInfo);
 
@@ -551,9 +551,9 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
 }
 
 void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
-                                           DeviceInfo::Ptr deviceInfo)
+                                           Device::Ptr deviceInfo)
 {
-    DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+    Dslam::Ptr dslamInfo = deviceInfo.objectCast<Dslam>();
 
     int index;
     int firstPair;
@@ -576,14 +576,14 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum oltModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr oltInfo;
+    Device::Ptr oltInfo;
 
     switch (oltModel) {
     case DeviceModel::LTE8ST:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(this));
+        oltInfo = Device::Ptr(new OltLte8st(this));
         break;
     case DeviceModel::LTP8X:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(this));
+        oltInfo = Device::Ptr(new OltLtp8x(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -605,9 +605,9 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 }
 
 void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
-                                           DeviceInfo::Ptr deviceInfo)
+                                           Device::Ptr deviceInfo)
 {
-    OltInfo::Ptr oltInfo = deviceInfo.objectCast<OltInfo>();
+    Olt::Ptr oltInfo = deviceInfo.objectCast<Olt>();
 
     int index;
     QString name;
@@ -635,7 +635,7 @@ void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
 }
 
 void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
-        const SwitchInfo::Ptr &deviceInfo)
+        const Switch::Ptr &deviceInfo)
 {
     writer.writeStartElement("switch");
 
@@ -649,7 +649,7 @@ void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
 }
 
 void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
-                                          const DslamInfo::Ptr &deviceInfo)
+                                          const Dslam::Ptr &deviceInfo)
 {
     writer.writeStartElement("dslam");
 
@@ -675,7 +675,7 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
 }
 
 void DeviceTableModel::createOltElement(QXmlStreamWriter &writer,
-                                        const OltInfo::Ptr &deviceInfo)
+                                        const Olt::Ptr &deviceInfo)
 {
     writer.writeStartElement("olt");
 
@@ -724,18 +724,18 @@ void DeviceTableModel::changeDeviceModel(int index, DeviceType::Enum deviceType,
 
 void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr switchInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr switchInfo;
 
     switch (deviceModel) {
     case DeviceModel::DES3526:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3526(currentInfo, this));
         break;
     case DeviceModel::DES3528:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3528(currentInfo, this));
         break;
     case DeviceModel::DES3550:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3550(currentInfo, this));
         break;
     default:
         return;
@@ -746,21 +746,21 @@ void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceMode
 
 void DeviceTableModel::changeDslamModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr dslamInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr dslamInfo;
 
     switch (deviceModel) {
     case DeviceModel::MA5600:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMa5600(currentInfo, this));
         break;
     case DeviceModel::MA5300:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMa5300(currentInfo, this));
         break;
     case DeviceModel::MXA32:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMxa32(currentInfo, this));
         break;
     case DeviceModel::MXA64:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMxa64(currentInfo, this));
         break;
     default:
         return;
@@ -771,15 +771,15 @@ void DeviceTableModel::changeDslamModel(int index, DeviceModel::Enum deviceModel
 
 void DeviceTableModel::changeOltModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr oltInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr oltInfo;
 
     switch (deviceModel) {
     case DeviceModel::LTE8ST:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(currentInfo, this));
+        oltInfo = Device::Ptr(new OltLte8st(currentInfo, this));
         break;
     case DeviceModel::LTP8X:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(currentInfo, this));
+        oltInfo = Device::Ptr(new OltLtp8x(currentInfo, this));
         break;
     default:
         return;

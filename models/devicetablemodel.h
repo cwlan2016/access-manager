@@ -2,13 +2,13 @@
 #define DEVICETABLEMODEL_H
 
 #ifdef _MSC_VER
-#include "../Info/switchinfo.h"
-#include "../Info/dslaminfo.h"
-#include "../Info/oltinfo.h"
+#include "../devices/switch.h"
+#include "../devices/dslam.h"
+#include "../devices/olt.h"
 #else
-#include "Info/switchinfo.h"
-#include "Info/dslaminfo.h"
-#include "Info/oltinfo.h"
+#include "devices/switch.h"
+#include "devices/dslam.h"
+#include "devices/olt.h"
 #endif
 
 class DeviceTableModel : public QAbstractTableModel
@@ -35,7 +35,7 @@ public:
     bool load();
     bool save();
 
-    QVector<DeviceInfo::Ptr> &deviceList();
+    QVector<Device::Ptr> &deviceList();
 
     BoardTableModel *boardListModel(QModelIndex index);
 
@@ -60,17 +60,17 @@ private:
     void parseSwitchElement(QXmlStreamReader &reader);
     void parseDslamElement(QXmlStreamReader &reader);
     void parseDslamBoardList(QXmlStreamReader &reader,
-                             DeviceInfo::Ptr deviceInfo);
+                             Device::Ptr deviceInfo);
     void parseOltElement(QXmlStreamReader &reader);
     void parseOltProfileList(QXmlStreamReader &reader,
-                             DeviceInfo::Ptr deviceInfo);
+                             Device::Ptr deviceInfo);
 
     void createSwitchElement(QXmlStreamWriter &writer,
-                             const SwitchInfo::Ptr &deviceInfo);
+                             const Switch::Ptr &deviceInfo);
     void createDslamElement(QXmlStreamWriter &writer,
-                            const DslamInfo::Ptr &deviceInfo);
+                            const Dslam::Ptr &deviceInfo);
     void createOltElement(QXmlStreamWriter &writer,
-                          const OltInfo::Ptr &deviceInfo);
+                          const Olt::Ptr &deviceInfo);
     void createOltProfileList(QXmlStreamWriter &writer,
                               const OltProfileMap &profileMap, QString typeElem);
 
@@ -84,7 +84,7 @@ private:
     QString mError;
     QString mDeviceListPath;
     QString mDeviceListBackupPath;
-    QVector<DeviceInfo::Ptr> mList;
+    QVector<Device::Ptr> mList;
 };
 
 #endif // DEVICETABLEMODEL_H

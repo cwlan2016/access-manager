@@ -1,5 +1,5 @@
-#ifndef SNMPCONFIGINFO_H
-#define SNMPCONFIGINFO_H
+#ifndef SNMPCONFIG_H
+#define SNMPCONFIG_H
 
 #ifdef _MSC_VER
 #include "../stdafx.h"
@@ -7,7 +7,7 @@
 #include "stdafx.h"
 #endif
 
-class SnmpConfigInfo
+class SnmpConfig
 {
 public:
     static QString readCommunity();
@@ -40,4 +40,4 @@ private:
     static int mRetries;
 };
 
-#endif // SNMPCONFIGINFO_H
+#endif // SNMPCONFIG_H

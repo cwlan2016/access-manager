@@ -1,4 +1,4 @@
-#include "dslaminfoma5600.h"
+#include "dslamma5600.h"
 
 #ifdef _MSC_VER
 #include "../constant.h"
@@ -8,27 +8,27 @@
 #include "customsnmpfunctions.h"
 #endif
 
-DslamInfoMa5600::DslamInfoMa5600(QObject *parent) :
-    DslamInfo(parent)
+DslamMa5600::DslamMa5600(QObject *parent) :
+    Dslam(parent)
 {
 }
 
-DslamInfoMa5600::DslamInfoMa5600(QString name, QString ip, QObject *parent) :
-    DslamInfo(name, ip, parent)
+DslamMa5600::DslamMa5600(QString name, QString ip, QObject *parent) :
+    Dslam(name, ip, parent)
 {
 }
 
-DslamInfoMa5600::DslamInfoMa5600(DeviceInfo *source, QObject *parent) :
-    DslamInfo(source, parent)
+DslamMa5600::DslamMa5600(Device *source, QObject *parent) :
+    Dslam(source, parent)
 {
 }
 
-DeviceModel::Enum DslamInfoMa5600::deviceModel() const
+DeviceModel::Enum DslamMa5600::deviceModel() const
 {
     return DeviceModel::MA5600;
 }
 
-int DslamInfoMa5600::countPorts(BoardType::Enum boardType)
+int DslamMa5600::countPorts(BoardType::Enum boardType)
 {
     if ((boardType == BoardType::AnnexA)
             || (boardType == BoardType::AnnexB)) {
@@ -40,7 +40,7 @@ int DslamInfoMa5600::countPorts(BoardType::Enum boardType)
     }
 }
 
-long DslamInfoMa5600::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+long DslamMa5600::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
                                          int port)
 {
     if ((boardType == BoardType::AnnexA)

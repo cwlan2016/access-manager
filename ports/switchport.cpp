@@ -1,65 +1,65 @@
-#include "switchportinfo.h"
+#include "switchport.h"
 
 
-SwitchPortInfo::SwitchPortInfo(QObject *parent) :
+SwitchPort::SwitchPort(QObject *parent) :
     QObject(parent)
 {
 }
 
-int SwitchPortInfo::index() const
+int SwitchPort::index() const
 {
     return mIndex;
 }
 
-void SwitchPortInfo::setIndex(int index)
+void SwitchPort::setIndex(int index)
 {
     mIndex = index;
 }
 
-SwitchPortState::Enum SwitchPortInfo::state() const
+SwitchPortState::Enum SwitchPort::state() const
 {
     return mState;
 }
 
-void SwitchPortInfo::setState(SwitchPortState::Enum state)
+void SwitchPort::setState(SwitchPortState::Enum state)
 {
     mState = state;
 }
 
-QString SwitchPortInfo::description() const
+QString SwitchPort::description() const
 {
     return mDescription;
 }
 
-void SwitchPortInfo::setDescription(QString desc)
+void SwitchPort::setDescription(QString desc)
 {
     mDescription = desc;
 }
 
-void SwitchPortInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void SwitchPort::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
 {
     Q_UNUSED(snmpClient)
     Q_UNUSED(portIndex)
 }
 
-void SwitchPortInfo::parsePdu(SnmpClient::Ptr snmpClient)
+void SwitchPort::parsePdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
 }
 
-QString SwitchPortInfo::speedDuplexString(long snmpValue)
+QString SwitchPort::speedDuplexString(long snmpValue)
 {
     Q_UNUSED(snmpValue)
 
     return "Unknown";
 }
 
-QString SwitchPortInfo::speedDuplex() const
+QString SwitchPort::speedDuplex() const
 {
     return mSpeedDuplex;
 }
 
-void SwitchPortInfo::setSpeedDuplex(QString speedDuplex)
+void SwitchPort::setSpeedDuplex(QString speedDuplex)
 {
     mSpeedDuplex = speedDuplex;
 }

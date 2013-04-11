@@ -1,13 +1,13 @@
-#ifndef SWITCHPORTINFODES3528_H
-#define SWITCHPORTINFODES3528_H
+#ifndef SWITCHPORTDES3528_H
+#define SWITCHPORTDES3528_H
 
-#include "switchportinfo.h"
+#include "switchport.h"
 
-class SwitchPortInfoDes3528 : public SwitchPortInfo
+class SwitchPortDes3528 : public SwitchPort
 {
     Q_OBJECT
 public:
-    SwitchPortInfoDes3528(QObject *parent);
+    SwitchPortDes3528(QObject *parent);
 
     void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
     void parsePdu(SnmpClient::Ptr snmpClient);
@@ -15,4 +15,4 @@ protected:
     QString speedDuplexString(long snmpValue);
 };
 
-#endif // SWITCHPORTINFODES3528_H
+#endif // SWITCHPORTDES3528_H

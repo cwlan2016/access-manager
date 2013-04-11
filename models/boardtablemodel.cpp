@@ -18,7 +18,7 @@
 // 1 - type_board
 // 2 - range pairs
 
-BoardTableModel::BoardTableModel(DslamInfo *parentDevice, QObject *parent) :
+BoardTableModel::BoardTableModel(Dslam *parentDevice, QObject *parent) :
     QAbstractTableModel(parent),
     mParentDevice(parentDevice)
 {
@@ -91,7 +91,7 @@ bool BoardTableModel::setData(const QModelIndex &index, const QVariant &value,
         return false;
 
     if ((!mList.contains(index.row())) && !value.isNull()) {
-        mList.insert(index.row(), new BoardInfo(this));
+        mList.insert(index.row(), new DslamBoard(this));
         mList[index.row()]->setIndex(index.row());
     }
 
@@ -173,7 +173,7 @@ bool BoardTableModel::removeRow(int row, const QModelIndex &parent)
     return true;
 }
 
-QHash<int, BoardInfo::Ptr> BoardTableModel::boardList() const
+QHash<int, DslamBoard::Ptr> BoardTableModel::boardList() const
 {
     return mList;
 }
@@ -181,7 +181,7 @@ QHash<int, BoardInfo::Ptr> BoardTableModel::boardList() const
 void BoardTableModel::addBoard(int index, BoardType::Enum type,
                                int firstPair)
 {
-    BoardInfo::Ptr boardInfo = new BoardInfo(this);
+    DslamBoard::Ptr boardInfo = new DslamBoard(this);
     boardInfo->setIndex(index);
     boardInfo->setType(type);
     boardInfo->setFirstPair(firstPair);
@@ -189,7 +189,7 @@ void BoardTableModel::addBoard(int index, BoardType::Enum type,
     mList.insert(index, boardInfo);
 }
 
-DslamInfo *BoardTableModel::parentDevice()
+Dslam *BoardTableModel::parentDevice()
 {
     return mParentDevice;
 }

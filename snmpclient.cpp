@@ -1,6 +1,6 @@
 #include "snmpclient.h"
 
-#include "Info/snmpconfiginfo.h"
+#include "configs/snmpconfig.h"
 #include "customsnmpfunctions.h"
 
 SnmpClient::SnmpClient()
@@ -34,7 +34,7 @@ void SnmpClient::setIp(QString ip)
 
 void SnmpClient::setTimeoutSaveConfig()
 {
-    mBaseSession.timeout = (long)(SnmpConfigInfo::saveConfigTimeout() * 1000L);
+    mBaseSession.timeout = (long)(SnmpConfig::saveConfigTimeout() * 1000L);
 }
 
 bool SnmpClient::setupSession(SessionType::Enum sessionType)
@@ -44,20 +44,20 @@ bool SnmpClient::setupSession(SessionType::Enum sessionType)
     mBaseSession.version = SNMP_VERSION_2c;
 
     if (sessionType == SessionType::ReadSession) {
-        mBaseSession.community = new uchar[SnmpConfigInfo::readCommunity().length() + 1];
+        mBaseSession.community = new uchar[SnmpConfig::readCommunity().length() + 1];
         qstrcpy(reinterpret_cast<char *>(mBaseSession.community),
-                SnmpConfigInfo::readCommunity().toLatin1().data());
-        mBaseSession.community_len = SnmpConfigInfo::readCommunity().length();
+                SnmpConfig::readCommunity().toLatin1().data());
+        mBaseSession.community_len = SnmpConfig::readCommunity().length();
     } else {
-        mBaseSession.community = new uchar[SnmpConfigInfo::writeCommunity().length() + 1];
+        mBaseSession.community = new uchar[SnmpConfig::writeCommunity().length() + 1];
         qstrcpy(reinterpret_cast<char *>(mBaseSession.community),
-                SnmpConfigInfo::writeCommunity().toLatin1().data());
-        mBaseSession.community_len = SnmpConfigInfo::writeCommunity().length();
+                SnmpConfig::writeCommunity().toLatin1().data());
+        mBaseSession.community_len = SnmpConfig::writeCommunity().length();
     }
 
-    mBaseSession.timeout = (long)(SnmpConfigInfo::timeout() * 1000L);
-    mBaseSession.retries = SnmpConfigInfo::retries();
-    mBaseSession.remote_port = SnmpConfigInfo::port();
+    mBaseSession.timeout = (long)(SnmpConfig::timeout() * 1000L);
+    mBaseSession.retries = SnmpConfig::retries();
+    mBaseSession.remote_port = SnmpConfig::port();
     mBaseSession.peername = new char[mIp.length() + 1];
     memcpy(mBaseSession.peername, mIp.toLatin1().data(), mIp.length());
     mBaseSession.peername[mIp.length()] = '\0';

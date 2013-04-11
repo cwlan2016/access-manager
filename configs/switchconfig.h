@@ -1,5 +1,5 @@
-#ifndef SWITCHCONFIGINFO_H
-#define SWITCHCONFIGINFO_H
+#ifndef SWITCHCONFIG_H
+#define SWITCHCONFIG_H
 
 #ifdef _MSC_VER
 #include "../stdafx.h"
@@ -7,7 +7,7 @@
 #include "stdafx.h"
 #endif
 
-class SwitchConfigInfo
+class SwitchConfig
 {
 public:
     static QString inetVlanName();
@@ -22,4 +22,4 @@ private:
     static QString mIptvUnicastVlanName;
 };
 
-#endif // SWITCHCONFIGINFO_H
+#endif // SWITCHCONFIG_H

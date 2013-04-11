@@ -1,74 +1,74 @@
-#include "switchinfo.h"
-
-#include "switchconfiginfo.h"
+#include "switch.h"
 
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
+#include "../configs/switchconfig.h"
 #else
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
+#include "configs/switchconfig.h"
 #endif
 
-SwitchInfo::SwitchInfo(QObject *parent) :
-    DeviceInfo(parent),
+Switch::Switch(QObject *parent) :
+    Device(parent),
     mInetVlanTag(0),
     mIptvVlanTag(0)
 {
 }
 
-SwitchInfo::SwitchInfo(QString name, QString ip, QObject *parent) :
-    DeviceInfo(name, ip, parent),
+Switch::Switch(QString name, QString ip, QObject *parent) :
+    Device(name, ip, parent),
     mInetVlanTag(0),
     mIptvVlanTag(0)
 {
 }
 
-SwitchInfo::SwitchInfo(DeviceInfo *source, QObject *parent) :
-    DeviceInfo(source, parent)
+Switch::Switch(Device *source, QObject *parent) :
+    Device(source, parent)
 {
     if (source->deviceType() == DeviceType::Switch) {
-        mInetVlanTag = static_cast<SwitchInfo *>(source)->inetVlanTag();
-        mIptvVlanTag = static_cast<SwitchInfo *>(source)->iptvVlanTag();
+        mInetVlanTag = static_cast<Switch *>(source)->inetVlanTag();
+        mIptvVlanTag = static_cast<Switch *>(source)->iptvVlanTag();
     } else {
         mInetVlanTag = 0;
         mIptvVlanTag = 0;
     }
 }
 
-int SwitchInfo::inetVlanTag() const
+int Switch::inetVlanTag() const
 {
     return mInetVlanTag;
 }
 
-void SwitchInfo::setInetVlanTag(int vlanTag)
+void Switch::setInetVlanTag(int vlanTag)
 {
     mInetVlanTag = vlanTag;
 }
 
-int SwitchInfo::iptvVlanTag() const
+int Switch::iptvVlanTag() const
 {
     return mIptvVlanTag;
 }
 
-void SwitchInfo::setIptvVlanTag(int vlanTag)
+void Switch::setIptvVlanTag(int vlanTag)
 {
     mIptvVlanTag = vlanTag;
 }
 
-DeviceType::Enum SwitchInfo::deviceType() const
+DeviceType::Enum Switch::deviceType() const
 {
     return DeviceType::Switch;
 }
 
-int SwitchInfo::countPorts()
+int Switch::countPorts()
 {
     return 0;
 }
 
-bool SwitchInfo::getServiceDataFromDevice()
+bool Switch::getServiceDataFromDevice()
 {
     mError.clear();
 
@@ -102,13 +102,13 @@ bool SwitchInfo::getServiceDataFromDevice()
 
         QString vlanName = toString(vars->val.string, vars->val_len);
 
-        if (vlanName == SwitchConfigInfo::inetVlanName()) {
+        if (vlanName == SwitchConfig::inetVlanName()) {
             findedInet = true;
             mInetVlanTag = vars->name[13];
 
             if (findedIptv)
                 break;
-        } else if (vlanName == SwitchConfigInfo::iptvVlanName()) {
+        } else if (vlanName == SwitchConfig::iptvVlanName()) {
             findedIptv = true;
             mIptvVlanTag = vars->name[13];
 
@@ -130,7 +130,7 @@ bool SwitchInfo::getServiceDataFromDevice()
     return findedInet && findedIptv;
 }
 
-bool SwitchInfo::saveConfig()
+bool Switch::saveConfig()
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 

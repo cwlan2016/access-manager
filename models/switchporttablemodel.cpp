@@ -5,17 +5,17 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
-#include "../Info/switchportinfodes3526.h"
-#include "../Info/switchportinfodes3528.h"
-#include "../Info/switchportinfodes3550.h"
+#include "../ports/switchportdes3526.h"
+#include "../ports/switchportdes3528.h"
+#include "../ports/switchportdes3550.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
-#include "Info/switchportinfodes3526.h"
-#include "Info/switchportinfodes3528.h"
-#include "Info/switchportinfodes3550.h"
+#include "ports/switchportdes3526.h"
+#include "ports/switchportdes3528.h"
+#include "ports/switchportdes3550.h"
 #endif
 
 // Columns
@@ -25,7 +25,7 @@
 // 2 - speed/duplex
 // 3 - description
 
-SwitchPortTableModel::SwitchPortTableModel(SwitchInfo::Ptr parentDevice,
+SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice,
                                            QObject *parent) :
     QAbstractTableModel(parent),
     mParentDevice(parentDevice)
@@ -136,8 +136,8 @@ void SwitchPortTableModel::sort(int column, Qt::SortOrder order)
     beginResetModel();
 
     qSort(mList.begin(), mList.end(),
-              [&](const SwitchPortInfo::Ptr first,
-    const SwitchPortInfo::Ptr second) -> bool {
+              [&](const SwitchPort::Ptr first,
+    const SwitchPort::Ptr second) -> bool {
         if (column == 0) {
             return order == Qt::AscendingOrder ? (first->index() < second->index())
                                                : (first->index() > second->index());
@@ -354,7 +354,7 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
         return false;
     }
 
-    SwitchPortInfo::Ptr currentPort = 0;
+    SwitchPort::Ptr currentPort = 0;
 
     auto it = mList.constBegin();
     auto end = mList.constEnd();
@@ -466,18 +466,18 @@ void SwitchPortTableModel::createList()
     mList.reserve(count);
 
     for (int i = 1; i <= count; ++i) {
-        SwitchPortInfo::Ptr portInfo = 0;
+        SwitchPort::Ptr portInfo = 0;
 
         switch (mParentDevice->deviceModel())
         {
         case DeviceModel::DES3526:
-            portInfo = new SwitchPortInfoDes3526(this);
+            portInfo = new SwitchPortDes3526(this);
             break;
         case DeviceModel::DES3528:
-            portInfo = new SwitchPortInfoDes3528(this);
+            portInfo = new SwitchPortDes3528(this);
             break;
         case DeviceModel::DES3550:
-            portInfo = new SwitchPortInfoDes3550(this);
+            portInfo = new SwitchPortDes3550(this);
             break;
         default:
             return;

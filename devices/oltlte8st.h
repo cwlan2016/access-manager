@@ -1,17 +1,17 @@
-#ifndef OLTINFOLTE8ST_H
-#define OLTINFOLTE8ST_H
+#ifndef OLTLTE8ST_H
+#define OLTLTE8ST_H
 
-#include "oltinfo.h"
+#include "olt.h"
 
-class OltInfoLte8st : public OltInfo
+class OltLte8st : public Olt
 {
     Q_OBJECT
 public:
-    explicit OltInfoLte8st(QObject *parent = 0);
-    OltInfoLte8st(QString name, QString ip, QObject *parent = 0);
-    OltInfoLte8st(DeviceInfo *source, QObject *parent = 0);
+    explicit OltLte8st(QObject *parent = 0);
+    OltLte8st(QString name, QString ip, QObject *parent = 0);
+    OltLte8st(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
 };
 
-#endif // OLTINFOLTE8ST_H
+#endif // OLTLTE8ST_H

@@ -1,4 +1,4 @@
-#include "switchportinfodes3528.h"
+#include "switchportdes3528.h"
 
 #ifdef _MSC_VER
 #include "../constant.h"
@@ -10,12 +10,12 @@
 #include "customsnmpfunctions.h"
 #endif
 
-SwitchPortInfoDes3528::SwitchPortInfoDes3528(QObject *parent) :
-    SwitchPortInfo(parent)
+SwitchPortDes3528::SwitchPortDes3528(QObject *parent) :
+    SwitchPort(parent)
 {
 }
 
-void SwitchPortInfoDes3528::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void SwitchPortDes3528::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
 {
     if (portIndex == -1)
         portIndex = mIndex;
@@ -33,7 +33,7 @@ void SwitchPortInfoDes3528::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
     snmpClient->addOid(createOidPair(Mib::ifAlias, 11, portIndex));
 }
 
-void SwitchPortInfoDes3528::parsePdu(SnmpClient::Ptr snmpClient)
+void SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
 {
     netsnmp_variable_list *vars = snmpClient->varList();
     if (!isValidSnmpValue(vars))
@@ -66,7 +66,7 @@ void SwitchPortInfoDes3528::parsePdu(SnmpClient::Ptr snmpClient)
     mDescription = toString(vars->val.string, vars->val_len);
 }
 
-QString SwitchPortInfoDes3528::speedDuplexString(long snmpValue)
+QString SwitchPortDes3528::speedDuplexString(long snmpValue)
 {
     switch (snmpValue) {
     case 0:

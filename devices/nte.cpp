@@ -1,10 +1,10 @@
-#include "nteinfo.h"
+#include "nte.h"
 
-NteInfo::NteInfo(QObject *parent) :
-    OntInfo(parent)
+Nte::Nte(QObject *parent) :
+    Ont(parent)
 {
 }
 
-void NteInfo::Reconfigure()
+void Nte::Reconfigure()
 {
 }

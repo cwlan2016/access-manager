@@ -3,9 +3,9 @@
 
 #include "pagewidget.h"
 #ifdef _MSC_VER
-#include "../Models/devicetablemodel.h"
+#include "../models/devicetablemodel.h"
 #else
-#include "Models/devicetablemodel.h"
+#include "models/devicetablemodel.h"
 #endif
 
 namespace Ui
@@ -18,7 +18,7 @@ class EditDslamBoardTablePageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+    explicit EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
                                            DeviceTableModel *deviceListModel,
                                            QWidget *parent = 0);
     ~EditDslamBoardTablePageWidget();

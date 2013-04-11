@@ -2,15 +2,15 @@
 
 #ifdef _MSC_VER
 #include "../constant.h"
-#include "../Info/nteinfo.h"
-#include "../Info/ntpinfo.h"
+#include "../devices/nte.h"
+#include "../devices/ntp.h"
 #else
 #include "constant.h"
-#include "Info/nteinfo.h"
-#include "Info/ntpinfo.h"
+#include "devices/nte.h"
+#include "devices/ntp.h"
 #endif
 
-OntTableModel::OntTableModel(OltInfo::Ptr oltInfo, QObject *parent) :
+OntTableModel::OntTableModel(Olt::Ptr oltInfo, QObject *parent) :
     QAbstractTableModel(parent),
     mOltInfo(oltInfo)
 {

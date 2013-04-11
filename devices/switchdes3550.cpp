@@ -1,26 +1,26 @@
-#include "switchinfodes3550.h"
+#include "switchdes3550.h"
 
-SwitchInfoDes3550::SwitchInfoDes3550(QObject *parent) :
-    SwitchInfo(parent)
+SwitchDes3550::SwitchDes3550(QObject *parent) :
+    Switch(parent)
 {
 }
 
-SwitchInfoDes3550::SwitchInfoDes3550(QString name, QString ip, QObject *parent) :
-    SwitchInfo(name, ip, parent)
+SwitchDes3550::SwitchDes3550(QString name, QString ip, QObject *parent) :
+    Switch(name, ip, parent)
 {
 }
 
-SwitchInfoDes3550::SwitchInfoDes3550(DeviceInfo *source, QObject *parent) :
-    SwitchInfo(source, parent)
+SwitchDes3550::SwitchDes3550(Device *source, QObject *parent) :
+    Switch(source, parent)
 {
 }
 
-DeviceModel::Enum SwitchInfoDes3550::deviceModel() const
+DeviceModel::Enum SwitchDes3550::deviceModel() const
 {
     return DeviceModel::DES3550;
 }
 
-int SwitchInfoDes3550::countPorts()
+int SwitchDes3550::countPorts()
 {
     return 50;
 }

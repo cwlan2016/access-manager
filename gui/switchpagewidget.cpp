@@ -4,18 +4,18 @@
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
-#include "../Info/switchinfo.h"
-#include "../Models/mactablemodel.h"
-#include "../Models/switchporttablemodel.h"
+#include "../devices/switch.h"
+#include "../models/mactablemodel.h"
+#include "../models/switchporttablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
-#include "Info/switchinfo.h"
-#include "Models/mactablemodel.h"
-#include "Models/switchporttablemodel.h"
+#include "devices/switch.h"
+#include "models/mactablemodel.h"
+#include "models/switchporttablemodel.h"
 #endif
 
-SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::SwitchPageWidget)
 {
@@ -56,7 +56,7 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
             this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
-    SwitchInfo::Ptr switchInfo = mDeviceInfo.objectCast<SwitchInfo>();
+    Switch::Ptr switchInfo = mDeviceInfo.objectCast<Switch>();
 
     SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
 
@@ -97,7 +97,7 @@ SwitchPageWidget::~SwitchPageWidget()
 
 void SwitchPageWidget::saveSwitchConfig()
 {
-    bool result = mDeviceInfo.objectCast<SwitchInfo>()->saveConfig();
+    bool result = mDeviceInfo.objectCast<Switch>()->saveConfig();
 
     if (result) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Запрос на сохранение конфигурации коммутатора отправлен."));

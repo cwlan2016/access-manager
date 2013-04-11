@@ -8,7 +8,7 @@
 #include "converters.h"
 #endif
 
-BoardTableDelegate::BoardTableDelegate(DslamInfo::Ptr dslamInfo,
+BoardTableDelegate::BoardTableDelegate(Dslam::Ptr dslamInfo,
                                        QObject *parent) :
     QItemDelegate(parent),
     mDslamInfo(dslamInfo)

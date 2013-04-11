@@ -1,80 +1,80 @@
-#include "ontinfo.h"
+#include "ont.h"
 
-OntInfo::OntInfo(QObject *parent) :
+Ont::Ont(QObject *parent) :
     QObject(parent)
 {
 }
 
-QString OntInfo::id()
+QString Ont::id()
 {
     return mId;
 }
 
-void OntInfo::setId(QString id)
+void Ont::setId(QString id)
 {
     mId = id;
 }
 
-QString OntInfo::state()
+QString Ont::state()
 {
     return mState;
 }
 
-void OntInfo::setState(QString state)
+void Ont::setState(QString state)
 {
     mState = state;
 }
 
-QString OntInfo::description()
+QString Ont::description()
 {
     return mDescription;
 }
 
-void OntInfo::setDescription(QString description)
+void Ont::setDescription(QString description)
 {
     mDescription = description;
 }
 
-OntType::Enum OntInfo::type()
+OntType::Enum Ont::type()
 {
     return mType;
 }
 
-void OntInfo::setType(OntType::Enum type)
+void Ont::setType(OntType::Enum type)
 {
     mType = type;
 }
 
-QString OntInfo::model()
+QString Ont::model()
 {
     return mModel;
 }
 
-void OntInfo::setModel(QString model)
+void Ont::setModel(QString model)
 {
     mModel = model;
 }
 
-int OntInfo::serviceProfile()
+int Ont::serviceProfile()
 {
     return mServiceProfile;
 }
 
-void OntInfo::setServiceProfile(int index)
+void Ont::setServiceProfile(int index)
 {
     mServiceProfile = index;
 }
 
-int OntInfo::multicastProfile()
+int Ont::multicastProfile()
 {
     return mMulticastProfile;
 }
 
-void OntInfo::setMulticastProfile(int index)
+void Ont::setMulticastProfile(int index)
 {
     mMulticastProfile = index;
 }
 
-void OntInfo::Reconfigure()
+void Ont::Reconfigure()
 {
 }

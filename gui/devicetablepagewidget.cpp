@@ -4,21 +4,21 @@
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../converters.h"
-#include "../Models/boardtablemodel.h"
-#include "../Models/devicetabledelegate.h"
-#include "../Pages/dslampagewidget.h"
-#include "../Pages/editdslamboardtablepagewidget.h"
-#include "../Pages/oltpagewidget.h"
-#include "../Pages/switchpagewidget.h"
+#include "../models/boardtablemodel.h"
+#include "../models/devicetabledelegate.h"
+#include "../gui/dslampagewidget.h"
+#include "../gui/editdslamboardtablepagewidget.h"
+#include "../gui/oltpagewidget.h"
+#include "../gui/switchpagewidget.h"
 #else
 #include "constant.h"
 #include "converters.h"
-#include "Models/boardtablemodel.h"
-#include "Models/devicetabledelegate.h"
-#include "Pages/dslampagewidget.h"
-#include "Pages/editdslamboardtablepagewidget.h"
-#include "Pages/oltpagewidget.h"
-#include "Pages/switchpagewidget.h"
+#include "models/boardtablemodel.h"
+#include "models/devicetabledelegate.h"
+#include "gui/dslampagewidget.h"
+#include "gui/editdslamboardtablepagewidget.h"
+#include "gui/oltpagewidget.h"
+#include "gui/switchpagewidget.h"
 #endif
 
 DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
@@ -138,7 +138,7 @@ void DeviceTablePageWidget::openDevice()
 
     QWidget *pageWidget;
 
-    DeviceInfo::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
+    Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
     if (deviceType == DeviceType::Switch) {
         pageWidget = new SwitchPageWidget(deviceInfo, this);
@@ -305,7 +305,7 @@ void DeviceTablePageWidget::showEditDslamBoardListPage()
         return;
     }
 
-    DeviceInfo::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
+    Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
     QWidget *pageWidget = new EditDslamBoardTablePageWidget(deviceInfo, mDeviceTableModel, this);
     pageWidget->setObjectName(namePage);
@@ -397,7 +397,7 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
     }
 
     int size = mDeviceTableModel->rowCount(QModelIndex());
-    QVector<DeviceInfo::Ptr> &deviceList = mDeviceTableModel->deviceList();
+    QVector<Device::Ptr> &deviceList = mDeviceTableModel->deviceList();
 
     for (int i = 0; i < size; ++i) {
         progressDialog->setValue(i);
@@ -415,8 +415,8 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
                 errorString += deviceList.at(i)->error() + "\n";
 
             if (deviceType == DeviceType::Dslam) {
-                if (deviceList.at(i).objectCast<DslamInfo>()->autoNumeringBoard())
-                    deviceList.at(i).objectCast<DslamInfo>()->boardTableModel()->renumeringPairList();
+                if (deviceList.at(i).objectCast<Dslam>()->autoNumeringBoard())
+                    deviceList.at(i).objectCast<Dslam>()->boardTableModel()->renumeringPairList();
             }
         }
     }

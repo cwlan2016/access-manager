@@ -3,17 +3,17 @@
 
 #ifdef _MSC_VER
 #include "../customtypes.h"
-#include "../Info/dslaminfo.h"
+#include "../devices/dslam.h"
 #else
 #include "customtypes.h"
-#include "Info/dslaminfo.h"
+#include "devices/dslam.h"
 #endif
 
 class BoardTableDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    BoardTableDelegate(DslamInfo::Ptr dslamInfo, QObject *parent = 0);
+    BoardTableDelegate(Dslam::Ptr dslamInfo, QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
@@ -36,7 +36,7 @@ private:
 
     int mIndexTypeBoard;
     int mIndexFirstPair;
-    DslamInfo::Ptr mDslamInfo;
+    Dslam::Ptr mDslamInfo;
 };
 
 #endif // BOARDTABLEDELEGATE_H

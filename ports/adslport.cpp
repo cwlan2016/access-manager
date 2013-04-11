@@ -1,7 +1,7 @@
-#include "adslportinfo.h"
+#include "adslport.h"
 
-AdslPortInfo::AdslPortInfo(QObject *parent) :
-    XdslPortInfo(parent)
+AdslPort::AdslPort(QObject *parent) :
+    XdslPort(parent)
 {
     mRxRate = 0;
     mTxRate = 0;
@@ -9,42 +9,42 @@ AdslPortInfo::AdslPortInfo(QObject *parent) :
     mLineType = "Fast";
 }
 
-int AdslPortInfo::rxRate() const
+int AdslPort::rxRate() const
 {
     return mRxRate;
 }
 
-void AdslPortInfo::setRxRate(int rxRate)
+void AdslPort::setRxRate(int rxRate)
 {
     mRxRate = rxRate;
 }
 
-int AdslPortInfo::txRate() const
+int AdslPort::txRate() const
 {
     return mTxRate;
 }
 
-void AdslPortInfo::setTxRate(int txRate)
+void AdslPort::setTxRate(int txRate)
 {
     mTxRate = txRate;
 }
 
-QString AdslPortInfo::coding() const
+QString AdslPort::coding() const
 {
     return mCoding;
 }
 
-void AdslPortInfo::setCoding(QString coding)
+void AdslPort::setCoding(QString coding)
 {
     mCoding = coding;
 }
 
-QString AdslPortInfo::lineType() const
+QString AdslPort::lineType() const
 {
     return mLineType;
 }
 
-void AdslPortInfo::setLineType(QString lineType)
+void AdslPort::setLineType(QString lineType)
 {
     mLineType = lineType;
 }

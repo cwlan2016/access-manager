@@ -2,18 +2,18 @@
 #define ONTTABLEMODEL_H
 
 #ifdef _MSC_VER
-#include "../Info/ontinfo.h"
-#include "../Info/oltinfo.h"
+#include "../devices/ont.h"
+#include "../devices/olt.h"
 #else
-#include "Info/ontinfo.h"
-#include "Info/oltinfo.h"
+#include "devices/ont.h"
+#include "devices/olt.h"
 #endif
 
 class OntTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit OntTableModel(OltInfo::Ptr oltInfo, QObject *parent = 0);
+    explicit OntTableModel(Olt::Ptr oltInfo, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parentDevice) const;
     int columnCount(const QModelIndex &parentDevice) const;
@@ -31,8 +31,8 @@ public:
 
 private:
     QString mError;
-    OltInfo::Ptr mOltInfo;
-    QVector<OntInfo::Ptr> mList;
+    Olt::Ptr mOltInfo;
+    QVector<Ont::Ptr> mList;
 };
 
 #endif // ONTTABLEMODEL_H

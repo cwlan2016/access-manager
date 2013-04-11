@@ -5,11 +5,11 @@
 #include "config.h"
 #include "constant.h"
 #include "converters.h"
-#include "Pages/devicetablepagewidget.h"
-#include "Pages/dslampagewidget.h"
-#include "Pages/settingspagewidget.h"
-#include "Pages/switchpagewidget.h"
-#include "Pages/aboutpagewidget.h"
+#include "gui/devicetablepagewidget.h"
+#include "gui/dslampagewidget.h"
+#include "gui/settingspagewidget.h"
+#include "gui/switchpagewidget.h"
+#include "gui/aboutpagewidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

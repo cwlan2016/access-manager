@@ -1,15 +1,15 @@
-#ifndef SWITCHINFO_H
-#define SWITCHINFO_H
+#ifndef SWITCH_H
+#define SWITCH_H
 
-#include "deviceinfo.h"
+#include "device.h"
 
-class SwitchInfo : public DeviceInfo
+class Switch : public Device
 {
     Q_OBJECT
 public:
-    explicit SwitchInfo(QObject *parent = 0);
-    SwitchInfo(QString name, QString ip, QObject *parent = 0);
-    SwitchInfo(DeviceInfo *source, QObject *parent = 0);
+    explicit Switch(QObject *parent = 0);
+    Switch(QString name, QString ip, QObject *parent = 0);
+    Switch(Device *source, QObject *parent = 0);
 
     int inetVlanTag() const;
     void setInetVlanTag(int vlanTag);
@@ -24,11 +24,11 @@ public:
 
     bool saveConfig();
 
-    typedef QSharedPointer<SwitchInfo> Ptr;
+    typedef QSharedPointer<Switch> Ptr;
 
 private:
     int mInetVlanTag;
     int mIptvVlanTag;
 };
 
-#endif // SWITCHINFO_H
+#endif // SWITCH_H

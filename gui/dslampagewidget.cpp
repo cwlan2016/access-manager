@@ -5,19 +5,19 @@
 #include "../basicdialogs.h"
 #include "../constant.h"
 #include "../converters.h"
-#include "../Info/dslaminfo.h"
-#include "../Models/boardtablemodel.h"
-#include "../Models/dslamporttablemodel.h"
+#include "../devices/dslam.h"
+#include "../models/boardtablemodel.h"
+#include "../models/dslamporttablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
 #include "converters.h"
-#include "Info/dslaminfo.h"
-#include "Models/boardtablemodel.h"
-#include "Models/dslamporttablemodel.h"
+#include "devices/dslam.h"
+#include "models/boardtablemodel.h"
+#include "models/dslamporttablemodel.h"
 #endif
 
-DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::DslamPageWidget)
 {
@@ -60,9 +60,9 @@ DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
 
     if ((mDeviceInfo->deviceModel() == DeviceModel::MA5600)
             || (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
-        ui->dslamTreeView->setModel(mDeviceInfo.objectCast<DslamInfo>()->boardTableModel());
+        ui->dslamTreeView->setModel(mDeviceInfo.objectCast<Dslam>()->boardTableModel());
     } else {
-        DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<DslamInfo>(), this);
+        DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<Dslam>(), this);
 
         portListModel->setBoardType(BoardType::AnnexA);
         portListModel->setFirstPair(1);
@@ -142,7 +142,7 @@ void DslamPageWidget::showPortListModel()
         return;
     }
 
-    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<DslamInfo>(), this);
+    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<Dslam>(), this);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
     QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
@@ -174,7 +174,7 @@ void DslamPageWidget::backToBoardListModel()
     ui->selectProfileGroupBox->setChecked(false);
 
     DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-    BoardTableModel *boardTableModel = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+    BoardTableModel *boardTableModel = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
 
     ui->dslamTreeView->setModel(boardTableModel);
 

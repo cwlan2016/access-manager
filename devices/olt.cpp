@@ -1,4 +1,4 @@
-#include "oltinfo.h"
+#include "olt.h"
 
 #ifdef _MSC_VER
 #include "../constant.h"
@@ -12,22 +12,22 @@
 #include "snmpclient.h"
 #endif
 
-OltInfo::OltInfo(QObject *parent) :
-    DeviceInfo(parent)
+Olt::Olt(QObject *parent) :
+    Device(parent)
 {
 }
 
-OltInfo::OltInfo(QString name, QString ip, QObject *parent) :
-    DeviceInfo(name, ip, parent)
+Olt::Olt(QString name, QString ip, QObject *parent) :
+    Device(name, ip, parent)
 {
 }
 
-OltInfo::OltInfo(DeviceInfo *source, QObject *parent) :
-    DeviceInfo(source, parent)
+Olt::Olt(Device *source, QObject *parent) :
+    Device(source, parent)
 {
 }
 
-QString OltInfo::serviceProfile(int index)
+QString Olt::serviceProfile(int index)
 {
     if (mServiceProfileList.find(index) == mServiceProfileList.end())
         return QString();
@@ -35,12 +35,12 @@ QString OltInfo::serviceProfile(int index)
     return mServiceProfileList[index];
 }
 
-void OltInfo::addServiceProfile(int index, QString profileName)
+void Olt::addServiceProfile(int index, QString profileName)
 {
     mServiceProfileList.insert(index, profileName);
 }
 
-QString OltInfo::multicastProfile(int index)
+QString Olt::multicastProfile(int index)
 {
     if (mMulticastProfileList.find(index) == mMulticastProfileList.end())
         return QString();
@@ -48,37 +48,37 @@ QString OltInfo::multicastProfile(int index)
     return mMulticastProfileList[index];
 }
 
-void OltInfo::addMulticastProfile(int index, QString profileName)
+void Olt::addMulticastProfile(int index, QString profileName)
 {
     mMulticastProfileList.insert(index, profileName);
 }
 
-OltProfileMap &OltInfo::serviceProfileList()
+OltProfileMap &Olt::serviceProfileList()
 {
     return mServiceProfileList;
 }
 
-QStringListModel *OltInfo::serviceProfileListModel(QObject *parent)
+QStringListModel *Olt::serviceProfileListModel(QObject *parent)
 {
     return createStringListModel(mServiceProfileList, parent);
 }
 
-OltProfileMap &OltInfo::multicastProfileList()
+OltProfileMap &Olt::multicastProfileList()
 {
     return mMulticastProfileList;
 }
 
-QStringListModel *OltInfo::multicastProfileListModel(QObject *parent)
+QStringListModel *Olt::multicastProfileListModel(QObject *parent)
 {
     return createStringListModel(mMulticastProfileList, parent);
 }
 
-DeviceType::Enum OltInfo::deviceType() const
+DeviceType::Enum Olt::deviceType() const
 {
     return DeviceType::Olt;
 }
 
-bool OltInfo::getServiceDataFromDevice()
+bool Olt::getServiceDataFromDevice()
 {
     mError.clear();
     bool result = false;
@@ -101,7 +101,7 @@ bool OltInfo::getServiceDataFromDevice()
     return result;
 }
 
-bool OltInfo::getProfileList(OltProfileMap &profileList,
+bool Olt::getProfileList(OltProfileMap &profileList,
                              OidPair oid)
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
@@ -170,7 +170,7 @@ bool OltInfo::getProfileList(OltProfileMap &profileList,
     return true;
 }
 
-QStringListModel *OltInfo::createStringListModel(OltProfileMap &profileList,
+QStringListModel *Olt::createStringListModel(OltProfileMap &profileList,
                                                         QObject *parent)
 {
     QStringList stringList;

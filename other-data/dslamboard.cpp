@@ -1,37 +1,37 @@
-#include "boardinfo.h"
+#include "dslamboard.h"
 
-BoardInfo::BoardInfo(QObject *parent) : QObject(parent),
+DslamBoard::DslamBoard(QObject *parent) : QObject(parent),
     mFirstPair(1),
     mType(BoardType::AnnexA)
 {
 }
 
-int BoardInfo::index() const
+int DslamBoard::index() const
 {
     return mNumber;
 }
 
-void BoardInfo::setIndex(int number)
+void DslamBoard::setIndex(int number)
 {
     mNumber = number;
 }
 
-BoardType::Enum BoardInfo::type() const
+BoardType::Enum DslamBoard::type() const
 {
     return mType;
 }
 
-void BoardInfo::setType(BoardType::Enum type)
+void DslamBoard::setType(BoardType::Enum type)
 {
     mType = type;
 }
 
-int BoardInfo::firstPair() const
+int DslamBoard::firstPair() const
 {
     return mFirstPair;
 }
 
-void BoardInfo::setFirstPair(int firstPair)
+void DslamBoard::setFirstPair(int firstPair)
 {
     mFirstPair = firstPair;
 }

@@ -4,20 +4,20 @@
 #ifdef _MSC_VER
 #include "../customtypes.h"
 #include "../snmpclient.h"
-#include "../Info/dslaminfo.h"
-#include "../Info/xdslportinfo.h"
+#include "../devices/dslam.h"
+#include "../ports/xdslport.h"
 #else
 #include "customtypes.h"
 #include "snmpclient.h"
-#include "Info/dslaminfo.h"
-#include "Info/xdslportinfo.h"
+#include "devices/dslam.h"
+#include "ports/xdslport.h"
 #endif
 
 class DslamPortTableModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit DslamPortTableModel(DslamInfo::Ptr parentDevice,
+    explicit DslamPortTableModel(Dslam::Ptr parentDevice,
                                  QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
@@ -58,8 +58,8 @@ private:
     int mFirstPair;
     int mBoardIndex;
     BoardType::Enum mBoardType;
-    DslamInfo::Ptr mParentDevice;
-    QVector<XdslPortInfo::Ptr> mList;
+    Dslam::Ptr mParentDevice;
+    QVector<XdslPort::Ptr> mList;
 };
 
 #endif // DSLAMPORTTABLEMODEL_H

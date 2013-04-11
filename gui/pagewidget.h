@@ -2,19 +2,19 @@
 #define PAGEWIDGET_H
 
 #ifdef _MSC_VER
-#include "../Info/deviceinfo.h"
+#include "../devices/device.h"
 #else
-#include "Info/deviceinfo.h"
+#include "devices/device.h"
 #endif
 
 class PageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
+    explicit PageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
 
 protected:
-    DeviceInfo::Ptr mDeviceInfo;
+    Device::Ptr mDeviceInfo;
 };
 
 #endif // PAGEWIDGET_H

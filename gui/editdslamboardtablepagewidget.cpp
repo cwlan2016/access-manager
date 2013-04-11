@@ -4,18 +4,18 @@
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
 #include "../constant.h"
-#include "../Info/dslaminfo.h"
-#include "../Models/boardtabledelegate.h"
-#include "../Models/boardtablemodel.h"
+#include "../devices/dslam.h"
+#include "../models/boardtabledelegate.h"
+#include "../models/boardtablemodel.h"
 #else
 #include "basicdialogs.h"
 #include "constant.h"
-#include "Info/dslaminfo.h"
-#include "Models/boardtabledelegate.h"
-#include "Models/boardtablemodel.h"
+#include "devices/dslam.h"
+#include "models/boardtabledelegate.h"
+#include "models/boardtablemodel.h"
 #endif
 
-EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
                                                              DeviceTableModel *deviceListModel,
                                                              QWidget *parent) :
     PageWidget(deviceInfo, parent),
@@ -33,12 +33,12 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
     connect(ui->renumeringBoardPairsAction, &QAction::triggered,
             this, &EditDslamBoardTablePageWidget::renumeringBoardPairs);
 
-    DslamInfo::Ptr dslamInfo = mDeviceInfo.objectCast<DslamInfo>();
+    Dslam::Ptr dslamInfo = mDeviceInfo.objectCast<Dslam>();
     BoardTableModel *boardTableModel = dslamInfo->boardTableModel();
 
     ui->editDslamBoardListTableView->setModel(boardTableModel);
 
-    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo.objectCast<DslamInfo>(), this);
+    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo.objectCast<Dslam>(), this);
     boardListDelegate->setIndexTypeBoard(1);
     boardListDelegate->setIndexFirstPair(2);
 
@@ -75,7 +75,7 @@ void EditDslamBoardTablePageWidget::removeBoard()
     if (!index.isValid())
         return;
 
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
     QString num = model->data(model->index(index.row(), 0)).toString();
     QString type = model->data(model->index(index.row(), 1)).toString();
 
@@ -89,7 +89,7 @@ void EditDslamBoardTablePageWidget::removeBoard()
 
 void EditDslamBoardTablePageWidget::getBoardList()
 {
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
 
     if (!model->getBoardListFromDevice())
         BasicDialogs::error(this, BasicDialogStrings::Error, model->error());
@@ -99,7 +99,7 @@ void EditDslamBoardTablePageWidget::getBoardList()
 
 void EditDslamBoardTablePageWidget::renumeringBoardPairs()
 {
-    BoardTableModel *model = mDeviceInfo.objectCast<DslamInfo>()->boardTableModel();
+    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
 
     model->renumeringPairList();
     mDeviceTableModel->setModified(true);
@@ -107,14 +107,14 @@ void EditDslamBoardTablePageWidget::renumeringBoardPairs()
 
 void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
 {
-    mDeviceInfo.objectCast<DslamInfo>()->setAutoFill(state ? 1 : 0);
+    mDeviceInfo.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
     mDeviceTableModel->setModified(true);
     ui->autoNumeringPairCheckBox->setEnabled(state);
 }
 
 void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
 {
-    mDeviceInfo.objectCast<DslamInfo>()->setAutoNumeringBoard(state ? 1 : 0);
+    mDeviceInfo.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
     mDeviceTableModel->setModified(true);
 }
 

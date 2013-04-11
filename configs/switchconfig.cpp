@@ -1,30 +1,30 @@
-#include "switchconfiginfo.h"
+#include "switchconfig.h"
 
-QString SwitchConfigInfo::inetVlanName()
+QString SwitchConfig::inetVlanName()
 {
     return mInetVlanName;
 }
 
-void SwitchConfigInfo::setInetVlanName(QString vlanName)
+void SwitchConfig::setInetVlanName(QString vlanName)
 {
     mInetVlanName = vlanName;
 }
 
-QString SwitchConfigInfo::iptvVlanName()
+QString SwitchConfig::iptvVlanName()
 {
     return mIptvUnicastVlanName;
 }
 
-void SwitchConfigInfo::setIptvVlanName(QString vlanName)
+void SwitchConfig::setIptvVlanName(QString vlanName)
 {
     mIptvUnicastVlanName = vlanName;
 }
 
-void SwitchConfigInfo::toDefault()
+void SwitchConfig::toDefault()
 {
     mInetVlanName = "Inet";
     mIptvUnicastVlanName = "IPTV_Unicast";
 }
 
-QString SwitchConfigInfo::mInetVlanName = QString();
-QString SwitchConfigInfo::mIptvUnicastVlanName = QString();
+QString SwitchConfig::mInetVlanName = QString();
+QString SwitchConfig::mIptvUnicastVlanName = QString();

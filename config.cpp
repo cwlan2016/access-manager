@@ -67,8 +67,8 @@ bool Config::backup()
 
 void Config::toDefault()
 {
-    SnmpConfigInfo::toDefault();
-    SwitchConfigInfo::toDefault();
+    SnmpConfig::toDefault();
+    SwitchConfig::toDefault();
     QSettings settings(mConfigPath % qApp->applicationName() % ".ini",
                        QSettings::IniFormat);
     createSnmpGroup(settings);
@@ -90,15 +90,15 @@ void Config::createSnmpGroup(QSettings &settings)
 {
     settings.beginGroup("snmp");
 
-    settings.setValue(SnmpSettingsStrings::port, SnmpConfigInfo::port());
+    settings.setValue(SnmpSettingsStrings::port, SnmpConfig::port());
     settings.setValue(SnmpSettingsStrings::readCommunity,
-                      SnmpConfigInfo::readCommunity());
+                      SnmpConfig::readCommunity());
     settings.setValue(SnmpSettingsStrings::writeCommunity,
-                      SnmpConfigInfo::writeCommunity());
-    settings.setValue(SnmpSettingsStrings::retries, SnmpConfigInfo::retries());
-    settings.setValue(SnmpSettingsStrings::timeout, SnmpConfigInfo::timeout());
+                      SnmpConfig::writeCommunity());
+    settings.setValue(SnmpSettingsStrings::retries, SnmpConfig::retries());
+    settings.setValue(SnmpSettingsStrings::timeout, SnmpConfig::timeout());
     settings.setValue(SnmpSettingsStrings::saveConfigTimeout,
-                      SnmpConfigInfo::saveConfigTimeout());
+                      SnmpConfig::saveConfigTimeout());
 
     settings.endGroup();
 }
@@ -108,17 +108,17 @@ void Config::parseSnmpGroup(QSettings &settings)
     settings.beginGroup("snmp");
 
     QVariant value = settings.value(SnmpSettingsStrings::port);
-    SnmpConfigInfo::setPort(value.toInt());
+    SnmpConfig::setPort(value.toInt());
     value = settings.value(SnmpSettingsStrings::readCommunity);
-    SnmpConfigInfo::setReadCommunity(value.toString());
+    SnmpConfig::setReadCommunity(value.toString());
     value = settings.value(SnmpSettingsStrings::writeCommunity);
-    SnmpConfigInfo::setWriteCommunity(value.toString());
+    SnmpConfig::setWriteCommunity(value.toString());
     value = settings.value(SnmpSettingsStrings::retries);
-    SnmpConfigInfo::setRetries(value.toInt());
+    SnmpConfig::setRetries(value.toInt());
     value = settings.value(SnmpSettingsStrings::timeout);
-    SnmpConfigInfo::setTimeout(value.toInt());
+    SnmpConfig::setTimeout(value.toInt());
     value = settings.value(SnmpSettingsStrings::saveConfigTimeout);
-    SnmpConfigInfo::setSaveConfigTimeout(value.toInt());
+    SnmpConfig::setSaveConfigTimeout(value.toInt());
 
     settings.endGroup();
 }
@@ -128,9 +128,9 @@ void Config::createSwitchGroup(QSettings &settings)
     settings.beginGroup("switch");
 
     settings.setValue(SwitchSettingsStrings::inetVlanName,
-                      SwitchConfigInfo::inetVlanName());
+                      SwitchConfig::inetVlanName());
     settings.setValue(SwitchSettingsStrings::iptvUnicastVlanName,
-                      SwitchConfigInfo::iptvVlanName());
+                      SwitchConfig::iptvVlanName());
 
     settings.endGroup();
 }
@@ -140,9 +140,9 @@ void Config::parseSwitchGroup(QSettings &settings)
     settings.beginGroup("switch");
 
     QVariant value = settings.value(SwitchSettingsStrings::inetVlanName);
-    SwitchConfigInfo::setInetVlanName(value.toString());
+    SwitchConfig::setInetVlanName(value.toString());
     value = settings.value(SwitchSettingsStrings::iptvUnicastVlanName);
-    SwitchConfigInfo::setIptvVlanName(value.toString());
+    SwitchConfig::setIptvVlanName(value.toString());
 
     settings.endGroup();
 

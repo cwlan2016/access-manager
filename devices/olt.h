@@ -1,15 +1,15 @@
-#ifndef OLTINFO_H
-#define OLTINFO_H
+#ifndef OLT_H
+#define OLT_H
 
-#include "deviceinfo.h"
+#include "device.h"
 
-class OltInfo : public DeviceInfo
+class Olt : public Device
 {
     Q_OBJECT
 public:
-    OltInfo(QObject *parent = 0);
-    OltInfo(QString name, QString ip, QObject *parent = 0);
-    OltInfo(DeviceInfo *source, QObject *parent = 0);
+    Olt(QObject *parent = 0);
+    Olt(QString name, QString ip, QObject *parent = 0);
+    Olt(Device *source, QObject *parent = 0);
 
     QString serviceProfile(int index);
     void addServiceProfile(int index, QString profileName);
@@ -27,7 +27,7 @@ public:
 
     bool getServiceDataFromDevice();
 
-    typedef QSharedPointer<OltInfo> Ptr;
+    typedef QSharedPointer<Olt> Ptr;
 
 private:
     bool getProfileList(OltProfileMap &profileList, OidPair oid);
@@ -40,4 +40,4 @@ private:
 
 
 
-#endif // OLTINFO_H
+#endif // OLT_H

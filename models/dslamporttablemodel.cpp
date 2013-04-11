@@ -4,14 +4,14 @@
 #include "../constant.h"
 #include "../converters.h"
 #include "../customsnmpfunctions.h"
-#include "../Info/adslportinfo.h"
-#include "../Info/shdslportinfo.h"
+#include "../ports/adslport.h"
+#include "../ports/shdslport.h"
 #else
 #include "constant.h"
 #include "converters.h"
 #include "customsnmpfunctions.h"
-#include "Info/adslportinfo.h"
-#include "Info/shdslportinfo.h"
+#include "ports/adslport.h"
+#include "ports/shdslport.h"
 #endif
 
 
@@ -19,7 +19,7 @@
 // invalidParentIndex - основная информация о порте, верхний уровень
 // > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
-DslamPortTableModel::DslamPortTableModel(DslamInfo::Ptr parentDevice, QObject *parent) :
+DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice, QObject *parent) :
     QAbstractItemModel(parent),
     mParentDevice(parentDevice)
 {
@@ -298,7 +298,7 @@ void DslamPortTableModel::createList()
             || (mBoardType == BoardType::AnnexB)) {
 
         for (int i = 0; i < count; ++i) {
-            AdslPortInfo::Ptr portInfo = new AdslPortInfo(this);
+            AdslPort::Ptr portInfo = new AdslPort(this);
 
             mList.push_back(portInfo);
             mList[i]->setPair(mFirstPair + i);
@@ -306,7 +306,7 @@ void DslamPortTableModel::createList()
     } else if (mBoardType == BoardType::Shdsl) {
 
         for (int i = 0; i < count; ++i) {
-            ShdslPortInfo::Ptr portInfo = new ShdslPortInfo(this);
+            ShdslPort::Ptr portInfo = new ShdslPort(this);
 
             mList.push_back(portInfo);
             mList[i]->setPair(mFirstPair + i);
@@ -556,7 +556,7 @@ QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
             return DslamPortTableModelStrings::Coding;
         }
     } else if (index.column() == 1) {
-        AdslPortInfo::Ptr portInfo = qobject_cast<AdslPortInfo *>(mList.at(index.parent().row()));
+        AdslPort::Ptr portInfo = qobject_cast<AdslPort *>(mList.at(index.parent().row()));
 
         if (index.row() == 0) {
             return portInfo->lineType();
@@ -581,7 +581,7 @@ QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
 bool DslamPortTableModel::updatePortMA(QModelIndex portIndex,
                                        QScopedPointer<SnmpClient> &snmp)
 {
-    AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
+    AdslPort::Ptr portInfo = static_cast<AdslPort *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
 
     portInfo->setState(DslPortState::from(*vars->val.integer));
@@ -661,7 +661,7 @@ bool DslamPortTableModel::updatePortMA(QModelIndex portIndex,
 bool DslamPortTableModel::updatePortMXA(QModelIndex portIndex,
                                         QScopedPointer<SnmpClient> &snmp)
 {
-    AdslPortInfo::Ptr portInfo = static_cast<AdslPortInfo *>(mList[portIndex.row()]);
+    AdslPort::Ptr portInfo = static_cast<AdslPort *>(mList[portIndex.row()]);
     netsnmp_variable_list *vars = snmp->varList();
 
     if (isValidSnmpValue(vars)

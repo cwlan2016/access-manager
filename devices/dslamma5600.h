@@ -1,19 +1,19 @@
-#ifndef DSLAMINFOMA5600_H
-#define DSLAMINFOMA5600_H
+#ifndef DSLAMMA5600_H
+#define DSLAMMA5600_H
 
-#include "dslaminfo.h"
+#include "dslam.h"
 
-class DslamInfoMa5600 : public DslamInfo
+class DslamMa5600 : public Dslam
 {
     Q_OBJECT
 public:
-    explicit DslamInfoMa5600(QObject *parent = 0);
-    DslamInfoMa5600(QString name, QString ip, QObject *parent = 0);
-    DslamInfoMa5600(DeviceInfo *source, QObject *parent = 0);
+    explicit DslamMa5600(QObject *parent = 0);
+    DslamMa5600(QString name, QString ip, QObject *parent = 0);
+    DslamMa5600(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);
     long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
 };
 
-#endif // DSLAMINFOMA5600_H
+#endif // DSLAMMA5600_H
