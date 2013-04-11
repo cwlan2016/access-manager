@@ -15,7 +15,7 @@
 #include "Models/boardtablemodel.h"
 #endif
 
-EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
                                                              DeviceTableModel *deviceListModel,
                                                              QWidget *parent) :
     PageWidget(deviceInfo, parent),
@@ -33,7 +33,7 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(DeviceInfo::Ptr dev
     connect(ui->renumeringBoardPairsAction, &QAction::triggered,
             this, &EditDslamBoardTablePageWidget::renumeringBoardPairs);
 
-    DslamInfo::Ptr dslamInfo = mDeviceInfo.objectCast<DslamInfo>();
+    Dslam::Ptr dslamInfo = mDeviceInfo.objectCast<DslamInfo>();
     BoardTableModel *boardTableModel = dslamInfo->boardTableModel();
 
     ui->editDslamBoardListTableView->setModel(boardTableModel);

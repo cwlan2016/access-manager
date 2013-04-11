@@ -1,13 +1,13 @@
-#ifndef NTPINFO_H
-#define NTPINFO_H
+#ifndef NTP_H
+#define NTP_H
 
-#include "ontinfo.h"
+#include "ont.h"
 
-class NtpInfo : public OntInfo
+class Ntp : public Ont
 {
     Q_OBJECT
 public:
-    NtpInfo(QObject *parent);
+    Ntp(QObject *parent);
 
     QString pppLogin();
     void setPppLogin(QString login);
@@ -38,7 +38,7 @@ public:
 
     void Reconfigure();
 
-    typedef NtpInfo *Ptr;
+    typedef Ntp *Ptr;
 
 private:
     QString mPppLogin;
@@ -52,4 +52,4 @@ private:
     QString mSipProxy;
 };
 
-#endif // NTPINFO_H
+#endif // NTP_H

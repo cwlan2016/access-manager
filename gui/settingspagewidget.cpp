@@ -17,21 +17,21 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->readComEdit->setText(SnmpConfigInfo::readCommunity());
+    ui->readComEdit->setText(SnmpConfig::readCommunity());
 
     ui->readComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+"), this));
-    ui->writeComEdit->setText(SnmpConfigInfo::writeCommunity());
-    ui->timeoutEdit->setText(QString::number(SnmpConfigInfo::timeout()));
+    ui->writeComEdit->setText(SnmpConfig::writeCommunity());
+    ui->timeoutEdit->setText(QString::number(SnmpConfig::timeout()));
     ui->timeoutEdit->setValidator(new QIntValidator(0, 100000, this));
-    ui->saveTimeoutEdit->setText(QString::number(SnmpConfigInfo::saveConfigTimeout()));
+    ui->saveTimeoutEdit->setText(QString::number(SnmpConfig::saveConfigTimeout()));
     ui->saveTimeoutEdit->setValidator(new QIntValidator(0, 100000, this));
-    ui->portEdit->setText(QString::number(SnmpConfigInfo::port()));
+    ui->portEdit->setText(QString::number(SnmpConfig::port()));
     ui->portEdit->setValidator(new QIntValidator(0, 100000, this));
-    ui->retriesEdit->setText(QString::number(SnmpConfigInfo::retries()));
+    ui->retriesEdit->setText(QString::number(SnmpConfig::retries()));
     ui->retriesEdit->setValidator(new QIntValidator(0, 100000, this));
 
-    ui->swInternetVlanEdit->setText(SwitchConfigInfo::inetVlanName());
-    ui->swIptvUnicastVlanEdit->setText(SwitchConfigInfo::iptvVlanName());
+    ui->swInternetVlanEdit->setText(SwitchConfig::inetVlanName());
+    ui->swIptvUnicastVlanEdit->setText(SwitchConfig::iptvVlanName());
 
     ui->stackedWidget->setCurrentIndex(0);
     ui->listWidget->setCurrentRow(0);
@@ -52,15 +52,15 @@ void SettingsPageWidget::saveSetting()
     if (!validateSettingsData())
         return;
 
-    SnmpConfigInfo::setReadCommunity(ui->readComEdit->text());
-    SnmpConfigInfo::setWriteCommunity(ui->writeComEdit->text());
-    SnmpConfigInfo::setTimeout(ui->timeoutEdit->text().toUInt());
-    SnmpConfigInfo::setSaveConfigTimeout(ui->saveTimeoutEdit->text().toUInt());
-    SnmpConfigInfo::setPort(ui->portEdit->text().toUInt());
-    SnmpConfigInfo::setRetries(ui->retriesEdit->text().toUInt());
+    SnmpConfig::setReadCommunity(ui->readComEdit->text());
+    SnmpConfig::setWriteCommunity(ui->writeComEdit->text());
+    SnmpConfig::setTimeout(ui->timeoutEdit->text().toUInt());
+    SnmpConfig::setSaveConfigTimeout(ui->saveTimeoutEdit->text().toUInt());
+    SnmpConfig::setPort(ui->portEdit->text().toUInt());
+    SnmpConfig::setRetries(ui->retriesEdit->text().toUInt());
 
-    SwitchConfigInfo::setInetVlanName(ui->swInternetVlanEdit->text().trimmed());
-    SwitchConfigInfo::setIptvVlanName(ui->swIptvUnicastVlanEdit->text().trimmed());
+    SwitchConfig::setInetVlanName(ui->swInternetVlanEdit->text().trimmed());
+    SwitchConfig::setIptvVlanName(ui->swIptvUnicastVlanEdit->text().trimmed());
 
     if (!Config::save()) {
         BasicDialogs::error(this, BasicDialogStrings::Error, Config::error(), "");

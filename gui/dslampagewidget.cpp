@@ -17,7 +17,7 @@
 #include "Models/dslamporttablemodel.h"
 #endif
 
-DslamPageWidget::DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::DslamPageWidget)
 {

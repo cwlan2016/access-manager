@@ -15,7 +15,7 @@ class SwitchPageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
+    explicit SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
     ~SwitchPageWidget();
 
     void saveSwitchConfig();

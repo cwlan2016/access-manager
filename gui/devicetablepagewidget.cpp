@@ -138,7 +138,7 @@ void DeviceTablePageWidget::openDevice()
 
     QWidget *pageWidget;
 
-    DeviceInfo::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
+    Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
     if (deviceType == DeviceType::Switch) {
         pageWidget = new SwitchPageWidget(deviceInfo, this);
@@ -305,7 +305,7 @@ void DeviceTablePageWidget::showEditDslamBoardListPage()
         return;
     }
 
-    DeviceInfo::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
+    Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
     QWidget *pageWidget = new EditDslamBoardTablePageWidget(deviceInfo, mDeviceTableModel, this);
     pageWidget->setObjectName(namePage);
@@ -397,7 +397,7 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
     }
 
     int size = mDeviceTableModel->rowCount(QModelIndex());
-    QVector<DeviceInfo::Ptr> &deviceList = mDeviceTableModel->deviceList();
+    QVector<Device::Ptr> &deviceList = mDeviceTableModel->deviceList();
 
     for (int i = 0; i < size; ++i) {
         progressDialog->setValue(i);

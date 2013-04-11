@@ -3,11 +3,11 @@
 
 #include "xdslportinfo.h"
 
-class AdslPortInfo : public XdslPortInfo
+class AdslPort : public XdslPort
 {
     Q_OBJECT
 public:
-    AdslPortInfo(QObject *parent);
+    AdslPort(QObject *parent);
 
     int rxRate() const;
     void setRxRate(int rxRate);
@@ -21,7 +21,7 @@ public:
     QString lineType() const;
     void setLineType(QString lineType);
 
-    typedef AdslPortInfo *Ptr;
+    typedef AdslPort *Ptr;
 
 private:
     int mRxRate;

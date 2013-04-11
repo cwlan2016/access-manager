@@ -13,7 +13,7 @@ class OltPageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
+    explicit OltPageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
     ~OltPageWidget();
 
 private:

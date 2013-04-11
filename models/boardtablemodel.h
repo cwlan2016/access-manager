@@ -3,19 +3,19 @@
 
 #ifdef _MSC_VER
 #include "../basicdialogs.h"
-#include "../Info/boardinfo.h"
-#include "../Info/dslaminfo.h"
+#include "../other-data/dslamboard.h"
+#include "../devices/dslam.h"
 #else
 #include "basicdialogs.h"
-#include "Info/boardinfo.h"
-#include "Info/dslaminfo.h"
+#include "other-data/dslamboard.h"
+#include "devices/dslam.h"
 #endif
 
 class BoardTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit BoardTableModel(DslamInfo *parentDevice, QObject *parent = 0);
+    explicit BoardTableModel(Dslam *parentDevice, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -28,10 +28,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool removeRow(int row, const QModelIndex &parent);
 
-    QHash<int, BoardInfo::Ptr> boardList() const;
+    QHash<int, DslamBoard::Ptr> boardList() const;
     void addBoard(int index, BoardType::Enum type, int firstPair);
 
-    DslamInfo *parentDevice();
+    Dslam *parentDevice();
 
     bool getBoardListFromDevice();
     void renumeringPairList();
@@ -43,8 +43,8 @@ private:
 
     QString mError;
     //TODO: Check access to this member on isNull.
-    DslamInfo *mParentDevice;
-    QHash<int, BoardInfo::Ptr> mList;
+    Dslam *mParentDevice;
+    QHash<int, DslamBoard::Ptr> mList;
 };
 
 #endif // BOARDTABLEMODEL_H

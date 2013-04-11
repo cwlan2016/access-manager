@@ -1,19 +1,19 @@
-#ifndef DSLAMINFOMXA32_H
-#define DSLAMINFOMXA32_H
+#ifndef DSLAMMXA32_H
+#define DSLAMMXA32_H
 
-#include "dslaminfo.h"
+#include "dslam.h"
 
-class DslamInfoMxa32 : public DslamInfo
+class DslamMxa32 : public Dslam
 {
     Q_OBJECT
 public:
-    explicit DslamInfoMxa32(QObject *parent = 0);
-    DslamInfoMxa32(QString name, QString ip, QObject *parent = 0);
-    DslamInfoMxa32(DeviceInfo *source, QObject *parent = 0);
+    explicit DslamMxa32(QObject *parent = 0);
+    DslamMxa32(QString name, QString ip, QObject *parent = 0);
+    DslamMxa32(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);
     long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
 };
 
-#endif // DSLAMINFOMXA32_H
+#endif // DSLAMMXA32_H

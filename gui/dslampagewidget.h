@@ -13,7 +13,7 @@ class DslamPageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit DslamPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
+    explicit DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
     ~DslamPageWidget();
 
     void upDslPort();

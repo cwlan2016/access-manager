@@ -15,7 +15,7 @@ class MacTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit MacTableModel(SwitchInfo::Ptr parentDevice, QObject *parent = 0);
+    explicit MacTableModel(Switch::Ptr parentDevice, QObject *parent = 0);
     ~MacTableModel();
 
     int rowCount(const QModelIndex &parent) const;
@@ -36,8 +36,8 @@ private:
                           QString vlanName);
 
     QString mError;
-    QVector<MacInfo::Ptr> *mList;
-    SwitchInfo::Ptr mParentDevice;
+    QVector<Mac::Ptr> *mList;
+    Switch::Ptr mParentDevice;
 };
 
 #endif // MACTABLEMODEL_H

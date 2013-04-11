@@ -1,21 +1,17 @@
-#ifndef DSLAMINFO_H
-#define DSLAMINFO_H
+#ifndef DSLAM_H
+#define DSLAM_H
 
-#ifdef _MSC_VER
-#include "../Info/deviceinfo.h"
-#else
-#include "Info/deviceinfo.h"
-#endif
+#include "device.h"
 
 class BoardTableModel;
 
-class DslamInfo : public DeviceInfo
+class Dslam : public Device
 {
     Q_OBJECT
 public:
-    DslamInfo(QObject *parent = 0);
-    DslamInfo(QString name, QString ip, QObject *parent = 0);
-    DslamInfo(DeviceInfo *source, QObject *parent = 0);
+    Dslam(QObject *parent = 0);
+    Dslam(QString name, QString ip, QObject *parent = 0);
+    Dslam(Device *source, QObject *parent = 0);
     //TODO: Assign only 2 values: 0 or 1. Replace using type on bool
     short autoFill() const;
     void setAutoFill(short autoFill);
@@ -31,7 +27,7 @@ public:
 
     bool getServiceDataFromDevice();
 
-    typedef QSharedPointer<DslamInfo> Ptr;
+    typedef QSharedPointer<Dslam> Ptr;
 
 private:
     void InitializeBoardTableModel();
@@ -41,4 +37,4 @@ private:
     BoardTableModel *mBoardListModel;
 };
 
-#endif // DSLAMINFO_H
+#endif // DSLAM_H

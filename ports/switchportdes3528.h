@@ -3,11 +3,11 @@
 
 #include "switchportinfo.h"
 
-class SwitchPortInfoDes3528 : public SwitchPortInfo
+class SwitchPortDes3528 : public SwitchPort
 {
     Q_OBJECT
 public:
-    SwitchPortInfoDes3528(QObject *parent);
+    SwitchPortDes3528(QObject *parent);
 
     void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
     void parsePdu(SnmpClient::Ptr snmpClient);

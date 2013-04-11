@@ -1,68 +1,68 @@
-#include "dslaminfo.h"
+#include "dslam.h"
 
 #ifdef _MSC_VER
-#include "../Models/boardtablemodel.h"
+#include "../models/boardtablemodel.h"
 #else
-#include "Models/boardtablemodel.h"
+#include "models/boardtablemodel.h"
 #endif
 
-DslamInfo::DslamInfo(QObject *parent) :
-    DeviceInfo(parent)
+Dslam::Dslam(QObject *parent) :
+    Device(parent)
 {
     InitializeBoardTableModel();
 }
 
-DslamInfo::DslamInfo(QString name, QString ip, QObject *parent) :
-    DeviceInfo(name, ip, parent)
+Dslam::Dslam(QString name, QString ip, QObject *parent) :
+    Device(name, ip, parent)
 {
     InitializeBoardTableModel();
 }
 
-DslamInfo::DslamInfo(DeviceInfo *source, QObject *parent) :
-    DeviceInfo(source, parent)
+Dslam::Dslam(Device *source, QObject *parent) :
+    Device(source, parent)
 {
     InitializeBoardTableModel();
 
     if (source->deviceType() == DeviceType::Dslam) {
-        mAutoFill = static_cast<DslamInfo *>(source)->autoFill();
-        mAutoNumeringBoard = static_cast<DslamInfo *>(source)->autoNumeringBoard();
+        mAutoFill = static_cast<Dslam *>(source)->autoFill();
+        mAutoNumeringBoard = static_cast<Dslam *>(source)->autoNumeringBoard();
     }
 
 }
 
-short DslamInfo::autoFill() const
+short Dslam::autoFill() const
 {
     return mAutoFill;
 }
 
-void DslamInfo::setAutoFill(short autoFill)
+void Dslam::setAutoFill(short autoFill)
 {
     mAutoFill = autoFill;
 }
 
-short DslamInfo::autoNumeringBoard() const
+short Dslam::autoNumeringBoard() const
 {
     return mAutoNumeringBoard;
 }
 
-void DslamInfo::setAutoNumeringBoard(short autoNumeringBoard)
+void Dslam::setAutoNumeringBoard(short autoNumeringBoard)
 {
     mAutoNumeringBoard = autoNumeringBoard;
 }
 
-DeviceType::Enum DslamInfo::deviceType() const
+DeviceType::Enum Dslam::deviceType() const
 {
     return DeviceType::Dslam;
 }
 
-int DslamInfo::countPorts(BoardType::Enum boardType)
+int Dslam::countPorts(BoardType::Enum boardType)
 {
     Q_UNUSED(boardType)
 
     return 0;
 }
 
-long DslamInfo::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+long Dslam::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
                                    int port)
 {
     Q_UNUSED(boardType)
@@ -72,12 +72,12 @@ long DslamInfo::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
     return 0;
 }
 
-BoardTableModel *DslamInfo::boardTableModel()
+BoardTableModel *Dslam::boardTableModel()
 {
     return mBoardListModel;
 }
 
-bool DslamInfo::getServiceDataFromDevice()
+bool Dslam::getServiceDataFromDevice()
 {
     if (mBoardListModel == 0)
         return false;
@@ -90,7 +90,7 @@ bool DslamInfo::getServiceDataFromDevice()
     return result;
 }
 
-void DslamInfo::InitializeBoardTableModel()
+void Dslam::InitializeBoardTableModel()
 {
     mBoardListModel = new BoardTableModel(this, this);
     setAutoFill(1);

@@ -7,7 +7,7 @@
 #include "stdafx.h"
 #endif
 
-class SwitchConfigInfo
+class SwitchConfig
 {
 public:
     static QString inetVlanName();

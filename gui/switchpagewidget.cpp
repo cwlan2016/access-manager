@@ -15,7 +15,7 @@
 #include "Models/switchporttablemodel.h"
 #endif
 
-SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::SwitchPageWidget)
 {
@@ -56,7 +56,7 @@ SwitchPageWidget::SwitchPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) 
             this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
-    SwitchInfo::Ptr switchInfo = mDeviceInfo.objectCast<SwitchInfo>();
+    Switch::Ptr switchInfo = mDeviceInfo.objectCast<SwitchInfo>();
 
     SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
 

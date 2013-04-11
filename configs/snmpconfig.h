@@ -7,7 +7,7 @@
 #include "stdafx.h"
 #endif
 
-class SnmpConfigInfo
+class SnmpConfig
 {
 public:
     static QString readCommunity();

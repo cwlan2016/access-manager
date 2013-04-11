@@ -178,7 +178,7 @@ Qt::ItemFlags DeviceTableModel::flags(const QModelIndex &index) const
 bool DeviceTableModel::insertRow(int row, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row);
-    DeviceInfo::Ptr element = DeviceInfo::Ptr(new DeviceInfo(this));
+    Device::Ptr element = Device::Ptr(new Device(this));
     mList.push_back(element);
     endInsertRows();
 
@@ -334,7 +334,7 @@ bool DeviceTableModel::save()
     return true;
 }
 
-QVector<DeviceInfo::Ptr> &DeviceTableModel::deviceList()
+QVector<Device::Ptr> &DeviceTableModel::deviceList()
 {
     return mList;
 }
@@ -399,7 +399,7 @@ bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
         return false;
     }
 
-    DslamInfo::Ptr deviceInfo = mList.at(index.row()).objectCast<DslamInfo>();
+    Dslam::Ptr deviceInfo = mList.at(index.row()).objectCast<DslamInfo>();
     bool result = deviceInfo->boardTableModel()->getBoardListFromDevice();
 
     if (deviceInfo->autoNumeringBoard())
@@ -426,7 +426,7 @@ bool DeviceTableModel::getProfilesFromDevice(QModelIndex index)
         return false;
     }
 
-    OltInfo::Ptr deviceInfo = mList.at(index.row()).objectCast<OltInfo>();
+    Olt::Ptr deviceInfo = mList.at(index.row()).objectCast<OltInfo>();
     bool result = deviceInfo->getServiceDataFromDevice();
 
     if (!result) {
@@ -475,17 +475,17 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum switchModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr switchInfo;
+    Device::Ptr switchInfo;
 
     switch (switchModel) {
     case DeviceModel::DES3526:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(this));
+        switchInfo = Device::Ptr(new SwitchDes3526(this));
         break;
     case DeviceModel::DES3528:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(this));
+        switchInfo = Device::Ptr(new SwitchDes3528(this));
         break;
     case DeviceModel::DES3550:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(this));
+        switchInfo = Device::Ptr(new SwitchDes3550(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -509,20 +509,20 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum dslamModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr dslamInfo;
+    Device::Ptr dslamInfo;
 
     switch (dslamModel) {
     case DeviceModel::MA5600:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(this));
+        dslamInfo = Device::Ptr(new DslamMa5600(this));
         break;
     case DeviceModel::MA5300:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(this));
+        dslamInfo = Device::Ptr(new DslamMa5300(this));
         break;
     case DeviceModel::MXA32:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(this));
+        dslamInfo = Device::Ptr(new DslamMxa32(this));
         break;
     case DeviceModel::MXA64:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(this));
+        dslamInfo = Device::Ptr(new DslamMxa64(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -551,9 +551,9 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
 }
 
 void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
-                                           DeviceInfo::Ptr deviceInfo)
+                                           Device::Ptr deviceInfo)
 {
-    DslamInfo::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
+    Dslam::Ptr dslamInfo = deviceInfo.objectCast<DslamInfo>();
 
     int index;
     int firstPair;
@@ -576,14 +576,14 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum oltModel = DeviceModel::from(modelString);
-    DeviceInfo::Ptr oltInfo;
+    Device::Ptr oltInfo;
 
     switch (oltModel) {
     case DeviceModel::LTE8ST:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(this));
+        oltInfo = Device::Ptr(new OltLte8st(this));
         break;
     case DeviceModel::LTP8X:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(this));
+        oltInfo = Device::Ptr(new OltLtp8x(this));
         break;
     default:
         reader.skipCurrentElement();
@@ -605,9 +605,9 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 }
 
 void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
-                                           DeviceInfo::Ptr deviceInfo)
+                                           Device::Ptr deviceInfo)
 {
-    OltInfo::Ptr oltInfo = deviceInfo.objectCast<OltInfo>();
+    Olt::Ptr oltInfo = deviceInfo.objectCast<OltInfo>();
 
     int index;
     QString name;
@@ -635,7 +635,7 @@ void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
 }
 
 void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
-        const SwitchInfo::Ptr &deviceInfo)
+        const Switch::Ptr &deviceInfo)
 {
     writer.writeStartElement("switch");
 
@@ -649,7 +649,7 @@ void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
 }
 
 void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
-                                          const DslamInfo::Ptr &deviceInfo)
+                                          const Dslam::Ptr &deviceInfo)
 {
     writer.writeStartElement("dslam");
 
@@ -675,7 +675,7 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
 }
 
 void DeviceTableModel::createOltElement(QXmlStreamWriter &writer,
-                                        const OltInfo::Ptr &deviceInfo)
+                                        const Olt::Ptr &deviceInfo)
 {
     writer.writeStartElement("olt");
 
@@ -724,18 +724,18 @@ void DeviceTableModel::changeDeviceModel(int index, DeviceType::Enum deviceType,
 
 void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr switchInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr switchInfo;
 
     switch (deviceModel) {
     case DeviceModel::DES3526:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3526(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3526(currentInfo, this));
         break;
     case DeviceModel::DES3528:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3528(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3528(currentInfo, this));
         break;
     case DeviceModel::DES3550:
-        switchInfo = DeviceInfo::Ptr(new SwitchInfoDes3550(currentInfo, this));
+        switchInfo = Device::Ptr(new SwitchDes3550(currentInfo, this));
         break;
     default:
         return;
@@ -746,21 +746,21 @@ void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceMode
 
 void DeviceTableModel::changeDslamModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr dslamInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr dslamInfo;
 
     switch (deviceModel) {
     case DeviceModel::MA5600:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5600(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMa5600(currentInfo, this));
         break;
     case DeviceModel::MA5300:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMa5300(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMa5300(currentInfo, this));
         break;
     case DeviceModel::MXA32:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa32(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMxa32(currentInfo, this));
         break;
     case DeviceModel::MXA64:
-        dslamInfo = DeviceInfo::Ptr(new DslamInfoMxa64(currentInfo, this));
+        dslamInfo = Device::Ptr(new DslamMxa64(currentInfo, this));
         break;
     default:
         return;
@@ -771,15 +771,15 @@ void DeviceTableModel::changeDslamModel(int index, DeviceModel::Enum deviceModel
 
 void DeviceTableModel::changeOltModel(int index, DeviceModel::Enum deviceModel)
 {
-    DeviceInfo *currentInfo = mList.at(index).data();
-    DeviceInfo::Ptr oltInfo;
+    Device *currentInfo = mList.at(index).data();
+    Device::Ptr oltInfo;
 
     switch (deviceModel) {
     case DeviceModel::LTE8ST:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLte8st(currentInfo, this));
+        oltInfo = Device::Ptr(new OltLte8st(currentInfo, this));
         break;
     case DeviceModel::LTP8X:
-        oltInfo = DeviceInfo::Ptr(new OltInfoLtp8x(currentInfo, this));
+        oltInfo = Device::Ptr(new OltLtp8x(currentInfo, this));
         break;
     default:
         return;

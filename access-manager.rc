@@ -1,4 +1,4 @@
-IDI_ICON1               ICON    DISCARDABLE     "Data.ico"
+IDI_ICON1               ICON    DISCARDABLE     "data.ico"
 
 # if defined(UNDER_CE)
 #  include <winbase.h>
@@ -27,7 +27,7 @@ VS_VERSION_INFO VERSIONINFO
                                 VALUE "FileDescription", "Manage of access devices\0"
                                 VALUE "FileVersion", "0.2\0"
                                 VALUE "LegalCopyright", "Gudkov Konstantin & Kuznetsov Vyacheslav © 2012\0"
-                                VALUE "OriginalFilename", "AccessManager.exe\0"
+                                VALUE "OriginalFilename", "access-manager.exe\0"
                                 VALUE "ProductName", "Access Manager\0"
                         END
                 END

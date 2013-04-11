@@ -1,18 +1,18 @@
-#ifndef SWITCHINFODES3526_H
-#define SWITCHINFODES3526_H
+#ifndef SWITCHDES3526_H
+#define SWITCHDES3526_H
 
-#include "switchinfo.h"
+#include "switch.h"
 
-class SwitchInfoDes3526 : public SwitchInfo
+class SwitchDes3526 : public Switch
 {
     Q_OBJECT
 public:
-    explicit SwitchInfoDes3526(QObject *parent = 0);
-    SwitchInfoDes3526(QString name, QString ip, QObject *parent = 0);
-    SwitchInfoDes3526(DeviceInfo *source, QObject *parent = 0);
+    explicit SwitchDes3526(QObject *parent = 0);
+    SwitchDes3526(QString name, QString ip, QObject *parent = 0);
+    SwitchDes3526(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts();
 };
 
-#endif // SWITCHINFODES3526_H
+#endif // SWITCHDES3526_H

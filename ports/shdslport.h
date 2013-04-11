@@ -3,13 +3,13 @@
 
 #include "xdslportinfo.h"
 
-class ShdslPortInfo : public XdslPortInfo
+class ShdslPort : public XdslPort
 {
     Q_OBJECT
 public:
-    ShdslPortInfo(QObject *parent);
+    ShdslPort(QObject *parent);
 
-    typedef ShdslPortInfo *Ptr;
+    typedef ShdslPort *Ptr;
 };
 
 #endif // SHDSLPORTINFO_H

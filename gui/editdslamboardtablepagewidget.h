@@ -18,7 +18,7 @@ class EditDslamBoardTablePageWidget : public PageWidget
     Q_OBJECT
 
 public:
-    explicit EditDslamBoardTablePageWidget(DeviceInfo::Ptr deviceInfo,
+    explicit EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
                                            DeviceTableModel *deviceListModel,
                                            QWidget *parent = 0);
     ~EditDslamBoardTablePageWidget();

@@ -1,4 +1,4 @@
-#include "deviceinfo.h"
+#include "device.h"
 
 #ifdef _MSC_VER
 #include "../converters.h"
@@ -6,72 +6,72 @@
 #include "converters.h"
 #endif
 
-DeviceInfo::DeviceInfo(QObject *parent) :
+Device::Device(QObject *parent) :
     QObject(parent)
 {
 }
 
-DeviceInfo::DeviceInfo(QString name, QString ip, QObject *parent) :
+Device::Device(QString name, QString ip, QObject *parent) :
     QObject(parent)
 {
     mName = name;
     mIp = ip;
 }
 
-DeviceInfo::DeviceInfo(DeviceInfo *source, QObject *parent) :
+Device::Device(Device *source, QObject *parent) :
     QObject(parent)
 {
     mName = source->name();
     mIp = source->ip();
 }
 
-QString DeviceInfo::name() const
+QString Device::name() const
 {
     return mName;
 }
 
-void DeviceInfo::setName(const QString name)
+void Device::setName(const QString name)
 {
     mName = name;
 }
 
-QString DeviceInfo::ip() const
+QString Device::ip() const
 {
     return mIp;
 }
 
-void DeviceInfo::setIp(const QString ip)
+void Device::setIp(const QString ip)
 {
     mIp = ip;
 }
 
-DeviceModel::Enum DeviceInfo::deviceModel() const
+DeviceModel::Enum Device::deviceModel() const
 {
     return DeviceModel::Other;
 }
 
-DeviceType::Enum DeviceInfo::deviceType() const
+DeviceType::Enum Device::deviceType() const
 {
     return DeviceType::Other;
 }
 
-QString DeviceInfo::error() const
+QString Device::error() const
 {
     return mError;
 }
 
-bool DeviceInfo::getServiceDataFromDevice()
+bool Device::getServiceDataFromDevice()
 {
     return false;
 }
 
-void DeviceInfo::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void Device::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
 {
     Q_UNUSED(snmpClient)
     Q_UNUSED(portIndex)
 }
 
-void DeviceInfo::parsePdu(SnmpClient::Ptr snmpClient)
+void Device::parsePdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
 }

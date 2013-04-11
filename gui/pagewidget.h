@@ -11,10 +11,10 @@ class PageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent = 0);
+    explicit PageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
 
 protected:
-    DeviceInfo::Ptr mDeviceInfo;
+    Device::Ptr mDeviceInfo;
 };
 
 #endif // PAGEWIDGET_H

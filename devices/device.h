@@ -1,5 +1,5 @@
-#ifndef DEVICEINFO_H
-#define DEVICEINFO_H
+#ifndef DEVICE_H
+#define DEVICE_H
 
 #ifdef _MSC_VER
 #include "../customtypes.h"
@@ -9,13 +9,13 @@
 #include "snmpclient.h"
 #endif
 
-class DeviceInfo : public QObject
+class Device : public QObject
 {
     Q_OBJECT
 public:
-    DeviceInfo(QObject *parent = 0);
-    DeviceInfo(QString name, QString ip, QObject *parent = 0);
-    DeviceInfo(DeviceInfo *source, QObject *parent = 0);
+    Device(QObject *parent = 0);
+    Device(QString name, QString ip, QObject *parent = 0);
+    Device(Device *source, QObject *parent = 0);
 
     QString name() const;
     void setName(const QString name);
@@ -33,7 +33,7 @@ public:
     virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
     virtual void parsePdu(SnmpClient::Ptr snmpClient);
 
-    typedef QSharedPointer<DeviceInfo> Ptr;
+    typedef QSharedPointer<Device> Ptr;
 
 protected:
     QString mIp;
@@ -43,4 +43,4 @@ protected:
 
 
 
-#endif // DEVICEINFO_H
+#endif // DEVICE_H

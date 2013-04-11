@@ -1,5 +1,5 @@
-#ifndef ONTINFO_H
-#define ONTINFO_H
+#ifndef ONT_H
+#define ONT_H
 
 #ifdef _MSC_VER
 #include "../customtypes.h"
@@ -7,11 +7,11 @@
 #include "customtypes.h"
 #endif
 
-class OntInfo : public QObject
+class Ont : public QObject
 {
     Q_OBJECT
 public:
-    OntInfo(QObject *parent);
+    Ont(QObject *parent);
 
     QString id();
     void setId(QString id);
@@ -36,7 +36,7 @@ public:
 
     virtual void Reconfigure();
 
-    typedef OntInfo *Ptr;
+    typedef Ont *Ptr;
 
 protected:
     QString mId;    //Mac or Serial
@@ -48,4 +48,4 @@ protected:
     int     mMulticastProfile;
 };
 
-#endif // ONTINFO_H
+#endif // ONT_H

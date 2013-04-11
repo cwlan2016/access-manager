@@ -1,87 +1,109 @@
 #include "xdslportinfo.h"
 
-XdslPortInfo::XdslPortInfo(QObject *parent) :
+XdslPort::XdslPort(QObject *parent) :
     QObject(parent)
 {
 
 }
 
-int XdslPortInfo::pair() const
+int XdslPort::pair() const
 {
     return mPair;
 }
 
-void XdslPortInfo::setPair(int pair)
+void XdslPort::setPair(int pair)
 {
     mPair = pair;
 }
 
-QString XdslPortInfo::name() const
+QString XdslPort::name() const
 {
     return mName;
 }
 
-void XdslPortInfo::setName(QString name)
+void XdslPort::setName(QString name)
 {
     mName = name;
 }
 
-DslPortState::Enum XdslPortInfo::state() const
+DslPortState::Enum XdslPort::state() const
 {
     return mState;
 }
 
-void XdslPortInfo::setState(DslPortState::Enum state)
+void XdslPort::setState(DslPortState::Enum state)
 {
     mState = state;
 }
 
-QString XdslPortInfo::profile() const
+QString XdslPort::profile() const
 {
     return mProfile;
 }
 
-void XdslPortInfo::setProfile(QString profile)
+void XdslPort::setProfile(QString profile)
 {
     mProfile = profile;
 }
 
-QString XdslPortInfo::description() const
+QString XdslPort::description() const
 {
     return mDescription;
 }
 
-void XdslPortInfo::setDescription(QString desc)
+void XdslPort::setDescription(QString desc)
 {
     mDescription = desc;
 }
 
-QString XdslPortInfo::rxAttenuation() const
+QString XdslPort::rxAttenuation() const
 {
     return mRxAttenuation;
 }
 
-void XdslPortInfo::setRxAttenuation(QString rxAttenuation)
+void XdslPort::setRxAttenuation(QString rxAttenuation)
 {
     mRxAttenuation = rxAttenuation;
 }
 
-QString XdslPortInfo::txAttenuation() const
+QString XdslPort::txAttenuation() const
 {
     return mTxAttenuation;
 }
 
-void XdslPortInfo::setTxAttenuation(QString txAttenuation)
+void XdslPort::setTxAttenuation(QString txAttenuation)
 {
     mTxAttenuation = txAttenuation;
 }
 
-QString XdslPortInfo::timeLastChange() const
+QString XdslPort::timeLastChange() const
 {
     return mTimeLastChange;
 }
 
-void XdslPortInfo::setTimeLastChange(QString lastChange)
+void XdslPort::setTimeLastChange(QString lastChange)
 {
     mTimeLastChange = lastChange;
+}
+
+void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+{
+    Q_UNUSED(snmpClient)
+    Q_UNUSED(portIndex)
+}
+
+void XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+{
+    Q_UNUSED(snmpClient)
+}
+
+void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+{
+    Q_UNUSED(snmpClient)
+    Q_UNUSED(portIndex)
+}
+
+void XdslPort::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+{
+    Q_UNUSED(snmpClient)
 }

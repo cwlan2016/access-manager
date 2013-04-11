@@ -7,11 +7,11 @@
 #include "stdafx.h"
 #endif
 
-class MacInfo : public QObject
+class Mac : public QObject
 {
     Q_OBJECT
 public:
-    MacInfo(QObject *parent);
+    Mac(QObject *parent);
 
     int port() const;
     void setPort(int port);
@@ -22,7 +22,7 @@ public:
     QString vlanName() const;
     void setVlanName(QString vlanName);
 
-    typedef MacInfo *Ptr;
+    typedef Mac *Ptr;
 
 private:
     int mPort;

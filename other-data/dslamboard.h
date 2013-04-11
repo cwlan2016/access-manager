@@ -9,11 +9,11 @@
 #include "customtypes.h"
 #endif
 
-class BoardInfo : public QObject
+class DslamBoard : public QObject
 {
     Q_OBJECT
 public:
-    BoardInfo(QObject *parent = 0);
+    DslamBoard(QObject *parent = 0);
 
     int index() const;
     void setIndex(int index);
@@ -24,7 +24,7 @@ public:
     int firstPair() const;
     void setFirstPair(int firstPair);
 
-    typedef BoardInfo *Ptr;
+    typedef DslamBoard *Ptr;
 
 private:
     int mNumber;

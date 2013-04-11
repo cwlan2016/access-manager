@@ -11,7 +11,7 @@
 #include "Models/onttablemodel.h"
 #endif
 
-OltPageWidget::OltPageWidget(DeviceInfo::Ptr deviceInfo, QWidget *parent) :
+OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
     ui(new Ui::OltPageWidget)
 {

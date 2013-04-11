@@ -1,17 +1,17 @@
-#ifndef NTEINFO_H
-#define NTEINFO_H
+#ifndef NTE_H
+#define NTE_H
 
-#include "ontinfo.h"
+#include "ont.h"
 
-class NteInfo : public OntInfo
+class Nte : public Ont
 {
     Q_OBJECT
 public:
-    NteInfo(QObject *parent);
+    Nte(QObject *parent);
 
     void Reconfigure();
 
-    typedef NteInfo *Ptr;
+    typedef Nte *Ptr;
 };
 
-#endif // NTEINFO_H
+#endif // NTE_H

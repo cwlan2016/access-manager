@@ -1,4 +1,4 @@
-#include "oltinfoltp8x.h"
+#include "oltltp8x.h"
 
 #ifdef _MSC_VER
 #include "../constant.h"
@@ -8,22 +8,22 @@
 #include "customsnmpfunctions.h"
 #endif
 
-OltInfoLtp8x::OltInfoLtp8x(QObject *parent) :
-    OltInfo(parent)
+OltLtp8x::OltLtp8x(QObject *parent) :
+    Olt(parent)
 {
 }
 
-OltInfoLtp8x::OltInfoLtp8x(QString name, QString ip, QObject *parent) :
-    OltInfo(name, ip, parent)
+OltLtp8x::OltLtp8x(QString name, QString ip, QObject *parent) :
+    Olt(name, ip, parent)
 {
 }
 
-OltInfoLtp8x::OltInfoLtp8x(DeviceInfo *source, QObject *parent) :
-    OltInfo(source, parent)
+OltLtp8x::OltLtp8x(Device *source, QObject *parent) :
+    Olt(source, parent)
 {
 }
 
-DeviceModel::Enum OltInfoLtp8x::deviceModel() const
+DeviceModel::Enum OltLtp8x::deviceModel() const
 {
     return DeviceModel::LTP8X;
 }

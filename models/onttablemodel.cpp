@@ -10,7 +10,7 @@
 #include "Info/ntpinfo.h"
 #endif
 
-OntTableModel::OntTableModel(OltInfo::Ptr oltInfo, QObject *parent) :
+OntTableModel::OntTableModel(Olt::Ptr oltInfo, QObject *parent) :
     QAbstractTableModel(parent),
     mOltInfo(oltInfo)
 {
