@@ -74,8 +74,8 @@ SOURCES += main.cpp \
     gui/editdslamboardtablepagewidget.cpp \
     gui/aboutpagewidget.cpp \
     gui/settingspagewidget.cpp \
-    gui/devicetablepagewidget.cpp 
-    
+    gui/devicetablepagewidget.cpp
+
 HEADERS  += basicdialogs.h \
     config.h \
     constant.h \

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setStyle("fusion");
+    QApplication::setStyle("fusion");
     a.setApplicationName("Access Manager");
     a.setApplicationVersion(QString::fromUtf8("0.2"));
     a.setOrganizationName(QObject::trUtf8("rt.ru"));
