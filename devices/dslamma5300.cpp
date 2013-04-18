@@ -1,5 +1,7 @@
 #include "dslamma5300.h"
 
+#include <ports/adslportma5300.h>
+
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../customsnmpfunctions.h"
@@ -51,3 +53,16 @@ long DslamMa5300::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
     }
 }
 
+XdslPort::Ptr DslamMa5300::createPort(BoardType::Enum boardType, int boardIndex,
+                                      int portIndex, QObject *parent)
+{
+    int snmpPortIndex = snmpInterfaceIndex(boardType, boardIndex, portIndex);
+
+    switch (boardType) {
+    case BoardType::AnnexA:
+    case BoardType::AnnexB:
+        return new AdslPortMa5300(snmpPortIndex, parent);
+    default:
+        return new XdslPort(snmpPortIndex, parent);
+    }
+}

@@ -148,5 +148,5 @@ void Config::parseSwitchGroup(QSettings &settings)
 
 }
 
-QString Config::mConfigPath = QString();
-QString Config::mError = QString();
+QString Config::mConfigPath = "";
+QString Config::mError = "";

@@ -14,6 +14,8 @@ public:
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);
     long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
+    XdslPort::Ptr createPort(BoardType::Enum boardType, int boardIndex,
+                             int portIndex, QObject *parent);
 };
 
 #endif // DSLAMMA5300_H

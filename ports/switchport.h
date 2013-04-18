@@ -1,13 +1,9 @@
 #ifndef SWITCHPORT_H
 #define SWITCHPORT_H
 
-#ifdef _MSC_VER
-#include "../snmpclient.h"
-#include "../stdafx.h"
-#else
-#include "snmpclient.h"
-#include "stdafx.h"
-#endif
+#include <stdafx.h>
+
+#include <snmpclient.h>
 
 class SwitchPort : public QObject
 {
@@ -28,7 +24,7 @@ public:
     void setDescription(QString description);
 
     virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    virtual void parsePdu(SnmpClient::Ptr snmpClient);
+    virtual bool parsePdu(SnmpClient::Ptr snmpClient);
 
     typedef SwitchPort *Ptr;
 

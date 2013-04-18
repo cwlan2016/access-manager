@@ -167,7 +167,7 @@ QString profileExtName(DeviceModel::Enum deviceModel, QString profile)
             return "Other";
         }
     } else {
-        return QString();
+        return "";
     }
 }
 
@@ -210,7 +210,7 @@ QString displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString pro
         }
     }
 
-    return QString();
+    return "";
 
 }
 

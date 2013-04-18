@@ -1,9 +1,10 @@
 #include "xdslport.h"
 
-XdslPort::XdslPort(QObject *parent) :
-    QObject(parent)
+XdslPort::XdslPort(long index, QObject *parent) :
+    QObject(parent),
+    mIndex(index),
+    mState(DslPortState::Other)
 {
-
 }
 
 int XdslPort::pair() const
@@ -92,9 +93,12 @@ void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
     Q_UNUSED(portIndex)
 }
 
-void XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+bool XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
+
+    //TODO: INSERT QASSERT validated index;
+    return false;
 }
 
 void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
@@ -103,7 +107,10 @@ void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
     Q_UNUSED(portIndex)
 }
 
-void XdslPort::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+bool XdslPort::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
+
+    //TODO: INSERT QASSERT validated index;
+    return false;
 }

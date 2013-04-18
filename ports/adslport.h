@@ -7,7 +7,7 @@ class AdslPort : public XdslPort
 {
     Q_OBJECT
 public:
-    AdslPort(QObject *parent);
+    AdslPort(long index, QObject *parent);
 
     int rxRate() const;
     void setRxRate(int rxRate);
@@ -23,7 +23,7 @@ public:
 
     typedef AdslPort *Ptr;
 
-private:
+protected:
     int mRxRate;
     int mTxRate;
     QString mCoding;

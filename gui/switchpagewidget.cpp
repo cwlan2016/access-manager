@@ -321,8 +321,8 @@ void SwitchPageWidget::showPortInfoGroupBox()
 
     QModelIndex portIndex = portListModel->index(index.row(), 0);
     int port = portListModel->data(portIndex).toInt();
-    ui->portInetVlanValueLabel->setText(VlanStateName[(short)portListModel->memberInetVlan(port)]);
-    ui->portIptvVlanValueLabel->setText(VlanStateName[(short)portListModel->memberIptvVlan(port)]);
+    ui->portInetVlanValueLabel->setText(VlanState::toString(portListModel->memberInetVlan(port)));
+    ui->portIptvVlanValueLabel->setText(VlanState::toString(portListModel->memberIptvVlan(port)));
 
     if (portListModel->memberMulticastVlan(port)) {
         ui->multicastVlanValueLabel->setPixmap(QPixmap(QString::fromUtf8(":/images/yes.png")));

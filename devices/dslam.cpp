@@ -72,6 +72,17 @@ long Dslam::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
     return 0;
 }
 
+XdslPort::Ptr Dslam::createPort(BoardType::Enum boardType, int boardIndex,
+                                int portIndex, QObject *parent)
+{
+    Q_UNUSED(boardType)
+    Q_UNUSED(boardIndex)
+    Q_UNUSED(portIndex)
+    Q_UNUSED(parent)
+
+    return 0;
+}
+
 BoardTableModel *Dslam::boardTableModel()
 {
     return mBoardListModel;

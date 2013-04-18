@@ -7,7 +7,12 @@ class AdslPortMa5600 : public AdslPort
 {
     Q_OBJECT
 public:
-    explicit AdslPortMa5600(QObject *parent = 0);
+    explicit AdslPortMa5600(long index, QObject *parent = 0);
+
+    void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
+    void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    bool parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient);
 };
 
 #endif // ADSLPORTMA5600_H

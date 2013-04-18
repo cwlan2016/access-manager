@@ -3,6 +3,8 @@
 
 #include "device.h"
 
+#include <ports/xdslport.h>
+
 class BoardTableModel;
 
 class Dslam : public Device
@@ -22,6 +24,8 @@ public:
     DeviceType::Enum deviceType() const;
     virtual int countPorts(BoardType::Enum boardType);
     virtual long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
+    virtual XdslPort::Ptr createPort(BoardType::Enum boardType, int boardIndex,
+                                     int portIndex, QObject *parent);
 
     BoardTableModel *boardTableModel();
 

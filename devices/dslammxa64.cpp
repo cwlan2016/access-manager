@@ -1,5 +1,7 @@
 #include "dslammxa64.h"
 
+#include <ports/adslportmxa64.h>
+
 #ifdef _MSC_VER
 #include "../constant.h"
 #include "../customsnmpfunctions.h"
@@ -44,3 +46,18 @@ long DslamMxa64::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
 
     return port + 1;
 }
+
+XdslPort::Ptr DslamMxa64::createPort(BoardType::Enum boardType, int boardIndex,
+                                     int portIndex, QObject *parent)
+{
+    int snmpPortIndex = snmpInterfaceIndex(boardType, boardIndex, portIndex);
+
+    switch (boardType) {
+    case BoardType::AnnexA:
+    case BoardType::AnnexB:
+        return new AdslPortMxa64(snmpPortIndex, parent);
+    default:
+        return new XdslPort(snmpPortIndex, parent);
+    }
+}
+

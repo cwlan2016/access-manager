@@ -1,7 +1,7 @@
 #include "adslport.h"
 
-AdslPort::AdslPort(QObject *parent) :
-    XdslPort(parent)
+AdslPort::AdslPort(long index, QObject *parent) :
+    XdslPort(index, parent)
 {
     mRxRate = 0;
     mTxRate = 0;

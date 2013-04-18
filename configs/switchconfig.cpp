@@ -26,5 +26,5 @@ void SwitchConfig::toDefault()
     mIptvUnicastVlanName = "IPTV_Unicast";
 }
 
-QString SwitchConfig::mInetVlanName = QString();
-QString SwitchConfig::mIptvUnicastVlanName = QString();
+QString SwitchConfig::mInetVlanName = "";
+QString SwitchConfig::mIptvUnicastVlanName = "";

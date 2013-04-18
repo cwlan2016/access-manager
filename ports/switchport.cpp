@@ -1,8 +1,8 @@
 #include "switchport.h"
 
-
 SwitchPort::SwitchPort(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    mState(SwitchPortState::Other)
 {
 }
 
@@ -42,16 +42,18 @@ void SwitchPort::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
     Q_UNUSED(portIndex)
 }
 
-void SwitchPort::parsePdu(SnmpClient::Ptr snmpClient)
+bool SwitchPort::parsePdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
+
+    return false;
 }
 
 QString SwitchPort::speedDuplexString(long snmpValue)
 {
     Q_UNUSED(snmpValue)
 
-    return "Unknown";
+    return "";
 }
 
 QString SwitchPort::speedDuplex() const

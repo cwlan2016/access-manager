@@ -373,9 +373,12 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
     currentPort->fillPdu(snmpClient.data());
 
     if (snmpClient->sendRequest()) {
-        currentPort->parsePdu(snmpClient.data());
-
-        emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 3));
+        if (!currentPort->parsePdu(snmpClient.data())) {
+            mError = SnmpErrorStrings::GetInfo;
+            return false;
+        } else {
+            emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 3));
+        }
     } else {
         mError = SnmpErrorStrings::GetInfo;
         return false;
@@ -409,9 +412,12 @@ bool SwitchPortTableModel::updateInfoAllPort()
         mList[indexPort]->fillPdu(snmpClient.data());
 
         if (snmpClient->sendRequest()) {
-            mList[indexPort]->parsePdu(snmpClient.data());
+            if (!mList[indexPort]->parsePdu(snmpClient.data())) {
+                mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
+            } else {
+                emit dataChanged(index(indexPort, 1), index(indexPort, 3));
+            }
 
-            emit dataChanged(index(indexPort, 1), index(indexPort, 3));
             snmpClient->clearResponse();
         } else {
             mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");

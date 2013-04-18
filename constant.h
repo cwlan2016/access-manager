@@ -5,7 +5,6 @@
 
 const quint64 invalidParentIndex = 111111111;
 
-const QString VlanStateName[] = { "Untag", "Tag", "None" };
 const QString LtpOntState[] =   { "Free", "Allocated", "AuthInProgress", "AuthFailed", "AuthOk", "CfgInProgress", "CfgFailed", "Ok", "Failed", "Blocked", "Mibreset", "Preconfig", "FwUpdating", "Unactivated", "Redundant", "Disabled", "Unknown" };
 const QString LteOntState[] =   { "Free", "Allocated", "AuthInProgress", "CfgInProgress", "AuthFailed", "CfgFailed", "ReportTimeout", "Ok", "AuthOk", "ResetInProgress", "ResetOk", "Discovered", "Blocked" };
 const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400g", "Nte-rg-1400f-w", "Nte-rg-1400g-w", "Nte-rg-1400fc", "Nte-rg-1400gc", "Nte-rg-1400fc-w", "Nte-rg-1400gc-w", "Nte-rg-1402f", "Nte-rg-1402g", "Nte-rg-1402f-w", "Nte-rg-1402g-w", "Nte-rg-1402fc", "Nte-rg-1402gc", "Nte-rg-1402fc-w", "Nte-rg-1402gc-w" };

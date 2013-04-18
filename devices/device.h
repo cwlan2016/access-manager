@@ -1,13 +1,8 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#ifdef _MSC_VER
-#include "../customtypes.h"
-#include "../snmpclient.h"
-#else
-#include "customtypes.h"
-#include "snmpclient.h"
-#endif
+#include <customtypes.h>
+#include <snmpclient.h>
 
 class Device : public QObject
 {

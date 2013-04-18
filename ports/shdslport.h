@@ -7,7 +7,7 @@ class ShdslPort : public XdslPort
 {
     Q_OBJECT
 public:
-    ShdslPort(QObject *parent);
+    ShdslPort(long index, QObject *parent);
 
     typedef ShdslPort *Ptr;
 };

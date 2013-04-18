@@ -197,6 +197,21 @@ inline DslPortState::Enum from(long snmpValue)
     }
 }
 
+inline DslPortState::Enum from(DslPortState::Enum operStatus,
+                               DslPortState::Enum adminStatus)
+{
+    if (adminStatus == DslPortState::Down)
+        return DslPortState::Down;
+    else if ((adminStatus == DslPortState::Up)
+             && (operStatus == DslPortState::Up))
+        return DslPortState::Up;
+    else if ((adminStatus == DslPortState::Up)
+             && (operStatus == DslPortState::Down))
+        return DslPortState::Activating;
+    else
+        return DslPortState::Other;
+}
+
 inline QString toString(DslPortState::Enum dslPortState)
 {
     return DslPortStateName[dslPortState];
@@ -343,6 +358,24 @@ enum Enum {
     Tag =   1,
     None =  2
 };
+
+const QString VlanStateName[] = { "Untag", "Tag", "None" };
+
+inline VlanState::Enum from(QString vlanState)
+{
+    if (vlanState == VlanStateName[VlanState::Untag]) {
+        return VlanState::Untag;
+    } else if (vlanState == VlanStateName[VlanState::Tag]) {
+        return VlanState::Tag;
+    } else {
+        return VlanState::None;
+    }
+}
+
+inline QString toString(VlanState::Enum state)
+{
+    return VlanStateName[state];
+}
 }
 
 #endif // CUSTOMTYPES_H

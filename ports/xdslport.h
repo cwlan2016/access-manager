@@ -1,21 +1,16 @@
 #ifndef XDSLPORT_H
 #define XDSLPORT_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#include "../customtypes.h"
-#include "../snmpclient.h"
-#else
-#include "stdafx.h"
-#include "customtypes.h"
-#include "snmpclient.h"
-#endif
+#include <stdafx.h>
+
+#include <customtypes.h>
+#include <snmpclient.h>
 
 class XdslPort : public QObject
 {
     Q_OBJECT
 public:
-    XdslPort(QObject *parent);
+    XdslPort(long index, QObject *parent);
 
     int pair() const;
     void setPair(int pair);
@@ -41,16 +36,17 @@ public:
     QString timeLastChange() const;
     void setTimeLastChange(QString timeLastChange);
 
-    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = 0);
-    virtual void parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
+    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
 
-    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = 0);
-    virtual void parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient);
+    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual bool parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient);
 
     typedef XdslPort *Ptr;
 
 protected:
     int mPair;
+    long mIndex;
     QString mName;
     QString mProfile;
     QString mDescription;

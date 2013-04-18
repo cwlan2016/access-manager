@@ -1,11 +1,5 @@
 #include "device.h"
 
-#ifdef _MSC_VER
-#include "../converters.h"
-#else
-#include "converters.h"
-#endif
-
 Device::Device(QObject *parent) :
     QObject(parent)
 {

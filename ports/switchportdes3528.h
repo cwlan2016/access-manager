@@ -10,7 +10,8 @@ public:
     SwitchPortDes3528(QObject *parent);
 
     void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    void parsePdu(SnmpClient::Ptr snmpClient);
+    bool parsePdu(SnmpClient::Ptr snmpClient);
+
 protected:
     QString speedDuplexString(long snmpValue);
 };

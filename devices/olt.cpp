@@ -30,7 +30,7 @@ Olt::Olt(Device *source, QObject *parent) :
 QString Olt::serviceProfile(int index)
 {
     if (mServiceProfileList.find(index) == mServiceProfileList.end())
-        return QString();
+        return "";
 
     return mServiceProfileList[index];
 }
@@ -43,7 +43,7 @@ void Olt::addServiceProfile(int index, QString profileName)
 QString Olt::multicastProfile(int index)
 {
     if (mMulticastProfileList.find(index) == mMulticastProfileList.end())
-        return QString();
+        return "";
 
     return mMulticastProfileList[index];
 }
@@ -120,19 +120,8 @@ bool Olt::getProfileList(OltProfileMap &profileList,
 
     profileList.clear();
 
-//    int profileNameOidLen = oidLen - 1;
-//    oid *profileNameOid = new oid[profileNameOidLen];
-
-//    memcpy(profileNameOid, oidProfileName, profileNameOidLen * sizeof(oid));
-
-//    size_t nextOidLen = oidLen;
-//    oid *nextOid = new oid[nextOidLen];
-
-//    memcpy(nextOid, oidProfileName, nextOidLen * sizeof(oid));
-
     snmp->createPdu(SNMP_MSG_GETNEXT);
     snmp->addOid(oid);
-    //snmp->addOid(nextOid, nextOidLen);
 
     while (true) {
         if (!snmp->sendRequest()) {
@@ -144,8 +133,6 @@ bool Olt::getProfileList(OltProfileMap &profileList,
 
         if (snmp_oid_ncompare(oid.first, oid.second, vars->name,
                               vars->name_length, oid.second) != 0)
-        //    if (snmp_oid_ncompare(profileNameOid, profileNameOidLen, vars->name,
-        //                          vars->name_length, oidLen - 1) != 0)
             break;
 
         QString profileName = toString(vars->val.string, vars->val_len);
@@ -154,18 +141,7 @@ bool Olt::getProfileList(OltProfileMap &profileList,
         profileList.insert(profileIndex, profileName);
 
         snmp->createPduFromResponse(SNMP_MSG_GETNEXT);
-        //delete[] nextOid;
-
-        //nextOid = new oid[vars->name_length];
-       // memmove(nextOid, vars->name, vars->name_length * sizeof(oid));
-       // nextOidLen = vars->name_length;
-
-        //snmp->clearResponse();
     }
-
-//    snmp->clearResponse();
-    //delete[] nextOid;
-    //delete[] profileNameOid;
 
     return true;
 }

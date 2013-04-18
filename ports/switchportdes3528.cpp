@@ -33,24 +33,24 @@ void SwitchPortDes3528::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
     snmpClient->addOid(createOidPair(Mib::ifAlias, 11, portIndex));
 }
 
-void SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
+bool SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
 {
     netsnmp_variable_list *vars = snmpClient->varList();
     if (!isValidSnmpValue(vars))
-        return;
+        return false;
 
     mState = SwitchPortState::from(*vars->val.integer);
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
-        return;
+        return false;
 
     if (mIndex == 25 || mIndex == 26) {
         QString cupperState = speedDuplexString(*vars->val.integer);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
-            return;
+            return false;
 
         QString opticState = speedDuplexString(*vars->val.integer);
 
@@ -61,9 +61,11 @@ void SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
-        return;
+        return false;
 
     mDescription = toString(vars->val.string, vars->val_len);
+
+    return true;
 }
 
 QString SwitchPortDes3528::speedDuplexString(long snmpValue)
