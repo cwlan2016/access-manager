@@ -15,6 +15,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QStringBuilder>
 #include <QtCore/QStringListModel>
+#include <QtCore/QTranslator>
 #include <QtCore/QVector>
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>

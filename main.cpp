@@ -1,15 +1,15 @@
-#include <QtCore/QTranslator>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QSplashScreen>
+#include <stdafx.h>
+
 #include "config.h"
 #include "constant.h"
-#include "mainwindow.h"
+#include "gui/mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationName("AccessManager");
+    QApplication::setStyle("fusion");
+    a.setApplicationName("Access Manager");
     a.setApplicationVersion(QString::fromUtf8("0.2"));
     a.setOrganizationName(QObject::trUtf8("rt.ru"));
     Config::init();
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     a.processEvents();
 
     splash.showMessage(LoadProgramStrings::LoadLocale);
-    QTranslator translator;// = new QTranslator();
+    QTranslator translator;
 
     if (translator.load(":tr/qtbase_ru.qm")) {
         a.installTranslator(&translator);

@@ -2,91 +2,6 @@
 
 #include "constant.h"
 
-int snmpInterfaceNumber(DeviceModel::Enum model, int slot, int port)
-{
-    if (model == DeviceModel::MA5600) {
-        return 201326592 + 8192 * slot + 64 * port;
-    } else if (model == DeviceModel::MA5300) {
-        return 201326592 + 65536 * slot + 64 * port;
-    } else if ((model == DeviceModel::MXA64)
-               || (model == DeviceModel::MXA32)) {
-        return port + 1;
-    } else {
-        return 0;
-    }
-
-}
-
-QString dslamStatePortString(long state)
-{
-    if (state == 1) {
-        return "Up";
-    } else if ((state == 2) || (state == 6)) {
-        return "Down";
-    } else if ((state == 5) || (state == 65536)) {
-        return "Activating";
-    } else if (state == 65548) {
-        return "Defective";
-    } else {
-        return "Other";
-    }
-}
-
-QString switchStatePortString(long state)
-{
-    if (state == 1) {
-        return "Up";
-    } else if (state == 2) {
-        return "Down";
-    } else {
-        return "Other";
-    }
-}
-
-QString speedDuplexString(DeviceModel::Enum deviceModel, long speedDuplex)
-{
-    if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3550)) {
-        if (speedDuplex == 2) {
-            return "Auto";
-        } else if (speedDuplex == 6) {
-            return "100Mbps/Full";
-        } else if (speedDuplex == 5) {
-            return "100Mbps/Half";
-        } else if (speedDuplex == 8) {
-            return "1Gbps/Full";
-        } else if (speedDuplex == 4) {
-            return "10Mbps/Full";
-        } else if (speedDuplex == 3) {
-            return "10Mbps/Half";
-        } else if (speedDuplex == 7) {
-            return "1Gbps/Half";
-        } else {
-            return "Unknown";
-        }
-    } else if (deviceModel == DeviceModel::DES3528) {
-        if (speedDuplex == 0) {
-            return "Down";
-        } else if (speedDuplex == 6) {
-            return "100Mbps/Full";
-        } else if (speedDuplex == 8) {
-            return "100Mbps/Half";
-        } else if (speedDuplex == 10) {
-            return "1Gbps/Full";
-        } else if (speedDuplex == 2) {
-            return "10Mbps/Full";
-        } else if (speedDuplex == 4) {
-            return "10Mbps/Half";
-        } else if (speedDuplex == 12) {
-            return "1Gbps/Half";
-        } else {
-            return "Unknown";
-        }
-    } else {
-        return "Unknown";
-    }
-}
-
 BoardType::Enum boardTypeFromBoardName(QString boardName)
 {
     if (boardName.contains("ADEF", Qt::CaseInsensitive)) {
@@ -100,59 +15,6 @@ BoardType::Enum boardTypeFromBoardName(QString boardName)
     }
 }
 
-int countPorts(DeviceModel::Enum deviceModel, BoardType::Enum boardType)
-{
-    if (deviceModel == DeviceModel::MA5600) {
-        if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB)) {
-            return 64;
-        } else if (boardType == BoardType::Shdsl) {
-            return 32;
-        }
-    } else if (deviceModel == DeviceModel::MA5300) {
-        if ((boardType == BoardType::AnnexA)
-                || (boardType == BoardType::AnnexB)) {
-            return 48;
-        } else if (boardType == BoardType::Shdsl) {
-            return 24;
-        }
-    } else if (deviceModel == DeviceModel::MXA64) {
-        return 64;
-    } else if (deviceModel == DeviceModel::MXA32) {
-        return 32;
-    }
-
-    return 0;
-}
-
-int countPorts(DeviceModel::Enum deviceModel)
-{
-    if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3528)) {
-        return 26;
-    } else if ((deviceModel == DeviceModel::DES3550)
-               || (deviceModel == DeviceModel::DES3552)) {
-        return 50;
-    }
-
-    return 0;
-}
-
-QString decMacAddressToHex(oid *macAddressOid, int length)
-{
-    QString tempStr = "";
-
-    for (int i = 14; i < length; ++i) {
-        if (i != 14) {
-            tempStr = QString("%1-%2").arg(tempStr).arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
-        } else {
-            tempStr = QString("%1").arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
-        }
-    }
-
-    return tempStr.toUpper();
-}
-
 bool validIpAddress(QString ip)
 {
     QString regExpStr = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
@@ -160,71 +22,6 @@ bool validIpAddress(QString ip)
     QRegExp regExp(regExpStr, Qt::CaseInsensitive, QRegExp::RegExp);
 
     return regExp.indexIn(ip) != -1;
-}
-
-QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
-{
-    int countBits = 0;
-
-    if ((deviceModel == DeviceModel::DES3526)
-            || (deviceModel == DeviceModel::DES3528)) {
-        countBits = 32;
-    } else if (deviceModel == DeviceModel::DES3550) {
-        countBits = 56;
-    }
-
-    QBitArray array(countBits, false);
-
-    int firstBit = 0;
-    int countBytes = countBits / 8;
-
-    for (int i = 0; i < countBytes; ++i) {
-        quint8 byteElement = str[i];
-
-        if (byteElement == 0) {
-            //так как массив уже инициализирован нулями
-            //если текущий байт равен 0, итерация просто пропускается
-            firstBit += 8;
-            continue;
-        }
-
-        for (int bits = 0; bits < 8; ++bits) {
-            array[7 - bits + firstBit] = byteElement % 2 == 1 ? true : false;
-
-            byteElement /= 2;
-        }
-
-        firstBit += 8;
-    }
-
-    return array;
-}
-
-QString qbitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &array, bool ismv)
-{
-    QString tempStr = "";
-
-    quint8 value = 0;
-
-    int size = array.size();
-    for (int i = 0; i < size; ++i) {
-        value <<= 1;
-        value += (quint8)array.at(i);
-
-        if ((i + 1) % 8 == 0) { //проверка на последний bit в текущем байте
-            tempStr.push_back(QString(" %1").arg(value, 2, 16, QLatin1Char('0')));
-            value = 0;
-        }
-    }
-
-    if ((deviceModel == DeviceModel::DES3528) && ismv) {
-        // Значение MembersISMV в DES-3528 имеет размер 64 байта
-        // Дополняем HEX-строку до 64 байт.
-        for (int i = 0; i < 60; ++i)
-            tempStr.push_back(QString(" 00"));
-    }
-
-    return tempStr.trimmed().toUpper();
 }
 
 QString typeLineString(int type)
@@ -290,7 +87,7 @@ QString profileExtName(DeviceModel::Enum deviceModel, QString profile)
             return "Other";
         }
     } else {
-        return QString();
+        return "";
     }
 }
 
@@ -333,11 +130,11 @@ QString displayNameProfileToDslamName(DeviceModel::Enum deviceModel, QString pro
         }
     }
 
-    return QString();
+    return "";
 
 }
 
-QString toQString(u_char *string, int str_len)
+QString toString(u_char *string, int str_len)
 {
     return QString::fromLatin1(reinterpret_cast<char *>(string), str_len);
 }

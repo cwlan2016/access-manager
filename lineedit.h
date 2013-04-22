@@ -1,2 +1,1 @@
-#include "Pages/lineedit.h"
-
+#include "gui/lineedit.h"

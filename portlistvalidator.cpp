@@ -2,9 +2,9 @@
 
 #include "converters.h"
 
-PortListValidator::PortListValidator(DeviceModel::Enum deviceModel)
+PortListValidator::PortListValidator(int countPorts) :
+    mCountPorts(countPorts)
 {
-    count = countPorts(deviceModel);
 }
 
 QValidator::State PortListValidator::validate(QString &input, int &pos) const
@@ -41,14 +41,14 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
         QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
 
         if (valueStringList.size() == 2) {
-            if ((valueStringList.at(0).toInt() > count)
-                    || (valueStringList.at(1).toInt() > count))
+            if ((valueStringList.at(0).toInt() > mCountPorts)
+                    || (valueStringList.at(1).toInt() > mCountPorts))
                 return Invalid;
 
             if (valueStringList.at(1).toInt() < valueStringList.at(0).toInt())
                 return Intermediate;
         } else {
-            if (valueStringList.at(0).toInt() > count)
+            if (valueStringList.at(0).toInt() > mCountPorts)
                 return Invalid;
         }
     }

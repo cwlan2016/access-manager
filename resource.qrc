@@ -22,9 +22,9 @@
         <file alias="clear_left.png">images/clear_left.png</file>
     </qresource>
     <qresource prefix="/xsd">
-        <file alias="devicelist.xsd">SchemaDeviceList.xsd</file>
+        <file alias="devicelist.xsd">schemadevicelist.xsd</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="appicon">Data.ico</file>
+        <file alias="appicon">data.ico</file>
     </qresource>
 </RCC>

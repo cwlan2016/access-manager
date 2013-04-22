@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "Info/snmpconfiginfo.h"
-#include "Info/switchconfiginfo.h"
+#include "configs/snmpconfig.h"
+#include "configs/switchconfig.h"
 
 class Config
 {

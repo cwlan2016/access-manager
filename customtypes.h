@@ -19,8 +19,23 @@ enum Enum {
 const QString BoardTypeName[] = { "ADSL Annex A", "ADSL Annex B", "SHDSL",
                                   "Other" };
 
-BoardType::Enum from(QString boardType);
-QString         toString(BoardType::Enum boardType);
+inline BoardType::Enum from(QString boardType)
+{
+    if (boardType == BoardTypeName[BoardType::AnnexA]) {
+        return BoardType::AnnexA;
+    } else if (boardType == BoardTypeName[BoardType::AnnexB]) {
+        return BoardType::AnnexB;
+    } else if (boardType == BoardTypeName[BoardType::Shdsl]) {
+        return BoardType::Shdsl;
+    } else {
+        return BoardType::Other;
+    }
+}
+
+inline QString toString(BoardType::Enum boardType)
+{
+    return BoardTypeName[boardType];
+}
 }
 
 namespace DeviceModel
@@ -46,8 +61,39 @@ const QString DeviceModelName[] = { "Other", "DES-3526", "DES-3528", "DES-3550",
                                     "MXA-32", "MXA-64", "LTE-8ST", "LTP-8X"
                                   };
 
-DeviceModel::Enum   from(QString deviceModel);
-QString             toString(DeviceModel::Enum deviceModel);
+inline DeviceModel::Enum from(QString deviceModel)
+{
+    if (deviceModel == DeviceModelName[DeviceModel::DES3526]) {
+        return DeviceModel::DES3526;
+    } else if (deviceModel == DeviceModelName[DeviceModel::MA5600]) {
+        return DeviceModel::MA5600;
+    } else if (deviceModel == DeviceModelName[DeviceModel::LTP8X]) {
+        return DeviceModel::LTP8X;
+    } else if (deviceModel == DeviceModelName[DeviceModel::LTE8ST]) {
+        return DeviceModel::LTE8ST;
+    } else if (deviceModel == DeviceModelName[DeviceModel::DES3528]) {
+        return DeviceModel::DES3528;
+    } else if (deviceModel == DeviceModelName[DeviceModel::MA5300]) {
+        return DeviceModel::MA5300;
+    } else if (deviceModel == DeviceModelName[DeviceModel::MXA64]) {
+        return DeviceModel::MXA64;
+    } else if (deviceModel == DeviceModelName[DeviceModel::DES3552]) {
+        return DeviceModel::DES3552;
+    } else if (deviceModel == DeviceModelName[DeviceModel::MXA32]) {
+        return DeviceModel::MXA32;
+    } else if (deviceModel == DeviceModelName[DeviceModel::MA5616]) {
+        return DeviceModel::MA5616;
+    } else if (deviceModel == DeviceModelName[DeviceModel::DES3550]) {
+        return DeviceModel::DES3550;
+    } else {
+        return DeviceModel::Other;
+    }
+}
+
+inline QString toString(DeviceModel::Enum deviceModel)
+{
+    return DeviceModelName[deviceModel];
+}
 }
 
 namespace DeviceType
@@ -61,26 +107,115 @@ enum Enum {
 
 const QString DeviceTypeName[] = { "Other", "Switch", "Dslam", "Olt" };
 
-DeviceType::Enum    from(QString deviceType);
-DeviceType::Enum    from(DeviceModel::Enum deviceModel);
-QString             toString(DeviceType::Enum deviceType);
+inline DeviceType::Enum from(QString deviceType)
+{
+    if (deviceType == DeviceTypeName[DeviceType::Switch]) {
+        return DeviceType::Switch;
+    } else if (deviceType == DeviceTypeName[DeviceType::Dslam]) {
+        return DeviceType::Dslam;
+    } else if (deviceType == DeviceTypeName[DeviceType::Olt]) {
+        return DeviceType::Olt;
+    } else {
+        return DeviceType::Other;
+    }
+}
+
+inline DeviceType::Enum from(DeviceModel::Enum deviceModel)
+{
+    switch (deviceModel) {
+    case DeviceModel::DES3526:
+    case DeviceModel::DES3528:
+    case DeviceModel::DES3550:
+    case DeviceModel::DES3552:
+        return DeviceType::Switch;
+    case DeviceModel::MA5600:
+    case DeviceModel::MA5300:
+    case DeviceModel::MA5616:
+    case DeviceModel::MXA32:
+    case DeviceModel::MXA64:
+        return DeviceType::Dslam;
+    case DeviceModel::LTP8X:
+    case DeviceModel::LTE8ST:
+        return DeviceType::Olt;
+    case DeviceModel::Other:
+    case DeviceModel::Count:
+        return DeviceType::Other;
+    default:
+        return DeviceType::Other;
+    }
+}
+
+inline QString toString(DeviceType::Enum deviceType)
+{
+    return DeviceTypeName[deviceType];
+}
 }
 
 namespace DslPortState
 {
 enum Enum {
+    Other =         0,
     Up =            1,
     Down =          2,
     Activating =    3,
-    Defective =     4,
-    Other =         5
+    Defective =     4
 };
 
-const QString DslPortStateName[] = { "Up", "Down", "Activating", "Defective",
-                                     "Other"};
+const QString DslPortStateName[] = {"Other", "Up", "Down", "Activating",
+                                    "Defective" };
 
-DslPortState::Enum  from(QString dslPortState);
-QString             toString(DslPortState::Enum dslPortState);
+inline DslPortState::Enum from(QString dslPortState)
+{
+    if (dslPortState == DslPortStateName[DslPortState::Activating]) {
+        return DslPortState::Activating;
+    } else if (dslPortState == DslPortStateName[DslPortState::Up]) {
+        return DslPortState::Up;
+    } else if (dslPortState == DslPortStateName[DslPortState::Down]) {
+        return DslPortState::Down;
+    } else if (dslPortState == DslPortStateName[DslPortState::Defective]) {
+        return DslPortState::Defective;
+    } else {
+        return DslPortState::Other;
+    }
+}
+
+inline DslPortState::Enum from(long snmpValue)
+{
+    switch (snmpValue) {
+    case 1:
+        return DslPortState::Up;
+    case 2:
+    case 6:
+        return DslPortState::Down;
+    case 5:
+    case 65536:
+        return DslPortState::Activating;
+    case 65548:
+        return DslPortState::Defective;
+    default:
+        return DslPortState::Other;
+    }
+}
+
+inline DslPortState::Enum from(DslPortState::Enum operStatus,
+                               DslPortState::Enum adminStatus)
+{
+    if (adminStatus == DslPortState::Down)
+        return DslPortState::Down;
+    else if ((adminStatus == DslPortState::Up)
+             && (operStatus == DslPortState::Up))
+        return DslPortState::Up;
+    else if ((adminStatus == DslPortState::Up)
+             && (operStatus == DslPortState::Down))
+        return DslPortState::Activating;
+    else
+        return DslPortState::Other;
+}
+
+inline QString toString(DslPortState::Enum dslPortState)
+{
+    return DslPortStateName[dslPortState];
+}
 }
 
 namespace OntType
@@ -177,6 +312,45 @@ enum Enum {
 };
 }
 
+namespace SwitchPortState
+{
+enum Enum {
+    Other =         0,
+    Up =            1,
+    Down =          2
+};
+
+const QString SwitchPortStateName[] = { "Other", "Up", "Down" };
+
+inline SwitchPortState::Enum from(QString switchPortState)
+{
+    if (switchPortState == SwitchPortStateName[SwitchPortState::Up]) {
+        return SwitchPortState::Up;
+    } else if (switchPortState == SwitchPortStateName[SwitchPortState::Down]) {
+        return SwitchPortState::Down;
+    } else {
+        return SwitchPortState::Other;
+    }
+}
+
+inline SwitchPortState::Enum from(long snmpValue)
+{
+    switch (snmpValue) {
+    case 1:
+        return SwitchPortState::Up;
+    case 2:
+        return SwitchPortState::Down;
+    default:
+        return SwitchPortState::Other;
+    }
+}
+
+inline QString toString(SwitchPortState::Enum state)
+{
+    return SwitchPortStateName[state];
+}
+}
+
 namespace VlanState
 {
 enum Enum {
@@ -184,6 +358,24 @@ enum Enum {
     Tag =   1,
     None =  2
 };
+
+const QString VlanStateName[] = { "Untag", "Tag", "None" };
+
+inline VlanState::Enum from(QString vlanState)
+{
+    if (vlanState == VlanStateName[VlanState::Untag]) {
+        return VlanState::Untag;
+    } else if (vlanState == VlanStateName[VlanState::Tag]) {
+        return VlanState::Tag;
+    } else {
+        return VlanState::None;
+    }
+}
+
+inline QString toString(VlanState::Enum state)
+{
+    return VlanStateName[state];
+}
 }
 
 #endif // CUSTOMTYPES_H
