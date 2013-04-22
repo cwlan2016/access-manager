@@ -35,6 +35,7 @@ public:
 
 private:
     void InitializeBoardTableModel();
+    void boardListIsModified();
 
     short mAutoFill;
     short mAutoNumeringBoard;

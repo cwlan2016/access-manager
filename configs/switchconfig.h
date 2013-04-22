@@ -1,11 +1,7 @@
 #ifndef SWITCHCONFIG_H
 #define SWITCHCONFIG_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#else
-#include "stdafx.h"
-#endif
+#include <stdafx.h>
 
 class SwitchConfig
 {

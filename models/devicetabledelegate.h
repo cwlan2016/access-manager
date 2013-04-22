@@ -1,11 +1,7 @@
 #ifndef DEVICETABLEDELEGATE_H
 #define DEVICETABLEDELEGATE_H
 
-#ifdef _MSC_VER
-#include "../customtypes.h"
-#else
-#include "customtypes.h"
-#endif
+#include <customtypes.h>
 
 class DeviceTableDelegate : public QItemDelegate
 {

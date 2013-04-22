@@ -1,17 +1,10 @@
 #ifndef DSLAMPORTTABLEMODEL_H
 #define DSLAMPORTTABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../customtypes.h"
-#include "../snmpclient.h"
-#include "../devices/dslam.h"
-#include "../ports/xdslport.h"
-#else
-#include "customtypes.h"
-#include "snmpclient.h"
-#include "devices/dslam.h"
-#include "ports/xdslport.h"
-#endif
+#include <customtypes.h>
+#include <snmpclient.h>
+#include <devices/dslam.h>
+#include <ports/xdslport.h>
 
 class DslamPortTableModel : public QAbstractItemModel
 {

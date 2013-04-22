@@ -1,17 +1,10 @@
 #ifndef SWITCHPORTTABLEMODEL_H
 #define SWITCHPORTTABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../customtypes.h"
-#include "../snmpclient.h"
-#include "../devices/switch.h"
-#include "../ports/switchport.h"
-#else
-#include "customtypes.h"
-#include "snmpclient.h"
-#include "devices/switch.h"
-#include "ports/switchport.h"
-#endif
+#include <customtypes.h>
+#include <snmpclient.h>
+#include <devices/switch.h>
+#include <ports/switchport.h>
 
 class SwitchPortTableModel : public QAbstractTableModel
 {
@@ -50,15 +43,16 @@ public:
 private:
     void createList();
 
-    //bool updateInfoPort(QScopedPointer<SnmpClient> &snmpClient,
-    //                    SwitchPortInfo::Ptr updatingPort);
-
     bool getUnicastVlanSettings(const OidPair &oidVlan,
                                 QBitArray &vlanPortArray, QString vlanName);
     bool getMulticastVlanSettings();
 
     bool sendVlanSetting(QVector<OidPair> &oidStringList,
                          QList<QBitArray> &arrayList, bool ismv);
+
+    QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
+    QString qbitArrayToHexString(DeviceModel::Enum deviceModel,
+                                 const QBitArray &array, bool ismv);
 
     QString mError;
     int mIptvMultVlanTag;

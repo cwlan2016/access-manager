@@ -1,15 +1,9 @@
 #ifndef DEVICETABLEMODEL_H
 #define DEVICETABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../devices/switch.h"
-#include "../devices/dslam.h"
-#include "../devices/olt.h"
-#else
-#include "devices/switch.h"
-#include "devices/dslam.h"
-#include "devices/olt.h"
-#endif
+#include <devices/dslam.h>
+#include <devices/olt.h>
+#include <devices/switch.h>
 
 class DeviceTableModel : public QAbstractTableModel
 {
@@ -30,7 +24,6 @@ public:
     bool insertRow(int row, const QModelIndex &parent);
     bool removeRow(int row, const QModelIndex &parent);
     bool isModified();
-    void setModified(bool state);
 
     bool load();
     bool save();
@@ -57,21 +50,21 @@ private:
 
     void readNextElement(QXmlStreamReader &reader);
 
-    void parseSwitchElement(QXmlStreamReader &reader);
-    void parseDslamElement(QXmlStreamReader &reader);
-    void parseDslamBoardList(QXmlStreamReader &reader,
+    void readSwitchElement(QXmlStreamReader &reader);
+    void readDslamElement(QXmlStreamReader &reader);
+    void readDslamBoardList(QXmlStreamReader &reader,
                              Device::Ptr deviceInfo);
-    void parseOltElement(QXmlStreamReader &reader);
-    void parseOltProfileList(QXmlStreamReader &reader,
+    void readOltElement(QXmlStreamReader &reader);
+    void readOltProfileList(QXmlStreamReader &reader,
                              Device::Ptr deviceInfo);
 
-    void createSwitchElement(QXmlStreamWriter &writer,
+    void writeSwitchElement(QXmlStreamWriter &writer,
                              const Switch::Ptr &deviceInfo);
-    void createDslamElement(QXmlStreamWriter &writer,
+    void writeDslamElement(QXmlStreamWriter &writer,
                             const Dslam::Ptr &deviceInfo);
-    void createOltElement(QXmlStreamWriter &writer,
+    void writeOltElement(QXmlStreamWriter &writer,
                           const Olt::Ptr &deviceInfo);
-    void createOltProfileList(QXmlStreamWriter &writer,
+    void writeOltProfileList(QXmlStreamWriter &writer,
                               const OltProfileMap &profileMap, QString typeElem);
 
     void changeDeviceModel(int index, DeviceType::Enum deviceType,
@@ -79,6 +72,8 @@ private:
     void changeSwitchModel(int index, DeviceModel::Enum deviceModel);
     void changeDslamModel(int index, DeviceModel::Enum deviceModel);
     void changeOltModel(int index, DeviceModel::Enum deviceModel);
+
+    void deviceListIsModified();
 
     bool mModified;
     QString mError;

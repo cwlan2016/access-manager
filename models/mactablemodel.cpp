@@ -1,16 +1,9 @@
 #include "mactablemodel.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../configs/switchconfig.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "configs/switchconfig.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
+#include <configs/switchconfig.h>
 
 // Columns
 // DisplayRole
@@ -166,4 +159,19 @@ void MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
 
         snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
+}
+
+QString MacTableModel::decMacAddressToHex(oid *macAddressOid, int length)
+{
+    QString tempStr = "";
+
+    for (int i = 14; i < length; ++i) {
+        if (i != 14) {
+            tempStr = QString("%1-%2").arg(tempStr).arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
+        } else {
+            tempStr = QString("%1").arg(macAddressOid[i], 2, 16, QLatin1Char('0'));
+        }
+    }
+
+    return tempStr.toUpper();
 }

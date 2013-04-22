@@ -1,18 +1,10 @@
 #include "dslamporttablemodel.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../ports/adslport.h"
-#include "../ports/shdslport.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "ports/adslport.h"
-#include "ports/shdslport.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
+#include <ports/adslport.h>
+#include <ports/shdslport.h>
 
 // index.internalId()
 // invalidParentIndex - основная информация о порте, верхний уровень
@@ -195,8 +187,6 @@ bool DslamPortTableModel::load()
             return false;
         }
     }
-
-    //TODO: Refactoring on GET_NEXT request
 
     endResetModel();
     return true;

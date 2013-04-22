@@ -1,14 +1,8 @@
 #include "adslportmxa32.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
 
 AdslPortMxa32::AdslPortMxa32(long index, QObject *parent) :
     AdslPort(index, parent)

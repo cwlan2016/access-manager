@@ -1,14 +1,8 @@
 #include "dslamma5300.h"
 
+#include <constant.h>
+#include <customsnmpfunctions.h>
 #include <ports/adslportma5300.h>
-
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "customsnmpfunctions.h"
-#endif
 
 DslamMa5300::DslamMa5300(QObject *parent) :
     Dslam(parent)

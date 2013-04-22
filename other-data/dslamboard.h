@@ -1,13 +1,8 @@
 #ifndef DSLAMBOARD_H
 #define DSLAMBOARD_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#include "../customtypes.h"
-#else
-#include "stdafx.h"
-#include "customtypes.h"
-#endif
+#include <stdafx.h>
+#include <customtypes.h>
 
 class DslamBoard : public QObject
 {
@@ -25,7 +20,8 @@ public:
     void setFirstPair(int firstPair);
 
     typedef DslamBoard *Ptr;
-
+signals:
+    void modified();
 private:
     int mNumber;
     int mFirstPair;

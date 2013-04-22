@@ -1,16 +1,9 @@
 #include "switch.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../configs/switchconfig.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "configs/switchconfig.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
+#include <configs/switchconfig.h>
 
 Switch::Switch(QObject *parent) :
     Device(parent),
@@ -45,7 +38,10 @@ int Switch::inetVlanTag() const
 
 void Switch::setInetVlanTag(int vlanTag)
 {
-    mInetVlanTag = vlanTag;
+    if (mInetVlanTag != vlanTag) {
+        mInetVlanTag = vlanTag;
+        emit modified();
+    }
 }
 
 int Switch::iptvVlanTag() const
@@ -55,7 +51,10 @@ int Switch::iptvVlanTag() const
 
 void Switch::setIptvVlanTag(int vlanTag)
 {
-    mIptvVlanTag = vlanTag;
+    if (mIptvVlanTag != vlanTag) {
+        mIptvVlanTag = vlanTag;
+        emit modified();
+    }
 }
 
 DeviceType::Enum Switch::deviceType() const
@@ -74,7 +73,7 @@ bool Switch::getServiceDataFromDevice()
 
     QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
-    snmpClient->setIp(mIp);
+    snmpClient->setIp(ip());
 
     if (!snmpClient->setupSession(SessionType::ReadSession)) {
         mError = SnmpErrorStrings::SetupSession;
@@ -104,13 +103,13 @@ bool Switch::getServiceDataFromDevice()
 
         if (vlanName == SwitchConfig::inetVlanName()) {
             findedInet = true;
-            mInetVlanTag = vars->name[13];
+            setInetVlanTag(vars->name[13]);
 
             if (findedIptv)
                 break;
         } else if (vlanName == SwitchConfig::iptvVlanName()) {
             findedIptv = true;
-            mIptvVlanTag = vars->name[13];
+            setIptvVlanTag(vars->name[13]);
 
             if (findedInet)
                 break;
@@ -120,11 +119,11 @@ bool Switch::getServiceDataFromDevice()
     }
 
     if (!findedInet && !findedInet) {
-        mError = QString::fromUtf8("Вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(mName, mIp);
+        mError = QString::fromUtf8("Вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(name(), ip());
     } else if (!findedInet) {
-        mError = QString::fromUtf8("Влан для интернета на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
+        mError = QString::fromUtf8("Влан для интернета на коммутаторе %1 [%2] не найден.").arg(name(), ip());
     } else if (!findedIptv) {
-        mError = QString::fromUtf8("Влан для iptv на коммутаторе %1 [%2] не найден.").arg(mName, mIp);
+        mError = QString::fromUtf8("Влан для iptv на коммутаторе %1 [%2] не найден.").arg(name(), ip());
     }
 
     return findedInet && findedIptv;
@@ -134,7 +133,7 @@ bool Switch::saveConfig()
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmp->setIp(ip());
 
     if ((deviceModel() == DeviceModel::DES3526)
             || (deviceModel() == DeviceModel::DES3550)) {

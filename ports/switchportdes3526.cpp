@@ -1,14 +1,8 @@
 #include "switchportdes3526.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
 
 SwitchPortDes3526::SwitchPortDes3526(QObject *parent) :
     SwitchPort(parent)

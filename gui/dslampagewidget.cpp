@@ -1,21 +1,12 @@
 #include "dslampagewidget.h"
 #include "ui_dslampagewidget.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../constant.h"
-#include "../converters.h"
-#include "../devices/dslam.h"
-#include "../models/boardtablemodel.h"
-#include "../models/dslamporttablemodel.h"
-#else
-#include "basicdialogs.h"
-#include "constant.h"
-#include "converters.h"
-#include "devices/dslam.h"
-#include "models/boardtablemodel.h"
-#include "models/dslamporttablemodel.h"
-#endif
+#include <basicdialogs.h>
+#include <constant.h>
+#include <converters.h>
+#include <devices/dslam.h>
+#include <models/boardtablemodel.h>
+#include <models/dslamporttablemodel.h>
 
 DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),

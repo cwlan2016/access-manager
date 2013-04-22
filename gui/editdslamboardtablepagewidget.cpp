@@ -1,26 +1,16 @@
 #include "editdslamboardtablepagewidget.h"
 #include "ui_editdslamboardtablepagewidget.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../constant.h"
-#include "../devices/dslam.h"
-#include "../models/boardtabledelegate.h"
-#include "../models/boardtablemodel.h"
-#else
-#include "basicdialogs.h"
-#include "constant.h"
-#include "devices/dslam.h"
-#include "models/boardtabledelegate.h"
-#include "models/boardtablemodel.h"
-#endif
+#include <basicdialogs.h>
+#include <constant.h>
+#include <devices/dslam.h>
+#include <models/boardtabledelegate.h>
+#include <models/boardtablemodel.h>
 
 EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
-                                                             DeviceTableModel *deviceListModel,
                                                              QWidget *parent) :
     PageWidget(deviceInfo, parent),
-    ui(new Ui::EditDslamBoardTablePageWidget),
-    mDeviceTableModel(deviceListModel)
+    ui(new Ui::EditDslamBoardTablePageWidget)
 {
     ui->setupUi(this);
 
@@ -43,11 +33,12 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(Device::Ptr deviceI
     boardListDelegate->setIndexFirstPair(2);
 
     ui->editDslamBoardListTableView->setItemDelegate(boardListDelegate);
+    ui->editDslamBoardListTableView->setColumnWidth(1, 150);
 
     ui->autoUpdateBoardListCheckBox->setCheckState(dslamInfo->autoFill() == 1 ? Qt::Checked : Qt::Unchecked);
     ui->autoNumeringPairCheckBox->setEnabled(dslamInfo->autoFill());
     ui->autoNumeringPairCheckBox->setCheckState(dslamInfo->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
-    //Привязка действий
+
     connect(ui->editDslamBoardListTableView, &QTableView::customContextMenuRequested,
             this, &EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu);
     connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
@@ -65,7 +56,6 @@ void EditDslamBoardTablePageWidget::editBoard()
 {
     ui->editDslamBoardListTableView->setFocus();
     ui->editDslamBoardListTableView->edit(ui->editDslamBoardListTableView->currentIndex());
-    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::removeBoard()
@@ -84,7 +74,6 @@ void EditDslamBoardTablePageWidget::removeBoard()
         return;
 
     model->removeRow(index.row(), QModelIndex());
-    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::getBoardList()
@@ -93,8 +82,6 @@ void EditDslamBoardTablePageWidget::getBoardList()
 
     if (!model->getBoardListFromDevice())
         BasicDialogs::error(this, BasicDialogStrings::Error, model->error());
-
-    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::renumeringBoardPairs()
@@ -102,20 +89,17 @@ void EditDslamBoardTablePageWidget::renumeringBoardPairs()
     BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
 
     model->renumeringPairList();
-    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
 {
     mDeviceInfo.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
-    mDeviceTableModel->setModified(true);
     ui->autoNumeringPairCheckBox->setEnabled(state);
 }
 
 void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
 {
     mDeviceInfo.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
-    mDeviceTableModel->setModified(true);
 }
 
 void EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu(QPoint point)

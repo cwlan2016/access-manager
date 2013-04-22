@@ -10,11 +10,7 @@
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#else
-#include "stdafx.h"
-#endif
+#include <stdafx.h>
 
 class LineEdit : public QLineEdit
 {

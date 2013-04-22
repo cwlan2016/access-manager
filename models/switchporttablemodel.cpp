@@ -1,22 +1,11 @@
 #include "switchporttablemodel.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../ports/switchportdes3526.h"
-#include "../ports/switchportdes3528.h"
-#include "../ports/switchportdes3550.h"
-#else
-#include "basicdialogs.h"
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "ports/switchportdes3526.h"
-#include "ports/switchportdes3528.h"
-#include "ports/switchportdes3550.h"
-#endif
+#include <basicdialogs.h>
+#include <constant.h>
+#include <customsnmpfunctions.h>
+#include <ports/switchportdes3526.h>
+#include <ports/switchportdes3528.h>
+#include <ports/switchportdes3550.h>
 
 // Columns
 // DisplayRole
@@ -456,7 +445,7 @@ bool SwitchPortTableModel::getVlanSettings()
         allErrors += mError + "\n";
 
     if (!allErrors.isEmpty())
-        BasicDialogs::error(0, BasicDialogStrings::Error, QString::fromUtf8("Произоизошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
+        BasicDialogs::error(0, BasicDialogStrings::Error, QString::fromUtf8("Произошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
 
     return true;
 }
@@ -635,4 +624,69 @@ bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList,
     }
 
     return result;
+}
+
+QBitArray SwitchPortTableModel::ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)
+{
+    int countBits = 0;
+
+    if ((deviceModel == DeviceModel::DES3526)
+            || (deviceModel == DeviceModel::DES3528)) {
+        countBits = 32;
+    } else if (deviceModel == DeviceModel::DES3550) {
+        countBits = 56;
+    }
+
+    QBitArray array(countBits, false);
+
+    int firstBit = 0;
+    int countBytes = countBits / 8;
+
+    for (int i = 0; i < countBytes; ++i) {
+        quint8 byteElement = str[i];
+
+        if (byteElement == 0) {
+            //так как массив уже инициализирован нулями
+            //если текущий байт равен 0, итерация просто пропускается
+            firstBit += 8;
+            continue;
+        }
+
+        for (int bits = 0; bits < 8; ++bits) {
+            array[7 - bits + firstBit] = byteElement % 2 == 1 ? true : false;
+
+            byteElement /= 2;
+        }
+
+        firstBit += 8;
+    }
+
+    return array;
+}
+
+QString SwitchPortTableModel::qbitArrayToHexString(DeviceModel::Enum deviceModel, const QBitArray &array, bool ismv)
+{
+    QString tempStr = "";
+
+    quint8 value = 0;
+
+    int size = array.size();
+    for (int i = 0; i < size; ++i) {
+        value <<= 1;
+        value += (quint8)array.at(i);
+
+        if ((i + 1) % 8 == 0) { //проверка на последний bit в текущем байте
+            tempStr.push_back(QString(" %1").arg(value, 2, 16, QLatin1Char('0')));
+            value = 0;
+        }
+    }
+
+    if ((deviceModel == DeviceModel::DES3528) && ismv) {
+        // Значение MembersISMV в DES-3528 имеет размер 64 байта
+        // Дополняем HEX-строку до 64 байт.
+        for (int i = 0; i < 60; ++i)
+            tempStr.push_back(QString(" 00"));
+    }
+
+    return tempStr.trimmed().toUpper();
 }

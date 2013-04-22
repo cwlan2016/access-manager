@@ -1,15 +1,9 @@
 #ifndef BOARDTABLEMODEL_H
 #define BOARDTABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../other-data/dslamboard.h"
-#include "../devices/dslam.h"
-#else
-#include "basicdialogs.h"
-#include "other-data/dslamboard.h"
-#include "devices/dslam.h"
-#endif
+#include <basicdialogs.h>
+#include <other-data/dslamboard.h>
+#include <devices/dslam.h>
 
 class BoardTableModel : public QAbstractTableModel
 {
@@ -37,9 +31,11 @@ public:
     void renumeringPairList();
 
     QString error() const;
-
+signals:
+    void modified();
 private:
     QString rangePairs(int firstPair, BoardType::Enum typeBoard) const;
+    void boardIsModified();
 
     QString mError;
     //TODO: Check access to this member on isNull.

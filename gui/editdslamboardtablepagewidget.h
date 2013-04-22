@@ -2,11 +2,7 @@
 #define EDITDSLAMBOARDTABLEPAGEWIDGET_H
 
 #include "pagewidget.h"
-#ifdef _MSC_VER
-#include "../models/devicetablemodel.h"
-#else
-#include "models/devicetablemodel.h"
-#endif
+#include <models/devicetablemodel.h>
 
 namespace Ui
 {
@@ -19,7 +15,6 @@ class EditDslamBoardTablePageWidget : public PageWidget
 
 public:
     explicit EditDslamBoardTablePageWidget(Device::Ptr deviceInfo,
-                                           DeviceTableModel *deviceListModel,
                                            QWidget *parent = 0);
     ~EditDslamBoardTablePageWidget();
 
@@ -35,7 +30,6 @@ private:
     void editBoardViewRequestContextMenu(QPoint point);
 
     Ui::EditDslamBoardTablePageWidget *ui;
-    DeviceTableModel *mDeviceTableModel;
 };
 
 #endif // EDITDSLAMBOARDTABLEPAGEWIDGET_H

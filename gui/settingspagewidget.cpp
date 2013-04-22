@@ -1,15 +1,9 @@
 #include "settingspagewidget.h"
 #include "ui_settingspagewidget.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../config.h"
-#include "../constant.h"
-#else
-#include "basicdialogs.h"
-#include "config.h"
-#include "constant.h"
-#endif
+#include <basicdialogs.h>
+#include <config.h>
+#include <constant.h>
 
 SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
     QWidget(parent),

@@ -1,11 +1,7 @@
 #ifndef ABOUTPAGEWIDGET_H
 #define ABOUTPAGEWIDGET_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#else
-#include "stdafx.h"
-#endif
+#include <stdafx.h>
 
 namespace Ui
 {

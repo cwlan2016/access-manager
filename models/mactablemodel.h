@@ -1,15 +1,9 @@
 #ifndef MACTABLEMODEL_H
 #define MACTABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../other-data/mac.h"
-#include "../devices/switch.h"
-#include "../snmpclient.h"
-#else
-#include "other-data/mac.h"
-#include "devices/switch.h"
-#include "snmpclient.h"
-#endif
+#include <snmpclient.h>
+#include <devices/switch.h>
+#include <other-data/mac.h>
 
 class MacTableModel : public QAbstractTableModel
 {
@@ -34,6 +28,7 @@ public:
 private:
     void updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag,
                           QString vlanName);
+    QString decMacAddressToHex(oid *macAddressOid, int length);
 
     QString mError;
     QVector<Mac::Ptr> *mList;

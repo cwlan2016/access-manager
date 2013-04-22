@@ -1,12 +1,7 @@
 #include "oltlte8st.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "customsnmpfunctions.h"
-#endif
+#include <constant.h>
+#include <customsnmpfunctions.h>
 
 OltLte8st::OltLte8st(QObject *parent) :
     Olt(parent)

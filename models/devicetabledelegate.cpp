@@ -1,10 +1,6 @@
 #include "devicetabledelegate.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#else
-#include "constant.h"
-#endif
+#include <constant.h>
 
 DeviceTableDelegate::DeviceTableDelegate(QObject *parent) :
     QItemDelegate(parent)

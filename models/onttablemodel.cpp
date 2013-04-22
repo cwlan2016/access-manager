@@ -1,14 +1,8 @@
 #include "onttablemodel.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../devices/nte.h"
-#include "../devices/ntp.h"
-#else
-#include "constant.h"
-#include "devices/nte.h"
-#include "devices/ntp.h"
-#endif
+#include <constant.h>
+#include <devices/nte.h>
+#include <devices/ntp.h>
 
 OntTableModel::OntTableModel(Olt::Ptr oltInfo, QObject *parent) :
     QAbstractTableModel(parent),

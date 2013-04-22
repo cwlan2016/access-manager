@@ -1,13 +1,8 @@
 #ifndef ONTTABLEMODEL_H
 #define ONTTABLEMODEL_H
 
-#ifdef _MSC_VER
-#include "../devices/ont.h"
-#include "../devices/olt.h"
-#else
-#include "devices/ont.h"
-#include "devices/olt.h"
-#endif
+#include <devices/olt.h>
+#include <devices/ont.h>
 
 class OntTableModel : public QAbstractTableModel
 {

@@ -1,11 +1,7 @@
 #ifndef PAGEWIDGET_H
 #define PAGEWIDGET_H
 
-#ifdef _MSC_VER
-#include "../devices/device.h"
-#else
-#include "devices/device.h"
-#endif
+#include <devices/device.h>
 
 class PageWidget : public QWidget
 {

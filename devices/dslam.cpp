@@ -1,10 +1,6 @@
 #include "dslam.h"
 
-#ifdef _MSC_VER
-#include "../models/boardtablemodel.h"
-#else
-#include "models/boardtablemodel.h"
-#endif
+#include <models/boardtablemodel.h>
 
 Dslam::Dslam(QObject *parent) :
     Device(parent)
@@ -37,7 +33,10 @@ short Dslam::autoFill() const
 
 void Dslam::setAutoFill(short autoFill)
 {
-    mAutoFill = autoFill;
+    if (mAutoFill != autoFill) {
+        mAutoFill = autoFill;
+        emit modified();
+    }
 }
 
 short Dslam::autoNumeringBoard() const
@@ -47,7 +46,10 @@ short Dslam::autoNumeringBoard() const
 
 void Dslam::setAutoNumeringBoard(short autoNumeringBoard)
 {
-    mAutoNumeringBoard = autoNumeringBoard;
+    if (mAutoNumeringBoard != autoNumeringBoard) {
+        mAutoNumeringBoard = autoNumeringBoard;
+        emit modified();
+    }
 }
 
 DeviceType::Enum Dslam::deviceType() const
@@ -104,6 +106,15 @@ bool Dslam::getServiceDataFromDevice()
 void Dslam::InitializeBoardTableModel()
 {
     mBoardListModel = new BoardTableModel(this, this);
+    connect(mBoardListModel, &BoardTableModel::modified,
+            this, &Dslam::boardListIsModified);
+
     setAutoFill(1);
     setAutoNumeringBoard(1);
 }
+
+void Dslam::boardListIsModified()
+{
+    emit modified();
+}
+

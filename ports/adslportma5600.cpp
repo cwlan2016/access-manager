@@ -1,14 +1,8 @@
 #include "adslportma5600.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
 
 AdslPortMa5600::AdslPortMa5600(long index, QObject *parent) :
     AdslPort(index, parent)

@@ -15,7 +15,12 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
  DEFINES += USING_PCH
 }
 
+gcc*:QMAKE_CXXFLAGS+="-std=c++11"
+clang*:QMAKE_CXXFLAGS+="-std=c++11"
+
 RC_FILE = access-manager.rc
+
+INCLUDEPATH += $$PWD
 
 SOURCES += main.cpp \    
     basicdialogs.cpp \

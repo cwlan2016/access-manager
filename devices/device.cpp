@@ -26,7 +26,10 @@ QString Device::name() const
 
 void Device::setName(const QString name)
 {
-    mName = name;
+    if (mName.compare(name) != 0) {
+        mName = name;
+        emit modified();
+    }
 }
 
 QString Device::ip() const
@@ -36,7 +39,10 @@ QString Device::ip() const
 
 void Device::setIp(const QString ip)
 {
-    mIp = ip;
+    if (mIp.compare(ip) != 0) {
+        mIp = ip;
+        emit modified();
+    }
 }
 
 DeviceModel::Enum Device::deviceModel() const

@@ -11,10 +11,10 @@ public:
     Olt(QString name, QString ip, QObject *parent = 0);
     Olt(Device *source, QObject *parent = 0);
 
-    QString serviceProfile(int index);
+    QString serviceProfile(int index) const;
     void addServiceProfile(int index, QString profileName);
 
-    QString multicastProfile(int index);
+    QString multicastProfile(int index) const;
     void addMulticastProfile(int index, QString profileName);
 
     OltProfileMap &serviceProfileList();

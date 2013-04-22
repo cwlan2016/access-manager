@@ -1,16 +1,9 @@
 #include "olt.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../snmpclient.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "snmpclient.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
+#include <snmpclient.h>
 
 Olt::Olt(QObject *parent) :
     Device(parent)
@@ -27,7 +20,7 @@ Olt::Olt(Device *source, QObject *parent) :
 {
 }
 
-QString Olt::serviceProfile(int index)
+QString Olt::serviceProfile(int index) const
 {
     if (mServiceProfileList.find(index) == mServiceProfileList.end())
         return "";
@@ -38,9 +31,10 @@ QString Olt::serviceProfile(int index)
 void Olt::addServiceProfile(int index, QString profileName)
 {
     mServiceProfileList.insert(index, profileName);
+    emit modified();
 }
 
-QString Olt::multicastProfile(int index)
+QString Olt::multicastProfile(int index) const
 {
     if (mMulticastProfileList.find(index) == mMulticastProfileList.end())
         return "";
@@ -51,6 +45,7 @@ QString Olt::multicastProfile(int index)
 void Olt::addMulticastProfile(int index, QString profileName)
 {
     mMulticastProfileList.insert(index, profileName);
+    emit modified();
 }
 
 OltProfileMap &Olt::serviceProfileList()
@@ -96,7 +91,7 @@ bool Olt::getServiceDataFromDevice()
     }
 
     result = getProfileList(mServiceProfileList, serviceProfileOid);
-    result |= getProfileList(mMulticastProfileList, multicastProfileOid);
+    result &= getProfileList(mMulticastProfileList, multicastProfileOid);
 
     return result;
 }
@@ -106,7 +101,7 @@ bool Olt::getProfileList(OltProfileMap &profileList,
 {
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
-    snmp->setIp(mIp);
+    snmp->setIp(ip());
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
         mError += SnmpErrorStrings::SetupSession % "\n";
@@ -118,7 +113,7 @@ bool Olt::getProfileList(OltProfileMap &profileList,
         return false;
     }
 
-    profileList.clear();
+    OltProfileMap newProfileList;
 
     snmp->createPdu(SNMP_MSG_GETNEXT);
     snmp->addOid(oid);
@@ -138,10 +133,14 @@ bool Olt::getProfileList(OltProfileMap &profileList,
         QString profileName = toString(vars->val.string, vars->val_len);
         int profileIndex = vars->name[vars->name_length - 1];
 
-        profileList.insert(profileIndex, profileName);
+        newProfileList.insert(profileIndex, profileName);
 
         snmp->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
+
+    profileList = newProfileList;
+
+    emit modified();
 
     return true;
 }

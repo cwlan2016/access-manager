@@ -1,16 +1,9 @@
 #include "boardtablemodel.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../customsnmpfunctions.h"
-#include "../snmpclient.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "customsnmpfunctions.h"
-#include "snmpclient.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <customsnmpfunctions.h>
+#include <snmpclient.h>
 
 //Columns
 //
@@ -93,6 +86,8 @@ bool BoardTableModel::setData(const QModelIndex &index, const QVariant &value,
     if ((!mList.contains(index.row())) && !value.isNull()) {
         mList.insert(index.row(), new DslamBoard(this));
         mList[index.row()]->setIndex(index.row());
+        connect(mList[index.row()], &DslamBoard::modified,
+                this, &BoardTableModel::boardIsModified);
     }
 
     if (index.column() == 1) {
@@ -170,6 +165,8 @@ bool BoardTableModel::removeRow(int row, const QModelIndex &parent)
 
     endRemoveRows();
 
+    boardIsModified();
+
     return true;
 }
 
@@ -185,6 +182,8 @@ void BoardTableModel::addBoard(int index, BoardType::Enum type,
     boardInfo->setIndex(index);
     boardInfo->setType(type);
     boardInfo->setFirstPair(firstPair);
+    connect(boardInfo, &DslamBoard::modified,
+            this, &BoardTableModel::boardIsModified);
 
     mList.insert(index, boardInfo);
 }
@@ -193,11 +192,6 @@ Dslam *BoardTableModel::parentDevice()
 {
     return mParentDevice;
 }
-
-//void BoardTableModel::setParentDevice(const DslamInfo::Ptr &parent)
-//{
-//    mParentDevice = parent;
-//}
 
 bool BoardTableModel::getBoardListFromDevice()
 {
@@ -229,7 +223,7 @@ bool BoardTableModel::getBoardListFromDevice()
 
     snmp->addOid(Mib::dslamBoardName, 16);
 
-
+    //TODO: Refactoring. Add board to newList. If success operation -> replace list.
     if (snmp->sendRequest()) {
         beginResetModel();
 
@@ -254,11 +248,6 @@ bool BoardTableModel::getBoardListFromDevice()
                 continue;
 
             addBoard(boardIndex, boardTypeFromBoardName(boardName), 1);
-            //BoardInfo::Ptr info = new BoardInfo(this);
-            //info->setIndex(boardIndex);
-            //info->setType(boardTypeFromBoardName(boardName));
-
-            //mList.insert(boardIndex, info);
         }
     } else {
         mError = SnmpErrorStrings::GetInfo;
@@ -267,6 +256,8 @@ bool BoardTableModel::getBoardListFromDevice()
     }
 
     endResetModel();
+
+    boardIsModified();
 
     return true;
 }
@@ -310,5 +301,11 @@ QString BoardTableModel::rangePairs(int firstPair, BoardType::Enum typeBoard) co
 {
     return QString("%1-%2")
            .arg(firstPair)
-           .arg(firstPair + mParentDevice->countPorts(typeBoard) - 1);
+            .arg(firstPair + mParentDevice->countPorts(typeBoard) - 1);
 }
+
+void BoardTableModel::boardIsModified()
+{
+    emit modified();
+}
+

@@ -1,12 +1,7 @@
 #include "boardtabledelegate.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#endif
+#include <constant.h>
+#include <converters.h>
 
 BoardTableDelegate::BoardTableDelegate(Dslam::Ptr dslamInfo,
                                        QObject *parent) :

@@ -1,11 +1,7 @@
 #ifndef DEVICETABLEPAGEWIDGET_H
 #define DEVICETABLEPAGEWIDGET_H
 
-#ifdef _MSC_VER
-#include "../models/devicetablemodel.h"
-#else
-#include "models/devicetablemodel.h"
-#endif
+#include <models/devicetablemodel.h>
 
 namespace Ui
 {

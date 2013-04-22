@@ -1,11 +1,7 @@
 #ifndef SETTINGSPAGEWIDGET_H
 #define SETTINGSPAGEWIDGET_H
 
-#ifdef _MSC_VER
-#include "../stdafx.h"
-#else
-#include "stdafx.h"
-#endif
+#include <stdafx.h>
 
 namespace Ui
 {

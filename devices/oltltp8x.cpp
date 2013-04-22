@@ -1,12 +1,7 @@
 #include "oltltp8x.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "customsnmpfunctions.h"
-#endif
+#include <constant.h>
+#include <customsnmpfunctions.h>
 
 OltLtp8x::OltLtp8x(QObject *parent) :
     Olt(parent)

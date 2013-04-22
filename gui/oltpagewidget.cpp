@@ -1,15 +1,9 @@
 #include "oltpagewidget.h"
 #include "ui_oltpagewidget.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../constant.h"
-#include "../models/onttablemodel.h"
-#else
-#include "basicdialogs.h"
-#include "constant.h"
-#include "models/onttablemodel.h"
-#endif
+#include <basicdialogs.h>
+#include <constant.h>
+#include <models/onttablemodel.h>
 
 OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),

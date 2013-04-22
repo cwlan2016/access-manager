@@ -1,13 +1,8 @@
 #ifndef BOARDTABLEDELEGATE_H
 #define BOARDTABLEDELEGATE_H
 
-#ifdef _MSC_VER
-#include "../customtypes.h"
-#include "../devices/dslam.h"
-#else
-#include "customtypes.h"
-#include "devices/dslam.h"
-#endif
+#include <customtypes.h>
+#include <devices/dslam.h>
 
 class BoardTableDelegate : public QItemDelegate
 {

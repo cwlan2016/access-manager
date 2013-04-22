@@ -1,14 +1,8 @@
 #include "dslammxa64.h"
 
+#include <constant.h>
+#include <customsnmpfunctions.h>
 #include <ports/adslportmxa64.h>
-
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "customsnmpfunctions.h"
-#endif
 
 DslamMxa64::DslamMxa64(QObject *parent) :
     Dslam(parent)

@@ -1,14 +1,8 @@
 #include "dslammxa32.h"
 
+#include <constant.h>
+#include <customsnmpfunctions.h>
 #include <ports/adslportmxa32.h>
-
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../customsnmpfunctions.h"
-#else
-#include "constant.h"
-#include "customsnmpfunctions.h"
-#endif
 
 DslamMxa32::DslamMxa32(QObject *parent) :
     Dslam(parent)

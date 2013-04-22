@@ -1,19 +1,11 @@
 #include "switchpagewidget.h"
 #include "ui_switchpagewidget.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../constant.h"
-#include "../devices/switch.h"
-#include "../models/mactablemodel.h"
-#include "../models/switchporttablemodel.h"
-#else
-#include "basicdialogs.h"
-#include "constant.h"
-#include "devices/switch.h"
-#include "models/mactablemodel.h"
-#include "models/switchporttablemodel.h"
-#endif
+#include <basicdialogs.h>
+#include <constant.h>
+#include <devices/switch.h>
+#include <models/mactablemodel.h>
+#include <models/switchporttablemodel.h>
 
 SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),

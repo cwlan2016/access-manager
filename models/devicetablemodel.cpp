@@ -1,40 +1,21 @@
 #include "devicetablemodel.h"
 
-#ifdef _MSC_VER
-#include "../basicdialogs.h"
-#include "../config.h"
-#include "../constant.h"
-#include "../converters.h"
-#include "../snmpclient.h"
-#include "../other-data/dslamboard.h"
-#include "../devices/dslamma5300.h"
-#include "../devices/dslamma5600.h"
-#include "../devices/dslammxa32.h"
-#include "../devices/dslammxa64.h"
-#include "../devices/oltlte8st.h"
-#include "../devices/oltltp8x.h"
-#include "../devices/switchdes3526.h"
-#include "../devices/switchdes3528.h"
-#include "../devices/switchdes3550.h"
-#include "../models/boardtablemodel.h"
-#else
-#include "basicdialogs.h"
-#include "config.h"
-#include "constant.h"
-#include "converters.h"
-#include "snmpclient.h"
-#include "other-data/dslamboard.h"
-#include "devices/dslamma5300.h"
-#include "devices/dslamma5600.h"
-#include "devices/dslammxa32.h"
-#include "devices/dslammxa64.h"
-#include "devices/oltlte8st.h"
-#include "devices/oltltp8x.h"
-#include "devices/switchdes3526.h"
-#include "devices/switchdes3528.h"
-#include "devices/switchdes3550.h"
-#include "models/boardtablemodel.h"
-#endif
+#include <basicdialogs.h>
+#include <config.h>
+#include <constant.h>
+#include <converters.h>
+#include <snmpclient.h>
+#include <other-data/dslamboard.h>
+#include <devices/dslamma5300.h>
+#include <devices/dslamma5600.h>
+#include <devices/dslammxa32.h>
+#include <devices/dslammxa64.h>
+#include <devices/oltlte8st.h>
+#include <devices/oltltp8x.h>
+#include <devices/switchdes3526.h>
+#include <devices/switchdes3528.h>
+#include <devices/switchdes3550.h>
+#include <models/boardtablemodel.h>
 
 // Columns
 // DisplayRole, EditRole
@@ -98,13 +79,16 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
         if (index.column() == 0) {
             mList[index.row()]->setName(value.toString().trimmed());
             emit dataChanged(index, index);
-            mModified = true;
+            //mModified = true;
             return true;
         } else if (index.column() == 1) {
             DeviceModel::Enum newModel = DeviceModel::from(value.toString());
             DeviceType::Enum newType = DeviceType::from(newModel);
 
             QModelIndex deviceTypeIndex = this->index(index.row(), 3);
+
+            if (mList.at(index.row())->deviceModel() == newModel)
+                return false;
 
             if ((mList.at(index.row())->deviceType() == DeviceType::Other)
                     || (mList.at(index.row())->deviceType() == newType)) {
@@ -117,7 +101,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
             emit dataChanged(index, index);
             emit dataChanged(deviceTypeIndex, deviceTypeIndex);
-            mModified = true;
+            //mModified = true;
 
             return true;
         } else if (index.column() == 2) {
@@ -129,7 +113,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
             mList[index.row()]->setIp(value.toString().trimmed());
             emit dataChanged(index, index);
-            mModified = true;
+            //mModified = true;
 
             return true;
         }
@@ -182,7 +166,7 @@ bool DeviceTableModel::insertRow(int row, const QModelIndex &parent)
     mList.push_back(element);
     endInsertRows();
 
-    mModified = true;
+    deviceListIsModified();
 
     return true;
 }
@@ -193,7 +177,7 @@ bool DeviceTableModel::removeRow(int row, const QModelIndex &parent)
     mList.erase(mList.begin() + row);
     endRemoveRows();
 
-    mModified = true;
+    deviceListIsModified();
 
     return true;
 }
@@ -201,11 +185,6 @@ bool DeviceTableModel::removeRow(int row, const QModelIndex &parent)
 bool DeviceTableModel::isModified()
 {
     return mModified;
-}
-
-void DeviceTableModel::setModified(bool state)
-{
-    mModified = state;
 }
 
 bool DeviceTableModel::load()
@@ -262,13 +241,13 @@ bool DeviceTableModel::load()
 
     while (!reader.atEnd()) {
         if (reader.name() == "dslam") {
-            parseDslamElement(reader);
+            readDslamElement(reader);
             continue;
         } else if (reader.name() == "switch") {
-            parseSwitchElement(reader);
+            readSwitchElement(reader);
             continue;
         } else if (reader.name() == "olt") {
-            parseOltElement(reader);
+            readOltElement(reader);
             continue;
         } else {
             reader.skipCurrentElement();
@@ -317,11 +296,11 @@ bool DeviceTableModel::save()
     auto end = mList.constEnd();
     for (; it != end; ++it) {
         if ((*it)->deviceType() == DeviceType::Switch) {
-            createSwitchElement(writer, (*it).objectCast<Switch>());
+            writeSwitchElement(writer, (*it).objectCast<Switch>());
         } else if ((*it)->deviceType() == DeviceType::Dslam) {
-            createDslamElement(writer, (*it).objectCast<Dslam>());
+            writeDslamElement(writer, (*it).objectCast<Dslam>());
         } else if ((*it)->deviceType() == DeviceType::Olt) {
-            createOltElement(writer, (*it).objectCast<Olt>());
+            writeOltElement(writer, (*it).objectCast<Olt>());
         }
     }
 
@@ -378,13 +357,10 @@ bool DeviceTableModel::getVlanTagFromDevice(QModelIndex index)
 
     bool result = mList[index.row()]->getServiceDataFromDevice();
 
-    if (!result) {
+    if (!result)
         mError = mList[index.row()]->error();
-        return false;
-    } else {
-        mModified = true;
-        return true;
-    }
+
+    return result;
 }
 
 bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
@@ -405,13 +381,10 @@ bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
     if (deviceInfo->autoNumeringBoard())
         deviceInfo->boardTableModel()->renumeringPairList();
 
-    if (!result) {
+    if (!result)
         mError = deviceInfo->boardTableModel()->error();
-        return false;
-    } else {
-        mModified = true;
-        return true;
-    }
+
+    return result;
 }
 
 bool DeviceTableModel::getProfilesFromDevice(QModelIndex index)
@@ -429,13 +402,10 @@ bool DeviceTableModel::getProfilesFromDevice(QModelIndex index)
     Olt::Ptr deviceInfo = mList.at(index.row()).objectCast<Olt>();
     bool result = deviceInfo->getServiceDataFromDevice();
 
-    if (!result) {
+    if (!result)
         mError = deviceInfo->error();
-        return false;
-    } else {
-        mModified = true;
-        return true;
-    }
+
+    return result;
 }
 
 QString DeviceTableModel::error() const
@@ -471,7 +441,7 @@ void DeviceTableModel::readNextElement(QXmlStreamReader &reader)
     }
 }
 
-void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
+void DeviceTableModel::readSwitchElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum switchModel = DeviceModel::from(modelString);
@@ -499,13 +469,15 @@ void DeviceTableModel::parseSwitchElement(QXmlStreamReader &reader)
     switchInfo->setIp(reader.attributes().value("ip").toString());
     switchInfo.objectCast<Switch>()->setInetVlanTag(inetVlan);
     switchInfo.objectCast<Switch>()->setIptvVlanTag(iptvVlan);
+    connect(switchInfo.data(), &Device::modified,
+            this, &DeviceTableModel::deviceListIsModified);
 
     mList.push_back(switchInfo);
 
     readNextElement(reader);
 }
 
-void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
+void DeviceTableModel::readDslamElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum dslamModel = DeviceModel::from(modelString);
@@ -536,6 +508,8 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
     dslamInfo->setIp(reader.attributes().value("ip").toString());
     dslamInfo.objectCast<Dslam>()->setAutoFill(autoFill);
     dslamInfo.objectCast<Dslam>()->setAutoNumeringBoard(autoNumering);
+    connect(dslamInfo.data(), &Device::modified,
+            this, &DeviceTableModel::deviceListIsModified);
 
     mList.push_back(dslamInfo);
 
@@ -545,12 +519,12 @@ void DeviceTableModel::parseDslamElement(QXmlStreamReader &reader)
         return;
 
     if (reader.name() == "board")
-        parseDslamBoardList(reader, dslamInfo);
+        readDslamBoardList(reader, dslamInfo);
 
 
 }
 
-void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
+void DeviceTableModel::readDslamBoardList(QXmlStreamReader &reader,
                                            Device::Ptr deviceInfo)
 {
     Dslam::Ptr dslamInfo = deviceInfo.objectCast<Dslam>();
@@ -572,7 +546,7 @@ void DeviceTableModel::parseDslamBoardList(QXmlStreamReader &reader,
     }
 }
 
-void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
+void DeviceTableModel::readOltElement(QXmlStreamReader &reader)
 {
     QString modelString = reader.attributes().value("model").toString();
     DeviceModel::Enum oltModel = DeviceModel::from(modelString);
@@ -592,6 +566,8 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
 
     oltInfo->setName(reader.attributes().value("name").toString());
     oltInfo->setIp(reader.attributes().value("ip").toString());
+    connect(oltInfo.data(), &Device::modified,
+            this, &DeviceTableModel::deviceListIsModified);
 
     mList.push_back(oltInfo);
 
@@ -601,10 +577,10 @@ void DeviceTableModel::parseOltElement(QXmlStreamReader &reader)
         return;
 
     if ((reader.name() == "uniprofile") || (reader.name() == "multprofile"))
-        parseOltProfileList(reader, oltInfo);
+        readOltProfileList(reader, oltInfo);
 }
 
-void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
+void DeviceTableModel::readOltProfileList(QXmlStreamReader &reader,
                                            Device::Ptr deviceInfo)
 {
     Olt::Ptr oltInfo = deviceInfo.objectCast<Olt>();
@@ -634,7 +610,7 @@ void DeviceTableModel::parseOltProfileList(QXmlStreamReader &reader,
     }
 }
 
-void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
+void DeviceTableModel::writeSwitchElement(QXmlStreamWriter &writer,
         const Switch::Ptr &deviceInfo)
 {
     writer.writeStartElement("switch");
@@ -648,7 +624,7 @@ void DeviceTableModel::createSwitchElement(QXmlStreamWriter &writer,
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
+void DeviceTableModel::writeDslamElement(QXmlStreamWriter &writer,
                                           const Dslam::Ptr &deviceInfo)
 {
     writer.writeStartElement("dslam");
@@ -674,7 +650,7 @@ void DeviceTableModel::createDslamElement(QXmlStreamWriter &writer,
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createOltElement(QXmlStreamWriter &writer,
+void DeviceTableModel::writeOltElement(QXmlStreamWriter &writer,
                                         const Olt::Ptr &deviceInfo)
 {
     writer.writeStartElement("olt");
@@ -683,13 +659,13 @@ void DeviceTableModel::createOltElement(QXmlStreamWriter &writer,
     writer.writeAttribute("ip", deviceInfo->ip());
     writer.writeAttribute("model", DeviceModel::toString(deviceInfo->deviceModel()));
 
-    createOltProfileList(writer, deviceInfo->serviceProfileList(), "uniprofile");
-    createOltProfileList(writer, deviceInfo->multicastProfileList(), "multprofile");
+    writeOltProfileList(writer, deviceInfo->serviceProfileList(), "uniprofile");
+    writeOltProfileList(writer, deviceInfo->multicastProfileList(), "multprofile");
 
     writer.writeEndElement();
 }
 
-void DeviceTableModel::createOltProfileList(QXmlStreamWriter &writer,
+void DeviceTableModel::writeOltProfileList(QXmlStreamWriter &writer,
                                             const OltProfileMap &profileMap,
                                             QString typeElem)
 {
@@ -720,6 +696,8 @@ void DeviceTableModel::changeDeviceModel(int index, DeviceType::Enum deviceType,
     default:
         return;
     }
+
+    deviceListIsModified();
 }
 
 void DeviceTableModel::changeSwitchModel(int index, DeviceModel::Enum deviceModel)
@@ -786,4 +764,9 @@ void DeviceTableModel::changeOltModel(int index, DeviceModel::Enum deviceModel)
     }
 
     mList[index] = oltInfo;
+}
+
+void DeviceTableModel::deviceListIsModified()
+{
+    mModified = true;
 }

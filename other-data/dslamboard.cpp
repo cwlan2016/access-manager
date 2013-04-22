@@ -23,7 +23,10 @@ BoardType::Enum DslamBoard::type() const
 
 void DslamBoard::setType(BoardType::Enum type)
 {
-    mType = type;
+    if (mType != type) {
+        mType = type;
+        emit modified();
+    }
 }
 
 int DslamBoard::firstPair() const
@@ -33,5 +36,8 @@ int DslamBoard::firstPair() const
 
 void DslamBoard::setFirstPair(int firstPair)
 {
-    mFirstPair = firstPair;
+    if (mFirstPair != firstPair) {
+        mFirstPair = firstPair;
+        emit modified();
+    }
 }

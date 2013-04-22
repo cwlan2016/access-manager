@@ -1,25 +1,14 @@
 #include "devicetablepagewidget.h"
 #include "ui_devicetablepagewidget.h"
 
-#ifdef _MSC_VER
-#include "../constant.h"
-#include "../converters.h"
-#include "../models/boardtablemodel.h"
-#include "../models/devicetabledelegate.h"
-#include "../gui/dslampagewidget.h"
-#include "../gui/editdslamboardtablepagewidget.h"
-#include "../gui/oltpagewidget.h"
-#include "../gui/switchpagewidget.h"
-#else
-#include "constant.h"
-#include "converters.h"
-#include "models/boardtablemodel.h"
-#include "models/devicetabledelegate.h"
-#include "gui/dslampagewidget.h"
-#include "gui/editdslamboardtablepagewidget.h"
-#include "gui/oltpagewidget.h"
-#include "gui/switchpagewidget.h"
-#endif
+#include <constant.h>
+#include <converters.h>
+#include <models/boardtablemodel.h>
+#include <models/devicetabledelegate.h>
+#include <gui/dslampagewidget.h>
+#include <gui/editdslamboardtablepagewidget.h>
+#include <gui/oltpagewidget.h>
+#include <gui/switchpagewidget.h>
 
 DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
                                              QVector<PageType::Enum> *typePageList,
@@ -307,7 +296,7 @@ void DeviceTablePageWidget::showEditDslamBoardListPage()
 
     Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
-    QWidget *pageWidget = new EditDslamBoardTablePageWidget(deviceInfo, mDeviceTableModel, this);
+    QWidget *pageWidget = new EditDslamBoardTablePageWidget(deviceInfo, this);
     pageWidget->setObjectName(namePage);
 
     mPageList->insert(namePage, pageWidget);
