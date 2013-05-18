@@ -13,9 +13,12 @@ public:
 
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);
-    long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
+    long snmpPortIndex(BoardType::Enum boardType, int slot, int port);
     XdslPort::Ptr createPort(BoardType::Enum boardType, int boardIndex,
                              int portIndex, QObject *parent);
+
+    static QList<DslProfile> *defaultAdslProfiles();
+    static QList<DslProfile> *defaultShdslProfiles();
 };
 
 #endif // DSLAMMXA64_H

@@ -23,9 +23,12 @@ public:
 
     DeviceType::Enum deviceType() const;
     virtual int countPorts(BoardType::Enum boardType);
-    virtual long snmpInterfaceIndex(BoardType::Enum boardType, int slot, int port);
+    virtual long snmpPortIndex(BoardType::Enum boardType, int slot, int port);
     virtual XdslPort::Ptr createPort(BoardType::Enum boardType, int boardIndex,
                                      int portIndex, QObject *parent);
+
+    static QList<DslProfile> *defaultAdslProfiles();
+    static QList<DslProfile> *defaultShdslProfiles();
 
     BoardTableModel *boardTableModel();
 

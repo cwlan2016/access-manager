@@ -3,6 +3,7 @@
 
 #include "configs/snmpconfig.h"
 #include "configs/switchconfig.h"
+#include "configs/dslamprofileconfig.h"
 
 class Config
 {

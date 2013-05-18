@@ -45,7 +45,7 @@
      <item>
       <widget class="QStackedWidget" name="stackedWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="snmpPage">
         <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -125,7 +125,7 @@
          <item>
           <widget class="QTabWidget" name="deviceTabWidget">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="switchTab">
             <attribute name="title">
@@ -157,6 +157,149 @@
                 </item>
                 <item row="1" column="1">
                  <widget class="QLineEdit" name="swIptvUnicastVlanEdit"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="dslamTab">
+            <attribute name="title">
+             <string>Dslam</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QGroupBox" name="dsDslProfileGroupBox">
+               <property name="title">
+                <string>Dsl профили</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout">
+                <item row="0" column="1" colspan="2">
+                 <widget class="QComboBox" name="dsDeviceModelComboBox">
+                  <item>
+                   <property name="text">
+                    <string>MA5600</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>MA5300</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>MXA-32</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>MXA-64</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="3" column="0" colspan="6">
+                 <widget class="QTableView" name="dsDslProfileTableView">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::EditKeyPressed</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="dsDeviceLabel">
+                  <property name="text">
+                   <string>Модель:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="6">
+                 <layout class="QHBoxLayout" name="dsEditProfileButtonsHLayout">
+                  <item>
+                   <widget class="QPushButton" name="dsAddProfileButton">
+                    <property name="toolTip">
+                     <string>Добавить новый DSL профиль...</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resource.qrc">
+                      <normaloff>:/images/add.png</normaloff>:/images/add.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="dsEditProfileButton">
+                    <property name="toolTip">
+                     <string>Отредактировать информацию о Dsl профиле...</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resource.qrc">
+                      <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="dsRemoveProfileButton">
+                    <property name="toolTip">
+                     <string>Удалить существующий DSL профиль...</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../resource.qrc">
+                      <normaloff>:/images/remove.png</normaloff>:/images/remove.png</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLabel" name="dsTypeBoardLabel">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Тип платы:</string>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="4" colspan="2">
+                 <widget class="QComboBox" name="dsTypeBoardComboBox">
+                  <item>
+                   <property name="text">
+                    <string>adsl</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>shdsl</string>
+                   </property>
+                  </item>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -244,6 +387,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>listWidget</tabstop>
+  <tabstop>readComEdit</tabstop>
+  <tabstop>writeComEdit</tabstop>
+  <tabstop>timeoutEdit</tabstop>
+  <tabstop>saveTimeoutEdit</tabstop>
+  <tabstop>portEdit</tabstop>
+  <tabstop>retriesEdit</tabstop>
+  <tabstop>deviceTabWidget</tabstop>
+  <tabstop>swInternetVlanEdit</tabstop>
+  <tabstop>swIptvUnicastVlanEdit</tabstop>
+  <tabstop>dsDeviceModelComboBox</tabstop>
+  <tabstop>dsTypeBoardComboBox</tabstop>
+  <tabstop>dsAddProfileButton</tabstop>
+  <tabstop>dsEditProfileButton</tabstop>
+  <tabstop>dsRemoveProfileButton</tabstop>
+  <tabstop>dsDslProfileTableView</tabstop>
+  <tabstop>defaultSettingButton</tabstop>
+  <tabstop>saveSettingsButton</tabstop>
+ </tabstops>
  <resources>
   <include location="../resource.qrc"/>
  </resources>

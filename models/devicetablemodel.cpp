@@ -79,7 +79,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
         if (index.column() == 0) {
             mList[index.row()]->setName(value.toString().trimmed());
             emit dataChanged(index, index);
-            //mModified = true;
+
             return true;
         } else if (index.column() == 1) {
             DeviceModel::Enum newModel = DeviceModel::from(value.toString());
@@ -101,7 +101,6 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
             emit dataChanged(index, index);
             emit dataChanged(deviceTypeIndex, deviceTypeIndex);
-            //mModified = true;
 
             return true;
         } else if (index.column() == 2) {

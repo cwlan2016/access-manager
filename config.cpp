@@ -11,6 +11,8 @@ void Config::init()
     mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                   % "/." % qApp->organizationName() % "/";
 #endif
+
+    DslamProfileConfig::init();
 }
 
 bool Config::load()

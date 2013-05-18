@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 typedef QPair<oid *, int> OidPair;
+typedef QPair<QString, QString> DslProfile;
 typedef QMap<int, QString> OltProfileMap;
 
 namespace BoardType

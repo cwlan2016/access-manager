@@ -21,6 +21,12 @@ private:
     bool validateSettingsData();
     void currentItemChanged(int item);
 
+    void addDslProfile();
+    void editDslProfile();
+    void removeDslProfile();
+
+    void dsComboBoxCurrentIndexChanged(int index);
+
     Ui::SettingsPageWidget *ui;
 };
 

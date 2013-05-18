@@ -29,11 +29,14 @@ public:
     virtual void parsePdu(SnmpClient::Ptr snmpClient);
 
     typedef QSharedPointer<Device> Ptr;
+
 signals:
     void modified();
+
 private:
     QString mIp;
     QString mName;
+
 protected:
     QString mError;
 };

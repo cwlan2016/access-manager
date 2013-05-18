@@ -5,8 +5,10 @@
 #include <constant.h>
 #include <converters.h>
 #include <devices/dslam.h>
+#include <configs/dslamprofileconfig.h>
 #include <models/boardtablemodel.h>
 #include <models/dslamporttablemodel.h>
+#include <models/dslprofiletablemodel.h>
 
 DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     PageWidget(deviceInfo, parent),
@@ -47,8 +49,6 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
             this, &DslamPageWidget::refreshAllPortInfo);
 
-    fillSelectProfileComboBox();
-
     if ((mDeviceInfo->deviceModel() == DeviceModel::MA5600)
             || (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
         ui->dslamTreeView->setModel(mDeviceInfo.objectCast<Dslam>()->boardTableModel());
@@ -65,6 +65,8 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
         }
 
         ui->dslamTreeView->setModel(portListModel);
+
+        fillSelectProfileComboBox();
     }
 }
 
@@ -156,6 +158,8 @@ void DslamPageWidget::showPortListModel()
     ui->dslamTreeView->setColumnWidth(1, 120);
     ui->dslamTreeView->setColumnWidth(2, 100);
     ui->dslamTreeView->setColumnWidth(3, 120);
+
+    fillSelectProfileComboBox();
 }
 
 void DslamPageWidget::backToBoardListModel()
@@ -174,42 +178,25 @@ void DslamPageWidget::backToBoardListModel()
 
 void DslamPageWidget::showSelectProfileGBox()
 {
-    DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-
-    DeviceModel::Enum deviceModel = mDeviceInfo->deviceModel();
-
-    if ((portTableModel->boardType() == BoardType::AnnexA)
-            && (deviceModel == DeviceModel::MA5600)) {
-        if (ui->profileListComboBox->count() <= 7)
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslGLite);
-    } else {
-        if (ui->profileListComboBox->count() == 8)
-            ui->profileListComboBox->removeItem(7);
-    }
-
     ui->selectProfileGroupBox->setChecked(true);
 }
 
 void DslamPageWidget::fillSelectProfileComboBox()
 {
-    if ((mDeviceInfo->deviceModel() == DeviceModel::MA5600) ||
-            (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslFast);
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslInterleave);
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::Adsl2Interleave);
+    DslamPortTableModel *model = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-        if (mDeviceInfo->deviceModel() == DeviceModel::MA5600) {
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslFast8Mb);
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::Adsl2Fast10Mb);
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::Adsl2Fast14Mb);
-            ui->profileListComboBox->addItem(AdslProfileDisplayName::Adsl2Fast18Mb);
-        }
-    } else if ((mDeviceInfo->deviceModel() == DeviceModel::MXA64) ||
-               (mDeviceInfo->deviceModel() == DeviceModel::MXA32)) {
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslInterleave);
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::AdslGLite);
-        ui->profileListComboBox->addItem(AdslProfileDisplayName::Adsl2Interleave);
+    if (!model)
+        return;
+
+    DslProfileTableModel *dslProfileModel = 0;
+    if ((model->boardType() == BoardType::AnnexA)
+            || (model->boardType() == BoardType::AnnexB)) {
+        dslProfileModel = DslamProfileConfig::adsl(mDeviceInfo->deviceModel());
+    } else if (model->boardType() == BoardType::Shdsl) {
+        dslProfileModel = DslamProfileConfig::shdsl(mDeviceInfo->deviceModel());
     }
+
+    ui->profileListComboBox->setModel(dslProfileModel);
 }
 
 void DslamPageWidget::applyDslProfile()
@@ -223,7 +210,12 @@ void DslamPageWidget::applyDslProfile()
     }
 
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-    QString profileName = displayNameProfileToDslamName(mDeviceInfo->deviceModel(), ui->profileListComboBox->currentText());
+    DslProfileTableModel *dslProfileModel = qobject_cast<DslProfileTableModel *>(ui->profileListComboBox->model());
+
+    if (!dslProfileModel)
+        return;
+
+    QString profileName = dslProfileModel->dslamProfileName(ui->profileListComboBox->currentIndex());
 
     bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
 

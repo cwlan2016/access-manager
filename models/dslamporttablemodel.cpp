@@ -168,7 +168,7 @@ bool DslamPortTableModel::load()
     }
 
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    int portIndex = mParentDevice->snmpInterfaceIndex(mBoardType, mBoardIndex, 0) - 1;
+    int portIndex = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex, 0) - 1;
     mList[0]->fillPrimaryLevelPdu(snmpClient.data(), portIndex);
     int size = mList.size();
 
@@ -274,7 +274,7 @@ bool DslamPortTableModel::changePortState(int portIndex, int portState)
 
     snmpClient->createPdu(SNMP_MSG_SET);
 
-    long numInterface = mParentDevice->snmpInterfaceIndex(mBoardType, mBoardIndex,
+    long numInterface = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex,
                                                           portIndex);
 
     OidPair statusOid;
@@ -321,7 +321,7 @@ bool DslamPortTableModel::changePortProfile(QModelIndex portIndex,
         return false;
     }
 
-    long indexPort = mParentDevice->snmpInterfaceIndex(mBoardType, mBoardIndex,
+    long indexPort = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex,
                                                         currPort);
 
     OidPair profileOid;
