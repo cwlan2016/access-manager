@@ -36,11 +36,11 @@ public:
     QString timeLastChange() const;
     void setTimeLastChange(QString timeLastChange);
 
-    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
     virtual bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
 
-    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    virtual bool parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient);
+    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
+    virtual bool parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient);
 
     typedef XdslPort *Ptr;
 

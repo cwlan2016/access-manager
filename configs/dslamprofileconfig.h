@@ -12,6 +12,8 @@ public:
     static DslProfileTableModel *adsl(DeviceModel::Enum deviceModel);
     static DslProfileTableModel *shdsl(DeviceModel::Enum deviceModel);
 
+    static void toDefault();
+
 private:
     static QHash<DeviceModel::Enum, DslProfileTableModel *> mAdslList;
     static QHash<DeviceModel::Enum, DslProfileTableModel *> mShdslList;

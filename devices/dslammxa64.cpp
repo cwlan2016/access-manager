@@ -44,7 +44,7 @@ long DslamMxa64::snmpPortIndex(BoardType::Enum boardType, int slot,
 XdslPort::Ptr DslamMxa64::createPort(BoardType::Enum boardType, int boardIndex,
                                      int portIndex, QObject *parent)
 {
-    int snmpIndex = snmpPortIndex(boardType, boardIndex, portIndex);
+    long snmpIndex = snmpPortIndex(boardType, boardIndex, portIndex);
 
     switch (boardType) {
     case BoardType::AnnexA:

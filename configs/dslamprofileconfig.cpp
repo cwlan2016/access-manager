@@ -44,5 +44,27 @@ DslProfileTableModel *DslamProfileConfig::shdsl(DeviceModel::Enum deviceModel)
     return 0;
 }
 
+void DslamProfileConfig::toDefault()
+{
+    auto adslIt = mAdslList.begin();
+    auto adslEnd = mAdslList.end();
+
+    for(; adslIt != adslEnd; ++adslIt) {
+        delete *adslIt;
+    }
+
+    auto shdslIt = mShdslList.begin();
+    auto shdslEnd = mShdslList.end();
+
+    for(; shdslIt != shdslEnd; ++shdslIt) {
+        delete *shdslIt;
+    }
+
+    mAdslList.clear();
+    mShdslList.clear();
+
+    init();
+}
+
 QHash<DeviceModel::Enum, DslProfileTableModel *> DslamProfileConfig::mAdslList;
 QHash<DeviceModel::Enum, DslProfileTableModel *> DslamProfileConfig::mShdslList;

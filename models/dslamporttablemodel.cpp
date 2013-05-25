@@ -167,9 +167,9 @@ bool DslamPortTableModel::load()
         return false;
     }
 
-    snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    int portIndex = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex, 0) - 1;
-    mList[0]->fillPrimaryLevelPdu(snmpClient.data(), portIndex);
+    snmpClient->createPdu(SNMP_MSG_GET);
+
+    mList[0]->fillPrimaryLevelPdu(snmpClient.data());
     int size = mList.size();
 
     for (int i = 0; i < size; ++i) {
@@ -234,7 +234,7 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
     mList[currPort]->fillSecondaryLevelPdu(snmpClient.data());
 
     if (snmpClient->sendRequest()) {
-        if (!mList[currPort]->parseSecondaryPrimaryLevelPdu(snmpClient.data())) {
+        if (!mList[currPort]->parseSecondaryLevelPdu(snmpClient.data())) {
             mError = SnmpErrorStrings::GetInfo;
             return false;
         } else {

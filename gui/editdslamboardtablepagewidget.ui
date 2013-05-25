@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>EditDslamBoardTablePageWidget</class>
- <widget class="QWidget" name="EditDslamBoardListPageWidget">
+ <widget class="QWidget" name="EditDslamBoardTablePageWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -57,10 +57,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Редактировать</string>
+    <string>Изменить</string>
    </property>
    <property name="toolTip">
-    <string>Редактировать</string>
+    <string>Изменить</string>
    </property>
   </action>
   <action name="removeBoardAction">

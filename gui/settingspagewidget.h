@@ -17,7 +17,13 @@ public:
     ~SettingsPageWidget();
 
 private:
+    void initGlobalActions();
+    void initSnmpTabFields();
+    void initDevicesTabFields();
+    void initDevicesTabActions();
+
     void saveSetting();
+    void resetToDefault();
     bool validateSettingsData();
     void currentItemChanged(int item);
 

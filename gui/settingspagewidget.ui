@@ -200,6 +200,9 @@
                 </item>
                 <item row="3" column="0" colspan="6">
                  <widget class="QTableView" name="dsDslProfileTableView">
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::ActionsContextMenu</enum>
+                  </property>
                   <property name="editTriggers">
                    <set>QAbstractItemView::EditKeyPressed</set>
                   </property>
@@ -386,6 +389,36 @@
     </layout>
    </item>
   </layout>
+  <action name="addDslProfileAction">
+   <property name="icon">
+    <iconset resource="../resource.qrc">
+     <normaloff>:/images/add.png</normaloff>
+     <normalon>:/images/add.png</normalon>:/images/add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Добавить</string>
+   </property>
+  </action>
+  <action name="editDslProfileAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Изменить</string>
+   </property>
+  </action>
+  <action name="removeDslProfileAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/remove.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Удалить</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>listWidget</tabstop>

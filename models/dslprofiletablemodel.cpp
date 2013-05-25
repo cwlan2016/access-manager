@@ -6,9 +6,10 @@ DslProfileTableModel::DslProfileTableModel(QList<DslProfile> *list,
                                            QObject *parent) :
     QAbstractTableModel(parent)
 {
-    countDefaultProfiles = 0;
+    mCountDefaultProfiles = 0;
+
     if (list) {
-        countDefaultProfiles = list->size();
+        mCountDefaultProfiles = list->size();
 
         auto it = list->begin();
         auto end = list->end();
@@ -48,6 +49,13 @@ QVariant DslProfileTableModel::data(const QModelIndex &index, int role) const
         } else if (index.column() == 1) {
             return mList.at(index.row()).second;
         }
+    } else if (role == Qt::FontRole) {
+        if (index.row() >= mCountDefaultProfiles)
+            return false;
+
+        QFont font(qApp->font());
+        font.setBold(true);
+        return font;
     }
 
     return QVariant();
@@ -104,7 +112,10 @@ Qt::ItemFlags DslProfileTableModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-    return Qt::ItemIsEditable | flags;
+    if (index.row() >= mCountDefaultProfiles)
+        flags |= Qt::ItemIsEditable;
+
+    return flags;
 }
 
 bool DslProfileTableModel::insertRow(int row, const QModelIndex &parent)
@@ -118,6 +129,9 @@ bool DslProfileTableModel::insertRow(int row, const QModelIndex &parent)
 
 bool DslProfileTableModel::removeRow(int row, const QModelIndex &parent)
 {
+    if (row < mCountDefaultProfiles)
+        return false;
+
     beginRemoveRows(parent, row, row);
     mList.erase(mList.begin() + row);
     endRemoveRows();
@@ -131,4 +145,45 @@ QString DslProfileTableModel::dslamProfileName(int index)
         return "";
 
     return mList.at(index).second;
+}
+
+QString DslProfileTableModel::displayProfileName(QString dslamName)
+{
+
+    auto end = mList.constEnd();
+
+    for (auto it = mList.constBegin(); it != end; ++it) {
+        if ((*it).second == dslamName)
+            return (*it).first;
+    }
+
+    return QString("Other(%1)").arg(dslamName);
+}
+
+QString DslProfileTableModel::configString()
+{
+    QString result = "";
+
+    int size = mList.size();
+    for (int i = mCountDefaultProfiles; i < size; ++i) {
+        result += QString("%1|%2|").arg(mList[i].first).arg(mList[i].second);
+    }
+
+    if (!result.isEmpty())
+        result.remove(result.size() - 1, 1);
+
+    return result;
+}
+
+void DslProfileTableModel::fromConfigString(QString value)
+{
+    QStringList list = value.split('|');
+
+    if (list.size() % 2 != 0)
+        return;
+
+    int size = list.size();
+    for (int i = 0; i < size; i += 2) {
+        mList.push_back(qMakePair(list.at(i), list.at(i + 1)));
+    }
 }

@@ -124,16 +124,12 @@ void SnmpClient::addOid(const oid *someOid, size_t size)
     snmp_add_null_var(mPdu, someOid, size);
 }
 
-// type next values
-// i: INTEGER
-// u: unsigned INTEGER
-// t: TIMETICKS
-// a: IPADDRESS
-// o: OBJID
-// s: STRING,
+// type values
+// i: INTEGER       u: UNSIGNED INTEGER
+// a: IPADDRESS     t: TIMETICKS
+// o: OBJID         b: BITS
+// s: STRING        d: DECIMAL STRING
 // x: HEX STRING
-// d: DECIMAL STRING
-// b: BITS
 void SnmpClient::addOid(const oid *someOid, size_t size, QString value, char type)
 {
     mGarbageCollector.push_back(someOid);

@@ -24,10 +24,14 @@ public:
     bool removeRow(int row, const QModelIndex &parent);
 
     QString dslamProfileName(int index);
+    QString displayProfileName(QString dslamName);
+
+    QString configString();
+    void fromConfigString(QString value);
 
 private:
     QList<DslProfile> mList;
-    int countDefaultProfiles;
+    int mCountDefaultProfiles;
 };
 
 #endif // DSLPROFILETABLEMODEL_H

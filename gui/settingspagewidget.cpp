@@ -12,32 +12,62 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->readComEdit->setText(SnmpConfig::readCommunity());
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->listWidget->setCurrentRow(0);
+    ui->deviceTabWidget->setCurrentIndex(0);
 
     ui->readComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+"), this));
+    ui->writeComEdit->setValidator(new QRegExpValidator(QRegExp("\\w+"), this));
+    ui->timeoutEdit->setValidator(new QIntValidator(0, 100000, this));
+    ui->saveTimeoutEdit->setValidator(new QIntValidator(0, 100000, this));
+    ui->portEdit->setValidator(new QIntValidator(0, 65523, this));
+    ui->retriesEdit->setValidator(new QIntValidator(0, 10, this));
+
+    initGlobalActions();
+    initSnmpTabFields();
+    initDevicesTabFields();
+    initDevicesTabActions();
+}
+
+SettingsPageWidget::~SettingsPageWidget()
+{
+    delete ui;
+}
+
+void SettingsPageWidget::initGlobalActions()
+{
+    connect(ui->saveSettingsButton, &QPushButton::pressed,
+            this, &SettingsPageWidget::saveSetting);
+    connect(ui->defaultSettingButton, &QPushButton::pressed,
+            this, &SettingsPageWidget::resetToDefault);
+    connect(ui->listWidget, &QListWidget::currentRowChanged,
+            this, &SettingsPageWidget::currentItemChanged);
+}
+
+void SettingsPageWidget::initSnmpTabFields()
+{
+    ui->readComEdit->setText(SnmpConfig::readCommunity());
     ui->writeComEdit->setText(SnmpConfig::writeCommunity());
     ui->timeoutEdit->setText(QString::number(SnmpConfig::timeout()));
-    ui->timeoutEdit->setValidator(new QIntValidator(0, 100000, this));
     ui->saveTimeoutEdit->setText(QString::number(SnmpConfig::saveConfigTimeout()));
-    ui->saveTimeoutEdit->setValidator(new QIntValidator(0, 100000, this));
     ui->portEdit->setText(QString::number(SnmpConfig::port()));
-    ui->portEdit->setValidator(new QIntValidator(0, 65523, this));
     ui->retriesEdit->setText(QString::number(SnmpConfig::retries()));
-    ui->retriesEdit->setValidator(new QIntValidator(0, 100000, this));
+}
 
+void SettingsPageWidget::initDevicesTabFields()
+{
     ui->swInternetVlanEdit->setText(SwitchConfig::inetVlanName());
     ui->swIptvUnicastVlanEdit->setText(SwitchConfig::iptvVlanName());
 
-    ui->stackedWidget->setCurrentIndex(0);
-    ui->listWidget->setCurrentRow(0);
-
-    connect(ui->saveSettingsButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::saveSetting);
-    connect(ui->listWidget, &QListWidget::currentRowChanged,
-            this, &SettingsPageWidget::currentItemChanged);
-
     ui->dsDeviceModelComboBox->setCurrentIndex(-1);
     ui->dsTypeBoardComboBox->setCurrentIndex(-1);
+}
+
+void SettingsPageWidget::initDevicesTabActions()
+{
+    ui->dsDslProfileTableView->addAction(ui->addDslProfileAction);
+    ui->dsDslProfileTableView->addAction(ui->editDslProfileAction);
+    ui->dsDslProfileTableView->addAction(ui->removeDslProfileAction);
 
     connect(ui->dsDeviceModelComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &SettingsPageWidget::dsComboBoxCurrentIndexChanged);
@@ -49,11 +79,12 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
             this, &SettingsPageWidget::editDslProfile);
     connect(ui->dsRemoveProfileButton, &QPushButton::pressed,
             this, &SettingsPageWidget::removeDslProfile);
-}
-
-SettingsPageWidget::~SettingsPageWidget()
-{
-    delete ui;
+    connect(ui->addDslProfileAction, &QAction::triggered,
+            this, &SettingsPageWidget::addDslProfile);
+    connect(ui->editDslProfileAction, &QAction::triggered,
+            this, &SettingsPageWidget::editDslProfile);
+    connect(ui->removeDslProfileAction, &QAction::triggered,
+            this, &SettingsPageWidget::removeDslProfile);
 }
 
 void SettingsPageWidget::saveSetting()
@@ -78,6 +109,22 @@ void SettingsPageWidget::saveSetting()
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки программы сохранены."), "");
         return;
     }
+}
+
+void SettingsPageWidget::resetToDefault()
+{
+    bool result = BasicDialogs::question(this, "Подтверждение",
+                                         "Все настройки программы будут удалены. Вы действительно хотите продолжить?");
+
+    if (!result)
+        return;
+
+    SnmpConfig::toDefault();
+    SwitchConfig::toDefault();
+    DslamProfileConfig::toDefault();
+
+    initSnmpTabFields();
+    initDevicesTabFields();
 }
 
 bool SettingsPageWidget::validateSettingsData()

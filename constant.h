@@ -11,6 +11,7 @@ const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400
 
 namespace Mib
 {
+const oid sysUpTime[] =                                 { 1, 3, 6, 1, 2, 1, 1, 3, 0 };
 const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 };  // .index = Description_new
 const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2 };    // .index = Description_new
 const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7 };
@@ -199,6 +200,15 @@ namespace SwitchSettingsStrings
 {
 const QString inetVlanName =        QString::fromUtf8("inetVlanName");
 const QString iptvUnicastVlanName = QString::fromUtf8("iptvUnicastVlanName");
+}
+
+namespace DslProfileSettingsStrings
+{
+const QString ma5300 = QString::fromUtf8("MA5300");
+const QString ma5600 = QString::fromUtf8("MA5600");
+
+const QString mxa32 = QString::fromUtf8("MXA32");
+const QString mxa64 = QString::fromUtf8("MXA64");
 }
 
 namespace DslProfileTableModelStrings

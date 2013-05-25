@@ -28,6 +28,9 @@ private:
     static void createSwitchGroup(QSettings &settings);
     static void parseSwitchGroup(QSettings &settings);
 
+    static void createDslProfileGroup(QSettings &settings);
+    static void parseDslProfileGroup(QSettings &settings);
+
     static QString mError;
     static QString mConfigPath;
 };
