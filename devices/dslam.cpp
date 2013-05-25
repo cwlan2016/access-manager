@@ -64,7 +64,7 @@ int Dslam::countPorts(BoardType::Enum boardType)
     return 0;
 }
 
-long Dslam::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+long Dslam::snmpPortIndex(BoardType::Enum boardType, int slot,
                                    int port)
 {
     Q_UNUSED(boardType)
@@ -82,6 +82,16 @@ XdslPort::Ptr Dslam::createPort(BoardType::Enum boardType, int boardIndex,
     Q_UNUSED(portIndex)
     Q_UNUSED(parent)
 
+    return 0;
+}
+
+QList<DslProfile> *Dslam::defaultAdslProfiles()
+{
+    return 0;
+}
+
+QList<DslProfile> *Dslam::defaultShdslProfiles()
+{
     return 0;
 }
 
@@ -109,8 +119,8 @@ void Dslam::InitializeBoardTableModel()
     connect(mBoardListModel, &BoardTableModel::modified,
             this, &Dslam::boardListIsModified);
 
-    setAutoFill(1);
-    setAutoNumeringBoard(1);
+    mAutoFill = 1;
+    mAutoNumeringBoard = 1;
 }
 
 void Dslam::boardListIsModified()

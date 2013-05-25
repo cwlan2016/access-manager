@@ -9,10 +9,10 @@ class AdslPortMxa32 : public AdslPort
 public:
     explicit AdslPortMxa32(long index, QObject *parent = 0);
 
-    void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
+    void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
     bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
-    void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    bool parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient);
+    void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
+    bool parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient);
 };
 
 #endif // ADSLPORTMXA32_H

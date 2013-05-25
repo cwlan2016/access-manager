@@ -32,7 +32,7 @@ int DslamMxa64::countPorts(BoardType::Enum boardType)
     return 64;
 }
 
-long DslamMxa64::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+long DslamMxa64::snmpPortIndex(BoardType::Enum boardType, int slot,
                                         int port)
 {
     Q_UNUSED(boardType)
@@ -44,14 +44,23 @@ long DslamMxa64::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
 XdslPort::Ptr DslamMxa64::createPort(BoardType::Enum boardType, int boardIndex,
                                      int portIndex, QObject *parent)
 {
-    int snmpPortIndex = snmpInterfaceIndex(boardType, boardIndex, portIndex);
+    long snmpIndex = snmpPortIndex(boardType, boardIndex, portIndex);
 
     switch (boardType) {
     case BoardType::AnnexA:
     case BoardType::AnnexB:
-        return new AdslPortMxa64(snmpPortIndex, parent);
+        return new AdslPortMxa64(snmpIndex, parent);
     default:
-        return new XdslPort(snmpPortIndex, parent);
+        return new XdslPort(snmpIndex, parent);
     }
 }
 
+QList<DslProfile> *DslamMxa64::defaultAdslProfiles()
+{
+    return 0;
+}
+
+QList<DslProfile> *DslamMxa64::defaultShdslProfiles()
+{
+    return 0;
+}

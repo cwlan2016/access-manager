@@ -20,7 +20,7 @@ public:
     void loadDeviceList();
     void loadProgramSettings();
 
-private:
+private:    
     void upDslPort();
     void downDslPort();
 

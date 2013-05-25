@@ -11,6 +11,8 @@ void Config::init()
     mConfigPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                   % "/." % qApp->organizationName() % "/";
 #endif
+
+    DslamProfileConfig::init();
 }
 
 bool Config::load()
@@ -25,7 +27,7 @@ bool Config::load()
                        QSettings::IniFormat);
     parseSnmpGroup(settings);
     parseSwitchGroup(settings);
-
+    parseDslProfileGroup(settings);
     return true;
 }
 
@@ -38,6 +40,7 @@ bool Config::save()
                        QSettings::IniFormat);
     createSnmpGroup(settings);
     createSwitchGroup(settings);
+    createDslProfileGroup(settings);
     settings.sync();
 
     return true;
@@ -69,10 +72,12 @@ void Config::toDefault()
 {
     SnmpConfig::toDefault();
     SwitchConfig::toDefault();
+    DslamProfileConfig::toDefault();
     QSettings settings(mConfigPath % qApp->applicationName() % ".ini",
                        QSettings::IniFormat);
     createSnmpGroup(settings);
     createSwitchGroup(settings);
+    createDslProfileGroup(settings);
     settings.sync();
 }
 
@@ -144,8 +149,63 @@ void Config::parseSwitchGroup(QSettings &settings)
     value = settings.value(SwitchSettingsStrings::iptvUnicastVlanName);
     SwitchConfig::setIptvVlanName(value.toString());
 
-    settings.endGroup();
+    settings.endGroup();    
+}
 
+void Config::createDslProfileGroup(QSettings &settings)
+{
+    settings.beginGroup("adsl");
+
+    settings.setValue(DslProfileSettingsStrings::ma5300,
+                      DslamProfileConfig::adsl(DeviceModel::MA5300)->configString());
+    settings.setValue(DslProfileSettingsStrings::ma5600,
+                      DslamProfileConfig::adsl(DeviceModel::MA5600)->configString());
+    settings.setValue(DslProfileSettingsStrings::mxa32,
+                      DslamProfileConfig::adsl(DeviceModel::MXA32)->configString());
+    settings.setValue(DslProfileSettingsStrings::mxa64,
+                      DslamProfileConfig::adsl(DeviceModel::MXA64)->configString());
+
+    settings.endGroup();
+    settings.beginGroup("shdsl");
+
+    settings.setValue(DslProfileSettingsStrings::ma5300,
+                      DslamProfileConfig::shdsl(DeviceModel::MA5300)->configString());
+    settings.setValue(DslProfileSettingsStrings::ma5600,
+                      DslamProfileConfig::shdsl(DeviceModel::MA5600)->configString());
+    settings.setValue(DslProfileSettingsStrings::mxa32,
+                      DslamProfileConfig::shdsl(DeviceModel::MXA32)->configString());
+    settings.setValue(DslProfileSettingsStrings::mxa64,
+                      DslamProfileConfig::shdsl(DeviceModel::MXA64)->configString());
+
+    settings.endGroup();
+}
+
+void Config::parseDslProfileGroup(QSettings &settings)
+{
+    settings.beginGroup("adsl");
+
+    QString value = settings.value(DslProfileSettingsStrings::ma5300).toString();
+    DslamProfileConfig::adsl(DeviceModel::MA5300)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::ma5600).toString();
+    DslamProfileConfig::adsl(DeviceModel::MA5600)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::mxa32).toString();
+    DslamProfileConfig::adsl(DeviceModel::MXA32)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::mxa64).toString();
+    DslamProfileConfig::adsl(DeviceModel::MXA64)->fromConfigString(value);
+
+    settings.endGroup();
+    settings.beginGroup("shdsl");
+
+    value = settings.value(DslProfileSettingsStrings::ma5300).toString();
+    DslamProfileConfig::shdsl(DeviceModel::MA5300)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::ma5600).toString();
+    DslamProfileConfig::shdsl(DeviceModel::MA5600)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::mxa32).toString();
+    DslamProfileConfig::shdsl(DeviceModel::MXA32)->fromConfigString(value);
+    value = settings.value(DslProfileSettingsStrings::mxa64).toString();
+    DslamProfileConfig::shdsl(DeviceModel::MXA64)->fromConfigString(value);
+
+    settings.endGroup();
 }
 
 QString Config::mConfigPath = "";

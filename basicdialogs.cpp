@@ -113,6 +113,6 @@ bool question(QWidget *parent, const QString &title, const QString &text,
 
     messageBox->exec();
 
-    return  messageBox->result() == QDialog::Accepted;
+    return  messageBox->buttonRole(messageBox->clickedButton()) == QMessageBox::YesRole;
 }
 }

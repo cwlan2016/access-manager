@@ -79,7 +79,9 @@ SOURCES += main.cpp \
     gui/editdslamboardtablepagewidget.cpp \
     gui/aboutpagewidget.cpp \
     gui/settingspagewidget.cpp \
-    gui/devicetablepagewidget.cpp
+    gui/devicetablepagewidget.cpp \
+    configs/dslamprofileconfig.cpp \
+    models/dslprofiletablemodel.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -138,7 +140,9 @@ HEADERS  += basicdialogs.h \
     gui/aboutpagewidget.h \
     gui/settingspagewidget.h \
     gui/devicetablepagewidget.h \ 
-    lineedit.h
+    lineedit.h \
+    configs/dslamprofileconfig.h \
+    models/dslprofiletablemodel.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \

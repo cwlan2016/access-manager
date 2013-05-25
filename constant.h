@@ -11,6 +11,7 @@ const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400
 
 namespace Mib
 {
+const oid sysUpTime[] =                                 { 1, 3, 6, 1, 2, 1, 1, 3, 0 };
 const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 };  // .index = Description_new
 const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2 };    // .index = Description_new
 const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7 };
@@ -177,47 +178,6 @@ const QString OpenSession =     QString::fromUtf8("Ошибка: Не удало
 const QString GetInfo =         QString::fromUtf8("Ошибка: Не удалось получить информацию!");
 }
 
-namespace AdslProfileDisplayName
-{
-const QString AdslFast =        QString::fromUtf8("ADSL, Fast");
-const QString AdslInterleave =  QString::fromUtf8("ADSL, Interleave");
-const QString Adsl2Interleave = QString::fromUtf8("ADSL2+, Interleave");
-const QString AdslGLite =       QString::fromUtf8("ADSL, G.Lite");
-const QString AdslFast8Mb =     QString::fromUtf8("ADSL(8 mbps), Fast");
-const QString Adsl2Fast10Mb =   QString::fromUtf8("ADSL2+(10 mbps), Fast");
-const QString Adsl2Fast14Mb =   QString::fromUtf8("ADSL2+(14 mbps), Fast");
-const QString Adsl2Fast18Mb =   QString::fromUtf8("ADSL2+(18 mbps), Fast");
-}
-
-namespace AdslProfileDslamName
-{
-namespace MA5600
-{
-const QString AdslFast =        QString::fromUtf8("ADSL LINE PROFILE 1000");
-const QString AdslInterleave =  QString::fromUtf8("ADSL LINE PROFILE 1001");
-const QString Adsl2Interleave = QString::fromUtf8("ADSL LINE PROFILE 1002");
-const QString AdslGLite =       QString::fromUtf8("ADSL G.Lite");
-const QString AdslFast8Mb =     QString::fromUtf8("ADSL (8mb)");
-const QString Adsl2Fast10Mb =   QString::fromUtf8("ADSL 2+ (10mb)");
-const QString Adsl2Fast14Mb =   QString::fromUtf8("ADSL 2+ (14mb)");
-const QString Adsl2Fast18Mb =   QString::fromUtf8("ADSL 2+ (18mb)");
-}
-
-namespace MA5300
-{
-const QString AdslFast =        QString::fromUtf8("LINE-PROFILE-1");
-const QString AdslInterleave =  QString::fromUtf8("LINE-PROFILE-2");
-const QString Adsl2Interleave = QString::fromUtf8("LINE-PROFILE-100");
-}
-
-namespace MXA
-{
-const QString AdslInterleave =  QString::fromUtf8("1");
-const QString Adsl2Interleave = QString::fromUtf8("3");
-const QString AdslGLite =       QString::fromUtf8("2");
-}
-}
-
 namespace BatchUpdateStrings
 {
 const QString Dslam =           QString::fromUtf8("Обновление данных о досках дсламов");
@@ -240,6 +200,21 @@ namespace SwitchSettingsStrings
 {
 const QString inetVlanName =        QString::fromUtf8("inetVlanName");
 const QString iptvUnicastVlanName = QString::fromUtf8("iptvUnicastVlanName");
+}
+
+namespace DslProfileSettingsStrings
+{
+const QString ma5300 = QString::fromUtf8("MA5300");
+const QString ma5600 = QString::fromUtf8("MA5600");
+
+const QString mxa32 = QString::fromUtf8("MXA32");
+const QString mxa64 = QString::fromUtf8("MXA64");
+}
+
+namespace DslProfileTableModelStrings
+{
+const QString DisplayName = QString::fromUtf8("Отображаемое имя профиля");
+const QString DslamName = QString::fromUtf8("Имя профиля на дсламе");
 }
 
 #endif // CONSTANT_H

@@ -3,13 +3,14 @@
 #include <constant.h>
 #include <converters.h>
 #include <customsnmpfunctions.h>
+#include <configs/dslamprofileconfig.h>
 
 AdslPortMxa32::AdslPortMxa32(long index, QObject *parent) :
     AdslPort(index, parent)
 {
 }
 
-void AdslPortMxa32::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void AdslPortMxa32::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
         portIndex = mIndex;
@@ -47,12 +48,12 @@ bool AdslPortMxa32::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
         return false;
 
     mProfile = QString::number(*vars->val.integer);
+    mProfile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(mProfile);
 
     return true;
-    //    mList[i]->setProfile(profileExtName(mParentDevice->deviceModel(), profile));
 }
 
-void AdslPortMxa32::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void AdslPortMxa32::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
         portIndex = mIndex;
@@ -66,7 +67,7 @@ void AdslPortMxa32::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIn
     snmpClient->addOid(createOidPair(Mib::mxa32DslPortActiveProfile, 13, portIndex));
 }
 
-bool AdslPortMxa32::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+bool AdslPortMxa32::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
     netsnmp_variable_list *vars = snmpClient->varList();
 
@@ -118,7 +119,7 @@ bool AdslPortMxa32::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
         return false;
 
     mProfile = QString::number(*vars->val.integer);
+    mProfile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(mProfile);
 
     return true;
-    //portInfo->setProfile(profileExtName(mParentDevice->deviceModel(), profile));
 }

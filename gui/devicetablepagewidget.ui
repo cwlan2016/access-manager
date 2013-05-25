@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>DeviceTablePageWidget</class>
- <widget class="QWidget" name="DeviceListPageWidget">
+ <widget class="QWidget" name="DeviceTablePageWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>342</height>
+    <height>347</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -214,10 +214,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Редактировать</string>
+    <string>Изменить</string>
    </property>
    <property name="toolTip">
-    <string>Редактировать</string>
+    <string>Изменить</string>
    </property>
   </action>
   <action name="selectDeviceAction">

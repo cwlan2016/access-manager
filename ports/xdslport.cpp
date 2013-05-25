@@ -87,7 +87,7 @@ void XdslPort::setTimeLastChange(QString lastChange)
     mTimeLastChange = lastChange;
 }
 
-void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     Q_UNUSED(snmpClient)
     Q_UNUSED(portIndex)
@@ -97,20 +97,18 @@ bool XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
 
-    //TODO: INSERT QASSERT validated index;
     return false;
 }
 
-void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, int portIndex)
+void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     Q_UNUSED(snmpClient)
     Q_UNUSED(portIndex)
 }
 
-bool XdslPort::parseSecondaryPrimaryLevelPdu(SnmpClient::Ptr snmpClient)
+bool XdslPort::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
     Q_UNUSED(snmpClient)
 
-    //TODO: INSERT QASSERT validated index;
     return false;
 }

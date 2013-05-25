@@ -36,7 +36,7 @@ int DslamMa5300::countPorts(BoardType::Enum boardType)
     }
 }
 
-long DslamMa5300::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
+long DslamMa5300::snmpPortIndex(BoardType::Enum boardType, int slot,
                                          int port)
 {
     if ((boardType == BoardType::AnnexA)
@@ -50,13 +50,31 @@ long DslamMa5300::snmpInterfaceIndex(BoardType::Enum boardType, int slot,
 XdslPort::Ptr DslamMa5300::createPort(BoardType::Enum boardType, int boardIndex,
                                       int portIndex, QObject *parent)
 {
-    int snmpPortIndex = snmpInterfaceIndex(boardType, boardIndex, portIndex);
+    long snmpIndex = snmpPortIndex(boardType, boardIndex, portIndex);
 
     switch (boardType) {
     case BoardType::AnnexA:
     case BoardType::AnnexB:
-        return new AdslPortMa5300(snmpPortIndex, parent);
+        return new AdslPortMa5300(snmpIndex, parent);
     default:
-        return new XdslPort(snmpPortIndex, parent);
+        return new XdslPort(snmpIndex, parent);
     }
+}
+
+QList<DslProfile> *DslamMa5300::defaultAdslProfiles()
+{
+    QList<DslProfile> *list = new QList<DslProfile>();
+
+    list->push_back(QPair<QString, QString>("ADSL, Fast", "LINE-PROFILE-1"));
+    list->push_back(QPair<QString, QString>("ADSL, Interleave", "LINE-PROFILE-2"));
+    list->push_back(QPair<QString, QString>("ADSL2+, Interleave", "LINE-PROFILE-100"));
+
+    return list;
+}
+
+QList<DslProfile> *DslamMa5300::defaultShdslProfiles()
+{
+    QList<DslProfile> *list = new QList<DslProfile>();
+    //TODO: add default shdsl profiles
+    return list;
 }

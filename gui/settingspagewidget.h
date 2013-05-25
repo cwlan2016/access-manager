@@ -17,9 +17,21 @@ public:
     ~SettingsPageWidget();
 
 private:
+    void initGlobalActions();
+    void initSnmpTabFields();
+    void initDevicesTabFields();
+    void initDevicesTabActions();
+
     void saveSetting();
+    void resetToDefault();
     bool validateSettingsData();
     void currentItemChanged(int item);
+
+    void addDslProfile();
+    void editDslProfile();
+    void removeDslProfile();
+
+    void dsComboBoxCurrentIndexChanged(int index);
 
     Ui::SettingsPageWidget *ui;
 };

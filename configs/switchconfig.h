@@ -13,6 +13,7 @@ public:
     static void setIptvVlanName(QString vlanName);
 
     static void toDefault();
+
 private:
     static QString mInetVlanName;
     static QString mIptvUnicastVlanName;
