@@ -113,8 +113,8 @@ void SettingsPageWidget::saveSetting()
 
 void SettingsPageWidget::resetToDefault()
 {
-    bool result = BasicDialogs::question(this, "Подтверждение",
-                                         "Все настройки программы будут удалены. Вы действительно хотите продолжить?");
+    bool result = BasicDialogs::question(this, QString::fromUtf8("Подтверждение"),
+                                         QString::fromUtf8("Все настройки программы будут удалены. Вы действительно хотите продолжить?"));
 
     if (!result)
         return;
@@ -125,6 +125,9 @@ void SettingsPageWidget::resetToDefault()
 
     initSnmpTabFields();
     initDevicesTabFields();
+
+    BasicDialogs::information(this, QString::fromUtf8("Информация"),
+                              QString::fromUtf8("Настройки сброшены! Нажмите \"Сохранить\" чтобы применить изменения"));
 }
 
 bool SettingsPageWidget::validateSettingsData()

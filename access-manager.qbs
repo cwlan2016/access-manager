@@ -46,7 +46,7 @@ Project {
         cpp.includePaths: ["."]
 
 //	Bug in this parameter or in my head.        
-//        cpp.precompiledHeader: "stdafx.h"
+//       cpp.precompiledHeader: "stdafx.h"
 
         cpp.cxxFlags: {
             if ((qbs.toolchain == "gcc") || (qbs.toolchain == "mingw") || (qbs.toolchain == "clang"))

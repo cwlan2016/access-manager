@@ -251,6 +251,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if (!deviceListModel->isModified()) {
         event->accept();
+        DslamProfileConfig::deinit();
         return;
     }
 
@@ -275,5 +276,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
 
         event->accept();
+        DslamProfileConfig::deinit();
     }
 }
