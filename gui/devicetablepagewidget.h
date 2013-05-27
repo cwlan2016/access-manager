@@ -27,9 +27,7 @@ public:
     void editDevice();
     void removeDevice();
 
-    void updateVlanInfoSwitch();
-    void updateBoardInfoDslam();
-    void updateProfileInfoOlt();
+    void getServiceDataFromCurrentDevice();
 
     void batchUpdateBoardsDslam();
     void batchUpdateVlansSwitch();

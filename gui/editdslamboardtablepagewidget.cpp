@@ -23,12 +23,12 @@ EditDslamBoardTablePageWidget::EditDslamBoardTablePageWidget(Device::Ptr deviceI
     connect(ui->renumeringBoardPairsAction, &QAction::triggered,
             this, &EditDslamBoardTablePageWidget::renumeringBoardPairs);
 
-    Dslam::Ptr dslamInfo = mDeviceInfo.objectCast<Dslam>();
+    Dslam::Ptr dslamInfo = mDevice.objectCast<Dslam>();
     BoardTableModel *boardTableModel = dslamInfo->boardTableModel();
 
     ui->editDslamBoardListTableView->setModel(boardTableModel);
 
-    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDeviceInfo.objectCast<Dslam>(), this);
+    BoardTableDelegate *boardListDelegate = new BoardTableDelegate(mDevice.objectCast<Dslam>(), this);
     boardListDelegate->setIndexTypeBoard(1);
     boardListDelegate->setIndexFirstPair(2);
 
@@ -65,7 +65,7 @@ void EditDslamBoardTablePageWidget::removeBoard()
     if (!index.isValid())
         return;
 
-    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
     QString num = model->data(model->index(index.row(), 0)).toString();
     QString type = model->data(model->index(index.row(), 1)).toString();
 
@@ -78,7 +78,7 @@ void EditDslamBoardTablePageWidget::removeBoard()
 
 void EditDslamBoardTablePageWidget::getBoardList()
 {
-    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
 
     if (!model->getBoardListFromDevice())
         BasicDialogs::error(this, BasicDialogStrings::Error, model->error());
@@ -86,20 +86,20 @@ void EditDslamBoardTablePageWidget::getBoardList()
 
 void EditDslamBoardTablePageWidget::renumeringBoardPairs()
 {
-    BoardTableModel *model = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
 
     model->renumeringPairList();
 }
 
 void EditDslamBoardTablePageWidget::autoUpdateBoardListStateChanged(bool state)
 {
-    mDeviceInfo.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
+    mDevice.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
     ui->autoNumeringPairCheckBox->setEnabled(state);
 }
 
 void EditDslamBoardTablePageWidget::autoNumeringPairsStateChanged(bool state)
 {
-    mDeviceInfo.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
+    mDevice.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
 }
 
 void EditDslamBoardTablePageWidget::editBoardViewRequestContextMenu(QPoint point)

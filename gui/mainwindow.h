@@ -26,6 +26,8 @@ private:
 
     void saveSwitchConfig();
 
+    void getServiceDataFromDevice();
+
     void showAboutProgramPage();
     void showSettingsPage();
 

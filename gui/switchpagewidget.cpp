@@ -48,7 +48,7 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
             this, &SwitchPageWidget::setPortInternetWithStbService);
 
     //Инициализация модели списка портов
-    Switch::Ptr switchInfo = mDeviceInfo.objectCast<Switch>();
+    Switch::Ptr switchInfo = mDevice.objectCast<Switch>();
 
     SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
 
@@ -89,12 +89,12 @@ SwitchPageWidget::~SwitchPageWidget()
 
 void SwitchPageWidget::saveSwitchConfig()
 {
-    bool result = mDeviceInfo.objectCast<Switch>()->saveConfig();
+    bool result = mDevice.objectCast<Switch>()->saveConfig();
 
     if (result) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Запрос на сохранение конфигурации коммутатора отправлен."));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Error, mDeviceInfo->error());
+        BasicDialogs::information(this, BasicDialogStrings::Error, mDevice->error());
     }
 }
 

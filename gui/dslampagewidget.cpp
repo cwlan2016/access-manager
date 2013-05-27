@@ -49,11 +49,11 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
             this, &DslamPageWidget::refreshAllPortInfo);
 
-    if ((mDeviceInfo->deviceModel() == DeviceModel::MA5600)
-            || (mDeviceInfo->deviceModel() == DeviceModel::MA5300)) {
-        ui->dslamTreeView->setModel(mDeviceInfo.objectCast<Dslam>()->boardTableModel());
+    if ((mDevice->deviceModel() == DeviceModel::MA5600)
+            || (mDevice->deviceModel() == DeviceModel::MA5300)) {
+        ui->dslamTreeView->setModel(mDevice.objectCast<Dslam>()->boardTableModel());
     } else {
-        DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<Dslam>(), this);
+        DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
 
         portListModel->setBoardType(BoardType::AnnexA);
         portListModel->setFirstPair(1);
@@ -135,7 +135,7 @@ void DslamPageWidget::showPortListModel()
         return;
     }
 
-    DslamPortTableModel *portListModel = new DslamPortTableModel(mDeviceInfo.objectCast<Dslam>(), this);
+    DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
     QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
@@ -169,7 +169,7 @@ void DslamPageWidget::backToBoardListModel()
     ui->selectProfileGroupBox->setChecked(false);
 
     DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-    BoardTableModel *boardTableModel = mDeviceInfo.objectCast<Dslam>()->boardTableModel();
+    BoardTableModel *boardTableModel = mDevice.objectCast<Dslam>()->boardTableModel();
 
     ui->dslamTreeView->setModel(boardTableModel);
 
@@ -191,9 +191,9 @@ void DslamPageWidget::fillSelectProfileComboBox()
     DslProfileTableModel *dslProfileModel = 0;
     if ((model->boardType() == BoardType::AnnexA)
             || (model->boardType() == BoardType::AnnexB)) {
-        dslProfileModel = DslamProfileConfig::adsl(mDeviceInfo->deviceModel());
+        dslProfileModel = DslamProfileConfig::adsl(mDevice->deviceModel());
     } else if (model->boardType() == BoardType::Shdsl) {
-        dslProfileModel = DslamProfileConfig::shdsl(mDeviceInfo->deviceModel());
+        dslProfileModel = DslamProfileConfig::shdsl(mDevice->deviceModel());
     }
 
     ui->profileListComboBox->setModel(dslProfileModel);

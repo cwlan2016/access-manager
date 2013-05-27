@@ -192,54 +192,19 @@ void DeviceTablePageWidget::removeDevice()
     mDeviceTableModel->removeRow(index.row(), QModelIndex());
 }
 
-void DeviceTablePageWidget::updateVlanInfoSwitch()
+void DeviceTablePageWidget::getServiceDataFromCurrentDevice()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
 
     if (!index.isValid())
         return;
 
-    bool result = mDeviceTableModel->getVlanTagFromDevice(index);
+    bool result = mDeviceTableModel->getServiceDataFromDevice(index);
 
     if (!result) {
         BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация о вланах обновлена."));
-
-        if (ui->vlanInfoGroupBox->isVisible())
-            showVlanInfoGroupBox();
-    }
-}
-
-void DeviceTablePageWidget::updateBoardInfoDslam()
-{
-    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-
-    if (!index.isValid())
-        return;
-
-    bool result = mDeviceTableModel->getBoardListFromDevice(index);
-
-    if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация о досках обновлена."));
-    }
-}
-
-void DeviceTablePageWidget::updateProfileInfoOlt()
-{
-    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-
-    if (!index.isValid())
-        return;
-
-    bool result = mDeviceTableModel->getProfilesFromDevice(index);
-
-    if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация о профилях обновлена."));
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
     }
 }
 

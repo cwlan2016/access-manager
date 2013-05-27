@@ -221,7 +221,7 @@ bool BoardTableModel::getBoardListFromDevice()
 
     snmp->createPdu(SNMP_MSG_GETBULK, 16);
 
-    snmp->addOid(Mib::dslamBoardName, 16);
+    snmp->addOid(createOidPair(Mib::dslamBoardName, 16));
 
     //TODO: Refactoring. Add board to newList. If success operation -> replace list.
     if (snmp->sendRequest()) {
@@ -254,6 +254,9 @@ bool BoardTableModel::getBoardListFromDevice()
         endResetModel();
         return false;
     }
+
+    if (mParentDevice->autoNumeringBoard())
+        mParentDevice->boardTableModel()->renumeringPairList();
 
     endResetModel();
 
