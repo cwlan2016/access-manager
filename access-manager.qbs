@@ -21,7 +21,7 @@ Project {
             "gui/*.h",
             "other-data/*.h"
         ]
-
+        
         Group {
             name : "Forms"
             files: [

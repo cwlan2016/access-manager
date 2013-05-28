@@ -20,8 +20,6 @@ public:
 
     void addOid(const OidPair &oid);
     void addOid(const OidPair &oid, QString value, char type);
-    void addOid(const oid *someOid, size_t size);
-    void addOid(const oid *someOid, size_t size, QString value, char type);
 
     bool sendRequest();
 
