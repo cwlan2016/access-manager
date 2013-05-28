@@ -137,17 +137,16 @@ QString MacTableModel::error() const
 void MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
                                      long vlanTag, QString vlanName)
 {
-    oid *vlanMacOid = createOid(Mib::dot1qTpFdbPort, 13, vlanTag);
-    size_t lenVlanNameOid = 14;
+    OidPair oidPair = createOidPair(Mib::dot1qTpFdbPort, 13, vlanTag);
 
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    snmpClient->addOid(vlanMacOid, lenVlanNameOid);
+    snmpClient->addOid(oidPair);
 
     while (snmpClient->sendRequest()) {
         netsnmp_variable_list *vars = snmpClient->varList();
 
-        if (snmp_oid_ncompare(vlanMacOid, lenVlanNameOid, vars->name,
-                              vars->name_length, lenVlanNameOid) != 0)
+        if (snmp_oid_ncompare(oidPair.first, oidPair.second, vars->name,
+                              vars->name_length, oidPair.second) != 0)
             break;
 
         Mac::Ptr macInfo = new Mac(this);

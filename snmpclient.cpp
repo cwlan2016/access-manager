@@ -112,28 +112,16 @@ void SnmpClient::addOid(const OidPair &oid)
     snmp_add_null_var(mPdu, oid.first, oid.second);
 }
 
-void SnmpClient::addOid(const OidPair &oid, QString value, char type)
-{
-    mGarbageCollector.push_back(oid.first);
-    snmp_add_var(mPdu, oid.first, oid.second, type, value.toLatin1().data());
-}
-
-void SnmpClient::addOid(const oid *someOid, size_t size)
-{
-    mGarbageCollector.push_back(someOid);
-    snmp_add_null_var(mPdu, someOid, size);
-}
-
 // type values
 // i: INTEGER       u: UNSIGNED INTEGER
 // a: IPADDRESS     t: TIMETICKS
 // o: OBJID         b: BITS
 // s: STRING        d: DECIMAL STRING
 // x: HEX STRING
-void SnmpClient::addOid(const oid *someOid, size_t size, QString value, char type)
+void SnmpClient::addOid(const OidPair &oid, QString value, char type)
 {
-    mGarbageCollector.push_back(someOid);
-    snmp_add_var(mPdu, someOid, size, type, value.toLatin1().data());
+    mGarbageCollector.push_back(oid.first);
+    snmp_add_var(mPdu, oid.first, oid.second, type, value.toLatin1().data());
 }
 
 bool SnmpClient::sendRequest()
