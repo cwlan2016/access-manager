@@ -8,6 +8,7 @@ class DslamProfileConfig
 {
 public:
     static void init();
+    static void deinit();
 
     static DslProfileTableModel *adsl(DeviceModel::Enum deviceModel);
     static DslProfileTableModel *shdsl(DeviceModel::Enum deviceModel);

@@ -28,6 +28,22 @@ void DslamProfileConfig::init()
                       new DslProfileTableModel(DslamMxa64::defaultShdslProfiles()));
 }
 
+void DslamProfileConfig::deinit()
+{
+    auto adslEnd = mAdslList.end();
+    for(auto adslIt = mAdslList.begin(); adslIt != adslEnd; ++adslIt) {
+        QAbstractTableModel *model = *adslIt;
+        delete model;
+    }
+
+
+    auto shdslEnd = mShdslList.end();
+    for(auto shdslIt = mShdslList.begin(); shdslIt != shdslEnd; ++shdslIt) {
+        QAbstractTableModel *model = *shdslIt;
+        delete model;
+    }
+}
+
 DslProfileTableModel *DslamProfileConfig::adsl(DeviceModel::Enum deviceModel)
 {
     if (mAdslList.find(deviceModel) != mAdslList.end())
@@ -46,19 +62,7 @@ DslProfileTableModel *DslamProfileConfig::shdsl(DeviceModel::Enum deviceModel)
 
 void DslamProfileConfig::toDefault()
 {
-    auto adslIt = mAdslList.begin();
-    auto adslEnd = mAdslList.end();
-
-    for(; adslIt != adslEnd; ++adslIt) {
-        delete *adslIt;
-    }
-
-    auto shdslIt = mShdslList.begin();
-    auto shdslEnd = mShdslList.end();
-
-    for(; shdslIt != shdslEnd; ++shdslIt) {
-        delete *shdslIt;
-    }
+    deinit();
 
     mAdslList.clear();
     mShdslList.clear();

@@ -257,10 +257,10 @@ bool SwitchPortTableModel::setMemberInternetService(int port)
     }
 
     QVector<OidPair> oidList;
-    oidList.push_back(OidPair(createOid(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag()), 14));
-    oidList.push_back(OidPair(createOid(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag()), 14));
-    oidList.push_back(OidPair(createOid(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()), 14));
-    oidList.push_back(OidPair(createOid(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag()), 14));
+    oidList.push_back(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag()));
+    oidList.push_back(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag()));
+    oidList.push_back(createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->inetVlanTag()));
+    oidList.push_back(createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->inetVlanTag()));
 
     QList<QBitArray> arrayList;
     arrayList.push_back(mIptvUnicastVlanUntagMember);
@@ -613,7 +613,7 @@ bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList,
     for (int i = 0; i < size; ++i) {
         QString arrayString = qbitArrayToHexString(mParentDevice->deviceModel(),
                                                    arrayList[i], ismv);
-        snmpClient->addOid(oidList.at(i).first, oidList.at(i).second, arrayString, 'x');
+        snmpClient->addOid(oidList.at(i), arrayString, 'x');
     }
 
     bool result = true;

@@ -37,6 +37,9 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::upDslPort);
     connect(ui->downPortAction, &QAction::triggered,
             this, &MainWindow::downDslPort);
+    connect(ui->updateServiceDataAction, &QAction::triggered,
+            this, &MainWindow::getServiceDataFromDevice);
+
     //Panels actions
     connect(ui->mainBarAction, &QAction::triggered,
             ui->mainToolBar, &QToolBar::setVisible);
@@ -85,12 +88,6 @@ void MainWindow::createDeviceListPage()
             deviceListPage, &DeviceTablePageWidget::loadDeviceList);
     connect(ui->saveDeviceListAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::saveDeviceList);
-    connect(ui->updateVlanSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::updateVlanInfoSwitch);
-    connect(ui->updateDslamBoardsInfoAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::updateBoardInfoDslam);
-    connect(ui->updateProfilesOltAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::updateProfileInfoOlt);
     connect(ui->updateVlanAllSwitchAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::batchUpdateVlansSwitch);
     connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
@@ -157,6 +154,29 @@ void MainWindow::saveSwitchConfig()
     switchPageWidget->saveSwitchConfig();
 }
 
+void MainWindow::getServiceDataFromDevice()
+{
+    int pageIndex = ui->tabWidget->currentIndex();
+    PageType::Enum currentPageType = mTypePageList->at(pageIndex);
+
+    if (currentPageType == PageType::DeviceListPage) {
+        DeviceTablePageWidget *widget = qobject_cast<DeviceTablePageWidget *>(ui->tabWidget->currentWidget());
+        widget->getServiceDataFromCurrentDevice();
+    } else if ((currentPageType == PageType::DslamPage)
+               || (currentPageType == PageType::SwitchPage)
+               || (currentPageType == PageType::OltPage)) {
+        PageWidget *widget = qobject_cast<PageWidget *>(ui->tabWidget->currentWidget());
+
+        bool result = widget->device()->getServiceDataFromDevice();
+
+        if (!result) {
+            BasicDialogs::error(this, BasicDialogStrings::Error, widget->device()->error());
+        } else {
+            BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
+        }
+    }
+}
+
 void MainWindow::showAboutProgramPage()
 {
     if (mPageList->contains("aboutTab")) {
@@ -211,6 +231,15 @@ void MainWindow::tabCurrentChanged(int index)
         DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
         deviceListPage->clearSelection();
     }
+
+    if ((pageType == PageType::DeviceListPage)
+            || (pageType == PageType::DslamPage)
+            || (pageType == PageType::DslamPage)
+            || (pageType == PageType::DslamPage)) {
+        ui->updateServiceDataAction->setEnabled(true);
+    } else {
+        ui->updateServiceDataAction->setEnabled(false);
+    }
 }
 
 void MainWindow::tabCloseRequested(int index)
@@ -251,6 +280,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if (!deviceListModel->isModified()) {
         event->accept();
+        DslamProfileConfig::deinit();
         return;
     }
 
@@ -275,5 +305,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
 
         event->accept();
+        DslamProfileConfig::deinit();
     }
 }

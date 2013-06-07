@@ -342,15 +342,10 @@ QStringListModel *DeviceTableModel::multicastProfileOltListModel(QModelIndex ind
     return mList.at(index.row()).objectCast<Olt>()->multicastProfileListModel(this);
 }
 
-bool DeviceTableModel::getVlanTagFromDevice(QModelIndex index)
+bool DeviceTableModel::getServiceDataFromDevice(QModelIndex index)
 {
     if (!index.isValid()) {
         mError = QString::fromUtf8("Неверный индекс.");
-        return false;
-    }
-
-    if (mList[index.row()]->deviceType() != DeviceType::Switch) {
-        mError = QString::fromUtf8("Обновлять информацию о вланах можно только на коммутаторе!");
         return false;
     }
 
@@ -358,51 +353,6 @@ bool DeviceTableModel::getVlanTagFromDevice(QModelIndex index)
 
     if (!result)
         mError = mList[index.row()]->error();
-
-    return result;
-}
-
-bool DeviceTableModel::getBoardListFromDevice(QModelIndex index)
-{
-    if (!index.isValid()) {
-        mError = QString::fromUtf8("Неверный индекс.");
-        return false;
-    }
-
-    if (mList.at(index.row())->deviceType() != DeviceType::Dslam) {
-        mError = QString::fromUtf8("Обновлять информацию о досках можно только на дсламе!");
-        return false;
-    }
-
-    Dslam::Ptr deviceInfo = mList.at(index.row()).objectCast<Dslam>();
-    bool result = deviceInfo->boardTableModel()->getBoardListFromDevice();
-
-    if (deviceInfo->autoNumeringBoard())
-        deviceInfo->boardTableModel()->renumeringPairList();
-
-    if (!result)
-        mError = deviceInfo->boardTableModel()->error();
-
-    return result;
-}
-
-bool DeviceTableModel::getProfilesFromDevice(QModelIndex index)
-{
-    if (!index.isValid()) {
-        mError = QString::fromUtf8("Неверный индекс.");
-        return false;
-    }
-
-    if (mList.at(index.row())->deviceType() != DeviceType::Olt) {
-        mError = QString::fromUtf8("Обновлять информацию о профилях можно только на олт!");
-        return false;
-    }
-
-    Olt::Ptr deviceInfo = mList.at(index.row()).objectCast<Olt>();
-    bool result = deviceInfo->getServiceDataFromDevice();
-
-    if (!result)
-        mError = deviceInfo->error();
 
     return result;
 }

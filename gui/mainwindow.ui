@@ -23,7 +23,7 @@
    <string>Access Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resource.qrc">
+   <iconset resource="../resource.qrc">
     <normaloff>:/icons/appicon</normaloff>:/icons/appicon</iconset>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
@@ -73,7 +73,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -94,14 +94,12 @@
       <string>Дслам</string>
      </property>
      <addaction name="editDslamBoardListAction"/>
-     <addaction name="updateDslamBoardsInfoAction"/>
     </widget>
     <widget class="QMenu" name="menuSwitch">
      <property name="title">
       <string>Коммутатор</string>
      </property>
      <addaction name="showVlanSwitchAction"/>
-     <addaction name="updateVlanSwitchAction"/>
     </widget>
     <widget class="QMenu" name="menuBatchUpdate">
      <property name="title">
@@ -118,7 +116,6 @@
       <string>Олт</string>
      </property>
      <addaction name="showProfilesOltAction"/>
-     <addaction name="updateProfilesOltAction"/>
     </widget>
     <addaction name="openDeviceAction"/>
     <addaction name="separator"/>
@@ -129,6 +126,8 @@
     <addaction name="menuDslam"/>
     <addaction name="menuSwitch"/>
     <addaction name="menuOlt"/>
+    <addaction name="separator"/>
+    <addaction name="updateServiceDataAction"/>
     <addaction name="separator"/>
     <addaction name="menuBatchUpdate"/>
    </widget>
@@ -276,7 +275,7 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Редактировать</string>
+    <string>Изменить</string>
    </property>
   </action>
   <action name="openDeviceAction">
@@ -297,28 +296,12 @@
     <string>Выход</string>
    </property>
   </action>
-  <action name="updateVlanSwitchAction">
-   <property name="text">
-    <string>Обновить данные о вланах</string>
-   </property>
-   <property name="toolTip">
-    <string>Обновить данные о вланах</string>
-   </property>
-  </action>
   <action name="showVlanSwitchAction">
    <property name="text">
     <string>Вланы</string>
    </property>
    <property name="toolTip">
     <string>Информация о вланах коммутатора</string>
-   </property>
-  </action>
-  <action name="updateDslamBoardsInfoAction">
-   <property name="text">
-    <string>Обновить данные о досках</string>
-   </property>
-   <property name="toolTip">
-    <string>Обновить информацию о досках</string>
    </property>
   </action>
   <action name="updateAllDslamBoardsInfoAction">
@@ -427,9 +410,9 @@
     <string>Профилей на олт...</string>
    </property>
   </action>
-  <action name="updateProfilesOltAction">
+  <action name="updateServiceDataAction">
    <property name="text">
-    <string>Обновить данные о профилях</string>
+    <string>Обновить информацию об устройстве</string>
    </property>
   </action>
   <action name="showProfilesOltAction">
@@ -440,7 +423,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="resource.qrc"/>
+  <include location="../resource.qrc"/>
  </resources>
  <connections/>
 </ui>

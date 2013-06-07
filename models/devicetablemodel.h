@@ -38,9 +38,7 @@ public:
     QStringListModel *serviceProfileOltListModel(QModelIndex index);
     QStringListModel *multicastProfileOltListModel(QModelIndex index);
 
-    bool getVlanTagFromDevice(QModelIndex index);
-    bool getBoardListFromDevice(QModelIndex index);
-    bool getProfilesFromDevice(QModelIndex index);
+    bool getServiceDataFromDevice(QModelIndex index);
 
     QString error() const;
 

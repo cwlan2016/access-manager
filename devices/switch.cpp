@@ -149,7 +149,7 @@ bool Switch::saveConfig()
 
         snmp->createPdu(SNMP_MSG_GET);
 
-        snmp->addOid(Mib::agentStatusSaveCfg, 12);
+        snmp->addOid(createOidPair(Mib::agentStatusSaveCfg, 12));
 
         if (snmp->sendRequest()) {
             netsnmp_variable_list *vars = snmp->varList();
