@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/tr">
+        <file>qtbase_ru.qm</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file alias="splash.png">images/splash.png</file>
+        <file alias="add.png">images/add16.png</file>
+        <file alias="configure.png">images/configure.png</file>
+        <file alias="down.png">images/down16.png</file>
+        <file alias="edit.png">images/edit16.png</file>
+        <file alias="info.png">images/info16.png</file>
+        <file alias="refresh.png">images/refresh.png</file>
+        <file alias="remove.png">images/remove16.png</file>
+        <file alias="save.png">images/save.png</file>
+        <file alias="table.png">images/table16.png</file>
+        <file alias="up.png">images/up16.png</file>
+        <file alias="prev.png">images/prev16.png</file>
+        <file alias="no.png">images/no16.png</file>
+        <file alias="yes.png">images/yes16.png</file>
+        <file alias="open.png">images/open16.png</file>
+        <file alias="tv.png">images/tv.png</file>
+        <file alias="clear_left.png">images/clear_left.png</file>
+    </qresource>
+    <qresource prefix="/xsd">
+        <file alias="devicelist.xsd">schemadevicelist.xsd</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="appicon">data.ico</file>
+    </qresource>
+</RCC>
