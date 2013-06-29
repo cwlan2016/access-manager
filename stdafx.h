@@ -4,6 +4,7 @@
 #include <QtCore/QBitArray>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMap>
 #include <QtCore/QModelIndex>
@@ -39,6 +40,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSplashScreen>
 #include <QtWidgets/QStyle>
+#include <QtWidgets/QStyleFactory>
 #include <QtWidgets/QToolButton>
 
 #include <net-snmp/net-snmp-config.h>

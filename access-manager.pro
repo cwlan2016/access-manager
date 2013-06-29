@@ -81,7 +81,9 @@ SOURCES += main.cpp \
     gui/settingspagewidget.cpp \
     gui/devicetablepagewidget.cpp \
     configs/dslamprofileconfig.cpp \
-    models/dslprofiletablemodel.cpp
+    models/dslprofiletablemodel.cpp \
+    ports/shdslportma5300.cpp \
+    ports/shdslportma5600.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -142,7 +144,9 @@ HEADERS  += basicdialogs.h \
     gui/devicetablepagewidget.h \ 
     lineedit.h \
     configs/dslamprofileconfig.h \
-    models/dslprofiletablemodel.h
+    models/dslprofiletablemodel.h \
+    ports/shdslportma5300.h \
+    ports/shdslportma5600.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \

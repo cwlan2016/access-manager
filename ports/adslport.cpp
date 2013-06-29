@@ -48,3 +48,27 @@ void AdslPort::setLineType(QString lineType)
 {
     mLineType = lineType;
 }
+
+QString AdslPort::typeLineString(int type)
+{
+    if (type == 2) {
+        return "Fast";
+    } else if (type == 3) {
+        return "Interleave";
+    } else {
+        return "другой";
+    }
+}
+
+QString AdslPort::codingString(int coding)
+{
+    if (coding == 2) {
+        return "dmt";
+    } else if (coding == 3) {
+        return "cap";
+    } else if (coding == 4) {
+        return "cam";
+    } else {
+        return "другой";
+    }
+}

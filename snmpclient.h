@@ -23,6 +23,8 @@ public:
 
     bool sendRequest();
 
+    QString error() const;
+
     netsnmp_variable_list *varList();
 
     typedef SnmpClient *Ptr;
@@ -35,6 +37,8 @@ private:
 
     netsnmp_session *mSnmpSession;
     netsnmp_session mBaseSession;
+
+    QString mError;
 
     QVector<const oid *> mGarbageCollector;
 };

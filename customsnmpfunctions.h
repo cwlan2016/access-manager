@@ -3,11 +3,12 @@
 
 #include "stdafx.h"
 
+#include "converters.h"
 #include "customtypes.h"
 
 inline bool isValidSnmpValue(netsnmp_variable_list *vars)
 {
-    return (vars->type != SNMP_ENDOFMIBVIEW)
+    return vars && (vars->type != SNMP_ENDOFMIBVIEW)
            && (vars->type != SNMP_NOSUCHINSTANCE)
            && (vars->type != SNMP_NOSUCHOBJECT);
 }
@@ -36,8 +37,7 @@ inline OidPair createOidPair(const oid *constOid, int oidLen, long *indexs,
     oid *newOid = new oid[fullLen];
     memcpy(newOid, constOid, oidLen * sizeof(oid));
 
-    oidLen += indexCount;
-    oidLen -= backOffset + 1;
+    oidLen -= backOffset;
 
     for (int i = 0; i < indexCount; ++i)
         newOid[oidLen + i] = indexs[i];

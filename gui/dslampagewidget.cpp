@@ -86,7 +86,14 @@ void DslamPageWidget::upDslPort()
 
     if (portListModel->changePortState(currentPort.row(), DslPortState::Up)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт активирован."));
-        portListModel->updatePortInfo(currentPort);
+        bool result = portListModel->updatePortInfoBasic(currentPort);
+
+        if (!result) {
+            BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
+                                portListModel->error());
+        } else {
+            ui->dslamTreeView->setExpanded(currentPort, false);
+        }
     } else {
         BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Порт активировать не удалось."));
     }
@@ -103,7 +110,15 @@ void DslamPageWidget::downDslPort()
 
     if (portListModel->changePortState(currentPort.row(), DslPortState::Down)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт деактивирован."));
-        portListModel->updatePortInfo(currentPort);
+
+        bool result = portListModel->updatePortInfoBasic(currentPort);
+
+        if (!result) {
+            BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
+                                portListModel->error());
+        } else {
+            ui->dslamTreeView->setExpanded(currentPort, false);
+        }
     } else {
         BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Порт деактивировать не удалось."));
     }
@@ -130,11 +145,6 @@ void DslamPageWidget::showPortListModel()
         return;
     }
 
-    if (typeBoard == BoardType::Shdsl) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация доступна только по ADSL доскам."));
-        return;
-    }
-
     DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
@@ -154,10 +164,10 @@ void DslamPageWidget::showPortListModel()
     ui->boardNameLabel->setVisible(true);
     ui->backToBoardListButton->setVisible(true);
     ui->dslamTreeView->setModel(portListModel);
-    ui->dslamTreeView->setColumnWidth(0, 220);
+    ui->dslamTreeView->setColumnWidth(0, 200);
     ui->dslamTreeView->setColumnWidth(1, 120);
-    ui->dslamTreeView->setColumnWidth(2, 100);
-    ui->dslamTreeView->setColumnWidth(3, 120);
+    ui->dslamTreeView->setColumnWidth(2, 120);
+    ui->dslamTreeView->setColumnWidth(3, 240);
 
     fillSelectProfileComboBox();
 }
@@ -201,10 +211,11 @@ void DslamPageWidget::fillSelectProfileComboBox()
 
 void DslamPageWidget::applyDslProfile()
 {
-    if (!ui->dslamTreeView->currentIndex().isValid())
+    QModelIndex index = ui->dslamTreeView->currentIndex();
+    if (!index.isValid())
         return;
 
-    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
+    if (index.internalId() != invalidParentIndex) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите порт для изменения профиля."));
         return;
     }
@@ -217,11 +228,18 @@ void DslamPageWidget::applyDslProfile()
 
     QString profileName = dslProfileModel->dslamProfileName(ui->profileListComboBox->currentIndex());
 
-    bool result = portListModel->changePortProfile(ui->dslamTreeView->currentIndex(), profileName);
+    bool result = portListModel->changePortProfile(index, profileName);
 
     if (result) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Профиль на порту изменен."));
-        portListModel->updatePortInfo(ui->dslamTreeView->currentIndex());
+        bool result = portListModel->updatePortInfoBasic(ui->dslamTreeView->currentIndex());
+
+        if (!result) {
+            BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
+                                portListModel->error());
+        } else {
+            ui->dslamTreeView->setExpanded(index, false);
+        }
     } else {
         BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Профиль на порту изменить не удалось!"));
     }
@@ -229,15 +247,28 @@ void DslamPageWidget::applyDslProfile()
 
 void DslamPageWidget::refreshPortInfo()
 {
-    if (!ui->dslamTreeView->currentIndex().isValid())
+    QModelIndex index = ui->dslamTreeView->currentIndex();
+
+    if (!index.isValid())
         return;
 
-    if (ui->dslamTreeView->currentIndex().internalId() != invalidParentIndex) {
+    if (index.internalId() != invalidParentIndex) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите порт для обновления информации."));
         return;
     }
 
-    portListExpandedNode(ui->dslamTreeView->currentIndex());
+    DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+
+    if (!portListModel->updatePortInfoBasic(index)) {
+        BasicDialogs::error(this, BasicDialogStrings::Error,
+                            QString::fromUtf8("Не удалось обновить информацию по порту."),
+                            portListModel->error());
+    } else {
+        BasicDialogs::information(this, BasicDialogStrings::Info,
+                                  QString::fromUtf8("Информация по порту успешно обновлена."));
+        ui->dslamTreeView->setExpanded(index, false);
+    }
+
 }
 
 void DslamPageWidget::refreshAllPortInfo()
@@ -281,8 +312,10 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
 
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (!portListModel->updatePortInfo(index))
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+    if (!portListModel->updatePortInfoExtended(index))
+        BasicDialogs::error(this, BasicDialogStrings::Error,
+                            QString::fromUtf8("Не удалось обновить информацию по порту."),
+                            portListModel->error());
 }
 
 QModelIndex DslamPageWidget::currentDslamXdslPort()

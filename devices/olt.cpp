@@ -120,7 +120,7 @@ bool Olt::getProfileList(OltProfileMap &profileList,
 
     while (true) {
         if (!snmp->sendRequest()) {
-            mError += SnmpErrorStrings::GetInfo % "\n";
+            mError += SnmpErrorStrings::Parse % "\n";
             return false;
         }
 

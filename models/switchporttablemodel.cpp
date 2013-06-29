@@ -363,13 +363,13 @@ bool SwitchPortTableModel::updateInfoPort(int indexPort)
 
     if (snmpClient->sendRequest()) {
         if (!currentPort->parsePdu(snmpClient.data())) {
-            mError = SnmpErrorStrings::GetInfo;
+            mError = SnmpErrorStrings::Parse;
             return false;
         } else {
             emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 3));
         }
     } else {
-        mError = SnmpErrorStrings::GetInfo;
+        mError = snmpClient->error();
         return false;
     }
 

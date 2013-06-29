@@ -9,9 +9,17 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QApplication::setStyle("fusion");
+
+    //Bug in Qt. Not exist properties for disabled Actions
+    QPalette palette = QStyleFactory::create("Fusion")->standardPalette();
+    QColor disabledText = QColor(190, 190, 190);
+    palette.setBrush(QPalette::Disabled, QPalette::ButtonText, disabledText);
+    palette.setBrush(QPalette::Disabled, QPalette::WindowText, disabledText);
+    QApplication::setPalette(palette);
+
     a.setApplicationName("Access Manager");
     a.setApplicationVersion(QString::fromUtf8("0.2.1"));
-    a.setOrganizationName(QObject::trUtf8("rt.ru"));
+    a.setOrganizationName(QString::fromUtf8("rt.ru"));
     Config::init();
 
     QPixmap pixmap(":/images/splash.png");

@@ -56,6 +56,7 @@ const oid mxa32DslBandActualRateRx[] =                  { 1, 3, 6, 1, 4, 1, 3526
 const oid mxa32DslBandLineAttenuationTx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 2 };
 const oid mxa32DslBandLineAttenuationRx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 1 };
 //параметры линии
+//adsl
 const oid adslLineCoding[] =                            { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 1 };
 const oid adslLineType[] =                              { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 2 };
 const oid adslLineConfProfile[] =                       { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 4 };
@@ -63,6 +64,18 @@ const oid adslAtucChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 
 const oid adslAturChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 5, 1, 2 }; //скорость восходящего канала
 const oid adslAtucCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 2, 1, 5 }; //затухание нисходящего канала
 const oid adslAturCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 3, 1, 5 }; //затухание восходящего канала
+//shdsl
+const oid hdsl2ShdslSpanConfProfile[] =                 { 1, 3, 6, 1, 2, 1, 10, 48, 1, 1, 1, 2 };
+const oid hdsl2ShdslStatusActualLineRate[] =            { 1, 3, 6, 1, 2, 1, 10, 48, 1, 2, 1, 3 };
+const oid hdsl2ShdslStatusMaxAttainableLineRate[] =     { 1, 3, 6, 1, 2, 1, 10, 48, 1, 2, 1, 2 };
+const oid hdsl2ShdslStatusTransmissionModeCurrent[] =   { 1, 3, 6, 1, 2, 1, 10, 48, 1, 2, 1, 4 };
+const oid hdsl2ShdslEndpointCurrAtn[] =                 { 1, 3, 6, 1, 2, 1, 10, 48, 1, 5, 1, 1 }; //.index.1.2.1
+const oid hdsl2ShdslEndpointCurrSnrMgn[] =              { 1, 3, 6, 1, 2, 1, 10, 48, 1, 5, 1, 2 }; //.index.1.2.1
+const oid hdsl2ShdslInvVendorID[] =                     { 1, 3, 6, 1, 2, 1, 10, 48, 1, 3, 1, 2 }; // .index.2 = string
+const oid hdsl2ShdslInvVendorModelNumber[] =            { 1, 3, 6, 1, 2, 1, 10, 48, 1, 3, 1, 3 }; // .index.2 = string
+const oid hdsl2ShdslInvVendorSerialNumber[] =           { 1, 3, 6, 1, 2, 1, 10, 48, 1, 3, 1, 4 }; // .index.2 = string
+const oid hdsl2ShdslInvVendorSoftwareVersion[] =        { 1, 3, 6, 1, 2, 1, 10, 48, 1, 3, 1, 9 }; // .index.2 = string
+const oid hdsl2ShdslInvVendorOther[] =                  { 1, 3, 6, 1, 2, 1, 10, 48, 1, 3, 1, 11 }; // .index.2 = string
 //MIBs для LTP-8X
 //last 8 numbers is serial of device in decimal representation
 const oid ltp8xONTConfigSerial[] =                      { 1, 3, 6, 1, 4, 1, 35265, 1, 22, 3, 4, 1, 2, 1, 8, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -138,13 +151,25 @@ const QString Port =            QString::fromUtf8("Порт");
 const QString State =           QString::fromUtf8("Статус");
 const QString Desc =            QString::fromUtf8("Описание");
 const QString Profile =         QString::fromUtf8("Профиль");
+const QString LastChange =      QString::fromUtf8("Последнее изменение");
+// adsl
 const QString LineType =        QString::fromUtf8("Тип линии");
-const QString TxRate =          QString::fromUtf8("Tx уровень, kbps");
-const QString RxRate =          QString::fromUtf8("Rx уровень, kbps");
+const QString TxRate =          QString::fromUtf8("Скорость Tx канала, kbps");
+const QString RxRate =          QString::fromUtf8("Скорость Rx канала, kbps");
 const QString TxAttenuation =   QString::fromUtf8("Затухание Tx канала, dB");
 const QString RxAttenuation =   QString::fromUtf8("Затухание Rx канала, dB");
-const QString LastChange =      QString::fromUtf8("Последнее изменение");
 const QString Coding =          QString::fromUtf8("Кодирование");
+// shdsl
+const QString ActualRate =      QString::fromUtf8("Фактическая скорость, kbps");
+const QString MaxRate =         QString::fromUtf8("Максимальная скорость, kbps");
+const QString Attenuation =     QString::fromUtf8("Затухание канала, dB");
+const QString SnrMargin =       QString::fromUtf8("Отношение сигнал/шум, dB");
+const QString TransmissionMode = QString::fromUtf8("Тип канала");
+const QString ModemVendorId =   QString::fromUtf8("Производитель модема");
+const QString ModemModel =      QString::fromUtf8("Модель модема");
+const QString ModemSerial =     QString::fromUtf8("Серийный номер модема");
+const QString ModemFirmware =   QString::fromUtf8("Версия ПО модема");
+const QString ModemVendorOther = QString::fromUtf8("Прочая информация о модеме");
 }
 
 namespace MacTableModelStrings
@@ -175,7 +200,7 @@ namespace SnmpErrorStrings
 {
 const QString SetupSession =    QString::fromUtf8("Ошибка: Не удалось настроить SNMP сессию.");
 const QString OpenSession =     QString::fromUtf8("Ошибка: Не удалось открыть SNMP сессию.");
-const QString GetInfo =         QString::fromUtf8("Ошибка: Не удалось получить информацию!");
+const QString Parse =           QString::fromUtf8("Ошибка: Произошла ошибка при разборе данных!");
 }
 
 namespace BatchUpdateStrings

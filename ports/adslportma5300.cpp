@@ -143,11 +143,7 @@ bool AdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
     long lastChangeStatus = *vars->val.integer / 100;
     long sysUpTime = *vars->next_variable->val.integer / 100;
 
-    if (lastChangeStatus  == 0) {
-        date = date.addSecs(-sysUpTime);
-    } else {
-        date = date.addSecs(-lastChangeStatus);
-    }
+    date = date.addSecs(-sysUpTime + lastChangeStatus);
 
     mTimeLastChange = date.toString("dd.MM.yyyy hh:mm");
 

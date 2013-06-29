@@ -17,11 +17,11 @@ void SwitchPortDes3528::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
 
     long numPort[] = {portIndex, 1};
-    snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3528, 15, numPort, 2, 1));
+    snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3528, 15, numPort, 2));
 
     if (mIndex == 25 || mIndex == 26) {
         numPort[1] = 2;
-        snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3528, 15, numPort, 2, 1));
+        snmpClient->addOid(createOidPair(Mib::swL2PortInfoNwayStatusDES3528, 15, numPort, 2));
     }
 
     snmpClient->addOid(createOidPair(Mib::ifAlias, 11, portIndex));

@@ -3,6 +3,7 @@
 #include <constant.h>
 #include <customsnmpfunctions.h>
 #include <ports/adslportma5600.h>
+#include <ports/shdslportma5600.h>
 
 DslamMa5600::DslamMa5600(QObject *parent) :
     Dslam(parent)
@@ -39,12 +40,16 @@ int DslamMa5600::countPorts(BoardType::Enum boardType)
 long DslamMa5600::snmpPortIndex(BoardType::Enum boardType, int slot,
                                          int port)
 {
+    int koef = 0; //correction depends on the type of board
+
     if ((boardType == BoardType::AnnexA)
             || (boardType == BoardType::AnnexB)) {
-        return 201326592 + 8192 * slot + 64 * port;
-    } else {
-        return 0;
+        koef = 201326592;
+    } else if (boardType == BoardType::Shdsl) {
+        koef = 1476395008;
     }
+
+    return koef + 8192 * slot + 64 * port;
 }
 
 XdslPort::Ptr DslamMa5600::createPort(BoardType::Enum boardType, int boardIndex,
@@ -56,6 +61,8 @@ XdslPort::Ptr DslamMa5600::createPort(BoardType::Enum boardType, int boardIndex,
     case BoardType::AnnexA:
     case BoardType::AnnexB:
         return new AdslPortMa5600(snmpIndex, parent);
+    case BoardType::Shdsl:
+        return new ShdslPortMa5600(snmpIndex, parent);
     default:
         return new XdslPort(snmpIndex, parent);
     }
@@ -65,6 +72,7 @@ QList<DslProfile> *DslamMa5600::defaultAdslProfiles()
 {
     QList<DslProfile> *list = new QList<DslProfile>();
 
+    list->push_back(QPair<QString, QString>("ADSL, Interleave (Default)", "DEFVAL"));
     list->push_back(QPair<QString, QString>("ADSL, Fast", "ADSL LINE PROFILE 1000"));
     list->push_back(QPair<QString, QString>("ADSL, Interleave", "ADSL LINE PROFILE 1001"));
     list->push_back(QPair<QString, QString>("ADSL2+, Interleave", "ADSL LINE PROFILE 1002"));
@@ -75,7 +83,10 @@ QList<DslProfile> *DslamMa5600::defaultAdslProfiles()
 QList<DslProfile> *DslamMa5600::defaultShdslProfiles()
 {
     QList<DslProfile> *list = new QList<DslProfile>();
-    //TODO: add default shdsl profiles
+
+    list->push_back(QPair<QString, QString>("Shdsl(Annex A&B), 2048", "DEFVAL"));
+    list->push_back(QPair<QString, QString>("Shdsl(Annex A&B), 4096", "SHDSL LINE PROFILE 1"));
+
     return list;
 }
 

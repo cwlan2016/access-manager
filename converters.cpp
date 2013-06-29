@@ -24,31 +24,16 @@ bool validIpAddress(QString ip)
     return regExp.indexIn(ip) != -1;
 }
 
-QString typeLineString(int type)
-{
-    if (type == 2) {
-        return "Fast";
-    } else if (type == 3) {
-        return "Interleave";
-    } else {
-        return "другой";
-    }
-}
-
-QString codingString(int coding)
-{
-    if (coding == 2) {
-        return "dmt";
-    } else if (coding == 3) {
-        return "cap";
-    } else if (coding == 4) {
-        return "cam";
-    } else {
-        return "другой";
-    }
-}
-
 QString toString(u_char *string, int str_len)
 {
     return QString::fromLatin1(reinterpret_cast<char *>(string), str_len);
+}
+
+QString oidToString(u_long *oid, int oid_len)
+{
+    QString result = "";
+    for (int i = 0 ; i < oid_len; ++i)
+        result += "." + QString::number(oid[i]);
+
+    return result;
 }

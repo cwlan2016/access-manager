@@ -21,7 +21,14 @@ int DslamPortTableModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid()) {
         return mList.size();
     } else if (parent.internalId() == invalidParentIndex) {
-        return 7;
+        if ((mBoardType == BoardType::AnnexA)
+                || (mBoardType == BoardType::AnnexB)) {
+            return 7;
+        } else if (mBoardType == BoardType::Shdsl) {
+            return 6;
+        } else {
+            return 0;
+        }
     } else {
         return 0;
     }
@@ -175,14 +182,14 @@ bool DslamPortTableModel::load()
     for (int i = 0; i < size; ++i) {
         if (snmpClient->sendRequest()) {
             if (!mList[i]->parsePrimaryLevelPdu(snmpClient.data())) {
-                mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
+                mError = snmpClient->error();
                 endResetModel();
                 return false;
             } else {
                 snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
             }
         } else {
-            mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
+            mError = snmpClient->error();
             endResetModel();
             return false;
         }
@@ -206,7 +213,51 @@ void DslamPortTableModel::createList()
     }
 }
 
-bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
+bool DslamPortTableModel::updatePortInfoBasic(QModelIndex portIndex)
+{
+    int currPort = currentPort(portIndex);
+
+    if (currPort == -1) {
+        mError = QString::fromUtf8("Не выбран порт для обновления информации");
+        return false;
+    }
+
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
+
+    snmpClient->setIp(mParentDevice->ip());
+
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        mError = SnmpErrorStrings::SetupSession;
+        return false;
+    }
+
+    if (!snmpClient->openSession()) {
+        mError = SnmpErrorStrings::OpenSession;
+        return false;
+    }
+
+    snmpClient->createPdu(SNMP_MSG_GET);
+
+    mList[currPort]->fillPrimaryLevelPdu(snmpClient.data());
+
+    if (snmpClient->sendRequest()) {
+        if (!mList[currPort]->parsePrimaryLevelPdu(snmpClient.data())) {
+            mError = snmpClient->error();
+            return false;
+        } else {
+            QModelIndex beginTopIndex = index(portIndex.row(), 0, QModelIndex());
+            QModelIndex endTopIndex = index(portIndex.row(), 4, QModelIndex());
+            emit dataChanged(beginTopIndex, endTopIndex);
+        }
+    } else {
+        mError = snmpClient->error();
+        return false;
+    }
+
+    return true;
+}
+
+bool DslamPortTableModel::updatePortInfoExtended(QModelIndex portIndex)
 {
     int currPort = currentPort(portIndex);
 
@@ -235,7 +286,7 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
 
     if (snmpClient->sendRequest()) {
         if (!mList[currPort]->parseSecondaryLevelPdu(snmpClient.data())) {
-            mError = SnmpErrorStrings::GetInfo;
+            mError = SnmpErrorStrings::Parse;
             return false;
         } else {
             QModelIndex beginIndex = index(0, 0, portIndex);
@@ -246,7 +297,7 @@ bool DslamPortTableModel::updatePortInfo(QModelIndex portIndex)
             emit dataChanged(beginTopIndex, endTopIndex);
         }
     } else {
-        mError = SnmpErrorStrings::GetInfo;
+        mError = snmpClient->error();
         return false;
     }
 
@@ -326,20 +377,38 @@ bool DslamPortTableModel::changePortProfile(QModelIndex portIndex,
 
     OidPair profileOid;
     char type;
-    if ((mParentDevice->deviceModel() == DeviceModel::MA5600)
-            || (mParentDevice->deviceModel() == DeviceModel::MA5300)) {
-        profileOid = createOidPair(Mib::adslLineConfProfile, 13, indexPort);
-        type = 's';
-    } else if (mParentDevice->deviceModel() == DeviceModel::MXA64) {
-        profileOid = createOidPair(Mib::mxa64DslPortActiveProfile, 13, indexPort);
-        type = 'i';
-    } else if (mParentDevice->deviceModel() == DeviceModel::MXA32) {
-        profileOid =createOidPair(Mib::mxa32DslPortActiveProfile, 13, indexPort);
-        type = 'i';
+    if ((mBoardType == BoardType::AnnexA)
+            || (mBoardType == BoardType::AnnexB)) {
+        if ((mParentDevice->deviceModel() == DeviceModel::MA5600)
+                || (mParentDevice->deviceModel() == DeviceModel::MA5300)) {
+            profileOid = createOidPair(Mib::adslLineConfProfile, 13, indexPort);
+            type = 's';
+        } else if (mParentDevice->deviceModel() == DeviceModel::MXA64) {
+            profileOid = createOidPair(Mib::mxa64DslPortActiveProfile, 13, indexPort);
+            type = 'i';
+        } else if (mParentDevice->deviceModel() == DeviceModel::MXA32) {
+            profileOid =createOidPair(Mib::mxa32DslPortActiveProfile, 13, indexPort);
+            type = 'i';
+        } else {
+            mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");
+            return false;
+        }
+    } else if (mBoardType ==BoardType::Shdsl) {
+        if ((mParentDevice->deviceModel() == DeviceModel::MA5600)
+                || (mParentDevice->deviceModel() == DeviceModel::MA5300)) {
+            profileOid = createOidPair(Mib::hdsl2ShdslSpanConfProfile, 12, indexPort);
+            type = 's';
+        } else {
+            mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");
+            return false;
+        }
     } else {
-        mError = QString::fromUtf8("Ошибка : неизвестный тип дслама!");
+        mError = QString::fromUtf8("Ошибка : неподдерживаемый тип доски!");
         return false;
     }
+
+
+
 
     snmpClient->addOid(profileOid, profileName, type);
 
@@ -382,6 +451,18 @@ QVariant DslamPortTableModel::topLevelData(QModelIndex index) const
 
 QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
 {
+    if ((mBoardType == BoardType::AnnexA)
+            || (mBoardType == BoardType::AnnexB)) {
+        return secondLevelDataAdsl(index);
+    } else if (mBoardType == BoardType::Shdsl) {
+        return secondLevelDataShdsl(index);
+    } else {
+        return QVariant();
+    }
+}
+
+QVariant DslamPortTableModel::secondLevelDataAdsl(QModelIndex index) const
+{
     if (index.column() == 0) {
         if (index.row() == 0) {
             return DslamPortTableModelStrings::LineType;
@@ -415,6 +496,43 @@ QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
             return portInfo->timeLastChange();
         } else if (index.row() == 6) {
             return portInfo->coding();
+        }
+    }
+
+    return QVariant();
+}
+
+QVariant DslamPortTableModel::secondLevelDataShdsl(QModelIndex index) const
+{
+    if (index.column() == 0) {
+        if (index.row() == 0) {
+            return DslamPortTableModelStrings::TransmissionMode;
+        } else if (index.row() == 1) {
+            return DslamPortTableModelStrings::ActualRate;
+        } else if (index.row() == 2) {
+            return DslamPortTableModelStrings::MaxRate;
+        } else if (index.row() == 3) {
+            return DslamPortTableModelStrings::Attenuation;
+        } else if (index.row() == 4) {
+            return DslamPortTableModelStrings::SnrMargin;
+        } else if (index.row() == 5) {
+            return DslamPortTableModelStrings::LastChange;
+        }
+    } else if (index.column() == 1) {
+        ShdslPort::Ptr portInfo = qobject_cast<ShdslPort *>(mList.at(index.parent().row()));
+
+        if (index.row() == 0) {
+            return portInfo->transmissonMode();
+        } else if (index.row() == 1) {
+            return portInfo->actualRate();
+        } else if (index.row() == 2) {
+            return portInfo->maxRate();
+        } else if (index.row() == 3) {
+            return portInfo->rxAttenuation();
+        } else if (index.row() == 4) {
+            return portInfo->snrMargin();
+        } else if (index.row() == 5) {
+            return portInfo->timeLastChange();
         }
     }
 

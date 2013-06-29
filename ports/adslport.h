@@ -24,6 +24,9 @@ public:
     typedef AdslPort *Ptr;
 
 protected:
+    QString typeLineString(int type);
+    QString codingString(int coding);
+
     int mRxRate;
     int mTxRate;
     QString mCoding;

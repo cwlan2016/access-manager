@@ -1,7 +1,8 @@
 #include "snmpclient.h"
 
-#include "configs/snmpconfig.h"
+#include "converters.h"
 #include "customsnmpfunctions.h"
+#include "configs/snmpconfig.h"
 
 SnmpClient::SnmpClient()
 {
@@ -128,7 +129,39 @@ bool SnmpClient::sendRequest()
 {
     int status = snmp_synch_response(mSnmpSession, mPdu, &mResponsePdu);
 
-    return (status == STAT_SUCCESS) && (mResponsePdu->errstat == SNMP_ERR_NOERROR);
+    if (status == STAT_SUCCESS) {
+        if (mResponsePdu->errstat != SNMP_ERR_NOERROR) {
+            mError = QString::fromUtf8("Ошибка в пакете. Причина: %1.")
+                    .arg(snmp_errstring(mResponsePdu->errstat));
+
+            if (mResponsePdu->errindex != 0) {
+                int count = 1;
+                auto vars = mResponsePdu->variables;
+                for (;vars && (count != mResponsePdu->errindex);
+                     vars = vars->next_variable, count++)
+                                    /*EMPTY*/;
+                if (vars) {
+                    mError += QString::fromUtf8(" Ошибка в OID: %1.")
+                            .arg(oidToString(vars->name, vars->name_length));
+                }
+            }
+
+            return false;
+        }
+
+        return true;
+    } else if (status == STAT_TIMEOUT) {
+        mError = QString::fromUtf8("Таймаут: Нет ответа от %1").arg(mSnmpSession->peername);
+        return false;
+    } else {
+        mError = QString::fromUtf8("Неизвестная ошибка");
+        return false;
+    }
+}
+
+QString SnmpClient::error() const
+{
+    return mError;
 }
 
 netsnmp_variable_list *SnmpClient::varList()

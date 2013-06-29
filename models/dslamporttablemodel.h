@@ -34,7 +34,8 @@ public:
     bool load();
     void createList();
 
-    bool updatePortInfo(QModelIndex index);
+    bool updatePortInfoBasic(QModelIndex portIndex);
+    bool updatePortInfoExtended(QModelIndex portIndex);
     bool changePortState(int portIndex, int portState);
     bool changePortProfile(QModelIndex portIndex, QString profileName);
 
@@ -44,6 +45,8 @@ private:
     int currentPort(QModelIndex index);
     QVariant topLevelData(QModelIndex index) const;
     QVariant secondLevelData(QModelIndex index) const;
+    QVariant secondLevelDataAdsl(QModelIndex index) const;
+    QVariant secondLevelDataShdsl(QModelIndex index) const;
 
     QString mError;
     int mFirstPair;

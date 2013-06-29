@@ -21,8 +21,8 @@ int BoardTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    if ((mParentDevice->deviceModel() == DeviceModel::MA5600)
-            || (mParentDevice->deviceModel() == DeviceModel::MA5300)) {
+    if (mParentDevice && ((mParentDevice->deviceModel() == DeviceModel::MA5600)
+            || (mParentDevice->deviceModel() == DeviceModel::MA5300))) {
         if (!parent.isValid()) {
             return 16;
         } else {
@@ -135,8 +135,8 @@ Qt::ItemFlags BoardTableModel::flags(const QModelIndex &index) const
     Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 
     //for MA5600, MA5300 edit all data, without 0 column and 7,8 row
-    if ((mParentDevice->deviceModel() == DeviceModel::MA5600)
-            || (mParentDevice->deviceModel() == DeviceModel::MA5300)) {
+    if (mParentDevice && ((mParentDevice->deviceModel() == DeviceModel::MA5600)
+            || (mParentDevice->deviceModel() == DeviceModel::MA5300))) {
         if (mParentDevice->autoFill() && mParentDevice->autoNumeringBoard())
             return flags;
 
@@ -195,6 +195,9 @@ Dslam *BoardTableModel::parentDevice()
 
 bool BoardTableModel::getBoardListFromDevice()
 {
+    if (!mParentDevice)
+        return false;
+
     if (mParentDevice->deviceModel() != DeviceModel::MA5600) {
         mError = QString::fromUtf8("Автоматическое обновление списка досок невозможно для данной модели дслама.");
         return false;
@@ -232,7 +235,7 @@ bool BoardTableModel::getBoardListFromDevice()
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable) {
             if (!isValidSnmpValue(vars)) {
-                mError = SnmpErrorStrings::GetInfo;
+                mError = SnmpErrorStrings::Parse;
                 endResetModel();
                 return false;
             }
@@ -250,12 +253,12 @@ bool BoardTableModel::getBoardListFromDevice()
             addBoard(boardIndex, boardTypeFromBoardName(boardName), 1);
         }
     } else {
-        mError = SnmpErrorStrings::GetInfo;
+        mError = SnmpErrorStrings::Parse;
         endResetModel();
         return false;
     }
 
-    if (mParentDevice->autoNumeringBoard())
+    if (mParentDevice && mParentDevice->autoNumeringBoard())
         mParentDevice->boardTableModel()->renumeringPairList();
 
     endResetModel();
@@ -267,6 +270,9 @@ bool BoardTableModel::getBoardListFromDevice()
 
 void BoardTableModel::renumeringPairList()
 {
+    if (!mParentDevice)
+        return;
+
     int adslStep = mParentDevice->countPorts(BoardType::AnnexA);
     int shdslStep = mParentDevice->countPorts(BoardType::Shdsl);
 
@@ -302,6 +308,9 @@ QString BoardTableModel::error() const
 
 QString BoardTableModel::rangePairs(int firstPair, BoardType::Enum typeBoard) const
 {
+    if (!mParentDevice)
+        return "";
+
     return QString("%1-%2")
            .arg(firstPair)
             .arg(firstPair + mParentDevice->countPorts(typeBoard) - 1);

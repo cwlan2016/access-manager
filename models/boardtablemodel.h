@@ -38,7 +38,6 @@ private:
     void boardIsModified();
 
     QString mError;
-    //TODO: Check access to this member on isNull.
     Dslam *mParentDevice;
     QHash<int, DslamBoard::Ptr> mList;
 };

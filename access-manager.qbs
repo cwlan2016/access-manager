@@ -19,15 +19,9 @@ Project {
             "ports/*.h",
             "models/*.h",
             "gui/*.h",
-            "other-data/*.h"
+            "other-data/*.h",
+            "gui/*.ui"
         ]
-        
-        Group {
-            name : "Forms"
-            files: [
-                "gui/*.ui"
-            ]
-        }
 
         Group {
             name : "Resources"
