@@ -65,6 +65,38 @@ bool Device::getServiceDataFromDevice()
     return false;
 }
 
+//QString Device::id() const
+//{
+//    return deviceModel() + ip();
+//}
+
+//QHash<int, QByteArray> Device::roleNames() const
+//{
+//    QHash<int, QByteArray> names;
+//    names[NameRole] = "name";
+//    names[IpRole] = "ip";
+//    names[TypeRole] = "type";
+//    names[ModelRole] = "model";
+
+//    return names;
+//}
+
+QVariant Device::data(int role) const
+{
+    switch(role) {
+    case NameRole:
+        return name();
+    case IpRole:
+        return ip();
+    case TypeRole:
+        return deviceType();
+    case ModelRole:
+        return deviceModel();
+    default:
+        return QVariant();
+    }
+}
+
 void Device::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
 {
     Q_UNUSED(snmpClient)

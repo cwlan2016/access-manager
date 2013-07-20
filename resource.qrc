@@ -2,7 +2,7 @@
     <qresource prefix="/tr">
         <file>qtbase_ru.qm</file>
     </qresource>
-    <qresource prefix="/images">
+    <qresource prefix="/">
         <file alias="splash.png">images/splash.png</file>
         <file alias="add.png">images/add16.png</file>
         <file alias="configure.png">images/configure.png</file>
@@ -26,5 +26,9 @@
     </qresource>
     <qresource prefix="/icons">
         <file alias="appicon">data.ico</file>
+    </qresource>
+    <qresource prefix="/qml">
+        <file alias="main.qml">main.qml</file>
+        <file alias="gui/DevicePage.qml">gui/DevicePage.qml</file>
     </qresource>
 </RCC>

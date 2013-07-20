@@ -5,17 +5,27 @@
 #include <devices/olt.h>
 #include <devices/switch.h>
 
-class DeviceTableModel : public QAbstractTableModel
+class DeviceTableModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    enum Roles {
+        NameRole = Qt::UserRole + 1,
+        IpRole,
+        TypeRole,
+        ModelRole
+      };
+
     explicit DeviceTableModel(QObject *parent = 0);
 
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+//    int columnCount(const QModelIndex &parent) const;
+
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+
+    void sort(int column, Qt::SortOrder order);
 
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const;
@@ -41,7 +51,8 @@ public:
     bool getServiceDataFromDevice(QModelIndex index);
 
     QString error() const;
-
+protected:
+    QHash<int, QByteArray> roleNames() const;
 private:
     bool exist();
     bool backup();

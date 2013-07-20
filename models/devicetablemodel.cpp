@@ -24,7 +24,7 @@
 // 2 - ip
 // 3 - type_device
 DeviceTableModel::DeviceTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractListModel(parent)
 {
     mDeviceListPath = Config::path() % "devicelist.xml";
     mDeviceListBackupPath = Config::path() % "devicelist.bak";
@@ -37,33 +37,55 @@ int DeviceTableModel::rowCount(const QModelIndex &parent) const
     return mList.size();
 }
 
-int DeviceTableModel::columnCount(const QModelIndex &parent) const
+//int DeviceTableModel::columnCount(const QModelIndex &parent) const
+//{
+//    Q_UNUSED(parent);
+//    return 4;
+//}
+
+QHash<int, QByteArray> DeviceTableModel::roleNames() const
 {
-    Q_UNUSED(parent);
-    return 4;
+    QHash<int, QByteArray> names;
+    names[NameRole] = "deviceName";
+    names[IpRole] = "deviceIp";
+    names[TypeRole] = "deviceType";
+    names[ModelRole] = "deviceModel";
+
+    return names;
 }
 
 QVariant DeviceTableModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if (index.row() < 0 || index.row() >= mList.size())
         return QVariant();
 
-    if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
-            return int(Qt::AlignLeft | Qt::AlignVCenter);
-        } else {
-            return int(Qt::AlignCenter | Qt::AlignVCenter);
-        }
-    } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
-            return mList.at(index.row())->name();
-        } else if (index.column() == 1) {
-            return DeviceModel::toString(mList.at(index.row())->deviceModel());
-        }  else if (index.column() == 2) {
-            return mList.at(index.row())->ip();
-        } else if (index.column() == 3) {
-            return DeviceType::toString(mList.at(index.row())->deviceType());
-        }
+    //if (!index.isValid())
+    //    return QVariant();
+
+//    if (role == Qt::TextAlignmentRole) {
+//        if (index.column() == 0) {
+//            return int(Qt::AlignLeft | Qt::AlignVCenter);
+//        } else {
+//            return int(Qt::AlignCenter | Qt::AlignVCenter);
+//        }
+//    } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
+//        if (index.column() == 0) {
+//            return mList.at(index.row())->name();
+//        } else if (index.column() == 1) {
+//            return DeviceModel::toString(mList.at(index.row())->deviceModel());
+//        }  else if (index.column() == 2) {
+//            return mList.at(index.row())->ip();
+//        } else if (index.column() == 3) {
+//            return DeviceType::toString(mList.at(index.row())->deviceType());
+//        }
+    /*} else*/ if (role == NameRole) {
+        return mList.at(index.row())->name();
+    } else if (role == IpRole) {
+        return mList.at(index.row())->ip();
+    } else if (role == TypeRole) {
+        return DeviceType::toString(mList.at(index.row())->deviceType());
+    } else if (role == ModelRole) {
+        return DeviceModel::toString(mList.at(index.row())->deviceModel());
     }
 
     return QVariant();
@@ -121,11 +143,32 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
     return false;
 }
 
+void DeviceTableModel::sort(int column, Qt::SortOrder order)
+{
+    if (column == 0) {
+        qDebug() << column << " " << order;
+    }
+
+}
+
+
+
 QVariant DeviceTableModel::headerData(int section, Qt::Orientation orientation,
                                       int role) const
 {
     if (orientation == Qt::Vertical)
         return QVariant();
+
+    switch (role) {
+    case NameRole:
+        return DeviceTableModelStrings::Name;
+    case IpRole:
+        return DeviceTableModelStrings::IP;
+    case ModelRole:
+        return DeviceTableModelStrings::DeviceModel;
+    case TypeRole:
+        return DeviceTableModelStrings::DeviceType;
+    }
 
     if (role == Qt::DisplayRole) {
         if (section == 0) {

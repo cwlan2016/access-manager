@@ -8,6 +8,13 @@ class Device : public QObject
 {
     Q_OBJECT
 public:
+    enum Roles {
+        NameRole = Qt::UserRole+1,
+        IpRole,
+        TypeRole,
+        ModelRole
+    };
+
     Device(QObject *parent = 0);
     Device(QString name, QString ip, QObject *parent = 0);
     Device(Device *source, QObject *parent = 0);
@@ -24,7 +31,9 @@ public:
     QString error() const;
 
     virtual bool getServiceDataFromDevice();
-
+   // virtual QString id() const;
+   // QHash<int, QByteArray> roleNames() const;
+    virtual QVariant data(int role) const;
     virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
     virtual void parsePdu(SnmpClient::Ptr snmpClient);
 

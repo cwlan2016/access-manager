@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xmlpatterns widgets
+QT       += core gui xmlpatterns widgets qml quick
 
 TARGET = access-manager
 TEMPLATE = app
@@ -187,7 +187,9 @@ OTHER_FILES += \
     images/clear_left.png \
     data.ico \
     access-manager.rc \
-    schemadevicelist.xsd
+    schemadevicelist.xsd \
+    gui/DevicePage.qml \
+    main.qml
 
 HEADERS += \
     stdafx.h

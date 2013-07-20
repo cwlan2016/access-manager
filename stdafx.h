@@ -21,10 +21,17 @@
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
+#include <QtGui/QGuiApplication>
 #include <QtGui/QBrush>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QFont>
 #include <QtGui/QValidator>
+
+#include <QtQml/qqml.h>
+#include <QtQml/QQmlApplicationEngine>
+#include <QtQml/QQmlContext>
+
+#include <QtQuick/QQuickWindow>
 
 #include <QtXmlPatterns/QXmlSchema>
 #include <QtXmlPatterns/QXmlSchemaValidator>
