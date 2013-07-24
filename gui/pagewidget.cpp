@@ -1,11 +1,17 @@
 #include "pagewidget.h"
 
-PageWidget::PageWidget(Device::Ptr device, QWidget *parent) :
-    QWidget(parent), mDevice(device)
+PageWidget::PageWidget(QWidget *parent) :
+    QWidget(parent),
+    mContextMenu(new QMenu(this))
 {
 }
 
-Device::Ptr PageWidget::device()
+void PageWidget::init()
 {
-    return mDevice;
+
+}
+
+QMenu *PageWidget::contextMenu()
+{
+    return mContextMenu;
 }

@@ -6,35 +6,281 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
-    <height>347</height>
+    <width>609</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="2">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>460</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="boardNameLabel">
-     <property name="text">
-      <string>Доска X</string>
-     </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="topButtonPanel" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="backToBoardListButton">
+        <property name="text">
+         <string>Назад</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/prev.png</normaloff>:/images/prev.png</iconset>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="boardNameLabel">
+        <property name="text">
+         <string>Доска X</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>460</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="finishEditButton">
+        <property name="text">
+         <string>Окончить редактирование</string>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="beginEditButton">
+        <property name="toolTip">
+         <string>Перейте в режим редактирования</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+        </property>
+        <property name="popupMode">
+         <enum>QToolButton::InstantPopup</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="3">
+   <item>
+    <widget class="QWidget" name="editToolButtonPanel" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="editBoardFrame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>9</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="autoUpdateBoardListCheckBox">
+           <property name="text">
+            <string>Автоматическое получение списка досок</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="autoNumeringPairCheckBox">
+           <property name="text">
+            <string>Автоматическая нумерация пар</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QToolButton" name="editBoardButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="removeBoardButton">
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/images/remove.png</normaloff>:/images/remove.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="operationToolButtonPanel" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="upPortButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/up.png</normaloff>:/images/up.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="downPortButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/down.png</normaloff>:/images/down.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QTreeView" name="dslamTreeView">
      <property name="contextMenuPolicy">
       <enum>Qt::CustomContextMenu</enum>
@@ -47,37 +293,53 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QPushButton" name="backToBoardListButton">
-     <property name="text">
-      <string>Назад</string>
+   <item>
+    <widget class="QFrame" name="profileFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="icon">
-      <iconset resource="../resource.qrc">
-       <normaloff>:/images/prev.png</normaloff>:/images/prev.png</iconset>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="QGroupBox" name="selectProfileGroupBox">
-     <property name="title">
-      <string>Выбор профиля</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="1" column="0">
-       <widget class="QLabel" name="profileDescLabel">
-        <property name="text">
-         <string>Профиль</string>
-        </property>
-       </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="profileFrameLabel">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Профиль</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="closeProfileFrameButton">
+          <property name="toolTip">
+           <string>Закрыть</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="1" column="1">
+      <item>
        <widget class="QComboBox" name="profileListComboBox"/>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <spacer name="horizontalSpacer_2">
@@ -146,18 +408,18 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Обновить все</string>
+    <string>Обновить информацию по всем портам</string>
    </property>
    <property name="toolTip">
-    <string>Обновить все</string>
+    <string>Обновить информацию по всем портам</string>
    </property>
   </action>
   <action name="collapseAllNodeAction">
    <property name="text">
-    <string>Свернуть все</string>
+    <string>Свернуть все узлы</string>
    </property>
    <property name="toolTip">
-    <string>Свернуть все</string>
+    <string>Свернуть все узлы</string>
    </property>
   </action>
   <action name="showBoardAction">
@@ -168,12 +430,54 @@
     <string>Открыть</string>
    </property>
   </action>
-  <action name="showSelectProfileGBAction">
+  <action name="showProfileFrameAction">
    <property name="text">
     <string>Изменить профиль</string>
    </property>
    <property name="toolTip">
     <string>Изменить профиль</string>
+   </property>
+  </action>
+  <action name="editBoardAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Изменить текущую ячейку</string>
+   </property>
+   <property name="toolTip">
+    <string>Изменить текущую ячейку</string>
+   </property>
+  </action>
+  <action name="removeBoardAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/remove.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Удалить текущую доску</string>
+   </property>
+   <property name="toolTip">
+    <string>Удалить текущую доску</string>
+   </property>
+  </action>
+  <action name="renumeringPairAction">
+   <property name="text">
+    <string>Перенумеровать пары</string>
+   </property>
+   <property name="toolTip">
+    <string>Перенумеровать пары</string>
+   </property>
+  </action>
+  <action name="getBoardListAction">
+   <property name="text">
+    <string>Запрос досок с дслама</string>
+   </property>
+   <property name="toolTip">
+    <string>Запрос досок с дслама</string>
    </property>
   </action>
  </widget>

@@ -76,14 +76,14 @@ SOURCES += main.cpp \
     gui/pagewidget.cpp \
     gui/switchpagewidget.cpp \
     gui/oltpagewidget.cpp \    
-    gui/editdslamboardtablepagewidget.cpp \
     gui/aboutpagewidget.cpp \
     gui/settingspagewidget.cpp \
     gui/devicetablepagewidget.cpp \
     configs/dslamprofileconfig.cpp \
     models/dslprofiletablemodel.cpp \
     ports/shdslportma5300.cpp \
-    ports/shdslportma5600.cpp
+    ports/shdslportma5600.cpp \
+    gui/devicepagewidget.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -138,7 +138,6 @@ HEADERS  += basicdialogs.h \
     gui/pagewidget.h \
     gui/switchpagewidget.h \
     gui/oltpagewidget.h \
-    gui/editdslamboardtablepagewidget.h \
     gui/aboutpagewidget.h \
     gui/settingspagewidget.h \
     gui/devicetablepagewidget.h \ 
@@ -146,13 +145,13 @@ HEADERS  += basicdialogs.h \
     configs/dslamprofileconfig.h \
     models/dslprofiletablemodel.h \
     ports/shdslportma5300.h \
-    ports/shdslportma5600.h
+    ports/shdslportma5600.h \
+    gui/devicepagewidget.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \
     gui/switchpagewidget.ui \
     gui/oltpagewidget.ui \
-    gui/editdslamboardtablepagewidget.ui \
     gui/aboutpagewidget.ui \
     gui/settingspagewidget.ui \
     gui/devicetablepagewidget.ui
@@ -169,7 +168,6 @@ win32:LIBS+= -ladvapi32
 
 OTHER_FILES += \
     images/up16.png \
-    images/table16.png \
     images/info16.png \
     images/yes16.png \
     images/tv.png \

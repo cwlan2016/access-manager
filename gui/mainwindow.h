@@ -21,11 +21,6 @@ public:
     void loadProgramSettings();
 
 private:    
-    void upDslPort();
-    void downDslPort();
-
-    void saveSwitchConfig();
-
     void getServiceDataFromDevice();
 
     void showAboutProgramPage();
@@ -33,8 +28,6 @@ private:
 
     void tabCurrentChanged(int index);
     void tabCloseRequested(int index);
-
-    void deviceViewActivatedItem(QModelIndex index);
 
     void closeEvent(QCloseEvent *event);
 

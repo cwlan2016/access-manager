@@ -6,7 +6,6 @@
 #include <models/boardtablemodel.h>
 #include <models/devicetabledelegate.h>
 #include <gui/dslampagewidget.h>
-#include <gui/editdslamboardtablepagewidget.h>
 #include <gui/oltpagewidget.h>
 #include <gui/switchpagewidget.h>
 
@@ -14,7 +13,7 @@ DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
                                              QVector<PageType::Enum> *typePageList,
                                              QHash<QString, QWidget *> *pageList,
                                              QWidget *parent) :
-    QWidget(parent),
+    PageWidget(parent),
     ui(new Ui::DeviceTablePageWidget),
     mDeviceTableModel(new DeviceTableModel(this)),
     mProxyModel(new QSortFilterProxyModel(this)),
@@ -23,56 +22,19 @@ DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
     mParentTabWidget(parentTabWidget)
 {
     ui->setupUi(this);
-
-    mProxyModel->setSourceModel(mDeviceTableModel);
-    mProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-
-    ui->deviceListTableView->setModel(mProxyModel);
-    ui->deviceListTableView->setColumnWidth(0, 200);
-    ui->deviceListTableView->setColumnWidth(1, 100);
-    ui->deviceListTableView->setColumnWidth(2, 150);
-    ui->deviceListTableView->setColumnWidth(3, 150);
-
-    DeviceTableDelegate *deviceListDelegate = new DeviceTableDelegate(this);
-    deviceListDelegate->setIndexDeviceModel(1);
-    ui->deviceListTableView->setItemDelegate(deviceListDelegate);
-
-    connect(ui->selectDeviceAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::openDevice);
-    connect(ui->addDeviceAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::addDevice);
-    connect(ui->editDeviceAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::editDevice);
-    connect(ui->removeDeviceAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::removeDevice);
-    connect(ui->deviceListTableView, &QTableView::doubleClicked,
-            this, &DeviceTablePageWidget::openDevice);
-    connect(ui->deviceListTableView->selectionModel(), &QItemSelectionModel::currentChanged,
-            this, &DeviceTablePageWidget::viewActivatedItem);
-    connect(ui->deviceListTableView, &QTableView::customContextMenuRequested,
-            this, &DeviceTablePageWidget::deviceViewRequestContextMenu);
-    connect(ui->filterNameLineEdit, &QLineEdit::textChanged,
-            this, &DeviceTablePageWidget::filterDeviceTextChanged);
-    connect(ui->vlanInfoGroupBox, &QGroupBox::toggled,
-            this, &DeviceTablePageWidget::vlanInfoGBoxStateChanged);
-    connect(ui->profileInfoGroupBox, &QGroupBox::toggled,
-            this, &DeviceTablePageWidget::profileInfoGboxStateChanged);
-    connect(ui->showVlanSwitchAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::showVlanInfoGroupBox);
-    connect(ui->editDslamBoardListAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::showEditDslamBoardListPage);
-    connect(ui->showProfilesOltAction, &QAction::triggered,
-            this, &DeviceTablePageWidget::showProfileInfoGroupBox);
-
-    ui->vlanInfoGroupBox->setVisible(false);
-    ui->vlanInfoGroupBox->setChecked(false);
-    ui->profileInfoGroupBox->setVisible(false);
-    ui->profileInfoGroupBox->setChecked(false);
 }
 
 DeviceTablePageWidget::~DeviceTablePageWidget()
 {
     delete ui;
+}
+
+void DeviceTablePageWidget::init()
+{
+    initActions();
+    initComponents();
+    initMenu();
+    initView();
 }
 
 void DeviceTablePageWidget::loadDeviceList()
@@ -125,26 +87,25 @@ void DeviceTablePageWidget::openDevice()
     QString deviceModelString = mDeviceTableModel->data(deviceModelIndex).toString();
     DeviceType::Enum deviceType = DeviceType::from(typeString);
 
-    QWidget *pageWidget;
+    PageWidget *pageWidget;
 
     Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
 
     if (deviceType == DeviceType::Switch) {
         pageWidget = new SwitchPageWidget(deviceInfo, this);
-        pageWidget->setObjectName(namePage);
         mTypePageList->push_back(PageType::SwitchPage);
     } else if (deviceType == DeviceType::Dslam) {
         pageWidget = new DslamPageWidget(deviceInfo, this);
-        pageWidget->setObjectName(namePage);
         mTypePageList->push_back(PageType::DslamPage);
     } else if (deviceType == DeviceType::Olt) {
         pageWidget = new OltPageWidget(deviceInfo, this);
-        pageWidget->setObjectName(namePage);
         mTypePageList->push_back(PageType::OltPage);
     } else {
         return;
     }
 
+    pageWidget->init();
+    pageWidget->setObjectName(namePage);
     mPageList->insert(namePage, pageWidget);
 
     QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
@@ -228,57 +189,7 @@ void DeviceTablePageWidget::batchUpdateInfoAllDevices()
     batchUpdate(DeviceType::Other);
 }
 
-void DeviceTablePageWidget::showEditDslamBoardListPage()
-{
-    QModelIndex index = ui->deviceListTableView->currentIndex();
-
-    if (!index.isValid())
-        return;
-
-    index = mProxyModel->mapToSource(index);
-
-    QModelIndex ipIndex = mDeviceTableModel->index(index.row(), 2);
-    QString ip = mDeviceTableModel->data(ipIndex).toString();
-    QModelIndex typeIndex = mDeviceTableModel->index(index.row(), 3);
-    QString typeString = mDeviceTableModel->data(typeIndex).toString();
-    QString namePage = typeString % ip % " Edit";
-
-    if (mPageList->contains(namePage)) {
-        mParentTabWidget->setCurrentWidget(mPageList->value(namePage));
-        return;
-    }
-
-    QModelIndex deviceModelIndex = mDeviceTableModel->index(index.row(), 1);
-    QString deviceModelString = mDeviceTableModel->data(deviceModelIndex).toString();
-    DeviceModel::Enum deviceModel = DeviceModel::from(deviceModelString);
-
-    if ((deviceModel == DeviceModel::Other)
-            || (deviceModel == DeviceModel::MXA32)
-            || (deviceModel == DeviceModel::MXA64)) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Данная модель дслама не имеет досок."));
-        return;
-    }
-
-    Device::Ptr deviceInfo = mDeviceTableModel->deviceList()[index.row()];
-
-    QWidget *pageWidget = new EditDslamBoardTablePageWidget(deviceInfo, this);
-    pageWidget->setObjectName(namePage);
-
-    mPageList->insert(namePage, pageWidget);
-    mTypePageList->push_back(PageType::EditDslamPage);
-
-    QModelIndex nameIndex = mDeviceTableModel->index(index.row(), 0);
-    QString name = mDeviceTableModel->data(nameIndex).toString();
-
-    QString title = QString::fromUtf8("%1 %2 - Правка")
-                    .arg(deviceModelString)
-                    .arg(name);
-
-    mParentTabWidget->addTab(pageWidget, title);
-    mParentTabWidget->setCurrentWidget(pageWidget);
-}
-
-void DeviceTablePageWidget::showVlanInfoGroupBox()
+void DeviceTablePageWidget::showSwitchExtInfoFrame()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
 
@@ -291,11 +202,11 @@ void DeviceTablePageWidget::showVlanInfoGroupBox()
     QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
     QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 1)).toString();
 
-    ui->vlanInfoGroupBox->setTitle(model % " " % name);
-    ui->vlanInfoGroupBox->setChecked(true);
+    ui->switchExtInfoLabel->setText(QString::fromUtf8("Коммутатор ") % model % ", " % name);
+    ui->switchExtInfoFrame->setVisible(true);
 }
 
-void DeviceTablePageWidget::showProfileInfoGroupBox()
+void DeviceTablePageWidget::showOltExtInfoFrame()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
 
@@ -308,8 +219,24 @@ void DeviceTablePageWidget::showProfileInfoGroupBox()
     QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
     QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 1)).toString();
 
-    ui->profileInfoGroupBox->setTitle(model % " " % name);
-    ui->profileInfoGroupBox->setChecked(true);
+    ui->oltExtInfoLabel->setText(QString::fromUtf8("Линейный оптический терминал ") % model % ", " % name);
+    ui->oltExtInfoFrame->setVisible(true);
+}
+
+void DeviceTablePageWidget::showExtendedInfoPanel()
+{
+    QModelIndex currentIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+    QModelIndex deviceTypeIndex = mDeviceTableModel->index(currentIndex.row(), 3);
+    DeviceType::Enum deviceType = DeviceType::from(mDeviceTableModel->data(deviceTypeIndex).toString());
+
+    if (deviceType == DeviceType::Switch) {
+        showSwitchExtInfoFrame();
+    } else if (deviceType == DeviceType::Dslam) {
+        BasicDialogs::information(this, BasicDialogStrings::Info,
+                                  QString::fromUtf8("Для данного типа устройства дополнительная информация недоступна."));
+    } else if (deviceType == DeviceType::Olt) {
+        showOltExtInfoFrame();
+    }
 }
 
 void DeviceTablePageWidget::clearSelection()
@@ -330,6 +257,79 @@ QSortFilterProxyModel *DeviceTablePageWidget::proxyModel() const
 QModelIndex DeviceTablePageWidget::currentDeviceListItem() const
 {
     return ui->deviceListTableView->currentIndex();
+}
+
+void DeviceTablePageWidget::initActions()
+{
+    connect(ui->openDeviceTabAction, &QAction::triggered,
+            this, &DeviceTablePageWidget::openDevice);
+    connect(ui->addDeviceAction, &QAction::triggered,
+            this, &DeviceTablePageWidget::addDevice);
+    connect(ui->editDeviceAction, &QAction::triggered,
+            this, &DeviceTablePageWidget::editDevice);
+    connect(ui->removeDeviceAction, &QAction::triggered,
+            this, &DeviceTablePageWidget::removeDevice);
+    connect(ui->extendedInfoAction, &QAction::triggered,
+            this, &DeviceTablePageWidget::showExtendedInfoPanel);
+
+    ui->openDeviceTabButton->setDefaultAction(ui->openDeviceTabAction);
+    ui->addDeviceButton->setDefaultAction(ui->addDeviceAction);
+    ui->editDeviceButton->setDefaultAction(ui->editDeviceAction);
+    ui->removeDeviceButton->setDefaultAction(ui->removeDeviceAction);
+    ui->extendedInfoButton->setDefaultAction(ui->extendedInfoAction);
+}
+
+void DeviceTablePageWidget::initComponents()
+{
+    connect(ui->filterNameLineEdit, &QLineEdit::textChanged,
+            this, &DeviceTablePageWidget::filterDeviceTextChanged);
+    connect(ui->closeSwitchExtInfoButton, &QToolButton::pressed,
+            ui->switchExtInfoFrame, &QFrame::hide);
+    connect(ui->closeOltExtInfoButton, &QToolButton::pressed,
+            ui->oltExtInfoFrame, &QFrame::hide);
+
+    ui->switchExtInfoFrame->setVisible(false);
+    ui->oltExtInfoFrame->setVisible(false);
+}
+
+void DeviceTablePageWidget::initMenu()
+{
+    mContextMenu->addAction(ui->openDeviceTabAction);
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->addDeviceAction);
+    mContextMenu->addAction(ui->editDeviceAction);
+    mContextMenu->addAction(ui->removeDeviceAction);
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->extendedInfoAction);
+}
+
+void DeviceTablePageWidget::initView()
+{
+    mProxyModel->setSourceModel(mDeviceTableModel);
+    mProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+
+    ui->deviceListTableView->setModel(mProxyModel);
+    ui->deviceListTableView->setColumnWidth(0, 200);
+    ui->deviceListTableView->setColumnWidth(1, 100);
+    ui->deviceListTableView->setColumnWidth(2, 150);
+    ui->deviceListTableView->setColumnWidth(3, 150);
+
+    DeviceTableDelegate *deviceListDelegate = new DeviceTableDelegate(this);
+    deviceListDelegate->setIndexDeviceModel(1);
+    ui->deviceListTableView->setItemDelegate(deviceListDelegate);
+
+    connect(ui->deviceListTableView, &QTableView::doubleClicked,
+            this, &DeviceTablePageWidget::openDevice);
+    connect(ui->deviceListTableView->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &DeviceTablePageWidget::viewActivatedItem);
+    connect(ui->deviceListTableView, &QTableView::customContextMenuRequested,
+            this, &DeviceTablePageWidget::deviceViewRequestContextMenu);
+
+    clearSelection();
+
+    ui->editDeviceAction->setEnabled(false);
+    ui->removeDeviceAction->setEnabled(false);
+    ui->extendedInfoAction->setEnabled(false);
 }
 
 void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
@@ -384,46 +384,23 @@ void DeviceTablePageWidget::filterDeviceTextChanged(QString text)
     mProxyModel->setFilterWildcard(text % "*");
 }
 
-void DeviceTablePageWidget::vlanInfoGBoxStateChanged(bool state)
-{
-    ui->vlanInfoGroupBox->setVisible(state);
-}
-
-void DeviceTablePageWidget::profileInfoGboxStateChanged(bool state)
-{
-    ui->profileInfoGroupBox->setVisible(state);
-}
-
 void DeviceTablePageWidget::deviceViewRequestContextMenu(QPoint point)
 {
-    QMenu contextMenu(this);
-    contextMenu.addAction(ui->selectDeviceAction);
-    contextMenu.addSeparator();
-    contextMenu.addAction(ui->addDeviceAction);
-    contextMenu.addAction(ui->editDeviceAction);
-    contextMenu.addAction(ui->removeDeviceAction);
-
-    QModelIndex devModelIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-    QModelIndex index = mDeviceTableModel->index(devModelIndex.row(), 3);
-    DeviceType::Enum deviceType = DeviceType::from(mDeviceTableModel->data(index).toString());
-
-    if (deviceType == DeviceType::Switch) {
-        contextMenu.addSeparator();
-        contextMenu.addAction(ui->showVlanSwitchAction);
-    } else if (deviceType == DeviceType::Dslam) {
-        contextMenu.addSeparator();
-        contextMenu.addAction(ui->editDslamBoardListAction);
-    } else if (deviceType == DeviceType::Olt) {
-        contextMenu.addSeparator();
-        contextMenu.addAction(ui->showProfilesOltAction);
-    }
-
-    contextMenu.exec(ui->deviceListTableView->mapToGlobal(point));
+    mContextMenu->exec(ui->deviceListTableView->mapToGlobal(point));
 }
 
-void DeviceTablePageWidget::viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex)
+void DeviceTablePageWidget::viewActivatedItem(QModelIndex currIndex,
+                                              QModelIndex prevIndex)
 {
     Q_UNUSED(prevIndex)
 
-    emit changedActiveItem(currIndex);
+    if (currIndex.isValid()) {
+        ui->editDeviceAction->setEnabled(currIndex.column() != 3);
+        ui->removeDeviceAction->setEnabled(true);
+        ui->extendedInfoAction->setEnabled(true);
+    } else {
+        ui->editDeviceAction->setEnabled(false);
+        ui->removeDeviceAction->setEnabled(false);
+        ui->extendedInfoAction->setEnabled(false);
+    }
 }

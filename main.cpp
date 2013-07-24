@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     QApplication::setPalette(palette);
 
     a.setApplicationName("Access Manager");
-    a.setApplicationVersion(QString::fromUtf8("0.2.1"));
+    a.setApplicationVersion(QString::fromUtf8("0.2.2"));
     a.setOrganizationName(QString::fromUtf8("rt.ru"));
     Config::init();
 

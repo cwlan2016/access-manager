@@ -8,30 +8,30 @@
 #include <models/switchporttablemodel.h>
 
 SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
-    PageWidget(deviceInfo, parent),
+    DevicePageWidget(deviceInfo, parent),
     ui(new Ui::SwitchPageWidget)
 {
     ui->setupUi(this);
 
-    ui->portInfoGroupBox->setVisible(false);
-    ui->portInfoGroupBox->setChecked(false);
+}
 
-    connect(ui->portListTableView, &QTableView::customContextMenuRequested,
-            this, &SwitchPageWidget::portViewRequestContextMenu);
-    connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
-            this, &SwitchPageWidget::macTableViewRequestContextMenu);
-    connect(ui->portInfoGroupBox, &QGroupBox::toggled,
-            ui->portInfoGroupBox, &QGroupBox::setVisible);
+SwitchPageWidget::~SwitchPageWidget()
+{
+    delete ui;
+}
 
-    connect(ui->macRadioButton, &QRadioButton::toggled,
-            this, &SwitchPageWidget::macRadioButtonChangeState);
-    connect(ui->macLineEdit, &QLineEdit::textChanged,
-            this, &SwitchPageWidget::macLineEditTextChanged);
-    connect(ui->filterPortButton, &QPushButton::pressed,
-            this, &SwitchPageWidget::filterMacAddressByPorts);
+void SwitchPageWidget::init()
+{
+    initActions();
+    initComponents();
+    initMenu();
+    initView();
+}
 
+void SwitchPageWidget::initActions()
+{
     connect(ui->showPortInfoAction, &QAction::triggered,
-            this, &SwitchPageWidget::showPortInfoGroupBox);
+            this, &SwitchPageWidget::showPortInfoFrame);
     connect(ui->refreshPortInfoAction, &QAction::triggered,
             this, &SwitchPageWidget::refreshPortInfo);
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
@@ -46,7 +46,55 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
             this, &SwitchPageWidget::setPortInternetService);
     connect(ui->setPortInetWithIptvStbServiceAction, &QAction::triggered,
             this, &SwitchPageWidget::setPortInternetWithStbService);
+    connect(ui->saveConfigAction, &QAction::triggered,
+            this, &SwitchPageWidget::saveSwitchConfig);
 
+    ui->saveConfigButton->setDefaultAction(ui->saveConfigAction);
+}
+
+void SwitchPageWidget::initComponents()
+{
+    ui->portInfoFrame->setVisible(false);
+
+    connect(ui->closePortInfoButton, &QToolButton::pressed,
+            ui->portInfoFrame, &QFrame::hide);
+    connect(ui->macRadioButton, &QRadioButton::toggled,
+            this, &SwitchPageWidget::macRadioButtonChangeState);
+    connect(ui->macLineEdit, &QLineEdit::textChanged,
+            this, &SwitchPageWidget::macLineEditTextChanged);
+    connect(ui->filterPortButton, &QPushButton::pressed,
+            this, &SwitchPageWidget::filterMacAddressByPorts);
+
+    if (mDevice->deviceModel() == DeviceModel::DES3550) {
+        ui->portListLineEdit->setText("1-50");
+    } else {
+        ui->portListLineEdit->setText("1-26");
+    }
+}
+
+void SwitchPageWidget::initMenu()
+{
+    mContextMenu->addAction(ui->showPortInfoAction);
+    mContextMenu->addAction(ui->refreshPortInfoAction);
+    mContextMenu->addSeparator();
+
+    QMenu *mvlanMenu = mContextMenu->addMenu(QIcon(":/images/tv.png"), "Multicast Vlan");
+    mvlanMenu->addAction(ui->addPortToMulticastVlanAction);
+    mvlanMenu->addAction(ui->removePortFromMulticastVlanAction);
+
+    QMenu *settingsPortMenu = mContextMenu->addMenu(QString::fromUtf8("Установить сервис"));
+    settingsPortMenu->addAction(ui->setPortInetServiceAction);
+    settingsPortMenu->addAction(ui->setPortInetWithIptvStbServiceAction);
+
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->refreshAllPortInfoAction);
+
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->refreshMacTableInfoAction);
+}
+
+void SwitchPageWidget::initView()
+{
     //Инициализация модели списка портов
     Switch::Ptr switchInfo = mDevice.objectCast<Switch>();
 
@@ -58,6 +106,9 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     ui->portListTableView->setColumnWidth(0, 50);
     ui->portListTableView->setColumnWidth(1, 70);
     ui->portListTableView->setColumnWidth(2, 145);
+
+    connect(ui->portListTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::portViewRequestContextMenu);
 
     //Инициализация модели таблицы mac-адресов
     MacTableModel *macListModel = new MacTableModel(switchInfo, this);
@@ -75,16 +126,8 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     ui->macAddressTableView->setColumnWidth(0, 70);
     ui->macAddressTableView->setColumnWidth(1, 100);
 
-    if (switchInfo->deviceModel() == DeviceModel::DES3550) {
-        ui->portListLineEdit->setText("1-50");
-    } else {
-        ui->portListLineEdit->setText("1-26");
-    }
-}
-
-SwitchPageWidget::~SwitchPageWidget()
-{
-    delete ui;
+    connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::macTableViewRequestContextMenu);
 }
 
 void SwitchPageWidget::saveSwitchConfig()
@@ -116,8 +159,8 @@ void SwitchPageWidget::refreshPortInfo()
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по порту %1 обновлена.").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
@@ -125,7 +168,7 @@ void SwitchPageWidget::refreshAllPortInfo()
 {
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
-    ui->portInfoGroupBox->setChecked(false);
+    ui->portInfoFrame->setVisible(false);
 
     if (!portListModel->updateInfoAllPort()) {
         BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
@@ -179,8 +222,8 @@ void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настойки порта изменены."));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
@@ -207,8 +250,8 @@ void SwitchPageWidget::setPortInternetService()
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт %1 настроен для Интернета.").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
@@ -235,8 +278,8 @@ void SwitchPageWidget::setPortInternetWithStbService()
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт настроен для Интернета + Iptv Stb"));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
@@ -302,7 +345,7 @@ void SwitchPageWidget::macRadioButtonChangeState(bool checked)
     }
 }
 
-void SwitchPageWidget::showPortInfoGroupBox()
+void SwitchPageWidget::showPortInfoFrame()
 {
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
@@ -322,8 +365,8 @@ void SwitchPageWidget::showPortInfoGroupBox()
         ui->multicastVlanValueLabel->setPixmap(QPixmap(QString::fromUtf8(":/images/no.png")));
     }
 
-    ui->portInfoGroupBox->setTitle(QString::fromUtf8("Порт %1").arg(port));
-    ui->portInfoGroupBox->setChecked(true);
+    ui->portInfoLabel->setText(QString::fromUtf8("Порт %1").arg(port));
+    ui->portInfoFrame->setVisible(true);
 }
 
 void SwitchPageWidget::portViewRequestContextMenu(QPoint point)

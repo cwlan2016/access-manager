@@ -30,6 +30,43 @@
     <number>3</number>
    </property>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="saveConfigButton">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -78,58 +115,93 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="portInfoGroupBox">
-         <property name="title">
-          <string>Порт XXX</string>
+        <widget class="QFrame" name="portInfoFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QFormLayout" name="formLayout">
-          <property name="labelAlignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="portInetVlanDescLabel">
-            <property name="text">
-             <string>Internet Vlan:</string>
-            </property>
-           </widget>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="portInfoLabel">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Порт xxx</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="closePortInfoButton">
+              <property name="toolTip">
+               <string>Закрыть</string>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../resource.qrc">
+                <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="portInetVlanValueLabel">
-            <property name="text">
-             <string>XXX</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="portIptvVlanDescLabel">
-            <property name="text">
-             <string>IPTV Unicast Vlan:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="portIptvVlanValueLabel">
-            <property name="text">
-             <string>XXX</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="multicastVlanDescLabel">
-            <property name="text">
-             <string>Multicast Vlan Member:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="multicastVlanValueLabel">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="portInetVlanDescLabel">
+              <property name="text">
+               <string>Internet Vlan:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="portIptvVlanDescLabel">
+              <property name="text">
+               <string>IPTV Unicast Vlan:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="multicastVlanDescLabel">
+              <property name="text">
+               <string>Multicast Vlan Member:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="portInetVlanValueLabel">
+              <property name="text">
+               <string>XXX</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="multicastVlanValueLabel">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="portIptvVlanValueLabel">
+              <property name="text">
+               <string>XXX</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -252,10 +324,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Обновить все</string>
+    <string>Обновить информацию по всем портам</string>
    </property>
    <property name="toolTip">
-    <string>Обновить все</string>
+    <string>Обновить информацию по всем портам</string>
    </property>
   </action>
   <action name="refreshMacTableInfoAction">
@@ -265,10 +337,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Обновить информацию</string>
+    <string>Обновить информацию по  MAC-адресам</string>
    </property>
    <property name="toolTip">
-    <string>Обновить информацию</string>
+    <string>Обновить информацию по  MAC-адресам</string>
    </property>
   </action>
   <action name="showPortInfoAction">
@@ -321,6 +393,19 @@
     <string>Интернет + Iptv Stb</string>
    </property>
   </action>
+  <action name="saveConfigAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/save.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить изменения конфигурации</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить изменения конфигурации</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -329,6 +414,8 @@
    <header>lineedit.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

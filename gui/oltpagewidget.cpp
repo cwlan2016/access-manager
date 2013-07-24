@@ -6,13 +6,12 @@
 #include <models/onttablemodel.h>
 
 OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
-    PageWidget(deviceInfo, parent),
+    DevicePageWidget(deviceInfo, parent),
     ui(new Ui::OltPageWidget)
 {
     ui->setupUi(this);
 
-    ui->userSettingsGroupBox->setVisible(false);
-    ui->userSettingsGroupBox->setChecked(false);
+    ui->userSettingsFrame->setVisible(false);
 
     OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<Olt>(), this);
 

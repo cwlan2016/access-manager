@@ -1,6 +1,7 @@
 #ifndef DEVICETABLEPAGEWIDGET_H
 #define DEVICETABLEPAGEWIDGET_H
 
+#include "pagewidget.h"
 #include <models/devicetablemodel.h>
 
 namespace Ui
@@ -8,7 +9,7 @@ namespace Ui
 class DeviceTablePageWidget;
 }
 
-class DeviceTablePageWidget : public QWidget
+class DeviceTablePageWidget : public PageWidget
 {
     Q_OBJECT
 
@@ -18,6 +19,8 @@ public:
                                    QHash<QString, QWidget *> *pageList,
                                    QWidget *parent = 0);
     ~DeviceTablePageWidget();
+
+    void init();
 
     void loadDeviceList();
     void saveDeviceList();
@@ -34,9 +37,9 @@ public:
     void batchUpdateProfilesOlt();
     void batchUpdateInfoAllDevices();
 
-    void showEditDslamBoardListPage();
-    void showVlanInfoGroupBox();
-    void showProfileInfoGroupBox();
+    void showSwitchExtInfoFrame();
+    void showOltExtInfoFrame();
+    void showExtendedInfoPanel();
 
     void clearSelection();
 
@@ -44,15 +47,15 @@ public:
     QSortFilterProxyModel *proxyModel() const;
     QModelIndex currentDeviceListItem() const;
 
-signals:
-    void changedActiveItem(QModelIndex index);
-
 private:
+    void initActions();
+    void initComponents();
+    void initMenu();
+    void initView();
+
     void batchUpdate(DeviceType::Enum updatingDeviceType);
 
     void filterDeviceTextChanged(QString text);
-    void vlanInfoGBoxStateChanged(bool state);
-    void profileInfoGboxStateChanged(bool state);
 
     void deviceViewRequestContextMenu(QPoint point);
     void viewActivatedItem(QModelIndex currIndex, QModelIndex prevIndex);

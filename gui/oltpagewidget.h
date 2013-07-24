@@ -1,14 +1,14 @@
 #ifndef OLTPAGEWIDGET_H
 #define OLTPAGEWIDGET_H
 
-#include "pagewidget.h"
+#include "devicepagewidget.h"
 
 namespace Ui
 {
 class OltPageWidget;
 }
 
-class OltPageWidget : public PageWidget
+class OltPageWidget : public DevicePageWidget
 {
     Q_OBJECT
 

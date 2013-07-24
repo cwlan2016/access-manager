@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>713</width>
-    <height>531</height>
+    <height>594</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,16 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item>
@@ -27,7 +36,16 @@
      </property>
      <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="leftVerticalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item>
@@ -100,15 +118,49 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="userSettingsGroupBox">
-         <property name="title">
-          <string>ACS настройки пользователя [NTP-1 xxx] </string>
+        <widget class="QFrame" name="userSettingsFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0" colspan="2">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="userSettingsLabel">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>ACS настройки пользователя [NTP-1 xxx] </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="closeUserSettingsFrameButton">
+              <property name="toolTip">
+               <string>Закрыть</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resource.qrc">
+                <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QGroupBox" name="pppSettingsGroupBox">
             <property name="title">
              <string>Настройки PPP</string>
@@ -140,7 +192,7 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
+          <item>
            <widget class="QGroupBox" name="sipSettingsGroupBox">
             <property name="title">
              <string>Настройки SIP</string>
@@ -229,7 +281,7 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item>
            <widget class="QPushButton" name="applyCredentialsButton">
             <property name="text">
              <string>Применить изменения</string>
@@ -243,7 +295,16 @@
      </widget>
      <widget class="QWidget" name="verticalLayoutWidget_2">
       <layout class="QVBoxLayout" name="rightVerticalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item>
@@ -324,6 +385,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

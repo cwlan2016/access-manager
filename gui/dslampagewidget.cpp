@@ -11,29 +11,27 @@
 #include <models/dslprofiletablemodel.h>
 
 DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
-    PageWidget(deviceInfo, parent),
+    DevicePageWidget(deviceInfo, parent),
     ui(new Ui::DslamPageWidget)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);     
+}
 
-    ui->boardNameLabel->setVisible(false);
-    ui->backToBoardListButton->setVisible(false);
-    ui->selectProfileGroupBox->setVisible(false);
-    ui->selectProfileGroupBox->setChecked(false);
+DslamPageWidget::~DslamPageWidget()
+{
+    delete ui;
+}
 
-    connect(ui->dslamTreeView, &QTreeView::customContextMenuRequested,
-            this, &DslamPageWidget::viewRequestContextMenu);
-    connect(ui->dslamTreeView, &QTreeView::doubleClicked,
-            this, &DslamPageWidget::showPortListModel);
-    connect(ui->dslamTreeView, &QTreeView::expanded,
-            this, &DslamPageWidget::portListExpandedNode);
-    connect(ui->selectProfileGroupBox, &QGroupBox::toggled,
-            ui->selectProfileGroupBox, &QGroupBox::setVisible);
-    connect(ui->backToBoardListButton, &QPushButton::pressed,
-            this, &DslamPageWidget::backToBoardListModel);
-    connect(ui->applyProfileButton, &QPushButton::pressed,
-            this, &DslamPageWidget::applyDslProfile);
+void DslamPageWidget::init()
+{
+    initActions();
+    initComponents();
+    initView();
+    setupMenu();
+}
 
+void DslamPageWidget::initActions()
+{
     connect(ui->showBoardAction, &QAction::triggered,
             this, &DslamPageWidget::showPortListModel);
     connect(ui->refreshPortInfoAction, &QAction::triggered,
@@ -42,17 +40,77 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
             this, &DslamPageWidget::upDslPort);
     connect(ui->downPortAction, &QAction::triggered,
             this, &DslamPageWidget::downDslPort);
-    connect(ui->showSelectProfileGBAction, &QAction::triggered,
-            this, &DslamPageWidget::showSelectProfileGBox);
+    connect(ui->showProfileFrameAction, &QAction::triggered,
+            ui->profileFrame, &QFrame::show);
     connect(ui->collapseAllNodeAction, &QAction::triggered,
             ui->dslamTreeView, &QTreeView::collapseAll);
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
             this, &DslamPageWidget::refreshAllPortInfo);
+    connect(ui->editBoardAction, &QAction::triggered,
+            this, &DslamPageWidget::editBoard);
+    connect(ui->removeBoardAction, &QAction::triggered,
+            this, &DslamPageWidget::removeBoard);
+    connect(ui->getBoardListAction, &QAction::triggered,
+            this, &DslamPageWidget::getBoardList);
+    connect(ui->renumeringPairAction, &QAction::triggered,
+            this, &DslamPageWidget::renumeringPairs);
 
+    ui->upPortButton->setDefaultAction(ui->upPortAction);
+    ui->downPortButton->setDefaultAction(ui->downPortAction);
+    ui->editBoardButton->setDefaultAction(ui->editBoardAction);
+    ui->removeBoardButton->setDefaultAction(ui->removeBoardAction);
+}
+
+void DslamPageWidget::initComponents()
+{
+    mEditMode = false;
+
+    ui->backToBoardListButton->setVisible(false);
+    ui->boardNameLabel->setVisible(false);
+    ui->profileFrame->setVisible(false);
+    ui->editToolButtonPanel->setVisible(false);
+    ui->finishEditButton->setVisible(false);
+
+    connect(ui->closeProfileFrameButton, &QToolButton::pressed,
+            ui->profileFrame, &QFrame::hide);
+    connect(ui->backToBoardListButton, &QToolButton::pressed,
+            this, &DslamPageWidget::backToBoardListModel);
+    connect(ui->applyProfileButton, &QToolButton::pressed,
+            this, &DslamPageWidget::applyDslProfile);
+
+    Dslam::Ptr dslamInfo = mDevice.objectCast<Dslam>();
+
+    ui->autoUpdateBoardListCheckBox->setCheckState(dslamInfo->autoFill() == 1 ? Qt::Checked : Qt::Unchecked);
+    ui->autoNumeringPairCheckBox->setEnabled(dslamInfo->autoFill());
+    ui->autoNumeringPairCheckBox->setCheckState(dslamInfo->autoNumeringBoard() == 1 ? Qt::Checked : Qt::Unchecked);
+    autoNumeringPairsStateChanged(dslamInfo->autoNumeringBoard());
+    autoUpdateBoardListStateChanged(dslamInfo->autoFill());
+
+    mBoardTableDelegate = new BoardTableDelegate(mDevice.objectCast<Dslam>(), this);
+    mBoardTableDelegate->setIndexTypeBoard(1);
+    mBoardTableDelegate->setIndexFirstPair(2);
+
+    connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
+            this, &DslamPageWidget::autoUpdateBoardListStateChanged);
+    connect(ui->autoNumeringPairCheckBox, &QCheckBox::toggled,
+            this, &DslamPageWidget::autoNumeringPairsStateChanged);
+    connect(ui->beginEditButton, &QToolButton::pressed,
+            this, &DslamPageWidget::beginEditBoardList);
+    connect(ui->finishEditButton, &QPushButton::pressed,
+            this, &DslamPageWidget::finishEditBoardList);
+    connect(this, &DslamPageWidget::modeChanged,
+            this, &DslamPageWidget::pageModeChanged);
+}
+
+void DslamPageWidget::initView()
+{
     if ((mDevice->deviceModel() == DeviceModel::MA5600)
             || (mDevice->deviceModel() == DeviceModel::MA5300)) {
         ui->dslamTreeView->setModel(mDevice.objectCast<Dslam>()->boardTableModel());
+        ui->operationToolButtonPanel->setVisible(false);
     } else {
+        ui->topButtonPanel->setVisible(false);
+
         DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
 
         portListModel->setBoardType(BoardType::AnnexA);
@@ -67,12 +125,15 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
         ui->dslamTreeView->setModel(portListModel);
 
         fillSelectProfileComboBox();
+        setupMenu();
     }
-}
 
-DslamPageWidget::~DslamPageWidget()
-{
-    delete ui;
+    connect(ui->dslamTreeView, &QTreeView::customContextMenuRequested,
+            this, &DslamPageWidget::viewRequestContextMenu);
+    connect(ui->dslamTreeView, &QTreeView::doubleClicked,
+            this, &DslamPageWidget::showPortListModel);
+    connect(ui->dslamTreeView, &QTreeView::expanded,
+            this, &DslamPageWidget::portListExpandedNode);
 }
 
 void DslamPageWidget::upDslPort()
@@ -126,7 +187,7 @@ void DslamPageWidget::downDslPort()
 
 void DslamPageWidget::showPortListModel()
 {
-    if (!ui->boardNameLabel->isHidden())
+    if (!ui->backToBoardListButton->isHidden())
         return;
 
     if (!ui->dslamTreeView->currentIndex().isValid())
@@ -161,8 +222,10 @@ void DslamPageWidget::showPortListModel()
     ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
                                 .arg(indexPairRange.row())
                                 .arg(BoardType::toString(typeBoard)));
-    ui->boardNameLabel->setVisible(true);
     ui->backToBoardListButton->setVisible(true);
+    ui->boardNameLabel->setVisible(true);
+    ui->beginEditButton->setVisible(false);
+    ui->operationToolButtonPanel->setVisible(true);
     ui->dslamTreeView->setModel(portListModel);
     ui->dslamTreeView->setColumnWidth(0, 200);
     ui->dslamTreeView->setColumnWidth(1, 120);
@@ -170,13 +233,16 @@ void DslamPageWidget::showPortListModel()
     ui->dslamTreeView->setColumnWidth(3, 240);
 
     fillSelectProfileComboBox();
+    setupMenu();
 }
 
 void DslamPageWidget::backToBoardListModel()
 {
-    ui->boardNameLabel->setVisible(false);
     ui->backToBoardListButton->setVisible(false);
-    ui->selectProfileGroupBox->setChecked(false);
+    ui->boardNameLabel->setVisible(false);
+    ui->beginEditButton->setVisible(true);
+    ui->operationToolButtonPanel->setVisible(false);
+    ui->profileFrame->setVisible(false);
 
     DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
     BoardTableModel *boardTableModel = mDevice.objectCast<Dslam>()->boardTableModel();
@@ -184,11 +250,8 @@ void DslamPageWidget::backToBoardListModel()
     ui->dslamTreeView->setModel(boardTableModel);
 
     delete portTableModel;
-}
 
-void DslamPageWidget::showSelectProfileGBox()
-{
-    ui->selectProfileGroupBox->setChecked(true);
+    setupMenu();
 }
 
 void DslamPageWidget::fillSelectProfileComboBox()
@@ -217,6 +280,11 @@ void DslamPageWidget::applyDslProfile()
 
     if (index.internalId() != invalidParentIndex) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите порт для изменения профиля."));
+        return;
+    }
+
+    if (ui->profileListComboBox->currentText().isEmpty()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Выберите профиль, который вы хотите применить."));
         return;
     }
 
@@ -282,24 +350,126 @@ void DslamPageWidget::refreshAllPortInfo()
     }
 }
 
+void DslamPageWidget::autoUpdateBoardListStateChanged(bool state)
+{
+    mDevice.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
+    ui->autoNumeringPairCheckBox->setEnabled(state);
+
+    ui->editBoardAction->setEnabled(!state);
+    ui->removeBoardAction->setEnabled(!state);
+    ui->getBoardListAction->setEnabled(state);
+}
+
+void DslamPageWidget::autoNumeringPairsStateChanged(bool state)
+{
+    mDevice.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
+}
+
+void DslamPageWidget::editBoard()
+{
+    ui->dslamTreeView->setFocus();
+    ui->dslamTreeView->edit(ui->dslamTreeView->currentIndex());
+}
+
+void DslamPageWidget::removeBoard()
+{
+    QModelIndex index = ui->dslamTreeView->currentIndex();
+
+    if (!index.isValid())
+        return;
+
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
+    QString num = model->data(model->index(index.row(), 0)).toString();
+    QString type = model->data(model->index(index.row(), 1)).toString();
+
+    if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление доски"),
+                                  QString::fromUtf8("Вы действительно хотите удалить доску №%1(%2)?").arg(num, type)))
+        return;
+
+    model->removeRow(index.row(), QModelIndex());
+}
+
+void DslamPageWidget::getBoardList()
+{
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
+
+    if (!model->getBoardListFromDevice())
+        BasicDialogs::error(this, BasicDialogStrings::Error, model->error());
+}
+
+void DslamPageWidget::renumeringPairs()
+{
+    BoardTableModel *model = mDevice.objectCast<Dslam>()->boardTableModel();
+
+    model->renumeringPairList();
+}
+
+void DslamPageWidget::beginEditBoardList()
+{
+    emit modeChanged(true);
+}
+
+void DslamPageWidget::finishEditBoardList()
+{
+    emit modeChanged(false);
+}
+
+void DslamPageWidget::pageModeChanged(bool editMode)
+{
+    mEditMode = editMode;
+    ui->beginEditButton->setVisible(!editMode);
+    ui->finishEditButton->setVisible(editMode);
+    ui->editToolButtonPanel->setVisible(editMode);
+
+    setupMenu();
+    setupView();
+}
+
+void DslamPageWidget::setupMenu()
+{
+    mContextMenu->clear();
+
+    if (mEditMode) {
+        mContextMenu->addAction(ui->editBoardAction);
+        mContextMenu->addAction(ui->removeBoardAction);
+        mContextMenu->addSeparator();
+        mContextMenu->addAction(ui->getBoardListAction);
+        mContextMenu->addAction(ui->renumeringPairAction);
+    } else if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "BoardTableModel") == 0) {
+        mContextMenu->addAction(ui->showBoardAction);
+    } else {
+        mContextMenu->addAction(ui->refreshPortInfoAction);
+        mContextMenu->addSeparator();
+        mContextMenu->addAction(ui->upPortAction);
+        mContextMenu->addAction(ui->downPortAction);
+        mContextMenu->addAction(ui->showProfileFrameAction);
+        mContextMenu->addSeparator();
+        mContextMenu->addAction(ui->collapseAllNodeAction);
+        mContextMenu->addAction(ui->refreshAllPortInfoAction);
+    }
+}
+
+void DslamPageWidget::setupView()
+{
+    if (mEditMode) {
+        disconnect(ui->dslamTreeView, &QTreeView::doubleClicked,
+                this, &DslamPageWidget::showPortListModel);
+        ui->dslamTreeView->setSelectionBehavior(QAbstractItemView::SelectItems);
+        ui->dslamTreeView->setEditTriggers(QAbstractItemView::DoubleClicked
+                                           | QAbstractItemView::EditKeyPressed);
+        ui->dslamTreeView->setItemDelegate(mBoardTableDelegate);
+    } else {
+        connect(ui->dslamTreeView, &QTreeView::doubleClicked,
+                this, &DslamPageWidget::showPortListModel);
+        ui->dslamTreeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui->dslamTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        ui->dslamTreeView->setItemDelegate(new QItemDelegate(this));
+    }
+}
+
 void DslamPageWidget::viewRequestContextMenu(QPoint point)
 {
-    QMenu contextMenu(this);
-
-    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "BoardTableModel") == 0) {
-        contextMenu.addAction(ui->showBoardAction);
-    } else {
-        contextMenu.addAction(ui->refreshPortInfoAction);
-        contextMenu.addSeparator();
-        contextMenu.addAction(ui->upPortAction);
-        contextMenu.addAction(ui->downPortAction);
-        contextMenu.addAction(ui->showSelectProfileGBAction);
-        contextMenu.addSeparator();
-        contextMenu.addAction(ui->collapseAllNodeAction);
-        contextMenu.addAction(ui->refreshAllPortInfoAction);
-    }
-
-    contextMenu.exec(ui->dslamTreeView->mapToGlobal(point));
+    mContextMenu->exec(ui->dslamTreeView->mapToGlobal(point));
 }
 
 void DslamPageWidget::portListExpandedNode(QModelIndex index)
