@@ -13,6 +13,7 @@ public:
 
     DeviceModel::Enum deviceModel() const;
     int countPorts();
+    SwitchPort::Ptr createPort(QObject *parentModel);
 };
 
 #endif // SWITCHDES3550_H

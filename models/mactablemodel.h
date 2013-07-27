@@ -21,15 +21,25 @@ public:
                         int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    bool update();
+    void update();
+    bool updateIsRunning();
 
     QString error() const;
 
+signals:
+    void updateFinished(bool withError);
+
 private:
-    void updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag,
-                          QString vlanName);
+    bool updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
+                          QVector<Mac::Ptr> *list, long vlanTag, QString vlanName);
+    QVector<Mac::Ptr> *asyncUpdateMacTable(bool fullMacTable);
+
+    void finishAsyncUpdate();
+
     QString decMacAddressToHex(oid *macAddressOid, int length);
 
+    QFuture<QVector<Mac::Ptr> *> *mFuture;
+    QFutureWatcher<QVector<Mac::Ptr> *> *mFutureWatcher;
     QString mError;
     QVector<Mac::Ptr> *mList;
     Switch::Ptr mParentDevice;

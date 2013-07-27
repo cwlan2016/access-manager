@@ -186,7 +186,8 @@ bool DslamPortTableModel::load()
                 endResetModel();
                 return false;
             } else {
-                snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
+                if (i+1 < size)
+                    snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
             }
         } else {
             mError = snmpClient->error();
@@ -194,6 +195,7 @@ bool DslamPortTableModel::load()
             return false;
         }
     }
+
 
     endResetModel();
     return true;

@@ -1,4 +1,5 @@
 #include "switchdes3526.h"
+#include <ports/switchportdes3526.h>
 
 SwitchDes3526::SwitchDes3526(QObject *parent) :
     Switch(parent)
@@ -24,3 +25,9 @@ int SwitchDes3526::countPorts()
 {
     return 26;
 }
+
+SwitchPort::Ptr SwitchDes3526::createPort(QObject *parentModel)
+{
+    return new SwitchPortDes3526(parentModel);
+}
+

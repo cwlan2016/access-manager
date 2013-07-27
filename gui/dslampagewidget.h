@@ -52,6 +52,8 @@ private:
     void beginEditBoardList();
     void finishEditBoardList();
     void pageModeChanged(bool editMode);
+    void currentColumnChanged(const QModelIndex &current, const QModelIndex &previous);
+
     void setupMenu();
     void setupView();
 

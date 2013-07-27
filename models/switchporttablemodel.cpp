@@ -461,22 +461,10 @@ void SwitchPortTableModel::createList()
     mList.reserve(count);
 
     for (int i = 1; i <= count; ++i) {
-        SwitchPort::Ptr portInfo = 0;
+        SwitchPort::Ptr portInfo = mParentDevice->createPort(this);
 
-        switch (mParentDevice->deviceModel())
-        {
-        case DeviceModel::DES3526:
-            portInfo = new SwitchPortDes3526(this);
-            break;
-        case DeviceModel::DES3528:
-            portInfo = new SwitchPortDes3528(this);
-            break;
-        case DeviceModel::DES3550:
-            portInfo = new SwitchPortDes3550(this);
-            break;
-        default:
+        if (!portInfo)
             return;
-        }
 
         portInfo->setIndex(i);
 

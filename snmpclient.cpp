@@ -142,7 +142,7 @@ bool SnmpClient::sendRequest()
                                     /*EMPTY*/;
                 if (vars) {
                     mError += QString::fromUtf8(" Ошибка в OID: %1.")
-                            .arg(oidToString(vars->name, vars->name_length));
+                            .arg(toString(vars->name, vars->name_length));
                 }
             }
 
@@ -151,7 +151,7 @@ bool SnmpClient::sendRequest()
 
         return true;
     } else if (status == STAT_TIMEOUT) {
-        mError = QString::fromUtf8("Таймаут: Нет ответа от %1").arg(mSnmpSession->peername);
+        mError = QString::fromUtf8("Таймаут. Нет ответа от %1").arg(mSnmpSession->peername);
         return false;
     } else {
         mError = QString::fromUtf8("Неизвестная ошибка");

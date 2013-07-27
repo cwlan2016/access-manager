@@ -355,14 +355,15 @@ void DslamPageWidget::autoUpdateBoardListStateChanged(bool state)
     mDevice.objectCast<Dslam>()->setAutoFill(state ? 1 : 0);
     ui->autoNumeringPairCheckBox->setEnabled(state);
 
-    ui->editBoardAction->setEnabled(!state);
-    ui->removeBoardAction->setEnabled(!state);
+    currentColumnChanged(ui->dslamTreeView->currentIndex(), QModelIndex());
+
     ui->getBoardListAction->setEnabled(state);
 }
 
 void DslamPageWidget::autoNumeringPairsStateChanged(bool state)
 {
     mDevice.objectCast<Dslam>()->setAutoNumeringBoard(state ? 1 : 0);
+    currentColumnChanged(ui->dslamTreeView->currentIndex(), QModelIndex());
 }
 
 void DslamPageWidget::editBoard()
@@ -421,8 +422,49 @@ void DslamPageWidget::pageModeChanged(bool editMode)
     ui->finishEditButton->setVisible(editMode);
     ui->editToolButtonPanel->setVisible(editMode);
 
+    QItemSelectionModel *model = ui->dslamTreeView->selectionModel();
+    model->clearCurrentIndex();
+    model->clearSelection();
+
+    if (editMode) {
+        connect(model, &QItemSelectionModel::currentColumnChanged,
+                this, &DslamPageWidget::currentColumnChanged);
+        currentColumnChanged(QModelIndex(), QModelIndex());
+    } else {
+        disconnect(model, &QItemSelectionModel::currentColumnChanged,
+                this, &DslamPageWidget::currentColumnChanged);
+    }
+
     setupMenu();
     setupView();
+}
+
+void DslamPageWidget::currentColumnChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    Q_UNUSED(previous)
+
+    if(!current.isValid()) {
+        ui->editBoardAction->setEnabled(false);
+        ui->removeBoardAction->setEnabled(false);\
+        return;
+    }
+
+    bool autoNumeringBoard  = mDevice.objectCast<Dslam>()->autoNumeringBoard() == 1 ? true : false;
+    bool autoFill  = mDevice.objectCast<Dslam>()->autoFill() == 1 ? true : false;
+
+    if (autoFill) {
+        ui->removeBoardAction->setEnabled(false);
+
+        if ((!autoNumeringBoard) && (current.column() == 2)) {
+            ui->editBoardAction->setEnabled(true);
+        } else {
+            ui->editBoardAction->setEnabled(false);
+        }
+    } else {
+        ui->editBoardAction->setEnabled(current.column() != 0);
+        ui->removeBoardAction->setEnabled(true);
+    }
+
 }
 
 void DslamPageWidget::setupMenu()

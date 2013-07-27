@@ -21,6 +21,8 @@
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QXmlStreamWriter>
 
+#include <QtConcurrent/QtConcurrent>
+
 #include <QtGui/QBrush>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QFont>

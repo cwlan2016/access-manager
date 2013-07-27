@@ -67,6 +67,13 @@ int Switch::countPorts()
     return 0;
 }
 
+SwitchPort::Ptr Switch::createPort(QObject *parentModel)
+{
+    Q_UNUSED(parentModel);
+
+    return 0;
+}
+
 bool Switch::getServiceDataFromDevice()
 {
     mError.clear();

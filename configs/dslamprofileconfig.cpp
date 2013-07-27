@@ -30,18 +30,8 @@ void DslamProfileConfig::init()
 
 void DslamProfileConfig::deinit()
 {
-    auto adslEnd = mAdslList.end();
-    for(auto adslIt = mAdslList.begin(); adslIt != adslEnd; ++adslIt) {
-        QAbstractTableModel *model = *adslIt;
-        delete model;
-    }
-
-
-    auto shdslEnd = mShdslList.end();
-    for(auto shdslIt = mShdslList.begin(); shdslIt != shdslEnd; ++shdslIt) {
-        QAbstractTableModel *model = *shdslIt;
-        delete model;
-    }
+    qDeleteAll(mAdslList.begin(), mAdslList.end());
+    qDeleteAll(mShdslList.begin(), mShdslList.end());
 }
 
 DslProfileTableModel *DslamProfileConfig::adsl(DeviceModel::Enum deviceModel)

@@ -111,16 +111,17 @@ void SwitchPageWidget::initView()
             this, &SwitchPageWidget::portViewRequestContextMenu);
 
     //Инициализация модели таблицы mac-адресов
-    MacTableModel *macListModel = new MacTableModel(switchInfo, this);
+    MacTableModel *macTableModel = new MacTableModel(switchInfo, this);
+    connect(macTableModel, &MacTableModel::updateFinished,
+            this, &SwitchPageWidget::updateMacTableFinished);
 
-    if (!macListModel->update())
-        BasicDialogs::error(this, BasicDialogStrings::Error, macListModel->error());
+    macTableModel->update();
 
     QSortFilterProxyModel *macListFilterProxyModel = new QSortFilterProxyModel(this);
     macListFilterProxyModel->setFilterRole(Qt::DisplayRole);
     macListFilterProxyModel->setFilterKeyColumn(2);
     macListFilterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    macListFilterProxyModel->setSourceModel(macListModel);
+    macListFilterProxyModel->setSourceModel(macTableModel);
 
     ui->macAddressTableView->setModel(macListFilterProxyModel);
     ui->macAddressTableView->setColumnWidth(0, 70);
@@ -182,11 +183,7 @@ void SwitchPageWidget::refreshMacTable()
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
     MacTableModel *macListModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
 
-    if (!macListModel->update()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, macListModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация в таблице MAC-адресов обновлена."));
-    }
+    macListModel->update();
 }
 
 void SwitchPageWidget::addPortToMulticastVlan()
@@ -396,4 +393,17 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
     contextMenu.addAction(ui->refreshMacTableInfoAction);
 
     contextMenu.exec(ui->macAddressTableView->mapToGlobal(point));
+}
+
+void SwitchPageWidget::updateMacTableFinished(bool withErrors)
+{
+    if (withErrors) {
+        QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
+        MacTableModel *model = qobject_cast<MacTableModel *>(proxyModel->sourceModel());
+        BasicDialogs::error(this, BasicDialogStrings::Error,
+                            QString::fromUtf8("Обновление таблицы MAC-адресов завершилось ошибкой."),
+                            model->error());
+    } else {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление таблицы MAC-адресов завершилось успешно."));
+    }
 }

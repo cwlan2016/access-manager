@@ -178,14 +178,20 @@ QHash<int, DslamBoard::Ptr> BoardTableModel::boardList() const
 void BoardTableModel::addBoard(int index, BoardType::Enum type,
                                int firstPair)
 {
-    DslamBoard::Ptr boardInfo = new DslamBoard(this);
-    boardInfo->setIndex(index);
-    boardInfo->setType(type);
-    boardInfo->setFirstPair(firstPair);
-    connect(boardInfo, &DslamBoard::modified,
+    DslamBoard::Ptr board = newBoard(index, type, firstPair);
+    mList.insert(index, board);
+}
+
+DslamBoard::Ptr BoardTableModel::newBoard(int index, BoardType::Enum type, int firstPair)
+{
+    DslamBoard::Ptr board = new DslamBoard(this);
+    board->setIndex(index);
+    board->setType(type);
+    board->setFirstPair(firstPair);
+    connect(board, &DslamBoard::modified,
             this, &BoardTableModel::boardIsModified);
 
-    mList.insert(index, boardInfo);
+    return board;
 }
 
 Dslam *BoardTableModel::parentDevice()
@@ -197,14 +203,20 @@ bool BoardTableModel::getBoardListFromDevice()
 {
     if (!mParentDevice)
         return false;
-
-    if (mParentDevice->deviceModel() != DeviceModel::MA5600) {
-        mError = QString::fromUtf8("Автоматическое обновление списка досок невозможно для данной модели дслама.");
+    if ((mParentDevice->deviceModel() != DeviceModel::MA5600)
+            && (mParentDevice->deviceModel() != DeviceModel::MA5300)) {
+        mError = QString::fromUtf8("%1 %2(%3) не поддерживает автоматическое обновление досок.")
+                .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                .arg(mParentDevice->name())
+                .arg(mParentDevice->ip());
         return false;
     }
 
     if (mParentDevice->autoFill() == 0) {
-        mError = QString::fromUtf8("На данном дсламе отключено автоматическое обновление досок.");
+        mError = QString::fromUtf8("На %1 %2(%3) отключено автоматическое обновление досок.")
+                .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                .arg(mParentDevice->name())
+                .arg(mParentDevice->ip());
         return false;
     }
 
@@ -213,49 +225,74 @@ bool BoardTableModel::getBoardListFromDevice()
     snmp->setIp(mParentDevice->ip());
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
+        mError = QString::fromUtf8("%1 %2(%3): %4")
+                .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                .arg(mParentDevice->name())
+                .arg(mParentDevice->ip())
+                .arg(SnmpErrorStrings::SetupSession);
+
         return false;
     }
 
     if (!snmp->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
+        mError = QString::fromUtf8("%1 %2(%3): %4")
+                .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                .arg(mParentDevice->name())
+                .arg(mParentDevice->ip())
+                .arg(SnmpErrorStrings::OpenSession);
+
         return false;
     }
 
     snmp->createPdu(SNMP_MSG_GETBULK, 16);
 
-    snmp->addOid(createOidPair(Mib::dslamBoardName, 16));
+    snmp->addOid(createOidPair(Mib::hwSlotType, 14));
 
-    //TODO: Refactoring. Add board to newList. If success operation -> replace list.
+    QHash<int, DslamBoard::Ptr> newList;
+
     if (snmp->sendRequest()) {
-        beginResetModel();
-
-        mList.clear();
-
         for (auto vars = snmp->varList(); vars;
                 vars = vars->next_variable) {
             if (!isValidSnmpValue(vars)) {
-                mError = SnmpErrorStrings::Parse;
-                endResetModel();
+                mError = QString::fromUtf8("%1 %2(%3): %4")
+                        .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                        .arg(mParentDevice->name())
+                        .arg(mParentDevice->ip())
+                        .arg(SnmpErrorStrings::Parse);
                 return false;
             }
 
-            if (snmp_oid_ncompare(Mib::dslamBoardName, 16,
-                                  vars->name, vars->name_length, 16) != 0)
+            if (snmp_oid_ncompare(Mib::hwSlotType, 14,
+                                  vars->name, vars->name_length, 14) != 0)
                 break;
 
-            QString boardName = toString(vars->val.string, vars->val_len);
-            int boardIndex = vars->name[16];
+            int slotType = *vars->val.integer;
+            int boardIndex = vars->name[14];
 
             if ((boardIndex == 7) || (boardIndex == 8))
                 continue;
 
-            addBoard(boardIndex, boardTypeFromBoardName(boardName), 1);
+            DslamBoard::Ptr board = newBoard(boardIndex, HuaweiSlotType::toBoardType(slotType), 1);
+            newList.insert(boardIndex, board);
         }
     } else {
-        mError = SnmpErrorStrings::Parse;
-        endResetModel();
+        mError = QString::fromUtf8("При получении данных с %1 %2(%3) произошла ошибка: %4")
+                .arg(DeviceModel::toString(mParentDevice->deviceModel()))
+                .arg(mParentDevice->name())
+                .arg(mParentDevice->ip())
+                .arg(snmp->error());
+
         return false;
+    }
+
+    beginResetModel();
+
+    qDeleteAll(mList.begin(), mList.end());
+    mList.clear();
+
+    auto end = newList.cend();
+    for (auto begin = newList.cbegin(); begin != end; ++begin) {
+        mList.insert(begin.key(), begin.value());
     }
 
     if (mParentDevice && mParentDevice->autoNumeringBoard())

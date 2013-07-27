@@ -202,14 +202,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if (result == QMessageBox::RejectRole) {
         event->ignore();
+        return;
     } else if (result == QMessageBox::YesRole) {
         if (!deviceListModel->save()) {
             BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
         } else {
             BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
         }
-
-        event->accept();
-        DslamProfileConfig::deinit();
     }
+
+    event->accept();
+    DslamProfileConfig::deinit();
 }

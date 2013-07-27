@@ -35,9 +35,9 @@ const oid agentStatusSaveCfg[] =                        { 1, 3, 6, 1, 4, 1, 171,
 // DES-3526 value 3
 // DES-3528 value 5
 const oid agentSaveCfg[] =                              { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };           // value set(3) for save switch config
-//информация по Dslam'у MA5600
-const oid dslamBoardName[] =                            { 1, 3, 6, 1, 4, 1, 2011, 2, 6, 7, 1, 1, 2, 1, 7, 0 };
-//MIBs для MXA-64
+//MIBS for Huawei
+const oid hwSlotType[] =                                { 1, 3, 6, 1, 4, 1, 2011, 6, 3, 3, 2, 1, 2, 0 };
+//MIBs for MXA-64
 const oid mxa64DslPortName[] =                          { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 2 };
 const oid mxa64DslPortActiveProfile[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 6 };
 const oid mxa64DslPortOperStatus[] =                    { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 3 };
@@ -46,7 +46,7 @@ const oid mxa64DslBandActualRateTx[] =                  { 1, 3, 6, 1, 4, 1, 3526
 const oid mxa64DslBandActualRateRx[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 3, 1 };
 const oid mxa64DslBandLineAttenuationTx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 2 };
 const oid mxa64DslBandLineAttenuationRx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 1 };
-//MIBs для MXA-32
+//MIBs for MXA-32
 const oid mxa32DslPortName[] =                          { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 2 };
 const oid mxa32DslPortActiveProfile[] =                 { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 6 };
 const oid mxa32DslPortOperStatus[] =                    { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 3 };
@@ -198,9 +198,9 @@ const QString MulticastProfile =    QString::fromUtf8("Мультикастов�
 
 namespace SnmpErrorStrings
 {
-const QString SetupSession =    QString::fromUtf8("Ошибка: Не удалось настроить SNMP сессию.");
-const QString OpenSession =     QString::fromUtf8("Ошибка: Не удалось открыть SNMP сессию.");
-const QString Parse =           QString::fromUtf8("Ошибка: Произошла ошибка при разборе данных!");
+const QString SetupSession =    QString::fromUtf8("Не удалось настроить SNMP сессию.");
+const QString OpenSession =     QString::fromUtf8("Не удалось открыть SNMP сессию.");
+const QString Parse =           QString::fromUtf8("Произошла ошибка при разборе данных!");
 }
 
 namespace BatchUpdateStrings

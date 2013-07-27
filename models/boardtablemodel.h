@@ -24,6 +24,7 @@ public:
 
     QHash<int, DslamBoard::Ptr> boardList() const;
     void addBoard(int index, BoardType::Enum type, int firstPair);
+    DslamBoard::Ptr newBoard(int index, BoardType::Enum type, int firstPair);
 
     Dslam *parentDevice();
 

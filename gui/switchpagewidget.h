@@ -47,6 +47,8 @@ private:
     void portViewRequestContextMenu(QPoint point);
     void macTableViewRequestContextMenu(QPoint point);
 
+    void updateMacTableFinished(bool withErrors);
+
     Ui::SwitchPageWidget *ui;
 };
 
