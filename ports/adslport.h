@@ -9,11 +9,23 @@ class AdslPort : public XdslPort
 public:
     AdslPort(long index, QObject *parent);
 
-    int rxRate() const;
-    void setRxRate(int rxRate);
+    int rxAttainableRate() const;
+    void setRxAttainableRate(int rxAttainableRate);
 
-    int txRate() const;
-    void setTxRate(int txRate);
+    int txAttainableRate() const;
+    void setTxAttainableRate(int txAttainableRate);
+
+    int rxCurrRate() const;
+    void setRxCurrRate(int rxCurrRate);
+
+    int txCurrRate() const;
+    void setTxCurrRate(int txCurrRate);
+
+    int rxPrevRate() const;
+    void setRxPrevRate(int rxPrevRate);
+
+    int txPrevRate() const;
+    void setTxPrevRate(int txPrevRate);
 
     QString coding() const;
     void setCoding(QString coding);
@@ -27,8 +39,13 @@ protected:
     QString typeLineString(int type);
     QString codingString(int coding);
 
-    int mRxRate;
-    int mTxRate;
+    int mRxAttainableRate;
+    int mTxAttainableRate;
+    int mRxCurrRate;
+    int mTxCurrRate;
+    int mRxPrevRate;
+    int mTxPrevRate;
+
     QString mCoding;
     QString mLineType;
 };

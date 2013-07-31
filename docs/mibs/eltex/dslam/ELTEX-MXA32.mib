@@ -1,0 +1,1977 @@
+--
+-- Eltex Enterprise Specific MIB: mxa MIB
+--
+-- Copyright (c) 2010, Eltex Co
+-- All rights reserved.
+--
+-- The contents of this document are subject to change without notice.
+--
+
+
+ELTEX-MXA32-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32, Counter32, Unsigned32, TimeTicks
+        FROM SNMPv2-SMI	
+    RowStatus, DisplayString, TruthValue, MacAddress, TEXTUAL-CONVENTION
+        FROM SNMPv2-TC
+    OBJECT-GROUP
+    	FROM SNMPv2-CONF
+    Adsl2RaMode, Adsl2SymbolProtection, Adsl2Direction
+    	FROM ADSL2-LINE-TC-MIB
+		
+    elHardware
+        FROM ELTEX-SMI;
+
+ mxa32 MODULE-IDENTITY
+    LAST-UPDATED "201003090000Z"
+    ORGANIZATION "Eltex Co"
+    CONTACT-INFO "eltex@gcom.ru"
+    DESCRIPTION  "MIB for MXA32 DSLAM family"
+    REVISION     "201003090000Z"
+    DESCRIPTION
+		"Initial revision."
+    ::= { elHardware 28 }
+
+
+-- MAIN properties
+
+mxaDevName OBJECT-TYPE
+    SYNTAX		DisplayString (SIZE (0..255))
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+	"it is environment var sysmane"
+    ::= { mxa32 1 }
+
+mxaDevType OBJECT-TYPE
+    SYNTAX		Integer32
+    MAX-ACCESS	read-only
+    STATUS		current
+    DESCRIPTION
+	"device type, for mxa type = 28"
+    ::= { mxa32 2 }
+
+mxaDevCfgBuild OBJECT-TYPE
+    SYNTAX		DisplayString (SIZE (0..255))
+    MAX-ACCESS	read-only
+    STATUS		deprecated
+    DESCRIPTION
+	"OS build string: compiling data and other info"
+    ::= { mxa32 3 }
+
+-- BEGIN Sensors (voltage,temperature)
+mxaSensor OBJECT IDENTIFIER ::= { mxa32 4 }
+
+-- mxaSensorNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"The number of voltage and temperature sensor"
+--     ::= { mxaSensor 1 }
+
+mxaSensorTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MxaSensorEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"A list of sensor entries.  The number of
+	entries is given by the value of mxaSensorNumber."
+    ::= { mxaSensor 2 }    
+
+mxaSensorEntry OBJECT-TYPE
+    SYNTAX  MxaSensorEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"An sensor entry containing objects at the sensor description, 
+	value range, alarm status and below for a particular sensor."
+    INDEX   { mxaSensorIndex }
+    ::= { mxaSensorTable 1 }
+
+MxaSensorEntry ::= SEQUENCE {
+mxaSensorIndex    Integer32,
+mxaSensorDescr    DisplayString,
+mxaSensorValue    Integer32,
+mxaSensorRangeMin Integer32,
+mxaSensorRangeMax Integer32
+}
+
+-- BEGIN Sensors members
+
+mxaSensorIndex OBJECT-TYPE
+    SYNTAX  Integer32 (1..10)
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"A unique value for each sensor.  Its value
+	ranges between 1 and the value of mxaSensorNumber."
+    ::= { mxaSensorEntry 1 }
+
+mxaSensorDescr OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE (0..100))
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"A textual string containing information about the
+	sensor."
+    ::= { mxaSensorEntry 2 }
+
+mxaSensorValue OBJECT-TYPE
+    SYNTAX  Integer32
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"Readings of the sensor."
+    ::= { mxaSensorEntry 3 }
+
+mxaSensorRangeMin OBJECT-TYPE
+    SYNTAX  Integer32
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+	"Minimum allowed value of the sensor's readings. If sensor's readings
+	are less than this this value, the corresponding trap is sent."
+    ::= { mxaSensorEntry 4 }
+
+mxaSensorRangeMax OBJECT-TYPE
+    SYNTAX  Integer32
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+	"Maximum allowed value of the sensor's readings. If sensor's readings
+	are greater than this this value, the corresponding trap is sent."
+    ::= { mxaSensorEntry 5 }
+
+-- END Sensors (voltage,temperature)
+
+
+mxaUptime OBJECT-TYPE
+    SYNTAX		DisplayString (SIZE (0..255))
+    MAX-ACCESS	read-only
+    STATUS		deprecated
+    DESCRIPTION
+	"Uptime in format dd hh mm ss"
+    ::= { mxa32 6 }
+
+-- =======================================================================
+--
+--	    Load table
+-- =======================================================================
+
+mxaLoad OBJECT IDENTIFIER ::= { mxa32 7 }
+
+-- mxaLoadNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"The number Entry in Load table"
+--     ::= { mxaLoad 1 }
+
+mxaLoadTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MxaLoadEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"A list of load entries.  The number of
+	entries is given by the value of mxaLoadNumber."
+    ::= { mxaLoad 2 }    
+
+mxaLoadEntry OBJECT-TYPE
+    SYNTAX  MxaLoadEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"An load entry containing objects at the fild description, 
+	value, index fild."
+    INDEX   { mxaLoadIndex }
+    ::= { mxaLoadTable 1 }
+
+MxaLoadEntry ::= SEQUENCE {
+mxaLoadIndex    Integer32,
+mxaLoadDescr    DisplayString,
+mxaLoadValue    DisplayString
+}
+
+-- BEGIN Load members
+
+mxaLoadIndex OBJECT-TYPE
+    SYNTAX  Integer32 (1..6)
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"Index."
+    ::= { mxaLoadEntry 1 }
+
+mxaLoadDescr OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE (0..30))
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"Describe fild."
+    ::= { mxaLoadEntry 2 }
+
+mxaLoadValue OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE (0..30))
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"A value average system Load for 1,5,15 min or Date or Time or system Uptime"
+    ::= { mxaLoadEntry 3 }
+
+-- END System Load (Time)
+
+
+
+-- =======================================================================
+--
+--	    Ram table
+-- =======================================================================
+mxaRam OBJECT IDENTIFIER ::= { mxa32 9 }
+
+-- mxaRamNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"Number of entries in mxaRamTable"
+--     ::= { mxaRam 1 }
+
+mxaRamTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MxaRamEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"A table containing summary of RAM-realted parameters."
+    ::= { mxaRam 2 }    
+
+mxaRamEntry OBJECT-TYPE
+    SYNTAX  MxaRamEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"Entry containing some RAM-related parameter in mxaRamTable."
+    INDEX   { mxaRamIndex }
+    ::= { mxaRamTable 1 }
+
+MxaRamEntry ::= SEQUENCE {
+	mxaRamIndex    Integer32,
+	mxaRamDescr    DisplayString,
+	mxaRamValue    Integer32
+}
+
+
+mxaRamIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..3)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"Index of a row in mxaRamTable."
+    ::= { mxaRamEntry 1 }
+
+mxaRamDescr OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE (0..255))
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"Description of paramter displayed in this row."
+    ::= { mxaRamEntry 2 }
+
+mxaRamValue OBJECT-TYPE
+    SYNTAX       Integer32
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+	"The value of described parameter."
+    ::= { mxaRamEntry 3 }
+    
+
+
+
+
+-- BEGIN DSL Port Table
+
+
+MXADslLineStandard ::= TEXTUAL-CONVENTION
+	STATUS current
+	DESCRIPTION
+		"ADSL 2 standard"
+	SYNTAX INTEGER {
+		noStandard(0),
+		ansit1413(1),
+		etsi(2),
+		g9921(4),
+		g9922(16),
+		g9923(64),
+		g9923AnnexL(256),
+		g9923AnnexM(4096),
+		g9925(16384),
+		g9925AnnexM(65536),
+		multiMode(262143)
+	}
+
+
+mxaDsl OBJECT IDENTIFIER ::= { mxa32 10 }
+    
+-- mxaDslNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"Number of mxaDslEntry entries in mxaDslTable"
+--     ::= { mxaDsl 1 }
+
+mxaDslPortTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MXADslPortEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"A list of port entries.  The number of
+	entries is given by the value of mxaDslNumber."
+    ::= { mxaDsl 2 }    
+
+mxaDslPortEntry OBJECT-TYPE
+    SYNTAX  MXADslPortEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"An entry containing all information about particular physical DSL port,
+	such as: description, oper status, statistics"
+    INDEX   { mxaDslPortNumber }
+    ::= { mxaDslPortTable 1 }
+
+MXADslPortEntry ::= SEQUENCE {
+mxaDslPortNumber        Integer32,
+mxaDslPortName          DisplayString,
+mxaDslPortOperStatus    INTEGER,
+mxaDslPortAdminStatus   INTEGER,
+mxaDslPortStandard      MXADslLineStandard,
+mxaDslPortActiveProfile INTEGER,
+mxaDslPortIgnLinkAlarm  TruthValue,
+
+-- MXA-24 specific columns
+mxaDslPortStatus              INTEGER,
+mxaDslPortLatency             INTEGER,
+mxaDslPortLclCrcErrors        Counter32,
+mxaDslPortRmtCrcErrors        Counter32,
+mxaDslPortRmtFecErrors        Counter32,
+mxaDslPortCorrectedErrors   Counter32,
+mxaDslPortUncorrectedErrors Counter32,
+mxaDslPortUtpParityErrors     Counter32
+}
+
+mxaDslPortNumber OBJECT-TYPE
+    SYNTAX  Integer32 (1..32)
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"Number of the current port."
+    ::= { mxaDslPortEntry 1 }
+
+mxaDslPortName OBJECT-TYPE
+    SYNTAX  DisplayString (SIZE (0..10))
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+	"The name of the port."
+    ::= { mxaDslPortEntry 2 }
+
+mxaDslPortOperStatus OBJECT-TYPE
+    SYNTAX  INTEGER {
+    	      up(1),
+	      down(2)
+	    }
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"The current operational state of the correspondig 
+	DSL port."
+    ::= { mxaDslPortEntry 3 }
+
+mxaDslPortAdminStatus OBJECT-TYPE
+    SYNTAX  INTEGER {
+    	      up(1),
+	      down(2)
+	    }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+	"The desired sate of the corresponding DSL port."
+    ::= { mxaDslPortEntry 4 }
+
+mxaDslPortStandard OBJECT-TYPE
+    SYNTAX  MXADslLineStandard
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+	"ADSL standard used on port."
+    ::= { mxaDslPortEntry 5 }
+
+mxaDslPortActiveProfile OBJECT-TYPE
+    SYNTAX INTEGER {
+    	noProfile(0),
+	firstProfile(1),
+	secondProfile(2),
+	thirdProfile(3),
+	fourthProfile(4),
+	fifthProfile(5),
+	sixthProfile(6),
+	seventhProfile(7),
+	eighthProfile(8),
+	ninthProfile(9),
+	tenthProdile(10)
+    }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	"ADSL Profile currently applied to the port."
+    ::= { mxaDslPortEntry 6 }
+
+mxaDslPortIgnLinkAlarm OBJECT-TYPE
+    SYNTAX TruthValue
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+	"Ignore link alarm settings. Set this varialble to true(1) 
+	in order to prevent agent from sending traps upon this 
+	port's status changes."
+    ::= { mxaDslPortEntry 7 }
+
+mxaDslPortStatus OBJECT-TYPE
+    SYNTAX INTEGER {
+    			idle(0),
+			activating(1),
+			ghs(2),
+			training(3),
+			showtime(4),
+			localLoopback(5),
+			analogLoopback(6),
+			spectrumMode(7),
+			ldmCompleted(8),
+			ldmInPorgress(9),
+			pmL2(10)
+    		}
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"ADSL port status."
+    ::= { mxaDslPortEntry 8 }
+
+mxaDslPortLatency OBJECT-TYPE
+    SYNTAX INTEGER {
+    		fast(1),
+		interleaved(2),
+		adsl2fast(3),
+		adsl2interleaved(4)
+           }
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"ADSL Port latency."
+    ::= { mxaDslPortEntry 9 }
+
+mxaDslPortLclCrcErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of local CRC errors."
+    ::= { mxaDslPortEntry 10 }
+
+mxaDslPortRmtCrcErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of remote CRC errors."
+    ::= { mxaDslPortEntry 11 }
+
+mxaDslPortRmtFecErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of remote FEC errors."
+    ::= { mxaDslPortEntry 12 }
+
+mxaDslPortCorrectedErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of corrected errors."
+    ::= { mxaDslPortEntry 13 }
+
+mxaDslPortUncorrectedErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of uncorrected errors."
+    ::= { mxaDslPortEntry 14 }
+
+mxaDslPortUtpParityErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of UTP parity errors."
+    ::= { mxaDslPortEntry 15 }
+
+
+
+mxaDslBandTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF MXADslBandEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+	"Table containing upstream/downstream characteristics of the 
+	DSL ports."
+    ::= { mxaDsl 3 }
+
+mxaDslBandEntry OBJECT-TYPE
+    SYNTAX MXADslBandEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+	"An entry of mxaDslBandTable."
+    INDEX { mxaDslBandDirection, mxaDslBandPort }
+    ::= { mxaDslBandTable 1 }
+
+MXADslBandEntry ::= SEQUENCE {
+mxaDslBandDirection       Adsl2Direction,
+mxaDslBandPort            Integer32,
+mxaDslBandActualRate      Gauge32,
+mxaDslBandAttainableRate  Gauge32,
+mxaDslBandSnrMargin       Integer32,
+mxaDslBandLineAttenuation Integer32,
+mxaDslBandTxPower         Integer32,
+
+mxaDslBandInterleaveDelay   Integer32,
+mxaDslBandInp               Adsl2SymbolProtection,
+mxaDslBandSignalAttenuation Integer32,
+mxaDslBandPayload           Gauge32
+}
+
+
+-- BEGIN ports members
+
+mxaDslBandDirection OBJECT-TYPE
+    SYNTAX Adsl2Direction
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Direction of the band."
+    ::= { mxaDslBandEntry 1 }
+
+mxaDslBandPort OBJECT-TYPE
+    SYNTAX Integer32 (1..32)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Number of the current port."
+    ::= { mxaDslBandEntry 2 }
+
+mxaDslBandActualRate OBJECT-TYPE
+    SYNTAX Gauge32
+    UNITS  "bps"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Actual data rate in the band's direction on current port."
+    ::= { mxaDslBandEntry 3 }
+
+mxaDslBandAttainableRate OBJECT-TYPE
+    SYNTAX Gauge32
+    UNITS  "bps"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Indicates the maximum currently attainable by the port data rate
+	in the band's direction. This value will be equal or greater 
+	than the downstream line rate."
+
+    ::= { mxaDslBandEntry 4 }
+
+mxaDslBandSnrMargin OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dB"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Signal to noise margin."
+    ::= { mxaDslBandEntry 5}
+
+mxaDslBandLineAttenuation OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dB"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Line attenuation."
+    ::= { mxaDslBandEntry 6}
+
+mxaDslBandTxPower OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dB"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Transmission power."
+    ::= { mxaDslBandEntry 7 }
+
+
+mxaDslBandInterleaveDelay OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS  "s"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Interleave delay."
+    ::= { mxaDslBandEntry 8 }
+
+mxaDslBandInp OBJECT-TYPE
+    SYNTAX Adsl2SymbolProtection
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Impulse noise protection settings."
+    ::= { mxaDslBandEntry 9 }
+
+mxaDslBandSignalAttenuation OBJECT-TYPE
+    SYNTAX Integer32
+    UNITS "dB"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Signal attenuation."
+    ::= { mxaDslBandEntry 10 }
+
+mxaDslBandPayload OBJECT-TYPE
+    SYNTAX Gauge32
+    UNITS "bytes"
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"Payload size."
+    ::= { mxaDslBandEntry 11 }
+
+-- END DSL Port Table	
+
+
+-- ===================================================
+--    			DSL profiles table
+-- ===================================================
+
+
+-- mxaDslProfileNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"The number of DSL profiles"
+--     ::= { mxaDslPr 1 }
+
+mxaDslProfileTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MXADslProfileEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"Table of all avalible profiles"
+    ::= { mxaDsl 4 }    
+
+mxaDslProfileEntry OBJECT-TYPE
+    SYNTAX  MXADslProfileEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"Entry containing all infomation about profile"
+    INDEX   { mxaDslProfileNumber }
+    ::= { mxaDslProfileTable 1 }
+
+MXAEnableDisableValue ::= TEXTUAL-CONVENTION
+	STATUS current
+	DESCRIPTION
+		"Represents enable/disabled values combination"
+	SYNTAX INTEGER { enabled(1), disabled(2) }
+
+MXADslProfileEntry ::= SEQUENCE {
+mxaDslProfileNumber	       Integer32,
+mxaDslProfileName              DisplayString,
+mxaDslProfileDsMinBitRate      Integer32,
+mxaDslProfileDsMaxBitRate      Integer32,
+mxaDslProfileUsMinBitRate      Integer32,
+mxaDslProfileUsMaxBitRate      Integer32,
+mxaDslProfileDsMaxIntrlvDelay  Integer32,
+mxaDslProfileUsMaxIntrlvDelay  Integer32,
+mxaDslProfileDsMaxNoiseMargin  Integer32,
+mxaDslProfileDsNoiseMargin     Integer32,
+mxaDslProfileDsMinNoiseMargin  Integer32,
+mxaDslProfileUsMaxNoiseMargin  Integer32,
+mxaDslProfileUsNoiseMargin     Integer32,
+mxaDslProfileUsMinNoiseMargin  Integer32,
+mxaDslProfileStandard          MXADslLineStandard,
+
+mxaDslProfileDsMinInp          Adsl2SymbolProtection,
+mxaDslProfileUsMinInp          Adsl2SymbolProtection,
+mxaDslProfileDsBitSwap         MXAEnableDisableValue,
+mxaDslProfileUsBitSwap         MXAEnableDisableValue,
+mxaDslProfileDsRAMode          Adsl2RaMode,
+mxaDslProfileUsRAMode          Adsl2RaMode
+}
+
+mxaDslProfileNumber OBJECT-TYPE
+	SYNTAX Integer32 (1..10)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Profile number."
+	::= { mxaDslProfileEntry 1 }
+
+mxaDslProfileName OBJECT-TYPE
+	SYNTAX DisplayString (SIZE(0..70))
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Profile name - textual string containing alphanumeric characters.
+		Name must not contain any whitespaces."
+	::= { mxaDslProfileEntry 2 }
+
+mxaDslProfileDsMinBitRate OBJECT-TYPE
+	SYNTAX Integer32 (0..25000)
+	UNITS "Kbps"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Minimum connection bit rate in downstream direction that must be acheived by the port 
+		in order to keep connection alive."
+	::= { mxaDslProfileEntry 3 }
+
+mxaDslProfileDsMaxBitRate OBJECT-TYPE
+	SYNTAX Integer32 (0..25000)
+	UNITS "Kbps"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Maximum connection bit rate in downstream dircetion that could be acheived by the port."
+	::= { mxaDslProfileEntry 4 }
+
+mxaDslProfileUsMinBitRate OBJECT-TYPE
+	SYNTAX Integer32 (0..25000)
+	UNITS "Kbps"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Minimum connection bit rate in upstream direction that must be acheived by the port 
+		in order to keep connection alive."
+	::= { mxaDslProfileEntry 5 }
+
+mxaDslProfileUsMaxBitRate OBJECT-TYPE
+	SYNTAX Integer32 (0..25000)
+	UNITS "Kbps"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Maximum connection bit rate in upstream dircetion that could be acheived by the port." 		
+	::= { mxaDslProfileEntry 6 }
+
+mxaDslProfileDsMaxIntrlvDelay OBJECT-TYPE
+	SYNTAX Integer32 (0..16)
+	UNITS "s"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Maximum allowed interleve dely in downstream direction"
+	::= { mxaDslProfileEntry 7 }
+
+mxaDslProfileUsMaxIntrlvDelay OBJECT-TYPE
+	SYNTAX Integer32 (0..16)
+	UNITS "s"
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Maximum allowed interleve delay in upstream direction"
+	::= { mxaDslProfileEntry 8 }
+
+mxaDslProfileDsMaxNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in downstream direction"
+	::= { mxaDslProfileEntry 9}
+
+mxaDslProfileDsNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in downstream direction"
+	::= { mxaDslProfileEntry 10 }
+
+mxaDslProfileDsMinNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in downstream direction"
+	::= { mxaDslProfileEntry 11 }
+
+mxaDslProfileUsMaxNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in upstream direction"
+	::= { mxaDslProfileEntry 12 }
+
+mxaDslProfileUsNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in upstream direction"
+	::= { mxaDslProfileEntry 13 }
+
+mxaDslProfileUsMinNoiseMargin OBJECT-TYPE
+	SYNTAX Integer32 (0..32)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"SNR margin in upstream direction"
+	::= { mxaDslProfileEntry 14 }
+
+mxaDslProfileStandard OBJECT-TYPE
+	SYNTAX MXADslLineStandard
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"ADSL connection standard to be used on the port"	
+	::= { mxaDslProfileEntry 15 }
+
+
+mxaDslProfileDsMinInp OBJECT-TYPE
+	SYNTAX Adsl2SymbolProtection
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Minimum impulse noise protection (INP) time interval in downstream direction"
+	::= { mxaDslProfileEntry 16 }
+
+mxaDslProfileUsMinInp OBJECT-TYPE
+	SYNTAX Adsl2SymbolProtection
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Minimum impulse noise protection (INP) time interval in upstream direction"
+	::= { mxaDslProfileEntry 17 }
+
+mxaDslProfileDsBitSwap OBJECT-TYPE
+	SYNTAX MXAEnableDisableValue
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Bit swap settings for downstream direction"
+	::= { mxaDslProfileEntry 18 }
+
+mxaDslProfileUsBitSwap OBJECT-TYPE
+	SYNTAX MXAEnableDisableValue
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Bit swap settings for upstream direction"
+	::= { mxaDslProfileEntry 19 }
+
+mxaDslProfileDsRAMode OBJECT-TYPE
+	SYNTAX Adsl2RaMode
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Rate adaptation mode in downstream direction"
+	::= { mxaDslProfileEntry 20 }
+
+mxaDslProfileUsRAMode OBJECT-TYPE
+	SYNTAX Adsl2RaMode
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Rate adaptation mode in upstream direction"
+	::= { mxaDslProfileEntry 21 }
+
+-- ===================================================
+--    			Switch table
+-- ===================================================
+
+mxaSwitchPort OBJECT IDENTIFIER ::= { mxa32 15 }
+
+-- mxaSwPortNumber OBJECT-TYPE
+--     SYNTAX  Integer32
+--     MAX-ACCESS  read-only
+--     STATUS  current
+--     DESCRIPTION
+-- 	"The number of DSL profiles"
+--     ::= { mxaSwPort 1 }
+
+mxaSwitchPortTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MXASwitchPortTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS  deprecated
+    DESCRIPTION
+	"A list of port entries. This table was deprecated in favor of ifTable.
+	Please try to use the latter one instead."
+    ::= { mxaSwitchPort 2 }    
+
+mxaSwitchPortTableEntry OBJECT-TYPE
+    SYNTAX  MXASwitchPortTableEntry
+    MAX-ACCESS  not-accessible
+    STATUS  deprecated
+    DESCRIPTION
+	"A switch port entry containing objects such as the 
+	port description, in/out packet counters etc."
+    INDEX   { mxaSwitchPortIndex }
+    ::= { mxaSwitchPortTable 1 }
+
+MXASwitchPortTableEntry ::= SEQUENCE {
+mxaSwitchPortIndex         Unsigned32,
+mxaSwitchPortDescription   DisplayString,
+mxaSwitchPortOperStatus    INTEGER,
+mxaSwitchPortSpeed         Gauge32,
+mxaSwitchPortInOctets      Counter32,
+mxaSwitchPortInUcast       Counter32,
+mxaSwitchPortInBcast       Counter32,
+mxaSwitchPortInMcast       Counter32,
+mxaSwitchPortOutOctets     Counter32,
+mxaSwitchPortOutUcast      Counter32,
+mxaSwitchPortOutBcast      Counter32,
+mxaSwitchPortOutMcast      Counter32,
+mxaSwitchPortInPause       Counter32,
+mxaSwitchPortInUndersized  Counter32,
+mxaSwitchPortInFragmented  Counter32,
+mxaSwitchPortInOversized   Counter32,
+mxaSwitchPortInJabber      Counter32,
+mxaSwitchPortInRxError     Counter32,
+mxaSwitchPortInFcsError    Counter32,
+mxaSwitchPortOutPause      Counter32, 
+mxaSwitchPortOutExces      Counter32,
+mxaSwitchPortOutCollision  Counter32,
+mxaSwitchPortOutDeff       Counter32,
+mxaSwitchPortOutSingl      Counter32,
+mxaSwitchPortOutMulti      Counter32,
+mxaSwitchPortOutFcsEr      Counter32,
+mxaSwitchPortOutLate       Counter32,                                     
+mxaSwitchPortLastChange    TimeTicks,
+mxaSwitchPortAdminStatus   INTEGER,
+mxaSwitchPortMtu           Unsigned32
+}
+
+mxaSwitchPortIndex OBJECT-TYPE
+	SYNTAX Unsigned32 (1..8)
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"A unique value, greater than zero, for each port."
+	::= { mxaSwitchPortTableEntry 1 }
+
+mxaSwitchPortDescription OBJECT-TYPE
+	SYNTAX DisplayString
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"A textual value describing the port"
+	::= { mxaSwitchPortTableEntry 2 }
+
+mxaSwitchPortOperStatus OBJECT-TYPE
+	SYNTAX INTEGER { 
+					up(1),
+					down(2)
+				}
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The current operatiuonal state of the port"
+	::= { mxaSwitchPortTableEntry 3 }
+
+mxaSwitchPortSpeed OBJECT-TYPE
+	SYNTAX Gauge32
+	UNITS "bps"
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"An estimate of the port's current bandwidth in bits per second."
+	::= { mxaSwitchPortTableEntry 4 }
+
+mxaSwitchPortInOctets OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of octets received on the port."
+	::= { mxaSwitchPortTableEntry 5 }
+
+mxaSwitchPortInUcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of Entry packets received on the port"
+	::= { mxaSwitchPortTableEntry 6 }
+
+mxaSwitchPortInBcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of broadcast packets received on the port."
+	::= { mxaSwitchPortTableEntry 7 }
+
+mxaSwitchPortInMcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of multicast packets received on the port."
+	::= { mxaSwitchPortTableEntry 8 }
+
+mxaSwitchPortOutOctets OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of octets transmitted by the port"
+	::= { mxaSwitchPortTableEntry 9 }
+
+mxaSwitchPortOutUcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of Entry packets transmitted by the port"
+	::= { mxaSwitchPortTableEntry 10 }
+
+mxaSwitchPortOutBcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of broadcast packets transmitted by the port"
+	::= { mxaSwitchPortTableEntry 11 }
+
+mxaSwitchPortOutMcast OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The total number of multicast packets transmitted by the port."
+	::= { mxaSwitchPortTableEntry 12 }
+
+mxaSwitchPortInPause OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of packets in paused state on the port."
+	::= { mxaSwitchPortTableEntry 13 }
+
+mxaSwitchPortInUndersized OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of undersized packets received by the port."
+	::= { mxaSwitchPortTableEntry 14 }
+
+mxaSwitchPortInFragmented OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of fragmrnted packets received by the port."
+	::= { mxaSwitchPortTableEntry 15 }
+
+mxaSwitchPortInOversized OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of oversized packets received by the port."
+	::= { mxaSwitchPortTableEntry 16 }
+
+mxaSwitchPortInJabber OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of jabbered packets received by the port."
+	::= { mxaSwitchPortTableEntry 17 }
+
+mxaSwitchPortInRxError OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of RX errors on the port."
+	::= { mxaSwitchPortTableEntry 18 }
+
+mxaSwitchPortInFcsError OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of pacets with FCS errors received by the port"
+	::= { mxaSwitchPortTableEntry 19 }
+
+mxaSwitchPortOutPause OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"Total number of packets in paused state transmitted by the port."
+	::= { mxaSwitchPortTableEntry 20 }
+
+mxaSwitchPortOutExces OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 21 }
+
+mxaSwitchPortOutCollision OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 22 }
+
+mxaSwitchPortOutDeff OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 23 }
+
+mxaSwitchPortOutSingl OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 24 }
+
+mxaSwitchPortOutMulti OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 25 }
+
+mxaSwitchPortOutFcsEr OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 26 }
+
+mxaSwitchPortOutLate OBJECT-TYPE
+	SYNTAX Counter32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 27 }
+
+mxaSwitchPortLastChange OBJECT-TYPE
+	SYNTAX TimeTicks
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The value of sysUpTime at the time the interface entered its current operational state."
+	::= { mxaSwitchPortTableEntry 28 }
+
+mxaSwitchPortAdminStatus OBJECT-TYPE
+	SYNTAX INTEGER {
+				up(1),
+				down(2)
+			}
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"The desired state of the port."
+	::= { mxaSwitchPortTableEntry 29 }
+
+mxaSwitchPortMtu OBJECT-TYPE
+	SYNTAX Unsigned32
+	MAX-ACCESS read-only
+	STATUS deprecated
+	DESCRIPTION
+		"No descitpion"
+	::= { mxaSwitchPortTableEntry 30 }
+
+    
+
+
+-- END Switch Table	
+
+
+
+
+-- Save and Save process status
+mxaSave OBJECT-TYPE
+    SYNTAX		INTEGER {
+					finishedSaving(0),
+					save(1),
+					busy(2)
+				}
+    MAX-ACCESS	read-write
+    STATUS		current
+    DESCRIPTION
+	"Set 1 to save; Read 1 - busy; Read 0 - saving finished"
+    ::= { mxa32 12 }
+-- END Save and Save process status
+
+
+-- ===================================================
+--    			ENPU statistics table
+-- ===================================================
+
+mxaEnpu OBJECT IDENTIFIER ::= { mxa32 13 }
+
+mxaEnpuStatsTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MXAEnpuStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"A list of port entries.  The number of
+	entries is given by the value of mxaDslNumber."
+    ::= { mxaEnpu 1 }    
+
+mxaEnpuStatsEntry OBJECT-TYPE
+    SYNTAX  MXAEnpuStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"An entry containing all information about particular physical DSL port,
+	such as: description, oper status, statistics"
+    INDEX   { mxaEnpuStatsPort,  mxaEnpuStatsVpi, mxaEnpuStatsVci }
+    ::= { mxaEnpuStatsTable 1 }
+
+MXAEnpuStatsEntry ::= SEQUENCE {
+	mxaEnpuStatsPort	Integer32,
+	mxaEnpuStatsVpi	Integer32,
+	mxaEnpuStatsVci	Integer32,		
+	mxaEnpuStatsAccessPort	        Integer32,
+	mxaEnpuStatsCRCalignErrors      Counter32,
+	mxaEnpuStatsUndersizedPackets   Counter32,
+	mxaEnpuStatsDropEvents          Counter32,
+	mxaEnpuStatsRxPkt64Oct         Counter32,
+	mxaEnpuStatsRxPkt64to127Oct    Counter32,
+	mxaEnpuStatsRxPkt128to255Oct   Counter32,
+	mxaEnpuStatsRxPkt256to511Oct   Counter32,
+	mxaEnpuStatsRxPkt512to1023Oct  Counter32,
+	mxaEnpuStatsRxPkt1024to1518Oct Counter32,
+	mxaEnpuStatsRxOctets                 Counter32,
+	mxaEnpuStatsRxPkts                Counter32,
+	mxaEnpuStatsRxBroadcastPackets       Counter32,
+	mxaEnpuStatsRxMulticastPackets       Counter32,
+	mxaEnpuStatsTxPkt64Oct         Counter32,
+	mxaEnpuStatsTxPkt64to127Oct    Counter32,
+	mxaEnpuStatsTxPkt128to255Oct   Counter32,
+	mxaEnpuStatsTxPkt256to511Oct   Counter32,
+	mxaEnpuStatsTxPkt512to1023Oct  Counter32,
+	mxaEnpuStatsTxPkt1024to1518Oct Counter32,
+	mxaEnpuStatsTxOctets             Counter32,
+	mxaEnpuStatsTxPkts                Counter32,
+	mxaEnpuStatsTxBroadcastPackets       Counter32,
+	mxaEnpuStatsTxMulticastPackets       Counter32
+}
+
+mxaEnpuStatsPort OBJECT-TYPE
+	SYNTAX Integer32 (1..32)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Number of the port this Entry entry is assigned to."
+	::= { mxaEnpuStatsEntry 1 }
+
+mxaEnpuStatsVpi OBJECT-TYPE
+	SYNTAX Integer32 (0..255)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"VPI of the Entry entry."
+	::= { mxaEnpuStatsEntry 2 }
+
+mxaEnpuStatsVci OBJECT-TYPE
+	SYNTAX Integer32 (32..255)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"VCI of the Entry entry."
+	::= { mxaEnpuStatsEntry 3 }
+
+
+mxaEnpuStatsAccessPort OBJECT-TYPE
+    SYNTAX Integer32 (1..1024)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of an access port"
+    ::= { mxaEnpuStatsEntry 4 }
+
+mxaEnpuStatsCRCalignErrors OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of CRC errors"
+    ::= { mxaEnpuStatsEntry 5 }
+
+mxaEnpuStatsUndersizedPackets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received undersized packets"
+    ::= { mxaEnpuStatsEntry 6 }
+
+mxaEnpuStatsDropEvents OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of drop events"
+    ::= { mxaEnpuStatsEntry 7 }
+
+mxaEnpuStatsRxPkt64Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length equal to 64 octets"
+    ::= { mxaEnpuStatsEntry 8 }
+
+mxaEnpuStatsRxPkt64to127Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length from 64 to 127 octets"
+    ::= { mxaEnpuStatsEntry 8 }
+
+mxaEnpuStatsRxPkt128to255Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length from 128 to 255 octets"	
+    ::= { mxaEnpuStatsEntry 10 }
+
+mxaEnpuStatsRxPkt256to511Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length from 256 to 511 octets"
+    ::= { mxaEnpuStatsEntry 11 }
+
+mxaEnpuStatsRxPkt512to1023Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length from 512 to 1023 octets"
+    ::= { mxaEnpuStatsEntry 12 }
+
+mxaEnpuStatsRxPkt1024to1518Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets with length from 1023 to 1518 octets"
+    ::= { mxaEnpuStatsEntry 13 }
+
+mxaEnpuStatsRxOctets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received octets"
+    ::= { mxaEnpuStatsEntry 14 }
+
+mxaEnpuStatsRxPkts OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received packets"
+    ::= { mxaEnpuStatsEntry 15 }
+
+mxaEnpuStatsRxBroadcastPackets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received broadcast packets"
+    ::= { mxaEnpuStatsEntry 16 }
+
+mxaEnpuStatsRxMulticastPackets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of received multicast packets"
+    ::= { mxaEnpuStatsEntry 17 }
+
+
+mxaEnpuStatsTxPkt64Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length equal to 64 octets"
+    ::= { mxaEnpuStatsEntry 18 }
+
+mxaEnpuStatsTxPkt64to127Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length from 64 to 127 octets"
+    ::= { mxaEnpuStatsEntry 19 }
+
+mxaEnpuStatsTxPkt128to255Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length from 128 to 255 octets"	
+    ::= { mxaEnpuStatsEntry 20 }
+
+mxaEnpuStatsTxPkt256to511Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length from 256 to 511 octets"
+    ::= { mxaEnpuStatsEntry 21 }
+
+mxaEnpuStatsTxPkt512to1023Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length from 512 to 1023 octets"
+    ::= { mxaEnpuStatsEntry 22 }
+
+mxaEnpuStatsTxPkt1024to1518Oct OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets with length from 1023 to 1518 octets"
+    ::= { mxaEnpuStatsEntry 23 }
+
+mxaEnpuStatsTxOctets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted octets"
+    ::= { mxaEnpuStatsEntry 24 }
+
+mxaEnpuStatsTxPkts OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted packets"
+    ::= { mxaEnpuStatsEntry 25 }
+
+mxaEnpuStatsTxBroadcastPackets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted broadcast packets"
+    ::= { mxaEnpuStatsEntry 26 }
+
+mxaEnpuStatsTxMulticastPackets OBJECT-TYPE
+    SYNTAX Counter32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+	"The number of transmitted multicast packets"
+    ::= { mxaEnpuStatsEntry 27 }
+
+
+
+
+
+mxaEnpuEntryTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF MXAEnpuEntryEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"Table of Entry entries."
+    ::= { mxaEnpu 2 }    
+
+mxaEnpuEntryEntry OBJECT-TYPE
+    SYNTAX  MXAEnpuEntryEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+	"Entry entry."
+    INDEX   { mxaEnpuEntryPort, mxaEnpuEntryVpi, mxaEnpuEntryVci }
+    ::= { mxaEnpuEntryTable 1 }
+
+MXAEnpuEntryEntry ::= SEQUENCE {	
+	mxaEnpuEntryPort        Integer32,
+	mxaEnpuEntryVpi         Integer32,
+	mxaEnpuEntryVci         Integer32,
+	mxaEnpuEntryMode        INTEGER,
+	mxaEnpuEntryPriority    Integer32,
+	mxaEnpuEntryClientVid   Integer32,
+	mxaEnpuEntryProviderVid Integer32,
+	mxaEnpuEntryServiceVid  Integer32,
+	mxaEnpuEntrySpec        INTEGER, 
+	mxaEnpuEntryRowStatus   RowStatus,
+	mxaEnpuEntryEnt		 Integer32
+}
+
+mxaEnpuEntryPort OBJECT-TYPE
+	SYNTAX Integer32 (1..32)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Number of the port this Entry entry is assigned to."
+	::= { mxaEnpuEntryEntry 1 }
+
+mxaEnpuEntryVpi OBJECT-TYPE
+	SYNTAX Integer32 (0..255)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"VPI of the Entry entry."
+	::= { mxaEnpuEntryEntry 2 }
+
+mxaEnpuEntryVci OBJECT-TYPE
+	SYNTAX Integer32 (32..255)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"VCI of the entry."
+	::= { mxaEnpuEntryEntry 3 }
+
+mxaEnpuEntryMode OBJECT-TYPE
+	SYNTAX INTEGER {
+			untagged(1),
+			single(2),
+			tls(3),
+			multicast(4)
+			}
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Entry mode of the entry. Three possible values are possible:
+		untagged(1), single(2), tls(3). When untagged(1) mode is selected
+		DSLAM will not tag packets in upstram diection and will tag packets in downstream direction
+		with either mxaEnpuEntryClientVid or comibination of mxaEnpuEntryClientVid and 
+		mxaEnpuEntryServiceVid. If single(2) mode is selected then DSLAM will tag upstream packets with 
+		mxaEnpuEntryProviderVid and packets in downstream direction
+		with either mxaEnpuEntryClientVid or comibination of mxaEnpuEntryClientVid and 
+		mxaEnpuEntryServiceVid. In tls(3) mode DSLAM double tags each packet with value of 
+		mxaEnpuEntryServiceVid."
+	::= { mxaEnpuEntryEntry 4 }
+
+mxaEnpuEntryPriority OBJECT-TYPE
+	SYNTAX Integer32 (0..7)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Priority of the Entry entry."
+	::= { mxaEnpuEntryEntry 5 }
+
+mxaEnpuEntryClientVid OBJECT-TYPE
+	SYNTAX Integer32 (0..4095)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Client VID at the client's side of the network (CVID)."
+	::= { mxaEnpuEntryEntry 6 }
+
+mxaEnpuEntryProviderVid OBJECT-TYPE
+	SYNTAX Integer32 (0..4095)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Client VID at the provider's side of the network (C_CVID)."
+	::= { mxaEnpuEntryEntry 7 }
+
+mxaEnpuEntryServiceVid OBJECT-TYPE
+	SYNTAX Integer32 (0..4095)
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+		"Second VLAN ID for double tagged packets."
+	::= { mxaEnpuEntryEntry 8 }
+
+mxaEnpuEntrySpec OBJECT-TYPE
+    	SYNTAX INTEGER {
+		unspec(0),
+		pppoe(1),
+		ipoe(2)
+	}
+	MAX-ACCESS read-create
+	STATUS current
+	DESCRIPTION
+		""
+	::= { mxaEnpuEntryEntry 9 }
+
+
+mxaEnpuEntryRowStatus OBJECT-TYPE
+    	SYNTAX RowStatus
+	MAX-ACCESS read-create
+	STATUS current
+	DESCRIPTION
+		"Satus of the row"
+	::= { mxaEnpuEntryEntry 10 }
+
+mxaEnpuEntryEnt OBJECT-TYPE
+	SYNTAX Integer32 (0..575)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		""
+	::= { mxaEnpuEntryEntry 11 }
+
+
+
+
+mxaEnpuPortActivityTable OBJECT-TYPE
+    	SYNTAX SEQUENCE OF MXAEnpuPortActivityEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	    "A table containing information about correspondence
+	    between PVCs physical ports and MAC-addresses."
+	::= { mxaEnpu 3 }
+
+mxaEnpuPortActivityEntry OBJECT-TYPE
+    	SYNTAX MXAEnpuPortActivityEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	    "An entry of mxaEnpuPortActivityTable"
+	INDEX { mxaEnpuPortActivityPhysicalPort, 
+		mxaEnpuPortActivityAccessPort, 
+		mxaEnpuPortActivityMacAddress }
+	::= { mxaEnpuPortActivityTable 1 }
+
+MXAEnpuPortActivityEntry ::= SEQUENCE {
+mxaEnpuPortActivityPhysicalPort  Integer32,
+mxaEnpuPortActivityAccessPort    Integer32,
+mxaEnpuPortActivityMacAddress    MacAddress,
+mxaEnpuPortActivityVid           Integer32
+}
+
+mxaEnpuPortActivityPhysicalPort OBJECT-TYPE
+	SYNTAX Integer32 (1..32)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    "Physical port number to which the subscriber with 
+	    corresponding MAC-Address is connected."
+	::= { mxaEnpuPortActivityEntry 1 }
+
+mxaEnpuPortActivityAccessPort OBJECT-TYPE
+	SYNTAX Integer32 (1..1024)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    "Logical port number to which the subscriber with 
+	    corresponding MAC-Address is 'connected'."
+	::= { mxaEnpuPortActivityEntry 2 }
+
+mxaEnpuPortActivityMacAddress OBJECT-TYPE
+	SYNTAX MacAddress
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    "Subscriver's MAC-Address."
+	::= { mxaEnpuPortActivityEntry 3 }
+
+mxaEnpuPortActivityVid OBJECT-TYPE
+	SYNTAX Integer32
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    "Subscriber's VLAN ID."
+	::= { mxaEnpuPortActivityEntry 4 }
+
+
+
+
+mxaEnpuVlanTable OBJECT-TYPE
+    	SYNTAX SEQUENCE OF MXAEnpuVlanEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	    ""
+	::= { mxaEnpu 4 }
+
+mxaEnpuVlanEntry OBJECT-TYPE
+    	SYNTAX MXAEnpuVlanEntry
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	    ""
+	INDEX { mxaEnpuVlanPort, 
+		mxaEnpuVlanVid }
+	::= {  mxaEnpuVlanTable 1 }
+
+MXAEnpuVlanEntry ::= SEQUENCE {
+mxaEnpuVlanVid         Integer32,
+mxaEnpuVlanPort        Integer32,
+
+mxaEnpuVlanClientVid   Integer32,
+mxaEnpuVlanProviderVid Integer32,
+mxaEnpuVlanServiceVid  Integer32
+}
+
+
+mxaEnpuVlanVid         OBJECT-TYPE
+    	SYNTAX Integer32 (1..4095)
+	MAX-ACCESS not-accessible
+	STATUS current
+	DESCRIPTION
+	    ""
+	::= { mxaEnpuVlanEntry 1 }
+
+mxaEnpuVlanPort  OBJECT-TYPE
+    	SYNTAX Integer32 (1..32)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    ""
+	::= { mxaEnpuVlanEntry 2 }
+
+mxaEnpuVlanClientVid OBJECT-TYPE
+	SYNTAX Integer32 (1..4095)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Client VID at the client's side of the network (CVID)."
+	::= { mxaEnpuVlanEntry 3 }
+
+mxaEnpuVlanProviderVid OBJECT-TYPE
+	SYNTAX Integer32 (1..4095)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Client VID at the provider's side of the network (C_CVID)."
+	::= { mxaEnpuVlanEntry 4 }
+
+mxaEnpuVlanServiceVid OBJECT-TYPE
+	SYNTAX Integer32 (1..4095)
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+		"Second VLAN ID for double tagged packets."
+	::= { mxaEnpuVlanEntry 5 }
+
+
+
+mxaFirmwareVersion OBJECT-TYPE
+    	SYNTAX DisplayString (SIZE (0..255))
+	MAX-ACCESS read-only
+	STATUS current
+	DESCRIPTION
+	    "Firware version of the device."
+	::= { mxa32 16 }
+
+mxaShutdownCtl OBJECT-TYPE
+    	SYNTAX INTEGER {
+			statusOK(0),
+			rebootDevice(1)
+		}
+	MAX-ACCESS read-write
+	STATUS current
+	DESCRIPTION
+	    "Set this variable to rebootDevice(1) to reboot device."
+	::= { mxa32 17 }
+
+
+
+mxa32Group  OBJECT-GROUP
+    OBJECTS	{
+mxaDevName,
+mxaDevType,
+mxaDevCfgBuild,
+    
+    -- mxaSensorNumber,
+mxaSensorIndex,
+mxaSensorDescr,
+mxaSensorValue,
+mxaSensorRangeMin,
+mxaSensorRangeMax,
+    
+mxaUptime,
+    
+mxaLoadIndex,
+mxaLoadDescr,
+mxaLoadValue,
+    
+mxaRamIndex,
+mxaRamDescr,
+mxaRamValue,
+
+mxaDslPortNumber,
+mxaDslPortName,
+mxaDslPortOperStatus,
+mxaDslPortAdminStatus,
+mxaDslPortStandard,
+mxaDslPortActiveProfile,
+mxaDslPortIgnLinkAlarm,
+mxaDslPortStatus,
+mxaDslPortLatency,
+mxaDslPortLclCrcErrors,
+mxaDslPortRmtCrcErrors,
+mxaDslPortRmtFecErrors,
+mxaDslPortCorrectedErrors,
+mxaDslPortUncorrectedErrors,
+mxaDslPortUtpParityErrors,
+
+mxaDslBandPort,
+mxaDslBandDirection,
+mxaDslBandActualRate,
+mxaDslBandAttainableRate,
+mxaDslBandSnrMargin,
+mxaDslBandLineAttenuation,
+mxaDslBandTxPower,
+mxaDslBandInterleaveDelay,
+mxaDslBandInp,
+mxaDslBandSignalAttenuation,
+mxaDslBandPayload,
+
+mxaDslProfileNumber,
+mxaDslProfileName,
+mxaDslProfileDsMinBitRate,
+mxaDslProfileDsMaxBitRate,
+mxaDslProfileUsMinBitRate,
+mxaDslProfileUsMaxBitRate,
+mxaDslProfileDsMaxIntrlvDelay,
+mxaDslProfileUsMaxIntrlvDelay,
+mxaDslProfileDsMaxNoiseMargin,
+mxaDslProfileDsNoiseMargin,
+mxaDslProfileDsMinNoiseMargin,
+mxaDslProfileUsMaxNoiseMargin,
+mxaDslProfileUsNoiseMargin,
+mxaDslProfileUsMinNoiseMargin,
+mxaDslProfileStandard,
+mxaDslProfileDsMinInp,
+mxaDslProfileUsMinInp,
+mxaDslProfileDsBitSwap,
+mxaDslProfileUsBitSwap,
+mxaDslProfileDsRAMode,
+mxaDslProfileUsRAMode,
+
+mxaSwitchPortIndex,
+mxaSwitchPortDescription,
+mxaSwitchPortOperStatus,
+mxaSwitchPortSpeed,
+mxaSwitchPortInOctets,
+mxaSwitchPortInUcast,
+mxaSwitchPortInBcast,
+mxaSwitchPortInMcast,
+mxaSwitchPortOutOctets,
+mxaSwitchPortOutUcast,
+mxaSwitchPortOutBcast,
+mxaSwitchPortOutMcast,
+mxaSwitchPortInPause,
+mxaSwitchPortInUndersized,
+mxaSwitchPortInFragmented,
+mxaSwitchPortInOversized,
+mxaSwitchPortInJabber,
+mxaSwitchPortInRxError,
+mxaSwitchPortInFcsError,
+mxaSwitchPortOutPause,
+mxaSwitchPortOutExces,
+mxaSwitchPortOutCollision,
+mxaSwitchPortOutDeff,
+mxaSwitchPortOutSingl,
+mxaSwitchPortOutMulti,
+mxaSwitchPortOutFcsEr,
+mxaSwitchPortOutLate,
+mxaSwitchPortLastChange,
+mxaSwitchPortAdminStatus,
+mxaSwitchPortMtu,
+
+mxaSave,
+
+mxaEnpuStatsPort,
+mxaEnpuStatsVpi,
+mxaEnpuStatsVci,
+mxaEnpuStatsAccessPort,
+mxaEnpuStatsCRCalignErrors,
+mxaEnpuStatsUndersizedPackets,
+mxaEnpuStatsDropEvents,
+mxaEnpuStatsRxPkt64Oct,
+mxaEnpuStatsRxPkt64to127Oct,
+mxaEnpuStatsRxPkt128to255Oct,
+mxaEnpuStatsRxPkt256to511Oct,
+mxaEnpuStatsRxPkt512to1023Oct,
+mxaEnpuStatsRxPkt1024to1518Oct,
+mxaEnpuStatsRxOctets,
+mxaEnpuStatsRxPkts,
+mxaEnpuStatsRxBroadcastPackets,
+mxaEnpuStatsRxMulticastPackets,
+mxaEnpuStatsTxPkt64Oct,
+mxaEnpuStatsTxPkt64to127Oct,
+mxaEnpuStatsTxPkt128to255Oct,
+mxaEnpuStatsTxPkt256to511Oct,
+mxaEnpuStatsTxPkt512to1023Oct,
+mxaEnpuStatsTxPkt1024to1518Oct,
+mxaEnpuStatsTxOctets,
+mxaEnpuStatsTxPkts,
+mxaEnpuStatsTxBroadcastPackets,
+mxaEnpuStatsTxMulticastPackets,
+
+mxaEnpuEntryPort,
+mxaEnpuEntryVpi,
+mxaEnpuEntryVci,
+mxaEnpuEntryMode,
+mxaEnpuEntryPriority,
+mxaEnpuEntryClientVid,
+mxaEnpuEntryProviderVid,
+mxaEnpuEntryServiceVid,
+mxaEnpuEntrySpec,
+mxaEnpuEntryRowStatus,
+mxaEnpuEntryEnt,
+
+mxaEnpuPortActivityPhysicalPort,
+mxaEnpuPortActivityAccessPort,
+mxaEnpuPortActivityMacAddress,
+mxaEnpuPortActivityVid,
+
+mxaEnpuVlanPort,
+mxaEnpuVlanClientVid,
+mxaEnpuVlanProviderVid,
+mxaEnpuVlanServiceVid,
+
+mxaFirmwareVersion,
+mxaShutdownCtl
+
+    }	
+    STATUS  current
+    DESCRIPTION
+	"none"
+    ::= { mxa32 200 }
+END
+
+

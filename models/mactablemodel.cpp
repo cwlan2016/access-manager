@@ -13,7 +13,6 @@
 
 MacTableModel::MacTableModel(Switch::Ptr parentDevice, QObject *parent) :
     QAbstractTableModel(parent),
-    mFuture(new QFuture<QVector<Mac::Ptr> *>()),
     mFutureWatcher(new QFutureWatcher<QVector<Mac::Ptr> *>()),
     mList(new QVector<Mac::Ptr>()),
     mParentDevice(parentDevice)
@@ -32,9 +31,6 @@ MacTableModel::~MacTableModel()
             mFutureWatcher->waitForFinished();
         delete mFutureWatcher;
     }
-
-    if (mFuture)
-        delete mFuture;
 }
 
 int MacTableModel::rowCount(const QModelIndex &parent) const
@@ -115,8 +111,8 @@ void MacTableModel::update()
         return;
     }
 
-    *mFuture = QtConcurrent::run(this, &MacTableModel::asyncUpdateMacTable, false);
-    mFutureWatcher->setFuture(*mFuture);
+    QFuture<QVector<Mac::Ptr> *> future = QtConcurrent::run(this, &MacTableModel::asyncUpdateMacTable, false);
+    mFutureWatcher->setFuture(future);
 }
 
 QString MacTableModel::error() const

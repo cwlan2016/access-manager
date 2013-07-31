@@ -57,6 +57,7 @@ void DslamPageWidget::initActions()
 
     ui->upPortButton->setDefaultAction(ui->upPortAction);
     ui->downPortButton->setDefaultAction(ui->downPortAction);
+    ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
     ui->editBoardButton->setDefaultAction(ui->editBoardAction);
     ui->removeBoardButton->setDefaultAction(ui->removeBoardAction);
 }
@@ -127,6 +128,8 @@ void DslamPageWidget::initView()
         fillSelectProfileComboBox();
         setupMenu();
     }
+
+    ui->dslamTreeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     connect(ui->dslamTreeView, &QTreeView::customContextMenuRequested,
             this, &DslamPageWidget::viewRequestContextMenu);
@@ -227,10 +230,10 @@ void DslamPageWidget::showPortListModel()
     ui->beginEditButton->setVisible(false);
     ui->operationToolButtonPanel->setVisible(true);
     ui->dslamTreeView->setModel(portListModel);
-    ui->dslamTreeView->setColumnWidth(0, 200);
-    ui->dslamTreeView->setColumnWidth(1, 120);
-    ui->dslamTreeView->setColumnWidth(2, 120);
-    ui->dslamTreeView->setColumnWidth(3, 240);
+    //ui->dslamTreeView->setColumnWidth(0, 200);
+    //ui->dslamTreeView->setColumnWidth(1, 120);
+    //ui->dslamTreeView->setColumnWidth(2, 120);
+    //ui->dslamTreeView->setColumnWidth(3, 240);
 
     fillSelectProfileComboBox();
     setupMenu();

@@ -57,6 +57,10 @@ void AdslPortMa5600::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long port
         portIndex = mIndex;
 
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAtucChanPrevTxRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAturChanPrevTxRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAtucCurrAttainableRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAturCurrAttainableRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslAtucChanCurrTxRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslAturChanCurrTxRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslLineCoding, 13, portIndex));
@@ -76,22 +80,57 @@ bool AdslPortMa5600::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 
     mState = DslPortState::from(*vars->val.integer);
 
+    vars = vars->next_variable;
+    if (!isValidSnmpValue(vars))
+        return false;
+
+    if (*vars->val.integer == 4294967295) {
+        mTxPrevRate = 0;
+    } else {
+        mTxPrevRate = *vars->val.integer / 1000;
+    }
+
+    vars = vars->next_variable;
+    if (!isValidSnmpValue(vars))
+        return false;
+
+    if (*vars->val.integer == 4294967295) {
+        mRxPrevRate = 0;
+    } else {
+        mRxPrevRate = *vars->val.integer / 1000;
+    }
+
     if (mState == DslPortState::Up) {
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTxRate = *vars->val.integer / 1000;
+        mTxAttainableRate = *vars->val.integer / 1000;
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxRate = *vars->val.integer / 1000;
+        mRxAttainableRate = *vars->val.integer / 1000;
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        mTxCurrRate = *vars->val.integer / 1000;
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        mRxCurrRate = *vars->val.integer / 1000;
     } else {
-        mTxRate = 0;
-        mRxRate = 0;
+        mTxAttainableRate = 0;
+        mRxAttainableRate = 0;
+        mTxCurrRate = 0;
+        mRxCurrRate = 0;
         //skip vars
+        vars = vars->next_variable->next_variable;
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
@@ -129,8 +168,8 @@ bool AdslPortMa5600::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 
         mRxAttenuation = QString::number(*vars->val.integer / 10.0);
     } else {
-        mTxAttenuation = "";
-        mRxAttenuation = "";
+        mTxAttenuation = "0";
+        mRxAttenuation = "0";
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;

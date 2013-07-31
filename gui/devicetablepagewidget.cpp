@@ -309,7 +309,7 @@ void DeviceTablePageWidget::initView()
     mProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     ui->deviceListTableView->setModel(mProxyModel);
-    ui->deviceListTableView->setColumnWidth(0, 200);
+    ui->deviceListTableView->setColumnWidth(0, 250);
     ui->deviceListTableView->setColumnWidth(1, 100);
     ui->deviceListTableView->setColumnWidth(2, 150);
     ui->deviceListTableView->setColumnWidth(3, 150);

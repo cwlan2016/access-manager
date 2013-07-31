@@ -23,14 +23,30 @@ Project {
             "gui/*.ui"
         ]
 
-        Group {
-            name : "Resources"
+        Group {         
+            name : "Other Resources"
             files: [
                 "images/*.png",
+                "gui/icons/*.png",
                 "data.ico",
-                "access-manager.rc",
-                "schemadevicelist.xsd",
-                "resource.qrc"
+                "schemadevicelist.xsd"
+            ]
+        }
+
+        Group {
+            fileTags: ["qrc"]
+            name: "Qt Resource"
+            files: [
+                "resource.qrc",
+                "gui/images.qrc"
+            ]
+        }
+
+        Group {
+            fileTags: ["rc"]
+            name: "RC Resource"
+            files: [
+                "access-manager.rc"
             ]
         }
 
@@ -40,17 +56,21 @@ Project {
         cpp.includePaths: ["."]
 
 //	Bug in this parameter or in my head.        
-//       cpp.precompiledHeader: "stdafx.h"
-
+//        cpp.precompiledHeader: "stdafx.h"
+//        cpp.precompiledHeaderDir : "."
         cpp.cxxFlags: {
-            if ((qbs.toolchain == "gcc") || (qbs.toolchain == "mingw") || (qbs.toolchain == "clang"))
-                return "-std=c++11"
+        if (qbs.toolchain.contains("gcc")
+                || qbs.toolchain.contains("mingw")
+                || qbs.toolchain.contains("clang"))
+            return "-std=c++11"
         }
 
         cpp.dynamicLibraries: {
-            if ((qbs.targetOS == "windows") && (qbs.buildVariant == "debug"))
+            if (qbs.targetOS.contains("windows")
+                    && qbs.buildVariant.contains("debug"))
                 return ["netsnmpd","wsock32","advapi32"]
-            else if ((qbs.targetOS == "windows") && (qbs.buildVariant == "release"))
+            else if (qbs.targetOS.contains("windows")
+                         && qbs.buildVariant.contains("release"))
                 return ["netsnmp","wsock32","advapi32"]
             else
                 return ["netsnmp"]

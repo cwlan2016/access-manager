@@ -487,9 +487,15 @@ QVariant DslamPortTableModel::secondLevelDataAdsl(QModelIndex index) const
         if (index.row() == 0) {
             return portInfo->lineType();
         } else if (index.row() == 1) {
-            return portInfo->txRate();
+            return QString::fromUtf8("%1/%2/%3")
+                    .arg(portInfo->txAttainableRate())
+                    .arg(portInfo->txCurrRate())
+                    .arg(portInfo->txPrevRate());
         } else if (index.row() == 2) {
-            return portInfo->rxRate();
+            return QString::fromUtf8("%1/%2/%3")
+                    .arg(portInfo->rxAttainableRate())
+                    .arg(portInfo->rxCurrRate())
+                    .arg(portInfo->rxPrevRate());
         } else if (index.row() == 3) {
             return portInfo->txAttenuation();
         } else if (index.row() == 4) {

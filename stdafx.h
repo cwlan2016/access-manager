@@ -1,6 +1,10 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
+#include <net-snmp/net-snmp-config.h>
+#include <net-snmp/net-snmp-includes.h>
+#include <net-snmp/version.h>
+
 #include <QtCore/QBitArray>
 #include <QtCore/QDateTime>
 #include <QtCore/QDir>
@@ -40,13 +44,10 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QProgressDialog>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollBar>
 #include <QtWidgets/QSplashScreen>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QStyleFactory>
 #include <QtWidgets/QToolButton>
-
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
-#include <net-snmp/version.h>
 
 #endif // STDAFX_H

@@ -12,29 +12,29 @@ const QString LteOntType[] =    { "", "", "Nte-2c", "Nte-rg-1400f", "Nte-rg-1400
 namespace Mib
 {
 const oid sysUpTime[] =                                 { 1, 3, 6, 1, 2, 1, 1, 3, 0 };
-const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 };  // .index = Description_new
-const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2 };    // .index = Description_new
+const oid ifName[] =                                    { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 1 };                   // .index = Description_new
+const oid ifDescr[] =                                   { 1, 3, 6, 1, 2, 1, 2, 2, 1, 2 };                       // .index = Description_new
 const oid ifAdminStatus[] =                             { 1, 3, 6, 1, 2, 1, 2, 2, 1, 7 };
 const oid ifOperStatus[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 8 };
 const oid ifLastChange[] =                              { 1, 3, 6, 1, 2, 1, 2, 2, 1, 9 };
-const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 };  // .index = Alias_new
-const oid swL2PortInfoNwayStatusDES3526[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 4, 1, 1, 5 }; // .index = Speed/Duplex_new
-const oid swL2PortInfoNwayStatusDES3550[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 4, 1, 1, 5 };   // .index = Speed/Duplex_new
-const oid swL2PortInfoNwayStatusDES3528[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 105, 1, 2, 3, 1, 1, 6 };  // .index = Speed/Duplex_new
+const oid ifAlias[] =                                   { 1, 3, 6, 1, 2, 1, 31, 1, 1, 1, 18 };                  // .index = Alias_new
+const oid swL2PortInfoNwayStatusDES3526[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 4, 1, 1, 5 };    // .index = Speed/Duplex_new
+const oid swL2PortInfoNwayStatusDES3550[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 4, 1, 1, 5 };    // .index = Speed/Duplex_new
+const oid swL2PortInfoNwayStatusDES3528[] =             { 1, 3, 6, 1, 4, 1, 171, 11, 105, 1, 2, 3, 1, 1, 6 };   // .index = Speed/Duplex_new
 
-const oid dot1qTpFdbPort[] =                            { 1, 3, 6, 1, 2, 1, 17, 7, 1, 2, 2, 1, 2 };          // .vlanid.mac = portNumber
+const oid dot1qTpFdbPort[] =                            { 1, 3, 6, 1, 2, 1, 17, 7, 1, 2, 2, 1, 2 };             // .vlanid.mac = portNumber
 
-const oid swL2IGMPMulticastVlanMemberPortDES3526[] =    { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 10, 6, 1, 4 };  // .vlanid = mask for ports
-const oid swL2IGMPMulticastVlanMemberPortDES3550[] =    { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 10, 6, 1, 4 };  // .vlanid = mask for ports
-const oid swL2IGMPMulticastVlanMemberPortDES3528[] =    { 1, 3, 6, 1, 4, 1, 171, 12, 64, 3, 1, 1, 4 };       // .vlanid = mask for ports
+const oid swL2IGMPMulticastVlanMemberPortDES3526[] =    { 1, 3, 6, 1, 4, 1, 171, 11, 64, 1, 2, 10, 6, 1, 4 };   // .vlanid = mask for ports
+const oid swL2IGMPMulticastVlanMemberPortDES3550[] =    { 1, 3, 6, 1, 4, 1, 171, 11, 64, 2, 2, 10, 6, 1, 4 };   // .vlanid = mask for ports
+const oid swL2IGMPMulticastVlanMemberPortDES3528[] =    { 1, 3, 6, 1, 4, 1, 171, 12, 64, 3, 1, 1, 4 };          // .vlanid = mask for ports
 
-const oid dot1qVlanStaticName[] =                       { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 1 };          // .index = VlanName
-const oid dot1qVlanStaticEgressPorts[] =                { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 2 };          // .vlanid = mask for ports in vlan
-const oid dot1qVlanStaticUntaggedPorts[] =              { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 4 };          // .vlanid = mask for ports untag ports in vlan
-const oid agentStatusSaveCfg[] =                        { 1, 3, 6, 1, 4, 1, 171, 12, 1, 1, 4, 0 };           // value proceeding(2) - current make. completed(3) failed (4)
+const oid dot1qVlanStaticName[] =                       { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 1 };             // .index = VlanName
+const oid dot1qVlanStaticEgressPorts[] =                { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 2 };             // .vlanid = mask for ports in vlan
+const oid dot1qVlanStaticUntaggedPorts[] =              { 1, 3, 6, 1, 2, 1, 17, 7, 1, 4, 3, 1, 4 };             // .vlanid = mask for ports untag ports in vlan
+const oid agentStatusSaveCfg[] =                        { 1, 3, 6, 1, 4, 1, 171, 12, 1, 1, 4, 0 };              // value proceeding(2) - current make. completed(3) failed (4)
 // DES-3526 value 3
 // DES-3528 value 5
-const oid agentSaveCfg[] =                              { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };           // value set(3) for save switch config
+const oid agentSaveCfg[] =                              { 1, 3, 6, 1, 4, 1, 171, 12, 1, 2, 6, 0 };              // value set(3) for save switch config
 //MIBS for Huawei
 const oid hwSlotType[] =                                { 1, 3, 6, 1, 4, 1, 2011, 6, 3, 3, 2, 1, 2, 0 };
 //MIBs for MXA-64
@@ -44,6 +44,8 @@ const oid mxa64DslPortOperStatus[] =                    { 1, 3, 6, 1, 4, 1, 3526
 const oid mxa64DslPortAdminStatus[] =                   { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 2, 1, 4 };
 const oid mxa64DslBandActualRateTx[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 3, 2 };
 const oid mxa64DslBandActualRateRx[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 3, 1 };
+const oid mxa64DslBandAttainableRateTx[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 4, 2 };
+const oid mxa64DslBandAttainableRateRx[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 4, 1 };
 const oid mxa64DslBandLineAttenuationTx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 2 };
 const oid mxa64DslBandLineAttenuationRx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 33, 10, 3, 1, 6, 1 };
 //MIBs for MXA-32
@@ -53,17 +55,22 @@ const oid mxa32DslPortOperStatus[] =                    { 1, 3, 6, 1, 4, 1, 3526
 const oid mxa32DslPortAdminStatus[] =                   { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 2, 1, 4 };
 const oid mxa32DslBandActualRateTx[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 3, 2 };
 const oid mxa32DslBandActualRateRx[] =                  { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 3, 1 };
+const oid mxa32DslBandAttainableRateTx[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 4, 2 };
+const oid mxa32DslBandAttainableRateRx[] =              { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 4, 1 };
 const oid mxa32DslBandLineAttenuationTx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 2 };
 const oid mxa32DslBandLineAttenuationRx[] =             { 1, 3, 6, 1, 4, 1, 35265, 1, 28, 10, 3, 1, 6, 1 };
-//параметры линии
 //adsl
 const oid adslLineCoding[] =                            { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 1 };
 const oid adslLineType[] =                              { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 2 };
 const oid adslLineConfProfile[] =                       { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 1, 1, 4 };
-const oid adslAtucChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 4, 1, 2 }; //скорость нисходящего канала
-const oid adslAturChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 5, 1, 2 }; //скорость восходящего канала
-const oid adslAtucCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 2, 1, 5 }; //затухание нисходящего канала
-const oid adslAturCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 3, 1, 5 }; //затухание восходящего канала
+const oid adslAtucCurrAttainableRate[] =                { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 2, 1, 8 }; //attainable upstream rate
+const oid adslAturCurrAttainableRate[] =                { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 3, 1, 8 }; //attainable downstream rate
+const oid adslAtucChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 4, 1, 2 }; //current upstream rate
+const oid adslAturChanCurrTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 5, 1, 2 }; //current downstream rate
+const oid adslAtucChanPrevTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 4, 1, 3 }; //previous upstream rate
+const oid adslAturChanPrevTxRate[] =                    { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 5, 1, 3 }; //previous downstream rate
+const oid adslAtucCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 2, 1, 5 }; //current attenuation upstream
+const oid adslAturCurrAtn[] =                           { 1, 3, 6, 1, 2, 1, 10, 94, 1, 1, 3, 1, 5 }; //current attenuation downstream
 //shdsl
 const oid hdsl2ShdslSpanConfProfile[] =                 { 1, 3, 6, 1, 2, 1, 10, 48, 1, 1, 1, 2 };
 const oid hdsl2ShdslStatusActualLineRate[] =            { 1, 3, 6, 1, 2, 1, 10, 48, 1, 2, 1, 3 };
@@ -154,8 +161,8 @@ const QString Profile =         QString::fromUtf8("Профиль");
 const QString LastChange =      QString::fromUtf8("Последнее изменение");
 // adsl
 const QString LineType =        QString::fromUtf8("Тип линии");
-const QString TxRate =          QString::fromUtf8("Скорость Tx канала, kbps");
-const QString RxRate =          QString::fromUtf8("Скорость Rx канала, kbps");
+const QString TxRate =          QString::fromUtf8("Скорость макс/текущая/прошлая Tx, kbps");
+const QString RxRate =          QString::fromUtf8("Скорость макс/текущая/прошлая Rx, kbps");
 const QString TxAttenuation =   QString::fromUtf8("Затухание Tx канала, dB");
 const QString RxAttenuation =   QString::fromUtf8("Затухание Rx канала, dB");
 const QString Coding =          QString::fromUtf8("Кодирование");

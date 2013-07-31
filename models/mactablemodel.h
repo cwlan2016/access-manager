@@ -38,7 +38,6 @@ private:
 
     QString decMacAddressToHex(oid *macAddressOid, int length);
 
-    QFuture<QVector<Mac::Ptr> *> *mFuture;
     QFutureWatcher<QVector<Mac::Ptr> *> *mFutureWatcher;
     QString mError;
     QVector<Mac::Ptr> *mList;

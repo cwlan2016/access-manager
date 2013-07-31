@@ -50,6 +50,7 @@ void SwitchPageWidget::initActions()
             this, &SwitchPageWidget::saveSwitchConfig);
 
     ui->saveConfigButton->setDefaultAction(ui->saveConfigAction);
+    ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
 }
 
 void SwitchPageWidget::initComponents()
