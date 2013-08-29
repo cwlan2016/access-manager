@@ -1,6 +1,7 @@
 #include "devicetabledelegate.h"
 
 #include <constant.h>
+#include "devicetablemodel.h"
 
 DeviceTableDelegate::DeviceTableDelegate(QObject *parent) :
     QItemDelegate(parent)
@@ -11,7 +12,7 @@ QWidget *DeviceTableDelegate::createEditor(QWidget *parent,
                                            const QStyleOptionViewItem &option,
                                            const QModelIndex &index) const
 {
-    if (index.column() == mIndexDeviceModel) {
+    if (index.column() == DeviceTableModel::DeviceModelColumn) {
         QComboBox *editor = new QComboBox(parent);
         editor->setMinimumWidth(100);
 
@@ -24,7 +25,7 @@ QWidget *DeviceTableDelegate::createEditor(QWidget *parent,
 void DeviceTableDelegate::setEditorData(QWidget *editor,
                                         const QModelIndex &index) const
 {
-    if (index.column() == mIndexDeviceModel) {
+    if (index.column() == DeviceTableModel::DeviceModelColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
         QString text = index.model()->data(index).toString();
 
@@ -42,7 +43,7 @@ void DeviceTableDelegate::setEditorData(QWidget *editor,
 void DeviceTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                       const QModelIndex &index) const
 {
-    if (index.column() == mIndexDeviceModel) {
+    if (index.column() == DeviceTableModel::DeviceModelColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         if (comboBox->currentIndex() == -1)
@@ -52,16 +53,6 @@ void DeviceTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
     } else {
         QItemDelegate::setModelData(editor, model, index);
     }
-}
-
-int DeviceTableDelegate::indexDeviceModel()
-{
-    return mIndexDeviceModel;
-}
-
-void DeviceTableDelegate::setIndexDeviceModel(int index)
-{
-    mIndexDeviceModel = index;
 }
 
 QStringListModel *DeviceTableDelegate::fillDeviceModelComboBox() const

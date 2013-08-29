@@ -49,20 +49,23 @@ QVariant DeviceTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == NameColumn) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        switch (index.column())  {
+        case NameColumn:
             return mList.at(index.row())->name();
-        } else if (index.column() == 1) {
+        case DeviceModelColumn:
             return DeviceModel::toString(mList.at(index.row())->deviceModel());
-        }  else if (index.column() == 2) {
+        case IpColumn:
             return mList.at(index.row())->ip();
-        } else if (index.column() == 3) {
+        case DeviceTypeColumn:
             return DeviceType::toString(mList.at(index.row())->deviceType());
+        default:
+            return QVariant();
         }
     }
 
@@ -75,16 +78,16 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
 
-    if (index.column() == 0) {
+    if (index.column() == NameColumn) {
         mList[index.row()]->setName(value.toString().trimmed());
         emit dataChanged(index, index);
 
         return true;
-    } else if (index.column() == 1) {
+    } else if (index.column() == DeviceModelColumn) {
         DeviceModel::Enum newModel = DeviceModel::from(value.toString());
         DeviceType::Enum newType = DeviceType::from(newModel);
 
-        QModelIndex deviceTypeIndex = this->index(index.row(), 3);
+        QModelIndex deviceTypeIndex = this->index(index.row(), DeviceTypeColumn);
 
         if (mList.at(index.row())->deviceModel() == newModel)
             return false;
@@ -102,7 +105,7 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
         emit dataChanged(deviceTypeIndex, deviceTypeIndex);
 
         return true;
-    } else if (index.column() == 2) {
+    } else if (index.column() == IpColumn) {
         if (!validIpAddress(value.toString())) {
             BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
                                       trUtf8("Некорректный IP адрес."));
@@ -125,14 +128,17 @@ QVariant DeviceTableModel::headerData(int section, Qt::Orientation orientation,
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        switch (section) {
+        case NameColumn:
             return DeviceTableModelStrings::Name;
-        } else if (section == 1) {
+        case DeviceModelColumn:
             return DeviceTableModelStrings::DeviceModel;
-        } else if (section == 2) {
+        case IpColumn:
             return DeviceTableModelStrings::IP;
-        } else if (section == 3) {
+        case DeviceTypeColumn:
             return DeviceTableModelStrings::DeviceType;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -149,7 +155,7 @@ Qt::ItemFlags DeviceTableModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-    if (index.column() != 3)
+    if (index.column() != DeviceTypeColumn)
         flags |= Qt::ItemIsEditable;
 
     return flags;

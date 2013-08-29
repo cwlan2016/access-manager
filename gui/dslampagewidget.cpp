@@ -59,7 +59,9 @@ void DslamPageWidget::initActions()
 
     ui->upPortButton->setDefaultAction(ui->upPortAction);
     ui->downPortButton->setDefaultAction(ui->downPortAction);
+    ui->showProfileFrameButton->setDefaultAction(ui->showProfileFrameAction);
     ui->editPortDescButton->setDefaultAction(ui->editPortDescAction);
+    ui->collapseAllNodeButton->setDefaultAction(ui->collapseAllNodeAction);
     ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
     ui->editBoardButton->setDefaultAction(ui->editBoardAction);
     ui->removeBoardButton->setDefaultAction(ui->removeBoardAction);
@@ -91,8 +93,6 @@ void DslamPageWidget::initComponents()
     autoUpdateBoardListStateChanged(dslamInfo->autoFill());
 
     mBoardTableDelegate = new BoardTableDelegate(mDevice.objectCast<Dslam>(), this);
-    mBoardTableDelegate->setIndexTypeBoard(1);
-    mBoardTableDelegate->setIndexFirstPair(2);
 
     mPortTableDelegate = new DslamPortTableDelegate(this);
     mPortTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());

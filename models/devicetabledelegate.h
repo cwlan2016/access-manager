@@ -15,13 +15,7 @@ public:
     void setModelData(QWidget *editor, QAbstractItemModel *model,
                       const QModelIndex &index) const;
 
-    int indexDeviceModel();
-    void setIndexDeviceModel(int index);
-
     QStringListModel *fillDeviceModelComboBox() const;
-
-private:
-    int mIndexDeviceModel;
 };
 
 #endif // DEVICETABLEDELEGATE_H

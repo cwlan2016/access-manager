@@ -189,7 +189,10 @@ OTHER_FILES += \
     images/clear_left.png \
     data.ico \
     access-manager.rc \
-    schemadevicelist.xsd
+    schemadevicelist.xsd \
+    images/edit2.png \
+    images/node.png \
+    images/profile.png
 
 HEADERS += \
     stdafx.h

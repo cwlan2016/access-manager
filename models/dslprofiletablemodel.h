@@ -9,6 +9,11 @@ class DslProfileTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        DisplayNameColumn = 0,
+        DslamNameColumn
+    };
+
     explicit DslProfileTableModel(QList<DslProfile> *list, QObject *parent = 0);
     
     int rowCount(const QModelIndex &parent) const;

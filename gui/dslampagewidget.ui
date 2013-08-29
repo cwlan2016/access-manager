@@ -265,6 +265,26 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="showProfileFrameButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/profile.png</normaloff>:/images/profile.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="editPortDescButton">
         <property name="text">
          <string/>
@@ -288,6 +308,26 @@
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="collapseAllNodeButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/node.png</normaloff>:/images/node.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -462,6 +502,11 @@
    </property>
   </action>
   <action name="collapseAllNodeAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/node.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>Свернуть все узлы</string>
    </property>
@@ -471,13 +516,18 @@
   </action>
   <action name="showBoardAction">
    <property name="text">
-    <string>Открыть</string>
+    <string>Перейти к портам</string>
    </property>
    <property name="toolTip">
-    <string>Открыть</string>
+    <string>Перейти к портам</string>
    </property>
   </action>
   <action name="showProfileFrameAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/profile.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>Изменить профиль</string>
    </property>

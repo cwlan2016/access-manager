@@ -46,17 +46,17 @@ QVariant BoardTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == TypeBoardColumn) {
             return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return static_cast<int>(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        if (index.column() == NumberColumn) {
             return index.row();
-        } else if ((index.column() == 1) && mList.contains(index.row())) {
+        } else if ((index.column() == TypeBoardColumn) && mList.contains(index.row())) {
             return BoardType::toString(mList[index.row()]->type());
-        } else if ((index.column() == 2) && mList.contains(index.row())) {
+        } else if ((index.column() == PairsColumn) && mList.contains(index.row())) {
             if (role == Qt::DisplayRole) {
                 return rangePairs(mList[index.row()]->firstPair(),
                         mList[index.row()]->type());
@@ -65,7 +65,7 @@ QVariant BoardTableModel::data(const QModelIndex &index, int role) const
             }
         }
     } else if (role == Qt::UserRole) {
-        if (index.column() == 1) {
+        if (index.column() == TypeBoardColumn) {
             if (mList.contains(index.row())) {
                 return mList[index.row()]->type();
             } else {
@@ -90,12 +90,12 @@ bool BoardTableModel::setData(const QModelIndex &index, const QVariant &value,
                 this, &BoardTableModel::boardIsModified);
     }
 
-    if (index.column() == 1) {
+    if (index.column() == TypeBoardColumn) {
         mList[index.row()]->setType(BoardType::from(value.toString()));
         emit dataChanged(index, index);
 
         return true;
-    } else if (index.column() == 2) {
+    } else if (index.column() == PairsColumn) {
         mList[index.row()]->setFirstPair(value.toInt());
         emit dataChanged(index, index);
 
@@ -112,12 +112,15 @@ QVariant BoardTableModel::headerData(int section, Qt::Orientation orientation,
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        switch (section) {
+        case NumberColumn:
             return BoardTableModelStrings::Number;
-        } else if (section == 1) {
+        case TypeBoardColumn:
             return BoardTableModelStrings::TypeBoard;
-        } else if (section == 2) {
+        case PairsColumn:
             return BoardTableModelStrings::Pairs;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -141,12 +144,12 @@ Qt::ItemFlags BoardTableModel::flags(const QModelIndex &index) const
             return flags;
 
         if (mParentDevice->autoFill() && !mParentDevice->autoNumeringBoard()) {
-            if ((index.column() == 2)
+            if ((index.column() == TypeBoardColumn)
                     && (index.row() != 7)
                     && (index.row() != 8)) {
                 flags |= Qt::ItemIsEditable;
             }
-        } else if ((index.column() != 0)
+        } else if ((index.column() != PairsColumn)
                    && (index.row() != 7)
                    && (index.row() != 8)) {
             flags |= Qt::ItemIsEditable;

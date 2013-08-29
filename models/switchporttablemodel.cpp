@@ -118,14 +118,17 @@ QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientati
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == NumberColumn) {
+        switch (section) {
+        case NumberColumn:
             return SwitchPortTableModelStrings::Number;
-        } else if (section == StateColumn) {
+        case StateColumn:
             return SwitchPortTableModelStrings::State;
-        } else if (section == SpeedDuplexColumn) {
+        case SpeedDuplexColumn:
             return SwitchPortTableModelStrings::SpeedDuplex;
-        } else if (section == DescColumn) {
+        case DescColumn:
             return SwitchPortTableModelStrings::Desc;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);

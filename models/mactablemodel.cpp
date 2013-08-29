@@ -53,18 +53,21 @@ QVariant MacTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == PortColumn) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        switch (index.column()) {
+        case PortColumn:
             return mList->at(index.row())->port();
-        } else if (index.column() == 1) {
+        case VlanColumn:
             return mList->at(index.row())->vlanName();
-        } else if (index.column() == 2) {
+        case MacAddressColumn:
             return mList->at(index.row())->mac();
+        default:
+            return QVariant();
         }
     }
 
@@ -78,12 +81,15 @@ QVariant MacTableModel::headerData(int section, Qt::Orientation orientation,
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        switch (section) {
+        case PortColumn:
             return MacTableModelStrings::Port;
-        } else if (section == 1) {
+        case VlanColumn:
             return MacTableModelStrings::Vlan;
-        } else if (section == 2) {
+        case MacAddressColumn:
             return MacTableModelStrings::MacAddress;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);

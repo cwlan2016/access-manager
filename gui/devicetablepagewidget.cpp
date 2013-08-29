@@ -49,7 +49,7 @@ void DeviceTablePageWidget::loadDeviceList()
         BasicDialogs::warning(this, QString::fromUtf8("Загрузка данных"), QString::fromUtf8("Ошибка: загрузка списка устройств не удалась."), mDeviceTableModel->error());
     }
 
-    ui->deviceListTableView->sortByColumn(0, Qt::AscendingOrder);
+    ui->deviceListTableView->sortByColumn(DeviceTableModel::NameColumn, Qt::AscendingOrder);
 }
 
 void DeviceTablePageWidget::saveDeviceList()
@@ -72,9 +72,9 @@ void DeviceTablePageWidget::openDevice()
 
     index = mProxyModel->mapToSource(index);
 
-    QModelIndex ipIndex = mDeviceTableModel->index(index.row(), 2);
+    QModelIndex ipIndex = mDeviceTableModel->index(index.row(), DeviceTableModel::IpColumn);
     QString ip = mDeviceTableModel->data(ipIndex).toString();
-    QModelIndex typeIndex = mDeviceTableModel->index(index.row(), 3);
+    QModelIndex typeIndex = mDeviceTableModel->index(index.row(), DeviceTableModel::DeviceTypeColumn);
     QString typeString = mDeviceTableModel->data(typeIndex).toString();
     QString namePage = typeString % ip;
 
@@ -83,7 +83,7 @@ void DeviceTablePageWidget::openDevice()
         return;
     }
 
-    QModelIndex deviceModelIndex = mDeviceTableModel->index(index.row(), 1);
+    QModelIndex deviceModelIndex = mDeviceTableModel->index(index.row(), DeviceTableModel::DeviceModelColumn);
     QString deviceModelString = mDeviceTableModel->data(deviceModelIndex).toString();
     DeviceType::Enum deviceType = DeviceType::from(typeString);
 
@@ -108,7 +108,7 @@ void DeviceTablePageWidget::openDevice()
     pageWidget->setObjectName(namePage);
     mPageList->insert(namePage, pageWidget);
 
-    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
+    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), DeviceTableModel::NameColumn)).toString();
 
     mParentTabWidget->addTab(pageWidget, deviceModelString % " " % name);
     mParentTabWidget->setCurrentWidget(pageWidget);
@@ -121,7 +121,7 @@ void DeviceTablePageWidget::addDevice()
     int row = mDeviceTableModel->rowCount(QModelIndex());
     mDeviceTableModel->insertRow(row, QModelIndex());
 
-    QModelIndex index = mProxyModel->mapFromSource(mDeviceTableModel->index(row, 0));
+    QModelIndex index = mProxyModel->mapFromSource(mDeviceTableModel->index(row, DeviceTableModel::NameColumn));
     ui->deviceListTableView->scrollToBottom();
     ui->deviceListTableView->setCurrentIndex(index);
     ui->deviceListTableView->setFocus();
@@ -141,9 +141,9 @@ void DeviceTablePageWidget::removeDevice()
     if (!index.isValid())
         return;
 
-    QModelIndex nameindex = mDeviceTableModel->index(index.row(), 0);
+    QModelIndex nameindex = mDeviceTableModel->index(index.row(), DeviceTableModel::NameColumn);
     QString name = mDeviceTableModel->data(nameindex).toString();
-    QModelIndex ipIndex = mDeviceTableModel->index(index.row(), 2);
+    QModelIndex ipIndex = mDeviceTableModel->index(index.row(), DeviceTableModel::IpColumn);
     QString ip = mDeviceTableModel->data(ipIndex).toString();
 
     if (!BasicDialogs::okToDelete(this, QString::fromUtf8("Удаление устройства"),
@@ -199,8 +199,8 @@ void DeviceTablePageWidget::showSwitchExtInfoFrame()
     ui->inetVlanValueLabel->setText(QString::number(mDeviceTableModel->inetVlan(index)));
     ui->iptvVlanValueLabel->setText(QString::number(mDeviceTableModel->iptvVlan(index)));
 
-    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
-    QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 1)).toString();
+    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), DeviceTableModel::NameColumn)).toString();
+    QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), DeviceTableModel::DeviceModelColumn)).toString();
 
     ui->switchExtInfoLabel->setText(QString::fromUtf8("Коммутатор ") % model % ", " % name);
     ui->switchExtInfoFrame->setVisible(true);
@@ -216,8 +216,8 @@ void DeviceTablePageWidget::showOltExtInfoFrame()
     ui->serviceProfileListView->setModel(mDeviceTableModel->serviceProfileOltListModel(index));
     ui->multicastProfileListView->setModel(mDeviceTableModel->multicastProfileOltListModel(index));
 
-    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 0)).toString();
-    QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), 1)).toString();
+    QString name = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), DeviceTableModel::NameColumn)).toString();
+    QString model = mDeviceTableModel->data(mDeviceTableModel->index(index.row(), DeviceTableModel::DeviceModelColumn)).toString();
 
     ui->oltExtInfoLabel->setText(QString::fromUtf8("Линейный оптический терминал ") % model % ", " % name);
     ui->oltExtInfoFrame->setVisible(true);
@@ -226,7 +226,7 @@ void DeviceTablePageWidget::showOltExtInfoFrame()
 void DeviceTablePageWidget::showExtendedInfoPanel()
 {
     QModelIndex currentIndex = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-    QModelIndex deviceTypeIndex = mDeviceTableModel->index(currentIndex.row(), 3);
+    QModelIndex deviceTypeIndex = mDeviceTableModel->index(currentIndex.row(), DeviceTableModel::DeviceTypeColumn);
     DeviceType::Enum deviceType = DeviceType::from(mDeviceTableModel->data(deviceTypeIndex).toString());
 
     if (deviceType == DeviceType::Switch) {
@@ -309,13 +309,12 @@ void DeviceTablePageWidget::initView()
     mProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     ui->deviceListTableView->setModel(mProxyModel);
-    ui->deviceListTableView->setColumnWidth(0, 250);
-    ui->deviceListTableView->setColumnWidth(1, 100);
-    ui->deviceListTableView->setColumnWidth(2, 150);
-    ui->deviceListTableView->setColumnWidth(3, 150);
+    ui->deviceListTableView->setColumnWidth(DeviceTableModel::NameColumn, 250);
+    ui->deviceListTableView->setColumnWidth(DeviceTableModel::DeviceModelColumn, 100);
+    ui->deviceListTableView->setColumnWidth(DeviceTableModel::IpColumn, 150);
+    ui->deviceListTableView->setColumnWidth(DeviceTableModel::DeviceTypeColumn, 150);
 
     DeviceTableDelegate *deviceListDelegate = new DeviceTableDelegate(this);
-    deviceListDelegate->setIndexDeviceModel(1);
     ui->deviceListTableView->setItemDelegate(deviceListDelegate);
 
     connect(ui->deviceListTableView, &QTableView::doubleClicked,
@@ -395,7 +394,7 @@ void DeviceTablePageWidget::viewActivatedItem(QModelIndex currIndex,
     Q_UNUSED(prevIndex)
 
     if (currIndex.isValid()) {
-        ui->editDeviceAction->setEnabled(currIndex.column() != 3);
+        ui->editDeviceAction->setEnabled(currIndex.column() != DeviceTableModel::DeviceTypeColumn);
         ui->removeDeviceAction->setEnabled(true);
         ui->extendedInfoAction->setEnabled(true);
     } else {

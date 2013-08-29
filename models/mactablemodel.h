@@ -9,6 +9,12 @@ class MacTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        PortColumn = 0,
+        VlanColumn,
+        MacAddressColumn
+    };
+
     explicit MacTableModel(Switch::Ptr parentDevice, QObject *parent = 0);
     ~MacTableModel();
 

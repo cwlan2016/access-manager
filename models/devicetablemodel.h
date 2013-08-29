@@ -9,6 +9,13 @@ class DeviceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        NameColumn = 0,
+        DeviceModelColumn,
+        IpColumn,
+        DeviceTypeColumn
+    };
+
     explicit DeviceTableModel(QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;

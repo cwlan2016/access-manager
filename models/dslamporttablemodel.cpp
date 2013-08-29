@@ -9,7 +9,7 @@
 
 // index.internalId()
 // invalidParentIndex - основная информация о порте, верхний уровень
-// > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
+// < invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
 DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice, QObject *parent) :
     QAbstractItemModel(parent),
@@ -105,16 +105,20 @@ QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientatio
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == PairColumn)
+        switch (section) {
+        case PairColumn:
             return DslamPortTableModelStrings::Pair;
-        else if (section == PortColumn)
+        case PortColumn:
             return DslamPortTableModelStrings::Port;
-        else if (section == StateColumn)
+        case StateColumn:
             return DslamPortTableModelStrings::State;
-        else if (section == DescColumn)
+        case DescColumn:
             return DslamPortTableModelStrings::Desc;
-        else if (section == ProfileColumn)
+        case ProfileColumn:
             return DslamPortTableModelStrings::Profile;
+        default:
+            return QVariant();
+        }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {
@@ -223,7 +227,6 @@ bool DslamPortTableModel::load()
             return false;
         }
     }
-
 
     endResetModel();
     return true;
@@ -437,9 +440,6 @@ bool DslamPortTableModel::changePortProfile(QModelIndex portIndex,
         return false;
     }
 
-
-
-
     snmpClient->addOid(profileOid, profileName, type);
 
     return snmpClient->sendRequest();
@@ -464,19 +464,20 @@ int DslamPortTableModel::currentPort(QModelIndex index)
 
 QVariant DslamPortTableModel::topLevelData(QModelIndex index) const
 {
-    if (index.column() == 0) {
+    switch(index.column()) {
+    case PairColumn:
         return mList.at(index.row())->pair();
-    } else if (index.column() == 1) {
+    case PortColumn:
         return mList.at(index.row())->name();
-    } else if (index.column() == 2) {
+    case StateColumn:
         return DslPortState::toString(mList.at(index.row())->state());
-    } else if (index.column() == 3) {
+    case DescColumn:
         return mList.at(index.row())->description();
-    } else if (index.column() == 4) {
+    case ProfileColumn:
         return mList.at(index.row())->profile();
+    default:
+        return QVariant();
     }
-
-    return QVariant();
 }
 
 QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const

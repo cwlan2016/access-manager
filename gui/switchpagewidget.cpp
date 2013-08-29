@@ -111,9 +111,9 @@ void SwitchPageWidget::initView()
 
     ui->portListTableView->setModel(portTableModel);
     ui->portListTableView->setItemDelegate(portTableDelegate);
-    ui->portListTableView->setColumnWidth(0, 50);
-    ui->portListTableView->setColumnWidth(1, 70);
-    ui->portListTableView->setColumnWidth(2, 145);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::NumberColumn, 50);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::StateColumn, 70);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::SpeedDuplexColumn, 145);
 
     connect(ui->portListTableView, &QTableView::customContextMenuRequested,
             this, &SwitchPageWidget::portViewRequestContextMenu);
@@ -127,13 +127,13 @@ void SwitchPageWidget::initView()
 
     QSortFilterProxyModel *macListFilterProxyModel = new QSortFilterProxyModel(this);
     macListFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    macListFilterProxyModel->setFilterKeyColumn(2);
+    macListFilterProxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
     macListFilterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     macListFilterProxyModel->setSourceModel(macTableModel);
 
     ui->macAddressTableView->setModel(macListFilterProxyModel);
-    ui->macAddressTableView->setColumnWidth(0, 70);
-    ui->macAddressTableView->setColumnWidth(1, 100);
+    ui->macAddressTableView->setColumnWidth(MacTableModel::PortColumn, 70);
+    ui->macAddressTableView->setColumnWidth(MacTableModel::VlanColumn, 100);
 
     connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
             this, &SwitchPageWidget::macTableViewRequestContextMenu);
@@ -168,7 +168,7 @@ void SwitchPageWidget::refreshPortInfo()
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
@@ -222,7 +222,7 @@ void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
@@ -250,7 +250,7 @@ void SwitchPageWidget::setPortInternetService()
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
@@ -278,7 +278,7 @@ void SwitchPageWidget::setPortInternetWithStbService()
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
 
     QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
@@ -305,7 +305,7 @@ void SwitchPageWidget::filterMacAddressByPorts()
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
 
-    proxyModel->setFilterKeyColumn(0);
+    proxyModel->setFilterKeyColumn(MacTableModel::PortColumn);
 
     if (ui->portListLineEdit->text().isEmpty()) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Перед фильтрованием необходимо ввести список портов."));
@@ -346,7 +346,7 @@ void SwitchPageWidget::macLineEditTextChanged(QString text)
     text = ui->macLineEdit->displayText();
     text.replace('_', "?");
 
-    proxyModel->setFilterKeyColumn(2);
+    proxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
     proxyModel->setFilterWildcard(text);
 }
 
@@ -372,7 +372,7 @@ void SwitchPageWidget::showPortInfoFrame()
     if (!index.isValid())
         return;
 
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
     ui->portInetVlanValueLabel->setText(VlanState::toString(portListModel->memberInetVlan(port)));
     ui->portIptvVlanValueLabel->setText(VlanState::toString(portListModel->memberIptvVlan(port)));

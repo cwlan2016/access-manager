@@ -16,12 +16,6 @@ public:
     void setModelData(QWidget *editor, QAbstractItemModel *model,
                       const QModelIndex &index) const;
 
-    int indexTypeBoard();
-    void setIndexTypeBoard(int index);
-
-    int indexFirstPair();
-    void setIndexFirstPair(int index);
-
 private:
     QWidget *createComboBoxEditor(QWidget *parent) const;
     void commitAndCloseComboBoxEditor(int index);
@@ -29,8 +23,6 @@ private:
     QStringListModel *fillTypeBoardComboBox() const;
     QStringListModel *fillFirstPairComboBox(QString boardType) const;
 
-    int mIndexTypeBoard;
-    int mIndexFirstPair;
     Dslam::Ptr mDslamInfo;
 };
 

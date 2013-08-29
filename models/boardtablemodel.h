@@ -9,6 +9,12 @@ class BoardTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+            NumberColumn = 0,
+            TypeBoardColumn,
+            PairsColumn
+    };
+
     explicit BoardTableModel(Dslam *parentDevice, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
