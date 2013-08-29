@@ -30,6 +30,7 @@
 #include <QtGui/QBrush>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QFont>
+#include <QtGui/QPainter>
 #include <QtGui/QValidator>
 
 #include <QtXmlPatterns/QXmlSchema>
@@ -47,6 +48,7 @@
 #include <QtWidgets/QScrollBar>
 #include <QtWidgets/QSplashScreen>
 #include <QtWidgets/QStyle>
+#include <QtWidgets/QStyledItemDelegate>
 #include <QtWidgets/QStyleFactory>
 #include <QtWidgets/QToolButton>
 

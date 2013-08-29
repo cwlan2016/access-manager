@@ -40,6 +40,8 @@ void DslamPageWidget::initActions()
             this, &DslamPageWidget::upDslPort);
     connect(ui->downPortAction, &QAction::triggered,
             this, &DslamPageWidget::downDslPort);
+    connect(ui->editPortDescAction, &QAction::triggered,
+            this, &DslamPageWidget::editDescPort);
     connect(ui->showProfileFrameAction, &QAction::triggered,
             ui->profileFrame, &QFrame::show);
     connect(ui->collapseAllNodeAction, &QAction::triggered,
@@ -57,6 +59,7 @@ void DslamPageWidget::initActions()
 
     ui->upPortButton->setDefaultAction(ui->upPortAction);
     ui->downPortButton->setDefaultAction(ui->downPortAction);
+    ui->editPortDescButton->setDefaultAction(ui->editPortDescAction);
     ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
     ui->editBoardButton->setDefaultAction(ui->editBoardAction);
     ui->removeBoardButton->setDefaultAction(ui->removeBoardAction);
@@ -91,6 +94,9 @@ void DslamPageWidget::initComponents()
     mBoardTableDelegate->setIndexTypeBoard(1);
     mBoardTableDelegate->setIndexFirstPair(2);
 
+    mPortTableDelegate = new DslamPortTableDelegate(this);
+    mPortTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
+
     connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
             this, &DslamPageWidget::autoUpdateBoardListStateChanged);
     connect(ui->autoNumeringPairCheckBox, &QCheckBox::toggled,
@@ -124,6 +130,8 @@ void DslamPageWidget::initView()
         }
 
         ui->dslamTreeView->setModel(portListModel);
+        ui->dslamTreeView->setItemDelegate(mPortTableDelegate);
+        ui->dslamTreeView->setEditTriggers(QAbstractItemView::EditKeyPressed);
 
         fillSelectProfileComboBox();
         setupMenu();
@@ -142,6 +150,9 @@ void DslamPageWidget::initView()
 void DslamPageWidget::upDslPort()
 {
     QModelIndex currentPort = currentDslamXdslPort();
+
+    if (!currentPort.isValid())
+        return;
 
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
@@ -167,6 +178,9 @@ void DslamPageWidget::downDslPort()
 {
     QModelIndex currentPort = currentDslamXdslPort();
 
+    if (!currentPort.isValid())
+        return;
+
     if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
         return;
 
@@ -186,6 +200,22 @@ void DslamPageWidget::downDslPort()
     } else {
         BasicDialogs::warning(this, BasicDialogStrings::Warning, QString::fromUtf8("Порт деактивировать не удалось."));
     }
+}
+
+void DslamPageWidget::editDescPort()
+{
+    QModelIndex currentPort = currentDslamXdslPort();
+
+    if (!currentPort.isValid())
+        return;
+
+    if (qstrcmp(ui->dslamTreeView->model()->metaObject()->className(), "DslamPortTableModel") != 0)
+        return;
+
+    QModelIndex descIndex = ui->dslamTreeView->model()->index(currentPort.row(),
+                                                              DslamPortTableModel::DescColumn);
+    ui->dslamTreeView->setFocus();
+    ui->dslamTreeView->edit(descIndex);
 }
 
 void DslamPageWidget::showPortListModel()
@@ -230,6 +260,8 @@ void DslamPageWidget::showPortListModel()
     ui->beginEditButton->setVisible(false);
     ui->operationToolButtonPanel->setVisible(true);
     ui->dslamTreeView->setModel(portListModel);
+    ui->dslamTreeView->setItemDelegate(mPortTableDelegate);
+    ui->dslamTreeView->setEditTriggers(QAbstractItemView::EditKeyPressed);
     //ui->dslamTreeView->setColumnWidth(0, 200);
     //ui->dslamTreeView->setColumnWidth(1, 120);
     //ui->dslamTreeView->setColumnWidth(2, 120);
@@ -251,6 +283,8 @@ void DslamPageWidget::backToBoardListModel()
     BoardTableModel *boardTableModel = mDevice.objectCast<Dslam>()->boardTableModel();
 
     ui->dslamTreeView->setModel(boardTableModel);
+    ui->dslamTreeView->setItemDelegate(new QItemDelegate(this));
+    ui->dslamTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     delete portTableModel;
 
@@ -467,7 +501,6 @@ void DslamPageWidget::currentColumnChanged(const QModelIndex &current, const QMo
         ui->editBoardAction->setEnabled(current.column() != 0);
         ui->removeBoardAction->setEnabled(true);
     }
-
 }
 
 void DslamPageWidget::setupMenu()
@@ -484,6 +517,7 @@ void DslamPageWidget::setupMenu()
         mContextMenu->addAction(ui->showBoardAction);
     } else {
         mContextMenu->addAction(ui->refreshPortInfoAction);
+        mContextMenu->addAction(ui->editPortDescAction);
         mContextMenu->addSeparator();
         mContextMenu->addAction(ui->upPortAction);
         mContextMenu->addAction(ui->downPortAction);

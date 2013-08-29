@@ -75,47 +75,44 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
 
-    if (role == Qt::EditRole) {
-        if (index.column() == 0) {
-            mList[index.row()]->setName(value.toString().trimmed());
-            emit dataChanged(index, index);
+    if (index.column() == 0) {
+        mList[index.row()]->setName(value.toString().trimmed());
+        emit dataChanged(index, index);
 
-            return true;
-        } else if (index.column() == 1) {
-            DeviceModel::Enum newModel = DeviceModel::from(value.toString());
-            DeviceType::Enum newType = DeviceType::from(newModel);
+        return true;
+    } else if (index.column() == 1) {
+        DeviceModel::Enum newModel = DeviceModel::from(value.toString());
+        DeviceType::Enum newType = DeviceType::from(newModel);
 
-            QModelIndex deviceTypeIndex = this->index(index.row(), 3);
+        QModelIndex deviceTypeIndex = this->index(index.row(), 3);
 
-            if (mList.at(index.row())->deviceModel() == newModel)
-                return false;
+        if (mList.at(index.row())->deviceModel() == newModel)
+            return false;
 
-            if ((mList.at(index.row())->deviceType() == DeviceType::Other)
-                    || (mList.at(index.row())->deviceType() == newType)) {
-                changeDeviceModel(index.row(), newType, newModel);
-            } else {
-                BasicDialogs::information(0, BasicDialogStrings::Info,
-                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
-                return false;
-            }
-
-            emit dataChanged(index, index);
-            emit dataChanged(deviceTypeIndex, deviceTypeIndex);
-
-            return true;
-        } else if (index.column() == 2) {
-            if (!validIpAddress(value.toString())) {
-                BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
-                                          trUtf8("Некорректный IP адрес."));
-                return false;
-            }
-
-            mList[index.row()]->setIp(value.toString().trimmed());
-            emit dataChanged(index, index);
-            //mModified = true;
-
-            return true;
+        if ((mList.at(index.row())->deviceType() == DeviceType::Other)
+                || (mList.at(index.row())->deviceType() == newType)) {
+            changeDeviceModel(index.row(), newType, newModel);
+        } else {
+            BasicDialogs::information(0, BasicDialogStrings::Info,
+                                      QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
+            return false;
         }
+
+        emit dataChanged(index, index);
+        emit dataChanged(deviceTypeIndex, deviceTypeIndex);
+
+        return true;
+    } else if (index.column() == 2) {
+        if (!validIpAddress(value.toString())) {
+            BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
+                                      trUtf8("Некорректный IP адрес."));
+            return false;
+        }
+
+        mList[index.row()]->setIp(value.toString().trimmed());
+        emit dataChanged(index, index);
+
+        return true;
     }
 
     return false;

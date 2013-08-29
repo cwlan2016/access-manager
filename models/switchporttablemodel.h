@@ -10,6 +10,13 @@ class SwitchPortTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        NumberColumn = 0,
+        StateColumn,
+        SpeedDuplexColumn,
+        DescColumn
+    };
+
     explicit SwitchPortTableModel(Switch::Ptr parentDevice,
                                   QObject *parent = 0);
 
@@ -17,6 +24,7 @@ public:
     int columnCount(const QModelIndex &parentDevice) const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const;

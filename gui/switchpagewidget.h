@@ -28,6 +28,8 @@ private:
 
     void saveSwitchConfig();
 
+    void editDescPort();
+
     void refreshPortInfo();
     void refreshAllPortInfo();
     void refreshMacTable();

@@ -20,6 +20,7 @@
         <file alias="tv.png">images/tv.png</file>
         <file alias="clear_left.png">images/clear_left.png</file>
         <file alias="close.png">images/close.png</file>
+        <file alias="edit2.png">images/edit2.png</file>
     </qresource>
     <qresource prefix="/xsd">
         <file alias="devicelist.xsd">schemadevicelist.xsd</file>

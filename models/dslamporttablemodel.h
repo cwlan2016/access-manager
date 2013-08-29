@@ -10,6 +10,14 @@ class DslamPortTableModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        PairColumn = 0,
+        PortColumn,
+        StateColumn,
+        DescColumn,
+        ProfileColumn
+    };
+
     explicit DslamPortTableModel(Dslam::Ptr parentDevice,
                                  QObject *parent = 0);
 
@@ -17,6 +25,7 @@ public:
     int columnCount(const QModelIndex &parent) const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role) const;

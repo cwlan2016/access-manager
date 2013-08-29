@@ -68,6 +68,18 @@ XdslPort::Ptr DslamMa5600::createPort(BoardType::Enum boardType, int boardIndex,
     }
 }
 
+int DslamMa5600::maxLengthPortDescription()
+{
+    return 33;
+}
+
+bool DslamMa5600::setPortDescription(long snmpPortIndex, QString description)
+{
+    OidPair oid = createOidPair(Mib::ifAlias, 11, snmpPortIndex);
+
+    return snmpSet(ip(), oid, 's', description, mError);
+}
+
 QList<DslProfile> *DslamMa5600::defaultAdslProfiles()
 {
     QList<DslProfile> *list = new QList<DslProfile>();

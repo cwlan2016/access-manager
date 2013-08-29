@@ -5,6 +5,7 @@
 #include <constant.h>
 #include <devices/switch.h>
 #include <models/mactablemodel.h>
+#include <models/switchporttabledelegate.h>
 #include <models/switchporttablemodel.h>
 
 SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
@@ -32,6 +33,8 @@ void SwitchPageWidget::initActions()
 {
     connect(ui->showPortInfoAction, &QAction::triggered,
             this, &SwitchPageWidget::showPortInfoFrame);
+    connect(ui->editPortDescAction, &QAction::triggered,
+            this, &SwitchPageWidget::editDescPort);
     connect(ui->refreshPortInfoAction, &QAction::triggered,
             this, &SwitchPageWidget::refreshPortInfo);
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
@@ -50,6 +53,7 @@ void SwitchPageWidget::initActions()
             this, &SwitchPageWidget::saveSwitchConfig);
 
     ui->saveConfigButton->setDefaultAction(ui->saveConfigAction);
+    ui->editPortDescButton->setDefaultAction(ui->editPortDescAction);
     ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
 }
 
@@ -66,17 +70,16 @@ void SwitchPageWidget::initComponents()
     connect(ui->filterPortButton, &QPushButton::pressed,
             this, &SwitchPageWidget::filterMacAddressByPorts);
 
-    if (mDevice->deviceModel() == DeviceModel::DES3550) {
-        ui->portListLineEdit->setText("1-50");
-    } else {
-        ui->portListLineEdit->setText("1-26");
-    }
+    Switch::Ptr switchInfo = qobject_cast<Switch::Ptr>(mDevice);
+
+    ui->portListLineEdit->setText(QString("1-%1").arg(switchInfo->countPorts()));
 }
 
 void SwitchPageWidget::initMenu()
 {
     mContextMenu->addAction(ui->showPortInfoAction);
     mContextMenu->addAction(ui->refreshPortInfoAction);
+    mContextMenu->addAction(ui->editPortDescAction);
     mContextMenu->addSeparator();
 
     QMenu *mvlanMenu = mContextMenu->addMenu(QIcon(":/images/tv.png"), "Multicast Vlan");
@@ -99,11 +102,15 @@ void SwitchPageWidget::initView()
     //Инициализация модели списка портов
     Switch::Ptr switchInfo = mDevice.objectCast<Switch>();
 
-    SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
+    SwitchPortTableModel *portTableModel = new SwitchPortTableModel(switchInfo, this);
 
-    portListModel->updateInfoAllPort();
+    portTableModel->updateInfoAllPort();
 
-    ui->portListTableView->setModel(portListModel);
+    SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(this);
+    portTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
+
+    ui->portListTableView->setModel(portTableModel);
+    ui->portListTableView->setItemDelegate(portTableDelegate);
     ui->portListTableView->setColumnWidth(0, 50);
     ui->portListTableView->setColumnWidth(1, 70);
     ui->portListTableView->setColumnWidth(2, 145);
@@ -141,6 +148,19 @@ void SwitchPageWidget::saveSwitchConfig()
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Error, mDevice->error());
     }
+}
+
+void SwitchPageWidget::editDescPort()
+{
+    QModelIndex currentPort = ui->portListTableView->currentIndex();
+
+    if (!currentPort.isValid())
+        return;
+
+    QModelIndex descIndex = ui->portListTableView->model()->index(currentPort.row(),
+                                                              SwitchPortTableModel::DescColumn);
+    ui->portListTableView->setFocus();
+    ui->portListTableView->edit(descIndex);
 }
 
 void SwitchPageWidget::refreshPortInfo()
@@ -372,6 +392,7 @@ void SwitchPageWidget::portViewRequestContextMenu(QPoint point)
     QMenu contextMenu(this);
     contextMenu.addAction(ui->showPortInfoAction);
     contextMenu.addAction(ui->refreshPortInfoAction);
+    contextMenu.addAction(ui->editPortDescAction);
     contextMenu.addSeparator();
 
     QMenu *mvlanMenu = contextMenu.addMenu(QIcon(":/images/tv.png"), "Multicast Vlan");

@@ -45,13 +45,6 @@ inline OidPair createOidPair(const oid *constOid, int oidLen, long *indexs,
     return qMakePair(newOid, fullLen);
 }
 
-inline void freeOid(const QVector<const oid *> &oidPairList)
-{
-    int size = oidPairList.size();
-    for (int i = 0; i < size; ++i) {
-        if (oidPairList.at(i))
-            delete[] oidPairList.at(i);
-    }
-}
+bool snmpSet(QString ipAddress, OidPair oid, char type, QString value, QString &error);
 
 #endif // CUSTOMSNMPFUNCTIONS_H

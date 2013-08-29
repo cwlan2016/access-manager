@@ -12,7 +12,10 @@ QWidget *DeviceTableDelegate::createEditor(QWidget *parent,
                                            const QModelIndex &index) const
 {
     if (index.column() == mIndexDeviceModel) {
-        return createComboBoxEditor(parent);
+        QComboBox *editor = new QComboBox(parent);
+        editor->setMinimumWidth(100);
+
+        return editor;
     } else {
         return QItemDelegate::createEditor(parent, option, index);
     }
@@ -69,26 +72,4 @@ QStringListModel *DeviceTableDelegate::fillDeviceModelComboBox() const
         stringList.push_back(DeviceModel::DeviceModelName[i]);
 
     return new QStringListModel(stringList, (QObject *)this);
-}
-
-QWidget *DeviceTableDelegate::createComboBoxEditor(QWidget *parent) const
-{
-    QComboBox *editor = new QComboBox(parent);
-
-    connect(editor,
-            static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
-            this,
-            &DeviceTableDelegate::commitAndCloseComboBoxEditor);
-    editor->setMinimumWidth(100);
-
-    return editor;
-}
-
-void DeviceTableDelegate::commitAndCloseComboBoxEditor(int index)
-{
-    Q_UNUSED(index);
-
-    QComboBox *editor = qobject_cast<QComboBox *>(sender());
-    emit commitData(editor);
-    emit closeEditor(editor);
 }

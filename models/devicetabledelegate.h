@@ -21,9 +21,6 @@ public:
     QStringListModel *fillDeviceModelComboBox() const;
 
 private:
-    QWidget *createComboBoxEditor(QWidget *parent) const;
-    void commitAndCloseComboBoxEditor(int index);
-
     int mIndexDeviceModel;
 };
 

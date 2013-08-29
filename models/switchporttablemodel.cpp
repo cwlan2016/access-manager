@@ -61,22 +61,22 @@ QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == NumberColumn) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        if (index.column() == NumberColumn) {
             return mList.at(index.row())->index();
-        } else if (index.column() == 1) {
+        } else if (index.column() == StateColumn) {
             return SwitchPortState::toString(mList.at(index.row())->state());
-        } else if (index.column() == 2) {
+        } else if (index.column() == SpeedDuplexColumn) {
             return mList.at(index.row())->speedDuplex();
-        } else if (index.column() == 3) {
+        } else if (index.column() == DescColumn) {
             return mList.at(index.row())->description();
         }
-    } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == 0)) {
+    } else if (role == Qt::BackgroundColorRole) {
         if (mList.at(index.row())->state() == SwitchPortState::Down) {
             return QBrush(QColor(223, 255, 252));
         } else if (mList.at(index.row())->state() == SwitchPortState::Up) {
@@ -87,6 +87,30 @@ QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool SwitchPortTableModel::setData(const QModelIndex &index, const QVariant &value,
+                                   int role)
+{
+    if ((!index.isValid()) || (role != Qt::EditRole))
+        return false;
+
+    if (index.column() != DescColumn)
+        return false;
+
+    long portIndex = mList[index.row()]->index();
+    bool result = mParentDevice->setPortDescription(portIndex, value.toString());
+
+    if (result) {
+        mList[index.row()]->setDescription(value.toString());
+        QModelIndex descIndex = SwitchPortTableModel::index(portIndex, DescColumn);
+        emit dataChanged(descIndex, descIndex);
+    } else {
+        BasicDialogs::error(0, BasicDialogStrings::Error, mParentDevice->error());
+    }
+
+    return true;
+}
+
+
 QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientation,
                                           int role) const
 {
@@ -94,13 +118,13 @@ QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientati
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        if (section == NumberColumn) {
             return SwitchPortTableModelStrings::Number;
-        } else if (section == 1) {
+        } else if (section == StateColumn) {
             return SwitchPortTableModelStrings::State;
-        } else if (section == 2) {
+        } else if (section == SpeedDuplexColumn) {
             return SwitchPortTableModelStrings::SpeedDuplex;
-        } else if (section == 3) {
+        } else if (section == DescColumn) {
             return SwitchPortTableModelStrings::Desc;
         }
     } else if (role == Qt::TextAlignmentRole) {
@@ -116,8 +140,12 @@ QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientati
 
 Qt::ItemFlags SwitchPortTableModel::flags(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+    if (index.column() == DescColumn)
+        flags |= Qt::ItemIsEditable;
+
+    return flags;
 }
 
 void SwitchPortTableModel::sort(int column, Qt::SortOrder order)
@@ -127,16 +155,16 @@ void SwitchPortTableModel::sort(int column, Qt::SortOrder order)
     qSort(mList.begin(), mList.end(),
               [&](const SwitchPort::Ptr first,
     const SwitchPort::Ptr second) -> bool {
-        if (column == 0) {
+        if (column == NumberColumn) {
             return order == Qt::AscendingOrder ? (first->index() < second->index())
                                                : (first->index() > second->index());
-        } else if (column == 1) {
+        } else if (column == StateColumn) {
             return order == Qt::AscendingOrder ? (first->state() < second->state())
                                                : (first->state() > second->state());
-        } else if (column == 2) {
+        } else if (column == SpeedDuplexColumn) {
             return order == Qt::AscendingOrder ? (first->speedDuplex() < second->speedDuplex())
                                                : (first->speedDuplex() > second->speedDuplex());
-        } else if (column == 3) {
+        } else if (column == DescColumn) {
             return order == Qt::AscendingOrder ? (first->description() < second->description())
                                                : (first->description() > second->description());
         }

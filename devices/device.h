@@ -25,8 +25,8 @@ public:
 
     virtual bool getServiceDataFromDevice();
 
-    virtual void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
-    virtual void parsePdu(SnmpClient::Ptr snmpClient);
+    virtual int  maxLengthPortDescription();
+    virtual bool setPortDescription(long snmpPortIndex, QString description);
 
     typedef QSharedPointer<Device> Ptr;
 

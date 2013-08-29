@@ -1,7 +1,6 @@
 #include "snmpclient.h"
 
 #include "converters.h"
-#include "customsnmpfunctions.h"
 #include "configs/snmpconfig.h"
 
 SnmpClient::SnmpClient()
@@ -130,6 +129,11 @@ bool SnmpClient::sendRequest()
     int status = snmp_synch_response(mSnmpSession, mPdu, &mResponsePdu);
 
     if (status == STAT_SUCCESS) {
+        if (!mResponsePdu) {
+            mError = QString::fromUtf8("Неизвестная ошибка");
+            return false;
+        }
+
         if (mResponsePdu->errstat != SNMP_ERR_NOERROR) {
             mError = QString::fromUtf8("Ошибка в пакете. Причина: %1.")
                     .arg(snmp_errstring(mResponsePdu->errstat));
@@ -167,4 +171,13 @@ QString SnmpClient::error() const
 netsnmp_variable_list *SnmpClient::varList()
 {
     return mResponsePdu->variables;
+}
+
+void SnmpClient::freeOid(const QVector<const oid *> &oidPairList)
+{
+    int size = oidPairList.size();
+    for (int i = 0; i < size; ++i) {
+        if (oidPairList.at(i))
+            delete[] oidPairList.at(i);
+    }
 }

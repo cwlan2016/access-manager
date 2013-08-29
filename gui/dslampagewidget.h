@@ -4,6 +4,7 @@
 #include "devicepagewidget.h"
 
 #include <models/boardtabledelegate.h>
+#include <models/dslamporttabledelegate.h>
 
 namespace Ui
 {
@@ -30,6 +31,7 @@ private:
 
     void upDslPort();
     void downDslPort();
+    void editDescPort();
 
     void showPortListModel();
     void backToBoardListModel();
@@ -64,6 +66,7 @@ private:
 
     Ui::DslamPageWidget *ui;
     BoardTableDelegate *mBoardTableDelegate;
+    DslamPortTableDelegate *mPortTableDelegate;
     bool mEditMode;
 };
 

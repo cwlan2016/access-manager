@@ -1,5 +1,6 @@
 #include "dslamporttablemodel.h"
 
+#include <basicdialogs.h>
 #include <constant.h>
 #include <converters.h>
 #include <customsnmpfunctions.h>
@@ -74,6 +75,29 @@ QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool DslamPortTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+
+    if ((!index.isValid()) || (role != Qt::EditRole))
+        return false;
+
+    if ((index.column() != DescColumn)
+            || (index.internalId() != invalidParentIndex))
+        return false;
+
+    long portIndex = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex, index.row());
+    bool result = mParentDevice->setPortDescription(portIndex, value.toString());
+
+    if (result) {
+        mList[index.row()]->setDescription(value.toString());
+        emit dataChanged(index, index);
+    } else {
+        BasicDialogs::error(0, BasicDialogStrings::Error, mParentDevice->error());
+    }
+
+    return true;
+}
+
 QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientation,
                                          int role) const
 {
@@ -81,15 +105,15 @@ QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientatio
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0)
+        if (section == PairColumn)
             return DslamPortTableModelStrings::Pair;
-        else if (section == 1)
+        else if (section == PortColumn)
             return DslamPortTableModelStrings::Port;
-        else if (section == 2)
+        else if (section == StateColumn)
             return DslamPortTableModelStrings::State;
-        else if (section == 3)
+        else if (section == DescColumn)
             return DslamPortTableModelStrings::Desc;
-        else if (section == 4)
+        else if (section == ProfileColumn)
             return DslamPortTableModelStrings::Profile;
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -104,9 +128,13 @@ QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientatio
 
 Qt::ItemFlags DslamPortTableModel::flags(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    if ((index.column() == DescColumn)
+            && (index.internalId() == invalidParentIndex))
+        flags |= Qt::ItemIsEditable;
+
+    return flags;
 }
 
 QModelIndex DslamPortTableModel::index(int row, int column,

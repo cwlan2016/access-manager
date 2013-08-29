@@ -86,7 +86,7 @@
         </property>
         <property name="icon">
          <iconset resource="../resource.qrc">
-          <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+          <normaloff>:/images/edit2.png</normaloff>:/images/edit2.png</iconset>
         </property>
         <property name="popupMode">
          <enum>QToolButton::InstantPopup</enum>
@@ -252,6 +252,26 @@
         <property name="icon">
          <iconset resource="../resource.qrc">
           <normaloff>:/images/down.png</normaloff>:/images/down.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="editPortDescButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../resource.qrc">
+          <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -505,6 +525,19 @@
    </property>
    <property name="toolTip">
     <string>Запрос досок с дслама</string>
+   </property>
+  </action>
+  <action name="editPortDescAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Изменить описание порта</string>
+   </property>
+   <property name="toolTip">
+    <string>Изменить описание порта</string>
    </property>
   </action>
  </widget>

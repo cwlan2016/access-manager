@@ -69,16 +69,14 @@ void SettingsPageWidget::initDevicesTabActions()
     ui->dsDslProfileTableView->addAction(ui->editDslProfileAction);
     ui->dsDslProfileTableView->addAction(ui->removeDslProfileAction);
 
+    ui->dsAddProfileButton->setDefaultAction(ui->addDslProfileAction);
+    ui->dsEditProfileButton->setDefaultAction(ui->editDslProfileAction);
+    ui->dsRemoveProfileButton->setDefaultAction(ui->removeDslProfileAction);
+
     connect(ui->dsDeviceModelComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &SettingsPageWidget::dsComboBoxCurrentIndexChanged);
     connect(ui->dsTypeBoardComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &SettingsPageWidget::dsComboBoxCurrentIndexChanged);
-    connect(ui->dsAddProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::addDslProfile);
-    connect(ui->dsEditProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::editDslProfile);
-    connect(ui->dsRemoveProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::removeDslProfile);
     connect(ui->addDslProfileAction, &QAction::triggered,
             this, &SettingsPageWidget::addDslProfile);
     connect(ui->editDslProfileAction, &QAction::triggered,

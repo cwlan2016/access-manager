@@ -65,13 +65,15 @@ bool Device::getServiceDataFromDevice()
     return false;
 }
 
-void Device::fillPdu(SnmpClient::Ptr snmpClient, int portIndex)
+int Device::maxLengthPortDescription()
 {
-    Q_UNUSED(snmpClient)
-    Q_UNUSED(portIndex)
+    return 0;
 }
 
-void Device::parsePdu(SnmpClient::Ptr snmpClient)
+bool Device::setPortDescription(long snmpPortIndex, QString description)
 {
-    Q_UNUSED(snmpClient)
+    Q_UNUSED(snmpPortIndex)
+    Q_UNUSED(description)
+
+    return false;
 }

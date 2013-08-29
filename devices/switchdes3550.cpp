@@ -1,4 +1,7 @@
 #include "switchdes3550.h"
+
+#include <constant.h>
+#include <customsnmpfunctions.h>
 #include <ports/switchportdes3550.h>
 
 SwitchDes3550::SwitchDes3550(QObject *parent) :
@@ -29,4 +32,16 @@ int SwitchDes3550::countPorts()
 SwitchPort::Ptr SwitchDes3550::createPort(QObject *parentModel)
 {
     return new SwitchPortDes3550(parentModel);
+}
+
+int SwitchDes3550::maxLengthPortDescription()
+{
+    return 32;
+}
+
+bool SwitchDes3550::setPortDescription(long snmpPortIndex, QString description)
+{
+    OidPair oid = createOidPair(Mib::ifAlias, 11, snmpPortIndex);
+
+    return snmpSet(ip(), oid, 's', description, mError);
 }

@@ -14,6 +14,9 @@ public:
     DeviceModel::Enum deviceModel() const;
     int countPorts();
     SwitchPort::Ptr createPort(QObject *parentModel);
+
+    int  maxLengthPortDescription();
+    bool setPortDescription(long snmpPortIndex, QString description);
 };
 
 #endif // SWITCHDES3528_H
