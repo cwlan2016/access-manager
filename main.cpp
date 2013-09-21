@@ -65,5 +65,7 @@ int main(int argc, char *argv[])
     w->show();
     splash.finish(w);
 
+    qRegisterMetaType<QVector<int> >("QVector<int>");
+
     return a.exec();
 }

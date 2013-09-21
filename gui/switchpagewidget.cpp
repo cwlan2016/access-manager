@@ -103,8 +103,10 @@ void SwitchPageWidget::initView()
     Switch::Ptr switchInfo = mDevice.objectCast<Switch>();
 
     SwitchPortTableModel *portTableModel = new SwitchPortTableModel(switchInfo, this);
+    connect(portTableModel, &SwitchPortTableModel::updateFinished,
+            this, &SwitchPageWidget::updatePortTableFinished);
 
-    portTableModel->updateInfoAllPort();
+    portTableModel->update();
 
     SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(this);
     portTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
@@ -174,7 +176,13 @@ void SwitchPageWidget::refreshPortInfo()
     if (!index.isValid())
         return;
 
-    bool result = portListModel->updateInfoPort(port);
+    if (portListModel->updateIsRunning()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info,
+                                  QString::fromUtf8("Уже выполняется обновление информации по всем портам."));
+        return;
+    }
+
+    bool result = portListModel->updatePort(port);
 
     if (!result) {
         BasicDialogs::information(this, BasicDialogStrings::Error, portListModel->error());
@@ -192,10 +200,11 @@ void SwitchPageWidget::refreshAllPortInfo()
 
     ui->portInfoFrame->setVisible(false);
 
-    if (!portListModel->updateInfoAllPort()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+    if (portListModel->updateIsRunning()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info,
+                                  QString::fromUtf8("Уже выполняется обновление информации по всем портам."));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по всем портам обновлена."));
+        portListModel->update();
     }
 }
 
@@ -204,7 +213,12 @@ void SwitchPageWidget::refreshMacTable()
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
     MacTableModel *macListModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
 
-    macListModel->update();
+    if (macListModel->updateIsRunning()) {
+        BasicDialogs::information(this, BasicDialogStrings::Info,
+                                  QString::fromUtf8("Обновление таблицы MAC-адресов уже выполняется."));
+    } else {
+        macListModel->update();
+    }
 }
 
 void SwitchPageWidget::addPortToMulticastVlan()
@@ -417,13 +431,25 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
     contextMenu.exec(ui->macAddressTableView->mapToGlobal(point));
 }
 
+void SwitchPageWidget::updatePortTableFinished(bool withErrors)
+{
+    if (withErrors) {
+        SwitchPortTableModel *model = qobject_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+        BasicDialogs::error(this, BasicDialogStrings::Error,
+                            QString::fromUtf8("Обновление информации по портам завершилось с ошибками."),
+                            model->error());
+    } else {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление информации по всем портам завершилось успешно."));
+    }
+}
+
 void SwitchPageWidget::updateMacTableFinished(bool withErrors)
 {
     if (withErrors) {
         QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
         MacTableModel *model = qobject_cast<MacTableModel *>(proxyModel->sourceModel());
         BasicDialogs::error(this, BasicDialogStrings::Error,
-                            QString::fromUtf8("Обновление таблицы MAC-адресов завершилось ошибкой."),
+                            QString::fromUtf8("Обновление таблицы MAC-адресов завершилось с ошибками."),
                             model->error());
     } else {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление таблицы MAC-адресов завершилось успешно."));

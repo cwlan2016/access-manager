@@ -37,8 +37,6 @@ public:
 
     QVector<Device::Ptr> &deviceList();
 
-    BoardTableModel *boardListModel(QModelIndex index);
-
     int inetVlan(QModelIndex index);
     int iptvVlan(QModelIndex index);
 

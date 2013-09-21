@@ -29,6 +29,11 @@ int SwitchDes3550::countPorts()
     return 50;
 }
 
+int SwitchDes3550::sizePortBitArray()
+{
+    return 56;
+}
+
 SwitchPort::Ptr SwitchDes3550::createPort(QObject *parentModel)
 {
     return new SwitchPortDes3550(parentModel);

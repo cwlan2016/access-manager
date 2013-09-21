@@ -8,6 +8,7 @@ SnmpClient::SnmpClient()
     mPdu = 0;
     mSnmpSession = 0;
     mResponsePdu = 0;
+    mError = "";
 }
 
 SnmpClient::~SnmpClient()
@@ -24,7 +25,7 @@ SnmpClient::~SnmpClient()
         snmp_free_pdu(mResponsePdu);
 
     if (mSnmpSession)
-        snmp_close(mSnmpSession);
+        snmp_sess_close(mSnmpSession);
 }
 
 void SnmpClient::setIp(QString ip)
@@ -68,9 +69,9 @@ bool SnmpClient::setupSession(SessionType::Enum sessionType)
 bool SnmpClient::openSession()
 {
     if (mSnmpSession)
-        snmp_close(mSnmpSession);
+        snmp_sess_close(mSnmpSession);
 
-    mSnmpSession = snmp_open(&mBaseSession);
+    mSnmpSession = static_cast<netsnmp_session *>(snmp_sess_open(&mBaseSession));
 
     return mSnmpSession ? true : false;
 }
@@ -126,7 +127,7 @@ void SnmpClient::addOid(const OidPair &oid, QString value, char type)
 
 bool SnmpClient::sendRequest()
 {
-    int status = snmp_synch_response(mSnmpSession, mPdu, &mResponsePdu);
+    int status = snmp_sess_synch_response(mSnmpSession, mPdu, &mResponsePdu);
 
     if (status == STAT_SUCCESS) {
         if (!mResponsePdu) {
@@ -155,7 +156,7 @@ bool SnmpClient::sendRequest()
 
         return true;
     } else if (status == STAT_TIMEOUT) {
-        mError = QString::fromUtf8("Таймаут. Нет ответа от %1").arg(mSnmpSession->peername);
+        mError = QString::fromUtf8("Таймаут. Нет ответа от %1").arg(mIp);
         return false;
     } else {
         mError = QString::fromUtf8("Неизвестная ошибка");

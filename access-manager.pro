@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xmlpatterns widgets
+QT       += core gui xmlpatterns widgets concurrent
 
 TARGET = access-manager
 TEMPLATE = app
@@ -163,11 +163,9 @@ FORMS += gui/mainwindow.ui \
 RESOURCES += \
     resource.qrc
 
-win32:debug:LIBS += -lnetsnmpd
-win32:release:LIBS += -lnetsnmp
-!win32:LIBS += -lnetsnmp
+LIBS += -lnetsnmp
 
-win32:LIBS+= -lwsock32
+win32:LIBS+= -lws2_32
 win32:LIBS+= -ladvapi32
 
 OTHER_FILES += \

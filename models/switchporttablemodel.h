@@ -20,6 +20,8 @@ public:
     explicit SwitchPortTableModel(Switch::Ptr parentDevice,
                                   QObject *parent = 0);
 
+    ~SwitchPortTableModel();
+
     int rowCount(const QModelIndex &parentDevice) const;
     int columnCount(const QModelIndex &parentDevice) const;
 
@@ -30,8 +32,6 @@ public:
                         int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    void sort(int column, Qt::SortOrder order);
-
     bool memberMulticastVlan(int port);
     bool setMemberMulticastVlan(int port, bool value);
 
@@ -41,12 +41,18 @@ public:
     bool setMemberInternetService(int port);
     bool setMemberInternetWithIptvStbService(int port);
 
-    bool updateInfoPort(int indexPort);
-    bool updateInfoAllPort();
+    bool updatePort(int index);
+    bool updatePort(const SwitchPort::Ptr &port);
+    void update();
+    bool updateIsRunning();
 
     bool getVlanSettings();
 
     QString error() const;
+
+signals:
+    void updateFinished(bool withError);
+    void updateError(QString error);
 
 private:
     void createList();
@@ -57,6 +63,9 @@ private:
 
     bool sendVlanSetting(QVector<OidPair> &oidStringList,
                          QList<QBitArray> &arrayList, bool ismv);
+
+    void finishAsyncUpdate();
+    void addErrorToList(QString error);
 
     QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
     QString qbitArrayToHexString(DeviceModel::Enum deviceModel,
@@ -70,7 +79,27 @@ private:
     QBitArray mMulticastVlanMember;
     QBitArray mIptvUnicastVlanAllMember;
     QBitArray mIptvUnicastVlanUntagMember;
+
+    QFutureWatcher<void> *mFutureWatcher;
+    QStringList mUpdateErrors;
+
     QVector<SwitchPort::Ptr> mList;
+};
+
+//Wrapper for QtConcurrent::map
+struct UpdateWrapperObject
+{
+    UpdateWrapperObject(SwitchPortTableModel *instance)
+    : mInstance(instance) { }
+
+    typedef void result_type;
+
+    void operator()(const SwitchPort::Ptr &port)
+    {
+         mInstance->updatePort(port);
+    }
+
+    SwitchPortTableModel *mInstance;
 };
 
 #endif // SWITCHPORTABLEMODEL_H

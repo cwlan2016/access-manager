@@ -25,11 +25,6 @@ public:
     void loadDeviceList();
     void saveDeviceList();
 
-    void openDevice();
-    void addDevice();
-    void editDevice();
-    void removeDevice();
-
     void getServiceDataFromCurrentDevice();
 
     void batchUpdateBoardsDslam();
@@ -37,17 +32,20 @@ public:
     void batchUpdateProfilesOlt();
     void batchUpdateInfoAllDevices();
 
+    void clearSelection();
+
+    DeviceTableModel *deviceTableModel() const;
+
+private:
+    void openDevice();
+    void addDevice();
+    void editDevice();
+    void removeDevice();
+
     void showSwitchExtInfoFrame();
     void showOltExtInfoFrame();
     void showExtendedInfoPanel();
 
-    void clearSelection();
-
-    DeviceTableModel *deviceTableModel() const;
-    QSortFilterProxyModel *proxyModel() const;
-    QModelIndex currentDeviceListItem() const;
-
-private:
     void initActions();
     void initComponents();
     void initMenu();

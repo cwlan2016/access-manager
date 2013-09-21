@@ -63,6 +63,52 @@ void DeviceTablePageWidget::saveDeviceList()
     }
 }
 
+void DeviceTablePageWidget::getServiceDataFromCurrentDevice()
+{
+    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
+
+    if (!index.isValid())
+        return;
+
+    bool result = mDeviceTableModel->getServiceDataFromDevice(index);
+
+    if (!result) {
+        BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
+    } else {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
+    }
+}
+
+void DeviceTablePageWidget::batchUpdateBoardsDslam()
+{
+    batchUpdate(DeviceType::Dslam);
+}
+
+void DeviceTablePageWidget::batchUpdateVlansSwitch()
+{
+    batchUpdate(DeviceType::Switch);
+}
+
+void DeviceTablePageWidget::batchUpdateProfilesOlt()
+{
+    batchUpdate(DeviceType::Olt);
+}
+
+void DeviceTablePageWidget::batchUpdateInfoAllDevices()
+{
+    batchUpdate(DeviceType::Other);
+}
+
+void DeviceTablePageWidget::clearSelection()
+{
+    ui->deviceListTableView->selectionModel()->clear();
+}
+
+DeviceTableModel *DeviceTablePageWidget::deviceTableModel() const
+{
+    return mDeviceTableModel;
+}
+
 void DeviceTablePageWidget::openDevice()
 {
     QModelIndex index = ui->deviceListTableView->currentIndex();
@@ -153,42 +199,6 @@ void DeviceTablePageWidget::removeDevice()
     mDeviceTableModel->removeRow(index.row(), QModelIndex());
 }
 
-void DeviceTablePageWidget::getServiceDataFromCurrentDevice()
-{
-    QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
-
-    if (!index.isValid())
-        return;
-
-    bool result = mDeviceTableModel->getServiceDataFromDevice(index);
-
-    if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
-    }
-}
-
-void DeviceTablePageWidget::batchUpdateBoardsDslam()
-{
-    batchUpdate(DeviceType::Dslam);
-}
-
-void DeviceTablePageWidget::batchUpdateVlansSwitch()
-{
-    batchUpdate(DeviceType::Switch);
-}
-
-void DeviceTablePageWidget::batchUpdateProfilesOlt()
-{
-    batchUpdate(DeviceType::Olt);
-}
-
-void DeviceTablePageWidget::batchUpdateInfoAllDevices()
-{
-    batchUpdate(DeviceType::Other);
-}
-
 void DeviceTablePageWidget::showSwitchExtInfoFrame()
 {
     QModelIndex index = mProxyModel->mapToSource(ui->deviceListTableView->currentIndex());
@@ -237,26 +247,6 @@ void DeviceTablePageWidget::showExtendedInfoPanel()
     } else if (deviceType == DeviceType::Olt) {
         showOltExtInfoFrame();
     }
-}
-
-void DeviceTablePageWidget::clearSelection()
-{
-    ui->deviceListTableView->selectionModel()->clear();
-}
-
-DeviceTableModel *DeviceTablePageWidget::deviceTableModel() const
-{
-    return mDeviceTableModel;
-}
-
-QSortFilterProxyModel *DeviceTablePageWidget::proxyModel() const
-{
-    return mProxyModel;
-}
-
-QModelIndex DeviceTablePageWidget::currentDeviceListItem() const
-{
-    return ui->deviceListTableView->currentIndex();
 }
 
 void DeviceTablePageWidget::initActions()
@@ -333,7 +323,6 @@ void DeviceTablePageWidget::initView()
 
 void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
 {
-    QString errorString = "";
     QScopedPointer<QProgressDialog> progressDialog(new QProgressDialog(this));
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->setFixedWidth(300);
@@ -351,6 +340,8 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
 
     int size = mDeviceTableModel->rowCount(QModelIndex());
     QVector<Device::Ptr> &deviceList = mDeviceTableModel->deviceList();
+
+    QString errorString = "";
 
     for (int i = 0; i < size; ++i) {
         progressDialog->setValue(i);
@@ -394,7 +385,8 @@ void DeviceTablePageWidget::viewActivatedItem(QModelIndex currIndex,
     Q_UNUSED(prevIndex)
 
     if (currIndex.isValid()) {
-        ui->editDeviceAction->setEnabled(currIndex.column() != DeviceTableModel::DeviceTypeColumn);
+        Qt::ItemFlags flags = mProxyModel->flags(ui->deviceListTableView->currentIndex());
+        ui->editDeviceAction->setEnabled(flags && Qt::ItemIsEditable);
         ui->removeDeviceAction->setEnabled(true);
         ui->extendedInfoAction->setEnabled(true);
     } else {

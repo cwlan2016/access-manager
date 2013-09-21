@@ -20,6 +20,7 @@ public:
 
     DeviceType::Enum deviceType() const;
     virtual int countPorts();
+    virtual int sizePortBitArray();
     virtual SwitchPort::Ptr createPort(QObject *parentModel);
 
     bool getServiceDataFromDevice();

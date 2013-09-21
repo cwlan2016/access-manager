@@ -320,11 +320,6 @@ QVector<Device::Ptr> &DeviceTableModel::deviceList()
     return mList;
 }
 
-BoardTableModel *DeviceTableModel::boardListModel(QModelIndex index)
-{
-    return mList.at(index.row()).objectCast<Dslam>()->boardTableModel();
-}
-
 int DeviceTableModel::inetVlan(QModelIndex index)
 {
     return mList.at(index.row()).objectCast<Switch>()->inetVlanTag();
@@ -481,14 +476,10 @@ void DeviceTableModel::readDslamBoardList(QXmlStreamReader &reader,
 {
     Dslam::Ptr dslamInfo = deviceInfo.objectCast<Dslam>();
 
-    int index;
-    int firstPair;
-    BoardType::Enum type;
-
     while (reader.name() == "board") {
-        index = reader.attributes().value("number").toString().toInt();
-        firstPair = reader.attributes().value("firstpair").toString().toInt();
-        type = BoardType::from(reader.attributes().value("type").toString());
+        int index = reader.attributes().value("number").toString().toInt();
+        int firstPair = reader.attributes().value("firstpair").toString().toInt();
+        BoardType::Enum type = BoardType::from(reader.attributes().value("type").toString());
         dslamInfo->boardTableModel()->addBoard(index, type, firstPair);
 
         readNextElement(reader);

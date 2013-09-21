@@ -37,8 +37,7 @@ Project {
             fileTags: ["qrc"]
             name: "Qt Resource"
             files: [
-                "resource.qrc",
-                "gui/images.qrc"
+                "resource.qrc"
             ]
         }
 
