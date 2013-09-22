@@ -52,7 +52,6 @@ public:
 
 signals:
     void updateFinished(bool withError);
-    void updateError(QString error);
 
 private:
     void createList();
@@ -65,7 +64,6 @@ private:
                          QList<QBitArray> &arrayList, bool ismv);
 
     void finishAsyncUpdate();
-    void addErrorToList(QString error);
 
     QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
     QString qbitArrayToHexString(DeviceModel::Enum deviceModel,
@@ -81,7 +79,8 @@ private:
     QBitArray mIptvUnicastVlanUntagMember;
 
     QFutureWatcher<void> *mFutureWatcher;
-    QStringList mUpdateErrors;
+    QString mUpdateErrors;
+    QMutex mMutexUpdateErrors;
 
     QVector<SwitchPort::Ptr> mList;
 };

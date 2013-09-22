@@ -55,6 +55,7 @@ void SwitchPageWidget::initActions()
     ui->saveConfigButton->setDefaultAction(ui->saveConfigAction);
     ui->editPortDescButton->setDefaultAction(ui->editPortDescAction);
     ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
+    ui->refreshMacTableInfoButton->setDefaultAction(ui->refreshMacTableInfoAction);
 }
 
 void SwitchPageWidget::initComponents()

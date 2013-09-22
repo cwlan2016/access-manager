@@ -62,7 +62,7 @@ void MainWindow::createDeviceListPage()
     connect(ui->updateAllDslamBoardsInfoAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::batchUpdateBoardsDslam);
     connect(ui->updateInfoAllDevicesAction, &QAction::triggered,
-            deviceListPage,  &DeviceTablePageWidget::batchUpdateInfoAllDevices);
+            deviceListPage, &DeviceTablePageWidget::batchUpdateInfoAllDevices);
     connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::batchUpdateProfilesOlt);
 

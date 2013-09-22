@@ -34,8 +34,6 @@ SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice,
 
     connect(mFutureWatcher, &QFutureWatcher<void>::finished,
             this, &SwitchPortTableModel::finishAsyncUpdate);
-    connect(this, &SwitchPortTableModel::updateError,
-            this, &SwitchPortTableModel::addErrorToList);
 }
 
 SwitchPortTableModel::~SwitchPortTableModel()
@@ -106,6 +104,10 @@ bool SwitchPortTableModel::setData(const QModelIndex &index, const QVariant &val
         return false;
 
     long portIndex = mList[index.row()]->index();
+
+    if (value.toString() == mList[index.row()]->description())
+        return true;
+
     bool result = mParentDevice->setPortDescription(portIndex, value.toString());
 
     if (result) {
@@ -338,13 +340,12 @@ bool SwitchPortTableModel::setMemberInternetWithIptvStbService(int port)
 
 bool SwitchPortTableModel::updatePort(int index)
 {
-    mError.clear();
     mUpdateErrors.clear();
 
     bool result = updatePort(mList[index - 1]);
 
-    if (!mUpdateErrors.isEmpty())
-        mError = mUpdateErrors.at(0);
+    if (!result)
+        mError = mUpdateErrors;
 
     return result;
 }
@@ -356,16 +357,20 @@ bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
     snmpClient->setIp(mParentDevice->ip());
 
     if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        emit updateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                                .arg(port->index())
-                                .arg(SnmpErrorStrings::SetupSession));
+        mMutexUpdateErrors.lock();
+        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                .arg(port->index())
+                .arg(SnmpErrorStrings::SetupSession) + "\n";
+        mMutexUpdateErrors.unlock();
         return false;
     }
 
     if (!snmpClient->openSession()) {
-        emit updateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                                .arg(port->index())
-                                .arg(SnmpErrorStrings::OpenSession));
+        mMutexUpdateErrors.lock();
+        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                .arg(port->index())
+                .arg(SnmpErrorStrings::OpenSession) + "\n";
+        mMutexUpdateErrors.unlock();
         return false;
     }
 
@@ -375,16 +380,21 @@ bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
 
     if (snmpClient->sendRequest()) {
         if (!port->parsePdu(snmpClient.data())) {
-            emit updateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                                    .arg(port->index())
-                                    .arg(SnmpErrorStrings::Parse));
+            mMutexUpdateErrors.lock();
+            mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                    .arg(port->index())
+                    .arg(SnmpErrorStrings::Parse) + "\n";
+            mMutexUpdateErrors.unlock();
             return false;
         } else {
             emit dataChanged(index(port->index() - 1, 1), index(port->index() - 1, 3));
         }
     } else {
-        emit updateError(QString::fromUtf8("Информацию по порту %1 получить не удалось.").arg(port->index())
-                + snmpClient->error());
+        mMutexUpdateErrors.lock();
+        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                .arg(port->index())
+                .arg(snmpClient->error()) + "\n";
+        mMutexUpdateErrors.unlock();
         return false;
     }
 
@@ -393,8 +403,6 @@ bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
 
 void SwitchPortTableModel::update()
 {
-    getVlanSettings();
-
     mUpdateErrors.clear();
 
     if (mFutureWatcher->isRunning()) {
@@ -405,6 +413,8 @@ void SwitchPortTableModel::update()
 
     QFuture<void> future = QtConcurrent::map(mList, UpdateWrapperObject(this));
     mFutureWatcher->setFuture(future);
+
+    getVlanSettings();
 }
 
 bool SwitchPortTableModel::updateIsRunning()
@@ -611,20 +621,10 @@ bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList,
 
 void SwitchPortTableModel::finishAsyncUpdate()
 {
-    if (!mUpdateErrors.isEmpty()) {
-        mError = "";
-
-        auto end = mUpdateErrors.end();
-        for (auto it = mUpdateErrors.begin(); it != end; ++it)
-            mError += *it + "\n";
-    }
+    if (!mUpdateErrors.isEmpty())
+        mError = mUpdateErrors;
 
     emit updateFinished(!mUpdateErrors.isEmpty());
-}
-
-void SwitchPortTableModel::addErrorToList(QString error)
-{
-    mUpdateErrors.push_back(error);
 }
 
 QBitArray SwitchPortTableModel::ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)

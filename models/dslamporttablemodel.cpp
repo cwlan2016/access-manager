@@ -85,6 +85,9 @@ bool DslamPortTableModel::setData(const QModelIndex &index, const QVariant &valu
             || (index.internalId() != invalidParentIndex))
         return false;
 
+    if (value.toString() == mList[index.row()]->description())
+        return true;
+
     long portIndex = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex, index.row());
     bool result = mParentDevice->setPortDescription(portIndex, value.toString());
 
