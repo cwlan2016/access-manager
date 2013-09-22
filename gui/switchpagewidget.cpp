@@ -109,10 +109,13 @@ void SwitchPageWidget::initView()
 
     portTableModel->update();
 
+    QSortFilterProxyModel *portProxyModel = new QSortFilterProxyModel(this);
+    portProxyModel->setSourceModel(portTableModel);
+
     SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(this);
     portTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
 
-    ui->portListTableView->setModel(portTableModel);
+    ui->portListTableView->setModel(portProxyModel);
     ui->portListTableView->setItemDelegate(portTableDelegate);
     ui->portListTableView->setColumnWidth(SwitchPortTableModel::NumberColumn, 50);
     ui->portListTableView->setColumnWidth(SwitchPortTableModel::StateColumn, 70);
@@ -128,13 +131,13 @@ void SwitchPageWidget::initView()
 
     macTableModel->update();
 
-    QSortFilterProxyModel *macListFilterProxyModel = new QSortFilterProxyModel(this);
-    macListFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    macListFilterProxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
-    macListFilterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    macListFilterProxyModel->setSourceModel(macTableModel);
+    QSortFilterProxyModel *macListProxyModel = new QSortFilterProxyModel(this);
+    macListProxyModel->setFilterRole(Qt::DisplayRole);
+    macListProxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
+    macListProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    macListProxyModel->setSourceModel(macTableModel);
 
-    ui->macAddressTableView->setModel(macListFilterProxyModel);
+    ui->macAddressTableView->setModel(macListProxyModel);
     ui->macAddressTableView->setColumnWidth(MacTableModel::PortColumn, 70);
     ui->macAddressTableView->setColumnWidth(MacTableModel::VlanColumn, 100);
 
@@ -168,9 +171,10 @@ void SwitchPageWidget::editDescPort()
 
 void SwitchPageWidget::refreshPortInfo()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
     QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
@@ -197,7 +201,8 @@ void SwitchPageWidget::refreshPortInfo()
 
 void SwitchPageWidget::refreshAllPortInfo()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
     ui->portInfoFrame->setVisible(false);
 
@@ -234,9 +239,10 @@ void SwitchPageWidget::removePortFromMulticastVlan()
 
 void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
     QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
@@ -262,9 +268,10 @@ void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
 
 void SwitchPageWidget::setPortInternetService()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
     QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
@@ -290,9 +297,10 @@ void SwitchPageWidget::setPortInternetService()
 
 void SwitchPageWidget::setPortInternetWithStbService()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
     QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
@@ -380,9 +388,10 @@ void SwitchPageWidget::macRadioButtonChangeState(bool checked)
 
 void SwitchPageWidget::showPortInfoFrame()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
 
     if (!index.isValid())
         return;
@@ -435,7 +444,8 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
 void SwitchPageWidget::updatePortTableFinished(bool withErrors)
 {
     if (withErrors) {
-        SwitchPortTableModel *model = qobject_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+        SwitchPortTableModel *model = qobject_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
         BasicDialogs::error(this, BasicDialogStrings::Error,
                             QString::fromUtf8("Обновление информации по портам завершилось с ошибками."),
                             model->error());
