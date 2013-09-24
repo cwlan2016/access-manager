@@ -13,8 +13,23 @@
 
 DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice, QObject *parent) :
     QAbstractItemModel(parent),
-    mParentDevice(parentDevice)
+    mParentDevice(parentDevice),
+    mFutureWatcher(new QFutureWatcher<void>())
 {
+    connect(mFutureWatcher, &QFutureWatcher<void>::finished,
+            this, &DslamPortTableModel::finishAsyncUpdate);
+}
+
+DslamPortTableModel::~DslamPortTableModel()
+{
+    if (mFutureWatcher) {
+        if (mFutureWatcher->isRunning()) {
+            mFutureWatcher->cancel();
+            mFutureWatcher->waitForFinished();
+        }
+
+        delete mFutureWatcher;
+    }
 }
 
 int DslamPortTableModel::rowCount(const QModelIndex &parent) const
@@ -190,51 +205,6 @@ void DslamPortTableModel::setBoardIndex(int boardIndex)
     mBoardIndex = boardIndex;
 }
 
-bool DslamPortTableModel::load()
-{
-    beginResetModel();
-    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
-
-    snmpClient->setIp(mParentDevice->ip());
-
-    if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
-        endResetModel();
-        return false;
-    }
-
-    if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
-        endResetModel();
-        return false;
-    }
-
-    snmpClient->createPdu(SNMP_MSG_GET);
-
-    mList[0]->fillPrimaryLevelPdu(snmpClient.data());
-    int size = mList.size();
-
-    for (int i = 0; i < size; ++i) {
-        if (snmpClient->sendRequest()) {
-            if (!mList[i]->parsePrimaryLevelPdu(snmpClient.data())) {
-                mError = snmpClient->error();
-                endResetModel();
-                return false;
-            } else {
-                if (i+1 < size)
-                    snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
-            }
-        } else {
-            mError = snmpClient->error();
-            endResetModel();
-            return false;
-        }
-    }
-
-    endResetModel();
-    return true;
-}
-
 void DslamPortTableModel::createList()
 {
     int count = mParentDevice->countPorts(mBoardType);
@@ -249,51 +219,7 @@ void DslamPortTableModel::createList()
     }
 }
 
-bool DslamPortTableModel::updatePortInfoBasic(QModelIndex portIndex)
-{
-    int currPort = currentPort(portIndex);
-
-    if (currPort == -1) {
-        mError = QString::fromUtf8("Не выбран порт для обновления информации");
-        return false;
-    }
-
-    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
-
-    snmpClient->setIp(mParentDevice->ip());
-
-    if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
-        return false;
-    }
-
-    if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
-        return false;
-    }
-
-    snmpClient->createPdu(SNMP_MSG_GET);
-
-    mList[currPort]->fillPrimaryLevelPdu(snmpClient.data());
-
-    if (snmpClient->sendRequest()) {
-        if (!mList[currPort]->parsePrimaryLevelPdu(snmpClient.data())) {
-            mError = snmpClient->error();
-            return false;
-        } else {
-            QModelIndex beginTopIndex = index(portIndex.row(), 0, QModelIndex());
-            QModelIndex endTopIndex = index(portIndex.row(), 4, QModelIndex());
-            emit dataChanged(beginTopIndex, endTopIndex);
-        }
-    } else {
-        mError = snmpClient->error();
-        return false;
-    }
-
-    return true;
-}
-
-bool DslamPortTableModel::updatePortInfoExtended(QModelIndex portIndex)
+bool DslamPortTableModel::updatePortExtended(QModelIndex portIndex)
 {
     int currPort = currentPort(portIndex);
 
@@ -338,6 +264,84 @@ bool DslamPortTableModel::updatePortInfoExtended(QModelIndex portIndex)
     }
 
     return true;
+}
+
+bool DslamPortTableModel::updatePortBasic(QModelIndex portIndex)
+{
+    int currPort = currentPort(portIndex);
+
+    if (currPort == -1) {
+        mError = QString::fromUtf8("Не выбран порт для обновления информации");
+        return false;
+    }
+
+    mUpdateErrors.clear();
+
+    bool result = updatePortBasic(mList[currPort]);
+
+    if (!result)
+        mError = mUpdateErrors;
+
+    return result;
+}
+
+bool DslamPortTableModel::updatePortBasic(const XdslPort::Ptr &port)
+{
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
+
+    snmpClient->setIp(mParentDevice->ip());
+
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::SetupSession));
+        return false;
+    }
+
+    if (!snmpClient->openSession()) {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::OpenSession));
+        return false;
+    }
+
+    snmpClient->createPdu(SNMP_MSG_GET);
+
+    port->fillPrimaryLevelPdu(snmpClient.data());
+
+    if (snmpClient->sendRequest()) {
+        if (!port->parsePrimaryLevelPdu(snmpClient.data())) {
+            appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                              .arg(port->index())
+                              .arg(SnmpErrorStrings::Parse));
+            return false;
+        } else {
+            QModelIndex beginTopIndex = index(port->index(), 0, QModelIndex());
+            QModelIndex endTopIndex = index(port->index(), 4, QModelIndex());
+            emit dataChanged(beginTopIndex, endTopIndex);
+        }
+    } else {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(snmpClient->error()));
+        return false;
+    }
+
+    return true;
+}
+
+void DslamPortTableModel::update()
+{
+    mUpdateErrors.clear();
+
+    if (mFutureWatcher->isRunning()) {
+        mError = QString::fromUtf8("Обновление информации по портам уже выполняется.");
+        emit updateFinished(true);
+        return;
+    }
+
+    QFuture<void> future = QtConcurrent::map(mList, DslamUpdateWrapperObject(this));
+    mFutureWatcher->setFuture(future);
 }
 
 //PortState values
@@ -577,4 +581,12 @@ QVariant DslamPortTableModel::secondLevelDataShdsl(QModelIndex index) const
     }
 
     return QVariant();
+}
+
+void DslamPortTableModel::finishAsyncUpdate()
+{
+    if (!mUpdateErrors.isEmpty())
+        mError = mUpdateErrors;
+
+    emit updateFinished(!mUpdateErrors.isEmpty());
 }

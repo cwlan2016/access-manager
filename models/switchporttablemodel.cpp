@@ -357,20 +357,16 @@ bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
     snmpClient->setIp(mParentDevice->ip());
 
     if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mMutexUpdateErrors.lock();
-        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                .arg(port->index())
-                .arg(SnmpErrorStrings::SetupSession) + "\n";
-        mMutexUpdateErrors.unlock();
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::SetupSession));
         return false;
     }
 
     if (!snmpClient->openSession()) {
-        mMutexUpdateErrors.lock();
-        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                .arg(port->index())
-                .arg(SnmpErrorStrings::OpenSession) + "\n";
-        mMutexUpdateErrors.unlock();
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::OpenSession));
         return false;
     }
 
@@ -380,21 +376,17 @@ bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
 
     if (snmpClient->sendRequest()) {
         if (!port->parsePdu(snmpClient.data())) {
-            mMutexUpdateErrors.lock();
-            mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                    .arg(port->index())
-                    .arg(SnmpErrorStrings::Parse) + "\n";
-            mMutexUpdateErrors.unlock();
+            appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                              .arg(port->index())
+                              .arg(SnmpErrorStrings::Parse));
             return false;
         } else {
             emit dataChanged(index(port->index() - 1, 1), index(port->index() - 1, 3));
         }
     } else {
-        mMutexUpdateErrors.lock();
-        mUpdateErrors += QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
-                .arg(port->index())
-                .arg(snmpClient->error()) + "\n";
-        mMutexUpdateErrors.unlock();
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(snmpClient->error()));
         return false;
     }
 
@@ -411,7 +403,7 @@ void SwitchPortTableModel::update()
         return;
     }
 
-    QFuture<void> future = QtConcurrent::map(mList, UpdateWrapperObject(this));
+    QFuture<void> future = QtConcurrent::map(mList, SwitchUpdateWrapperObject(this));
     mFutureWatcher->setFuture(future);
 
     getVlanSettings();

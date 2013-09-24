@@ -5,15 +5,15 @@
 #include <customsnmpfunctions.h>
 #include <configs/dslamprofileconfig.h>
 
-AdslPortMxa32::AdslPortMxa32(long index, QObject *parent) :
-    AdslPort(index, parent)
+AdslPortMxa32::AdslPortMxa32(int index, long snmpIndex, QObject *parent) :
+    AdslPort(index, snmpIndex, parent)
 {
 }
 
 void AdslPortMxa32::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::mxa32DslPortOperStatus, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::mxa32DslPortAdminStatus, 13, portIndex));
@@ -23,7 +23,7 @@ void AdslPortMxa32::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portInd
 
 bool AdslPortMxa32::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
 {
-    mName = QString("adsl %1").arg(mIndex);
+    setName(QString("adsl %1").arg(mSnmpIndex));
 
     netsnmp_variable_list *vars = snmpClient->varList();
 
@@ -32,7 +32,7 @@ bool AdslPortMxa32::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
         DslPortState::Enum operStatus = DslPortState::from(*vars->val.integer);
         DslPortState::Enum adminStatus = DslPortState::from(*vars->next_variable->val.integer);
 
-        mState = DslPortState::from(operStatus, adminStatus);
+        setState(DslPortState::from(operStatus, adminStatus));
     } else {
         return false;
     }
@@ -41,14 +41,15 @@ bool AdslPortMxa32::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mDescription = toString(vars->val.string, vars->val_len);
+    setDescription(toString(vars->val.string, vars->val_len));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = QString::number(*vars->val.integer);
-    mProfile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(mProfile);
+    QString profile = QString::number(*vars->val.integer);
+    profile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(profile);
+    setProfile(profile);
 
     return true;
 }
@@ -56,7 +57,7 @@ bool AdslPortMxa32::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
 void AdslPortMxa32::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::mxa32DslPortOperStatus, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::mxa32DslPortAdminStatus, 13, portIndex));
@@ -78,18 +79,18 @@ bool AdslPortMxa32::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
         DslPortState::Enum operStatus = DslPortState::from(*vars->val.integer);
         DslPortState::Enum adminStatus = DslPortState::from(*vars->next_variable->val.integer);
 
-        mState = DslPortState::from(operStatus, adminStatus);
+        setState(DslPortState::from(operStatus, adminStatus));
     } else {
         return false;
     }
 
-    if (mState != DslPortState::Up) {
-        mTxCurrRate = 0;
-        mRxCurrRate = 0;
-        mTxAttainableRate = 0;
-        mRxAttainableRate = 0;
-        mTxAttenuation = "0";
-        mRxAttenuation = "0";
+    if (state() != DslPortState::Up) {
+        setTxCurrRate(0);
+        setRxCurrRate(0);
+        setTxAttainableRate(0);
+        setRxAttainableRate(0);
+        setTxAttenuation("0");
+        setRxAttenuation("0");
         //TODO: params changed from status moved down. remove this recycled
         vars = vars->next_variable->next_variable->next_variable->next_variable->next_variable;
         vars = vars->next_variable->next_variable;
@@ -99,48 +100,49 @@ bool AdslPortMxa32::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTxAttainableRate = *vars->val.integer / 1000;
+        setTxAttainableRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxAttainableRate = *vars->val.integer / 1000;
+        setRxAttainableRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTxCurrRate = *vars->val.integer / 1000;
+        setTxCurrRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxCurrRate = *vars->val.integer / 1000;
+        setRxCurrRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTxAttenuation = QString::number(*vars->val.integer);
+        setTxAttenuation(QString::number(*vars->val.integer));
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxAttenuation = QString::number(*vars->val.integer);
+        setRxAttenuation(QString::number(*vars->val.integer));
     }
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = QString::number(*vars->val.integer);
-    mProfile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(mProfile);
+    QString profile = QString::number(*vars->val.integer);
+    profile = DslamProfileConfig::adsl(DeviceModel::MXA32)->displayProfileName(profile);
+    setProfile(profile);
 
-    mTxPrevRate = 0; //not supported this model of dslam
-    mRxPrevRate = 0; //not supported this model of dslam
+    setTxPrevRate(0); //not supported this model of dslam
+    setRxPrevRate(0); //not supported this model of dslam
 
     return true;
 }

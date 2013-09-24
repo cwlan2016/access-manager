@@ -62,6 +62,8 @@ private:
     void viewRequestContextMenu(QPoint point);
     void portListExpandedNode(QModelIndex index);
 
+    void updatePortTableFinished(bool withErrors);
+
     QModelIndex currentDslamXdslPort();
 
     Ui::DslamPageWidget *ui;

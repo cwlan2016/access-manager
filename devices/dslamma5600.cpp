@@ -60,11 +60,11 @@ XdslPort::Ptr DslamMa5600::createPort(BoardType::Enum boardType, int boardIndex,
     switch (boardType) {
     case BoardType::AnnexA:
     case BoardType::AnnexB:
-        return new AdslPortMa5600(snmpIndex, parent);
+        return new AdslPortMa5600(portIndex, snmpIndex, parent);
     case BoardType::Shdsl:
-        return new ShdslPortMa5600(snmpIndex, parent);
+        return new ShdslPortMa5600(portIndex, snmpIndex, parent);
     default:
-        return new XdslPort(snmpIndex, parent);
+        return new XdslPort(portIndex, snmpIndex, parent);
     }
 }
 

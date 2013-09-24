@@ -49,9 +49,9 @@ XdslPort::Ptr DslamMxa64::createPort(BoardType::Enum boardType, int boardIndex,
     switch (boardType) {
     case BoardType::AnnexA:
     case BoardType::AnnexB:
-        return new AdslPortMxa64(snmpIndex, parent);
+        return new AdslPortMxa64(portIndex, snmpIndex, parent);
     default:
-        return new XdslPort(snmpIndex, parent);
+        return new XdslPort(portIndex, snmpIndex, parent);
     }
 }
 

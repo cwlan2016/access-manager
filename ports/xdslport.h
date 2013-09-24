@@ -10,7 +10,11 @@ class XdslPort : public QObject
 {
     Q_OBJECT
 public:
-    XdslPort(long index, QObject *parent);
+    XdslPort(int index, long snmpIndex, QObject *parent);
+
+    int index() const;
+
+    long snmpIndex() const;
 
     int pair() const;
     void setPair(int pair);
@@ -36,17 +40,21 @@ public:
     QString timeLastChange() const;
     void setTimeLastChange(QString timeLastChange);
 
-    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
+    virtual void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long snmpPortIndex = -1);
     virtual bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);
 
-    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
+    virtual void fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long snmpPortIndex = -1);
     virtual bool parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient);
 
     typedef XdslPort *Ptr;
 
+
 protected:
+    int mIndex;         //periodic number in slot
+    long mSnmpIndex;    //periodic number in snmp tree
+
+private:
     int mPair;
-    long mIndex;
     QString mName;
     QString mProfile;
     QString mDescription;

@@ -1,7 +1,7 @@
 #include "shdslport.h"
 
-ShdslPort::ShdslPort(long index, QObject *parent) :
-    XdslPort(index, parent)
+ShdslPort::ShdslPort(int index, long snmpIndex, QObject *parent) :
+    XdslPort(index, snmpIndex, parent)
 {
 }
 

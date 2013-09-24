@@ -119,15 +119,15 @@ void DslamPageWidget::initView()
         ui->topButtonPanel->setVisible(false);
 
         DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
+        connect(portListModel, &DslamPortTableModel::updateFinished,
+                this, &DslamPageWidget::updatePortTableFinished);
 
         portListModel->setBoardType(BoardType::AnnexA);
         portListModel->setFirstPair(1);
         portListModel->setBoardIndex(1);
         portListModel->createList();
 
-        if (!portListModel->load()) {
-            BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
-        }
+        portListModel->update();
 
         ui->dslamTreeView->setModel(portListModel);
         ui->dslamTreeView->setItemDelegate(mPortTableDelegate);
@@ -161,7 +161,7 @@ void DslamPageWidget::upDslPort()
 
     if (portListModel->changePortState(currentPort.row(), DslPortState::Up)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт активирован."));
-        bool result = portListModel->updatePortInfoBasic(currentPort);
+        bool result = portListModel->updatePortBasic(currentPort);
 
         if (!result) {
             BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
@@ -189,7 +189,7 @@ void DslamPageWidget::downDslPort()
     if (portListModel->changePortState(currentPort.row(), DslPortState::Down)) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт деактивирован."));
 
-        bool result = portListModel->updatePortInfoBasic(currentPort);
+        bool result = portListModel->updatePortBasic(currentPort);
 
         if (!result) {
             BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
@@ -240,6 +240,8 @@ void DslamPageWidget::showPortListModel()
     }
 
     DslamPortTableModel *portListModel = new DslamPortTableModel(mDevice.objectCast<Dslam>(), this);
+    connect(portListModel, &DslamPortTableModel::updateFinished,
+            this, &DslamPageWidget::updatePortTableFinished);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
     QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
@@ -249,8 +251,7 @@ void DslamPageWidget::showPortListModel()
     portListModel->setBoardIndex(indexPairRange.row());
     portListModel->createList();
 
-    if (!portListModel->load())
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+    portListModel->update();
 
     ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
                                 .arg(indexPairRange.row())
@@ -262,10 +263,6 @@ void DslamPageWidget::showPortListModel()
     ui->dslamTreeView->setModel(portListModel);
     ui->dslamTreeView->setItemDelegate(mPortTableDelegate);
     ui->dslamTreeView->setEditTriggers(QAbstractItemView::EditKeyPressed);
-    //ui->dslamTreeView->setColumnWidth(0, 200);
-    //ui->dslamTreeView->setColumnWidth(1, 120);
-    //ui->dslamTreeView->setColumnWidth(2, 120);
-    //ui->dslamTreeView->setColumnWidth(3, 240);
 
     fillSelectProfileComboBox();
     setupMenu();
@@ -337,7 +334,7 @@ void DslamPageWidget::applyDslProfile()
 
     if (result) {
         BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Профиль на порту изменен."));
-        bool result = portListModel->updatePortInfoBasic(ui->dslamTreeView->currentIndex());
+        bool result = portListModel->updatePortBasic(ui->dslamTreeView->currentIndex());
 
         if (!result) {
             BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Не удалось обновить информацию по порту."),
@@ -364,7 +361,7 @@ void DslamPageWidget::refreshPortInfo()
 
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (!portListModel->updatePortInfoBasic(index)) {
+    if (!portListModel->updatePortBasic(index)) {
         BasicDialogs::error(this, BasicDialogStrings::Error,
                             QString::fromUtf8("Не удалось обновить информацию по порту."),
                             portListModel->error());
@@ -379,12 +376,7 @@ void DslamPageWidget::refreshPortInfo()
 void DslamPageWidget::refreshAllPortInfo()
 {
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
-
-    if (!portListModel->load()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
-    } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по портам обновлена."));
-    }
+    portListModel->update();
 }
 
 void DslamPageWidget::autoUpdateBoardListStateChanged(bool state)
@@ -561,10 +553,22 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
 
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
 
-    if (!portListModel->updatePortInfoExtended(index))
+    if (!portListModel->updatePortExtended(index))
         BasicDialogs::error(this, BasicDialogStrings::Error,
                             QString::fromUtf8("Не удалось обновить информацию по порту."),
                             portListModel->error());
+}
+
+void DslamPageWidget::updatePortTableFinished(bool withErrors)
+{
+    if (withErrors) {
+        DslamPortTableModel *model = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+        BasicDialogs::error(this, BasicDialogStrings::Error,
+                            QString::fromUtf8("Обновление информации по портам завершилось с ошибками."),
+                            model->error());
+    } else {
+        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление информации по всем портам завершилось успешно."));
+    }
 }
 
 QModelIndex DslamPageWidget::currentDslamXdslPort()

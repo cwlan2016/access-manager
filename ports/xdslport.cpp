@@ -1,10 +1,21 @@
 #include "xdslport.h"
 
-XdslPort::XdslPort(long index, QObject *parent) :
+XdslPort::XdslPort(int index, long snmpIndex, QObject *parent) :
     QObject(parent),
     mIndex(index),
+    mSnmpIndex(snmpIndex),
     mState(DslPortState::Other)
 {
+}
+
+int XdslPort::index() const
+{
+    return mIndex;
+}
+
+long XdslPort::snmpIndex() const
+{
+    return mSnmpIndex;
 }
 
 int XdslPort::pair() const
@@ -87,10 +98,10 @@ void XdslPort::setTimeLastChange(QString lastChange)
     mTimeLastChange = lastChange;
 }
 
-void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
+void XdslPort::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long snmpPortIndex)
 {
     Q_UNUSED(snmpClient)
-    Q_UNUSED(portIndex)
+    Q_UNUSED(snmpPortIndex)
 }
 
 bool XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
@@ -100,10 +111,10 @@ bool XdslPort::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
     return false;
 }
 
-void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
+void XdslPort::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long snmpPortIndex)
 {
     Q_UNUSED(snmpClient)
-    Q_UNUSED(portIndex)
+    Q_UNUSED(snmpPortIndex)
 }
 
 bool XdslPort::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)

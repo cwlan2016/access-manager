@@ -25,19 +25,19 @@ bool SwitchPortDes3526::parsePdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = SwitchPortState::from(*vars->val.integer);
+    setState(SwitchPortState::from(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mSpeedDuplex = speedDuplexString(*(vars->val.integer));
+    setSpeedDuplex(speedDuplexString(*(vars->val.integer)));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mDescription = toString(vars->val.string, vars->val_len);
+    setDescription(toString(vars->val.string, vars->val_len));
 
     return true;
 }

@@ -21,6 +21,8 @@ public:
     explicit DslamPortTableModel(Dslam::Ptr parentDevice,
                                  QObject *parent = 0);
 
+    ~DslamPortTableModel();
+
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
 
@@ -40,15 +42,20 @@ public:
     void setFirstPair(int pair);
     void setBoardIndex(int boardIndex);
 
-    bool load();
     void createList();
 
-    bool updatePortInfoBasic(QModelIndex portIndex);
-    bool updatePortInfoExtended(QModelIndex portIndex);
+    bool updatePortExtended(QModelIndex portIndex);
+    bool updatePortBasic(QModelIndex portIndex);
+    bool updatePortBasic(const XdslPort::Ptr &port);
+    void update();
+
     bool changePortState(int portIndex, int portState);
     bool changePortProfile(QModelIndex portIndex, QString profileName);
 
     QString error() const;
+
+signals:
+    void updateFinished(bool withError);
 
 private:
     int currentPort(QModelIndex index);
@@ -57,12 +64,41 @@ private:
     QVariant secondLevelDataAdsl(QModelIndex index) const;
     QVariant secondLevelDataShdsl(QModelIndex index) const;
 
+    void finishAsyncUpdate();
+
+    inline void appendUpdateError(QString error) {
+        mMutexUpdateErrors.lock();
+        mUpdateErrors += error + "\n";
+        mMutexUpdateErrors.unlock();
+    }
+
     QString mError;
     int mFirstPair;
     int mBoardIndex;
     BoardType::Enum mBoardType;
     Dslam::Ptr mParentDevice;
+
+    QFutureWatcher<void> *mFutureWatcher;
+    QString mUpdateErrors;
+    QMutex mMutexUpdateErrors;
+
     QVector<XdslPort::Ptr> mList;
+};
+
+//Wrapper for QtConcurrent::map
+struct DslamUpdateWrapperObject
+{
+    DslamUpdateWrapperObject(DslamPortTableModel *instance)
+    : mInstance(instance) { }
+
+    typedef void result_type;
+
+    void operator()(const XdslPort::Ptr &port)
+    {
+         mInstance->updatePortBasic(port);
+    }
+
+    DslamPortTableModel *mInstance;
 };
 
 #endif // DSLAMPORTTABLEMODEL_H

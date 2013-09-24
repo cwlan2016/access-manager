@@ -65,6 +65,12 @@ private:
 
     void finishAsyncUpdate();
 
+    inline void appendUpdateError(QString error) {
+        mMutexUpdateErrors.lock();
+        mUpdateErrors += error + "\n";
+        mMutexUpdateErrors.unlock();
+    }
+
     QBitArray ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str);
     QString qbitArrayToHexString(DeviceModel::Enum deviceModel,
                                  const QBitArray &array, bool ismv);
@@ -86,15 +92,15 @@ private:
 };
 
 //Wrapper for QtConcurrent::map
-struct UpdateWrapperObject
+struct SwitchUpdateWrapperObject
 {
-    UpdateWrapperObject(SwitchPortTableModel *instance)
-    : mInstance(instance) { }
+    SwitchUpdateWrapperObject(SwitchPortTableModel *instance)
+    : mInstance(instance) {
+    }
 
     typedef void result_type;
 
-    void operator()(const SwitchPort::Ptr &port)
-    {
+    void operator()(const SwitchPort::Ptr &port) {
          mInstance->updatePort(port);
     }
 

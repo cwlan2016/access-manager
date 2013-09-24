@@ -33,7 +33,7 @@ bool SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = SwitchPortState::from(*vars->val.integer);
+    setState(SwitchPortState::from(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
@@ -48,16 +48,16 @@ bool SwitchPortDes3528::parsePdu(SnmpClient::Ptr snmpClient)
 
         QString opticState = speedDuplexString(*vars->val.integer);
 
-        mSpeedDuplex = opticState % " | " % cupperState;
+        setSpeedDuplex(opticState % " | " % cupperState);
     } else {
-        mSpeedDuplex = speedDuplexString(*vars->val.integer);
+        setSpeedDuplex(speedDuplexString(*vars->val.integer));
     }
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mDescription = toString(vars->val.string, vars->val_len);
+    setDescription(toString(vars->val.string, vars->val_len));
 
     return true;
 }

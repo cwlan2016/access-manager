@@ -1,12 +1,12 @@
 #include "adslport.h"
 
-AdslPort::AdslPort(long index, QObject *parent) :
-    XdslPort(index, parent)
+AdslPort::AdslPort(int index, long snmpIndex, QObject *parent) :
+    XdslPort(index, snmpIndex, parent)
 {
-    mRxCurrRate = 0;
-    mTxCurrRate = 0;
-    mCoding = "dmt";
-    mLineType = "Fast";
+    setRxCurrRate(0);
+    setTxCurrRate(0);
+    setCoding("dmt");
+    setLineType("Fast");
 }
 
 int AdslPort::rxAttainableRate() const

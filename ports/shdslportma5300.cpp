@@ -5,15 +5,15 @@
 #include <customsnmpfunctions.h>
 #include <configs/dslamprofileconfig.h>
 
-ShdslPortMa5300::ShdslPortMa5300(long index, QObject *parent) :
-    ShdslPort(index, parent)
+ShdslPortMa5300::ShdslPortMa5300(int index, long snmpIndex, QObject *parent) :
+    ShdslPort(index, snmpIndex, parent)
 {
 }
 
 void ShdslPortMa5300::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::ifDescr, 10, portIndex));
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
@@ -27,33 +27,35 @@ bool ShdslPortMa5300::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mName = toString(vars->val.string, vars->val_len);
+    setName(toString(vars->val.string, vars->val_len));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = DslPortState::from(*vars->val.integer);
+    setState(DslPortState::from(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mDescription = toString(vars->val.string, vars->val_len);
+    setDescription(toString(vars->val.string, vars->val_len));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = toString(vars->val.string, vars->val_len);
-    mProfile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(mProfile);
+    QString profile = toString(vars->val.string, vars->val_len);
+    profile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(profile);
+    setProfile(profile);
+
     return true;
 }
 
 void ShdslPortMa5300::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
     snmpClient->addOid(createOidPair(Mib::ifLastChange, 10, portIndex));
@@ -73,7 +75,7 @@ bool ShdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = DslPortState::from(*vars->val.integer);
+    setState(DslPortState::from(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars) || !isValidSnmpValue(vars->next_variable))
@@ -85,53 +87,54 @@ bool ShdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 
     date = date.addSecs(-sysUpTime + lastChangeStatus);
 
-    mTimeLastChange = date.toString("dd.MM.yyyy hh:mm");
+    setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
 
     vars = vars->next_variable->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = toString(vars->val.string, vars->val_len);
-    mProfile = DslamProfileConfig::shdsl(DeviceModel::MA5300)->displayProfileName(mProfile);
+    QString profile = toString(vars->val.string, vars->val_len);
+    profile = DslamProfileConfig::shdsl(DeviceModel::MA5300)->displayProfileName(profile);
+    setProfile(profile);
 
-    if (mState == DslPortState::Up) {
+    if (state() == DslPortState::Up) {
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mActualRate = *vars->val.integer / 1000;
-
-        vars = vars->next_variable;
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        mMaxRate = *vars->val.integer / 1000;
+        setActualRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxAttenuation = QString::number(*vars->val.integer);
-        mTxAttenuation = QString::number(*vars->val.integer);
+        setMaxRate(*vars->val.integer / 1000);
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mSnrMargin = *vars->val.integer;
+        setRxAttenuation(QString::number(*vars->val.integer));
+        setTxAttenuation(QString::number(*vars->val.integer));
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTransmissonMode = transmissonModeString(*vars->val.integer);
+        setSnrMargin(*vars->val.integer);
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        setTransmissonMode(transmissonModeString(*vars->val.integer));
     } else {
-        mActualRate = 0;
-        mMaxRate = 0;
-        mSnrMargin = 0;
-        mTxAttenuation = "";
-        mRxAttenuation = "";
-        mTransmissonMode = "";
+        setActualRate(0);
+        setMaxRate(0);
+        setSnrMargin(0);
+        setTxAttenuation("");
+        setRxAttenuation("");
+        setTransmissonMode("");
     }
 
     return true;

@@ -7,7 +7,7 @@ class ShdslPort : public XdslPort
 {
     Q_OBJECT
 public:
-    ShdslPort(long index, QObject *parent);
+    ShdslPort(int index, long snmpIndex, QObject *parent);
 
     int actualRate() const;
     void setActualRate(int actualRate);
@@ -42,6 +42,7 @@ public:
 protected:
     QString transmissonModeString(int mode);
 
+private:
     int mActualRate;
     int mMaxRate;
     int mSnrMargin;
