@@ -4,6 +4,7 @@
 #include "devicepagewidget.h"
 
 class LineEdit;
+class KMessageWidget;
 
 namespace Ui
 {

@@ -22,8 +22,7 @@ int main(int argc, char *argv[])
     a.setOrganizationName(QString::fromUtf8("rt.ru"));
     Config::init();
 
-    QPixmap pixmap(":/images/splash.png");
-    QSplashScreen splash(pixmap);
+    QSplashScreen splash(QPixmap(":/images/splash.png"));
     splash.show();
     a.processEvents();
 

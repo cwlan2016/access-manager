@@ -85,7 +85,8 @@ SOURCES += main.cpp \
     ports/shdslportma5600.cpp \
     gui/devicepagewidget.cpp \
     models/dslamporttabledelegate.cpp \
-    models/switchporttabledelegate.cpp
+    models/switchporttabledelegate.cpp \
+    kmessagewidget.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -150,7 +151,8 @@ HEADERS  += basicdialogs.h \
     ports/shdslportma5600.h \
     gui/devicepagewidget.h \
     models/dslamporttabledelegate.h \
-    models/switchporttabledelegate.h
+    models/switchporttabledelegate.h \
+    kmessagewidget.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \

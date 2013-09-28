@@ -30,6 +30,12 @@
     <number>3</number>
    </property>
    <item>
+    <widget class="KMessageWidget" name="portModelMessage" native="true"/>
+   </item>
+   <item>
+    <widget class="KMessageWidget" name="macModelMessage" native="true"/>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QToolButton" name="saveConfigButton">
@@ -81,7 +87,7 @@
      <item>
       <widget class="QToolButton" name="refreshAllPortInfoButton">
        <property name="text">
-        <string/>
+        <string>Обновить информацию по портам</string>
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
@@ -94,7 +100,7 @@
         </size>
        </property>
        <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonFollowStyle</enum>
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -104,7 +110,7 @@
      <item>
       <widget class="QToolButton" name="refreshMacTableInfoButton">
        <property name="text">
-        <string/>
+        <string>Обновить информацию по  MAC-адресам</string>
        </property>
        <property name="icon">
         <iconset resource="../resource.qrc">
@@ -117,7 +123,7 @@
         </size>
        </property>
        <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonFollowStyle</enum>
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
        <property name="autoRaise">
         <bool>true</bool>
@@ -501,6 +507,11 @@
    <class>LineEdit</class>
    <extends>QWidget</extends>
    <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KMessageWidget</class>
+   <extends>QWidget</extends>
+   <header>kmessagewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

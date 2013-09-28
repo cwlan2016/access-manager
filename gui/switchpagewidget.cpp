@@ -13,7 +13,13 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     ui(new Ui::SwitchPageWidget)
 {
     ui->setupUi(this);
-
+    ui->portModelMessage->setHidden(true);
+    ui->portModelMessage->setCloseButtonVisible(true);
+    QFont font(qApp->font());
+    font.setPointSize(6);
+    ui->portModelMessage->setFont(font);
+    ui->macModelMessage->setHidden(true);
+    ui->macModelMessage->setCloseButtonVisible(true);
 }
 
 SwitchPageWidget::~SwitchPageWidget()
@@ -201,6 +207,9 @@ void SwitchPageWidget::refreshPortInfo()
 
 void SwitchPageWidget::refreshAllPortInfo()
 {
+    if (ui->portModelMessage->isVisible())
+        ui->portModelMessage->animatedHide();
+
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
     SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
@@ -216,6 +225,9 @@ void SwitchPageWidget::refreshAllPortInfo()
 
 void SwitchPageWidget::refreshMacTable()
 {
+    if (ui->macModelMessage->isVisible())
+        ui->macModelMessage->animatedHide();
+
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
     MacTableModel *macListModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
 
@@ -443,26 +455,44 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
 
 void SwitchPageWidget::updatePortTableFinished(bool withErrors)
 {
+    if (ui->portModelMessage->isVisible())
+        ui->portModelMessage->setHidden(true);
+
+    QString message;
+
     if (withErrors) {
-        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
-        SwitchPortTableModel *model = qobject_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
-        BasicDialogs::error(this, BasicDialogStrings::Error,
-                            QString::fromUtf8("Обновление информации по портам завершилось с ошибками."),
-                            model->error());
+        //TODO: Add output detailed message: switchPortModel->error()
+        message = QString::fromUtf8("Обновление информации по портам завершилось с ошибками.");
+        ui->portModelMessage->setMessageType(KMessageWidget::Error);
+        ui->portModelMessage->setIcon(QIcon(":/images/no.png"));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление информации по всем портам завершилось успешно."));
+        message = QString::fromUtf8("Обновление информации по всем портам завершилось успешно.");
+        ui->portModelMessage->setMessageType(KMessageWidget::Positive);
+        ui->portModelMessage->setIcon(QIcon(":/images/yes.png"));
     }
+
+    ui->portModelMessage->setText(message);
+    ui->portModelMessage->animatedShow();
 }
 
 void SwitchPageWidget::updateMacTableFinished(bool withErrors)
 {
+    if (ui->macModelMessage->isVisible())
+        ui->macModelMessage->setHidden(true);
+
+    QString message;
+
     if (withErrors) {
-        QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
-        MacTableModel *model = qobject_cast<MacTableModel *>(proxyModel->sourceModel());
-        BasicDialogs::error(this, BasicDialogStrings::Error,
-                            QString::fromUtf8("Обновление таблицы MAC-адресов завершилось с ошибками."),
-                            model->error());
+        //TODO: Add output detailed message: macModel->error()
+        message = QString::fromUtf8("Обновление таблицы MAC-адресов завершилось с ошибками.");
+        ui->macModelMessage->setMessageType(KMessageWidget::Error);
+        ui->macModelMessage->setIcon(QIcon(":/images/no.png"));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Обновление таблицы MAC-адресов завершилось успешно."));
+        message = QString::fromUtf8("Обновление таблицы MAC-адресов завершилось успешно.");
+        ui->macModelMessage->setMessageType(KMessageWidget::Positive);
+        ui->macModelMessage->setIcon(QIcon(":/images/yes.png"));
     }
+
+    ui->macModelMessage->setText(message);
+    ui->macModelMessage->animatedShow();
 }
