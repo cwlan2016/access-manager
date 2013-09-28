@@ -1,6 +1,7 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
+#include <winsock2.h>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/version.h>

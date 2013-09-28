@@ -149,8 +149,6 @@ bool MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
             break;
 
         Mac::Ptr macInfo = new Mac(0);          //create without parent
-        macInfo->moveToThread(this->thread());  //move to main gui thread
-        macInfo->setParent(this);               //set model as parent
         macInfo->setPort(*(vars->val.integer));
         macInfo->setVlanName(vlanName);
         macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));
@@ -222,6 +220,13 @@ void MacTableModel::finishAsyncUpdate()
         }
 
         mList = list;
+
+        auto end = mList->end();
+
+        for (auto it = mList->begin(); it != end; ++it) {
+            (*it)->moveToThread(this->thread());
+            (*it)->setParent(this);
+        }
 
         endResetModel();
         emit updateFinished(false);
