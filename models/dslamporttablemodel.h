@@ -2,6 +2,7 @@
 #define DSLAMPORTTABLEMODEL_H
 
 #include <customtypes.h>
+#include <improvedwidgets/improvedmessagewidget.h>
 #include <snmpclient.h>
 #include <devices/dslam.h>
 #include <ports/xdslport.h>
@@ -18,7 +19,7 @@ public:
         ProfileColumn
     };
 
-    explicit DslamPortTableModel(Dslam::Ptr parentDevice,
+    explicit DslamPortTableModel(Dslam::Ptr parentDevice, ImprovedMessageWidget *messageWidget,
                                  QObject *parent = 0);
 
     ~DslamPortTableModel();
@@ -83,6 +84,7 @@ private:
     QMutex mMutexUpdateErrors;
 
     QVector<XdslPort::Ptr> mList;
+    ImprovedMessageWidget *mMessageWidget;
 };
 
 //Wrapper for QtConcurrent::map

@@ -15,9 +15,8 @@ OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
 
     OntTableModel *ontTableModel = new OntTableModel(deviceInfo.objectCast<Olt>(), this);
 
-    if (!ontTableModel->load()) {
-        BasicDialogs::error(parent, BasicDialogStrings::Error, ontTableModel->error());
-    }
+    if (!ontTableModel->load())
+        showMessage(ontTableModel->error(), ImprovedMessageWidget::Error);
 
     QSortFilterProxyModel *ontTableFilterProxyModel = new QSortFilterProxyModel(this);
     ontTableFilterProxyModel->setFilterRole(Qt::DisplayRole);
@@ -31,11 +30,29 @@ OltPageWidget::OltPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
             this, &OltPageWidget::filterOntComboBoxIndexChanged);
     connect(ui->filterOntLineEdit, &QLineEdit::textChanged,
             this, &OltPageWidget::filterOntEditTextChanged);
+
+    ui->messageWidget->setCloseButtonVisible(true);
+    ui->messageWidget->hide();
 }
 
 OltPageWidget::~OltPageWidget()
 {
     delete ui;
+}
+
+void OltPageWidget::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType)
+{
+    if (msg.isEmpty())
+        return;
+
+    ui->messageWidget->setText(msg);
+    ui->messageWidget->setMessageType(messageType);
+
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
+
+    ui->messageWidget->animatedShow();
 }
 
 void OltPageWidget::filterOntComboBoxIndexChanged(int index)

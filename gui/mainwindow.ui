@@ -44,6 +44,9 @@
      <number>0</number>
     </property>
     <item>
+     <widget class="ImprovedMessageWidget" name="messageWidget"/>
+    </item>
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
@@ -191,6 +194,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ImprovedMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>improvedwidgets/improvedmessagewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resource.qrc"/>
  </resources>

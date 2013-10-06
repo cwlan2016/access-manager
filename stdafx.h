@@ -1,7 +1,10 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
+#if (defined(_WIN32) || defined(__WIN32__))
 #include <winsock2.h>
+#endif
+
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/version.h>

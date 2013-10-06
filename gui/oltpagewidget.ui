@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>713</width>
-    <height>594</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,9 @@
    <property name="bottomMargin">
     <number>3</number>
    </property>
+   <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+   </item>
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -87,7 +90,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="filterOntLineEdit">
+          <widget class="ImprovedLineEdit" name="filterOntLineEdit">
            <property name="readOnly">
             <bool>false</bool>
            </property>
@@ -177,7 +180,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="pppLoginLineEdit"/>
+              <widget class="ImprovedLineEdit" name="pppLoginLineEdit"/>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="pppPasswordLabel">
@@ -187,7 +190,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="pppPasswordLineEdit"/>
+              <widget class="ImprovedLineEdit" name="pppPasswordLineEdit"/>
              </item>
             </layout>
            </widget>
@@ -199,7 +202,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="2" column="1">
-              <widget class="QLineEdit" name="sipProxyLineEdit"/>
+              <widget class="ImprovedLineEdit" name="sipProxyLineEdit"/>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="sipProxyLabel">
@@ -235,10 +238,10 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLineEdit" name="loginPhone2LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="loginPhone2LineEdit"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="passwordPhone2LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="passwordPhone2LineEdit"/>
                 </item>
                </layout>
               </widget>
@@ -263,10 +266,10 @@
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="loginPhone1LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="loginPhone1LineEdit"/>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QLineEdit" name="passwordPhone1LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="passwordPhone1LineEdit"/>
                 </item>
                 <item row="3" column="0">
                  <widget class="QLabel" name="passwordPhone1Label">
@@ -331,7 +334,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="macLineEdit"/>
+           <widget class="ImprovedLineEdit" name="macLineEdit"/>
           </item>
           <item>
            <widget class="QRadioButton" name="portRadioButton">
@@ -341,7 +344,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="portListLineEdit">
+           <widget class="ImprovedLineEdit" name="portListLineEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>

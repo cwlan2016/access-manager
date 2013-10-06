@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mTypePageList = new QVector<PageType::Enum>();
     mPageList = new QHash<QString, QWidget *>();
+
+    ui->messageWidget->setCloseButtonVisible(true);
+    ui->messageWidget->hide();
 }
 
 MainWindow::~MainWindow()
@@ -81,8 +84,25 @@ void MainWindow::loadDeviceList()
 void MainWindow::loadProgramSettings()
 {
     if (!Config::load()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error());
+        showMessage(Config::error(), ImprovedMessageWidget::Error);
     }
+}
+
+void MainWindow::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType,
+                             const QString &detailedText)
+{
+    if (msg.isEmpty()) {
+        return;
+    }
+
+    ui->messageWidget->setText(msg, detailedText);
+    ui->messageWidget->setMessageType(messageType);
+
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
+
+    ui->messageWidget->animatedShow();
 }
 
 void MainWindow::getServiceDataFromDevice()
@@ -101,9 +121,9 @@ void MainWindow::getServiceDataFromDevice()
         bool result = widget->device()->getServiceDataFromDevice();
 
         if (!result) {
-            BasicDialogs::error(this, BasicDialogStrings::Error, widget->device()->error());
+            showMessage(widget->device()->error(), ImprovedMessageWidget::Error);
         } else {
-            BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
+            showMessage(trUtf8("Информация c устройства получена."), ImprovedMessageWidget::Information);
         }
     }
 }
@@ -205,9 +225,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     } else if (result == QMessageBox::YesRole) {
         if (!deviceListModel->save()) {
-            BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
+            showMessage(trUtf8("Cохранение списка устройств не удалось."),
+                        ImprovedMessageWidget::Warning, deviceListModel->error());
         } else {
-            BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
+            showMessage(trUtf8("Cписок устройств сохранен."),
+                        ImprovedMessageWidget::Positive);
         }
     }
 

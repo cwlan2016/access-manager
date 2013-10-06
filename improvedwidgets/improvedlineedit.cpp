@@ -7,24 +7,25 @@
 **
 ****************************************************************************/
 
-#include "lineedit.h"
+#include "improvedlineedit.h"
 
-LineEdit::LineEdit(QWidget *parent)
-    : QLineEdit(parent)
+#include <QStyle>
+
+ImprovedLineEdit::ImprovedLineEdit(QWidget *parent) :
+    QLineEdit(parent)
 {
     clearButton = new QToolButton(this);
-    QPixmap clearButtonPixmap(":/images/clear_left.png");
-    clearButton->setIcon(QIcon(clearButtonPixmap));
-    clearButton->setIconSize(clearButtonPixmap.size());
+    clearButton->setIcon(QIcon(":/images/clear_left.png"));
+    clearButton->setIconSize(QSize(18, 18));
     clearButton->setCursor(Qt::ArrowCursor);
     clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
-    clearButton->setToolTip(QString::fromUtf8("Очистить текст"));
+    clearButton->setToolTip(trUtf8("Очистить текст"));
     clearButton->hide();
 
     connect(clearButton, &QToolButton::clicked,
-            this, &LineEdit::clear);
-    connect(this, &LineEdit::textChanged,
-            this, &LineEdit::updateCloseButton);
+            this, &ImprovedLineEdit::clear);
+    connect(this, &ImprovedLineEdit::textChanged,
+            this, &ImprovedLineEdit::updateClearButton);
 
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
 #ifdef Q_WS_MAC
@@ -33,10 +34,9 @@ LineEdit::LineEdit(QWidget *parent)
     QSize msz = minimumSizeHint();
     setMinimumSize(qMax(msz.width(), clearButton->sizeHint().width() + frameWidth * 2 + 2),
                    qMax(msz.height(), clearButton->sizeHint().height() + frameWidth * 2 + 2));
-
 }
 
-void LineEdit::resizeEvent(QResizeEvent *)
+void ImprovedLineEdit::resizeEvent(QResizeEvent *)
 {
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     QSize sz = clearButton->sizeHint();
@@ -44,7 +44,7 @@ void LineEdit::resizeEvent(QResizeEvent *)
                       (rect().bottom() + 2 - sz.height()) / 2);
 }
 
-void LineEdit::updateCloseButton(const QString &text)
+void ImprovedLineEdit::updateClearButton(const QString &text)
 {
     if (!inputMask().isEmpty()) {
         QString temp = text;

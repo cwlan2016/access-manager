@@ -3,6 +3,7 @@
 
 #include "devicepagewidget.h"
 
+#include <improvedwidgets/improvedmessagewidget.h>
 #include <models/boardtabledelegate.h>
 #include <models/dslamporttabledelegate.h>
 
@@ -25,6 +26,9 @@ signals:
     void modeChanged(bool editMode);
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
+                     const QString &detailedText = "");
     void initActions();
     void initComponents();
     void initView();

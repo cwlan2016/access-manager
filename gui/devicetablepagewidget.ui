@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>451</height>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget"/>
+   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -158,8 +161,8 @@
     </layout>
    </item>
    <item>
-    <widget class="LineEdit" name="filterNameLineEdit" native="true">
-     <property name="placeholderText" stdset="0">
+    <widget class="ImprovedLineEdit" name="filterNameLineEdit">
+     <property name="placeholderText">
       <string>Фильтрация по названию устройства...</string>
      </property>
     </widget>
@@ -453,13 +456,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>LineEdit</class>
-   <extends>QWidget</extends>
-   <header>lineedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../resource.qrc"/>
  </resources>

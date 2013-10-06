@@ -15,6 +15,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+   </item>
+   <item>
     <widget class="QWidget" name="topButtonPanel" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="leftMargin">

@@ -2,9 +2,9 @@
 #define SWITCHPAGEWIDGET_H
 
 #include "devicepagewidget.h"
+#include <improvedwidgets/improvedmessagewidget.h>
 
 class LineEdit;
-class KMessageWidget;
 
 namespace Ui
 {
@@ -22,6 +22,9 @@ public:
     void init();
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
+                     const QString &detailedText = "");
     void initActions();
     void initComponents();
     void initMenu();

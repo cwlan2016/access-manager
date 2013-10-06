@@ -23,8 +23,9 @@
 // 1 - model_device
 // 2 - ip
 // 3 - type_device
-DeviceTableModel::DeviceTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+DeviceTableModel::DeviceTableModel(ImprovedMessageWidget *messageWidget, QObject *parent) :
+    QAbstractTableModel(parent),
+    mMessageWidget(messageWidget)
 {
     mDeviceListPath = Config::path() % "devicelist.xml";
     mDeviceListBackupPath = Config::path() % "devicelist.bak";
@@ -96,8 +97,10 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
                 || (mList.at(index.row())->deviceType() == newType)) {
             changeDeviceModel(index.row(), newType, newModel);
         } else {
-            BasicDialogs::information(0, BasicDialogStrings::Info,
-                                      QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
+            mMessageWidget->setMessageType(ImprovedMessageWidget::Information);
+            mMessageWidget->setText(trUtf8("Запрещено менять модель с одного типа устройства на другое."));
+            mMessageWidget->animatedShow();
+
             return false;
         }
 
@@ -106,9 +109,12 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
 
         return true;
     } else if (index.column() == IpColumn) {
+        //TODO: make QRegExpValidator in delegate. remove this check
         if (!validIpAddress(value.toString())) {
-            BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
-                                      trUtf8("Некорректный IP адрес."));
+            mMessageWidget->setMessageType(ImprovedMessageWidget::Information);
+            mMessageWidget->setText(trUtf8("Некорректный IP адрес."));
+            mMessageWidget->animatedShow();
+
             return false;
         }
 

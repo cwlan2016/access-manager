@@ -49,7 +49,7 @@ Project {
             ]
         }
 
-        Depends { name: "Qt"; submodules: ["core", "gui", "widgets", "xmlpatterns"] }
+        Depends { name: "Qt"; submodules: ["core", "gui", "widgets", "xmlpatterns", "concurrent"] }
         Depends { name: "cpp" }
 
         cpp.includePaths: ["."]
@@ -65,11 +65,7 @@ Project {
         }
 
         cpp.dynamicLibraries: {
-            if (qbs.targetOS.contains("windows")
-                    && qbs.buildVariant.contains("debug"))
-                return ["netsnmpd","wsock32","advapi32"]
-            else if (qbs.targetOS.contains("windows")
-                         && qbs.buildVariant.contains("release"))
+            if (qbs.targetOS.contains("windows"))
                 return ["netsnmp","wsock32","advapi32"]
             else
                 return ["netsnmp"]

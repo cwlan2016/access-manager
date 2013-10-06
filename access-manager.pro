@@ -21,6 +21,7 @@ clang*:QMAKE_CXXFLAGS+="-std=c++11"
 RC_FILE = access-manager.rc
 
 INCLUDEPATH += $$PWD
+INCLUDEPATH += improvedwidgets
 
 SOURCES += main.cpp \    
     basicdialogs.cpp \
@@ -71,7 +72,6 @@ SOURCES += main.cpp \
     configs/switchconfig.cpp \
     configs/snmpconfig.cpp \
     gui/mainwindow.cpp \
-    gui/lineedit.cpp \
     gui/dslampagewidget.cpp \
     gui/pagewidget.cpp \
     gui/switchpagewidget.cpp \
@@ -86,7 +86,8 @@ SOURCES += main.cpp \
     gui/devicepagewidget.cpp \
     models/dslamporttabledelegate.cpp \
     models/switchporttabledelegate.cpp \
-    kmessagewidget.cpp
+    improvedwidgets/improvedmessagewidget.cpp \
+    improvedwidgets/improvedlineedit.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -136,7 +137,6 @@ HEADERS  += basicdialogs.h \
     configs/snmpconfig.h \
     configs/switchconfig.h \
     gui/mainwindow.h \
-    gui/lineedit.h \
     gui/dslampagewidget.h \
     gui/pagewidget.h \
     gui/switchpagewidget.h \
@@ -144,7 +144,6 @@ HEADERS  += basicdialogs.h \
     gui/aboutpagewidget.h \
     gui/settingspagewidget.h \
     gui/devicetablepagewidget.h \ 
-    lineedit.h \
     configs/dslamprofileconfig.h \
     models/dslprofiletablemodel.h \
     ports/shdslportma5300.h \
@@ -152,7 +151,8 @@ HEADERS  += basicdialogs.h \
     gui/devicepagewidget.h \
     models/dslamporttabledelegate.h \
     models/switchporttabledelegate.h \
-    kmessagewidget.h
+    improvedwidgets/improvedmessagewidget.h \
+    improvedwidgets/improvedlineedit.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \
@@ -163,7 +163,8 @@ FORMS += gui/mainwindow.ui \
     gui/devicetablepagewidget.ui
 
 RESOURCES += \
-    resource.qrc
+    resource.qrc \
+    improvedwidgets/improvedwidgets.qrc
 
 LIBS += -lnetsnmp
 
@@ -186,13 +187,20 @@ OTHER_FILES += \
     images/down16.png \
     images/configure.png \
     images/add16.png \
-    images/clear_left.png \
     data.ico \
     access-manager.rc \
     schemadevicelist.xsd \
     images/edit2.png \
     images/node.png \
-    images/profile.png
+    images/profile.png \
+    improvedwidgets/images/go-up.png \
+    improvedwidgets/images/go-down.png \
+    improvedwidgets/images/error.png \
+    improvedwidgets/images/close.png \
+    improvedwidgets/images/clear_left.png \
+    improvedwidgets/images/warning.png \
+    improvedwidgets/images/positive.png \
+    improvedwidgets/images/information.png
 
 HEADERS += \
     stdafx.h

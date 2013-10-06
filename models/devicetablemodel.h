@@ -4,6 +4,7 @@
 #include <devices/dslam.h>
 #include <devices/olt.h>
 #include <devices/switch.h>
+#include <improvedwidgets/improvedmessagewidget.h>
 
 class DeviceTableModel : public QAbstractTableModel
 {
@@ -16,7 +17,7 @@ public:
         DeviceTypeColumn
     };
 
-    explicit DeviceTableModel(QObject *parent = 0);
+    explicit DeviceTableModel(ImprovedMessageWidget *messageWidget, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -83,6 +84,7 @@ private:
     QString mDeviceListPath;
     QString mDeviceListBackupPath;
     QVector<Device::Ptr> mList;
+    ImprovedMessageWidget *mMessageWidget;
 };
 
 #endif // DEVICETABLEMODEL_H

@@ -15,6 +15,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="topHorizontalLayout">
      <item>
       <widget class="QListWidget" name="listWidget">
@@ -63,19 +66,19 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="readComEdit"/>
+             <widget class="ImprovedLineEdit" name="readComEdit"/>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="writeComEdit"/>
+             <widget class="ImprovedLineEdit" name="writeComEdit"/>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="timeoutEdit"/>
+             <widget class="ImprovedLineEdit" name="timeoutEdit"/>
             </item>
             <item row="5" column="1">
-             <widget class="QLineEdit" name="portEdit"/>
+             <widget class="ImprovedLineEdit" name="portEdit"/>
             </item>
             <item row="6" column="1">
-             <widget class="QLineEdit" name="retriesEdit"/>
+             <widget class="ImprovedLineEdit" name="retriesEdit"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="writeComLabel">
@@ -113,7 +116,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="saveTimeoutEdit"/>
+             <widget class="ImprovedLineEdit" name="saveTimeoutEdit"/>
             </item>
            </layout>
           </widget>
@@ -153,10 +156,10 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLineEdit" name="swInternetVlanEdit"/>
+                 <widget class="ImprovedLineEdit" name="swInternetVlanEdit"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="swIptvUnicastVlanEdit"/>
+                 <widget class="ImprovedLineEdit" name="swIptvUnicastVlanEdit"/>
                 </item>
                </layout>
               </widget>

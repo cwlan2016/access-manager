@@ -15,13 +15,16 @@ DeviceTablePageWidget::DeviceTablePageWidget(QTabWidget *parentTabWidget,
                                              QWidget *parent) :
     PageWidget(parent),
     ui(new Ui::DeviceTablePageWidget),
-    mDeviceTableModel(new DeviceTableModel(this)),
+    mDeviceTableModel(new DeviceTableModel(ui->messageWidget, this)),
     mProxyModel(new QSortFilterProxyModel(this)),
     mPageList(pageList),
     mTypePageList(typePageList),
     mParentTabWidget(parentTabWidget)
 {
     ui->setupUi(this);
+
+    ui->messageWidget->hide();
+    ui->messageWidget->setCloseButtonVisible(true);
 }
 
 DeviceTablePageWidget::~DeviceTablePageWidget()
@@ -46,7 +49,7 @@ void DeviceTablePageWidget::loadDeviceList()
     }
 
     if (!mDeviceTableModel->load()) {
-        BasicDialogs::warning(this, QString::fromUtf8("Загрузка данных"), QString::fromUtf8("Ошибка: загрузка списка устройств не удалась."), mDeviceTableModel->error());
+        showMessage(trUtf8("Не удалось загрузить список устройств."), ImprovedMessageWidget::Warning, mDeviceTableModel->error());
     }
 
     ui->deviceListTableView->sortByColumn(DeviceTableModel::NameColumn, Qt::AscendingOrder);
@@ -55,11 +58,9 @@ void DeviceTablePageWidget::loadDeviceList()
 void DeviceTablePageWidget::saveDeviceList()
 {
     if (!mDeviceTableModel->save()) {
-        BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"),
-                              QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), mDeviceTableModel->error());
+        showMessage(trUtf8("Не удалось сохранить список устройств."), ImprovedMessageWidget::Warning, mDeviceTableModel->error());
     } else {
-        BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"),
-                                  QString::fromUtf8("Информация: список устройств сохранен."));
+        showMessage(trUtf8("Информация: список устройств сохранен."), ImprovedMessageWidget::Positive);
     }
 }
 
@@ -73,9 +74,9 @@ void DeviceTablePageWidget::getServiceDataFromCurrentDevice()
     bool result = mDeviceTableModel->getServiceDataFromDevice(index);
 
     if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, mDeviceTableModel->error());
+        showMessage(mDeviceTableModel->error(), ImprovedMessageWidget::Error);
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
+        showMessage(trUtf8("Информация c устройства получена."));
     }
 }
 
@@ -107,6 +108,21 @@ void DeviceTablePageWidget::clearSelection()
 DeviceTableModel *DeviceTablePageWidget::deviceTableModel() const
 {
     return mDeviceTableModel;
+}
+
+void DeviceTablePageWidget::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType, const QString &detailedText)
+{
+    if (msg.isEmpty())
+        return;
+
+    ui->messageWidget->setText(msg, detailedText);
+    ui->messageWidget->setMessageType(messageType);
+
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
+
+    ui->messageWidget->animatedShow();
 }
 
 void DeviceTablePageWidget::openDevice()
@@ -242,8 +258,7 @@ void DeviceTablePageWidget::showExtendedInfoPanel()
     if (deviceType == DeviceType::Switch) {
         showSwitchExtInfoFrame();
     } else if (deviceType == DeviceType::Dslam) {
-        BasicDialogs::information(this, BasicDialogStrings::Info,
-                                  QString::fromUtf8("Для данного типа устройства дополнительная информация недоступна."));
+        showMessage(trUtf8("Для данного типа устройства дополнительная информация недоступна."), ImprovedMessageWidget::Information);
     } else if (deviceType == DeviceType::Olt) {
         showOltExtInfoFrame();
     }
@@ -366,7 +381,7 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
     }
 
     if (!errorString.isEmpty())
-        BasicDialogs::error(this, BasicDialogStrings::Error, QString::fromUtf8("Во время обновления произошли ошибки!"), errorString);
+        showMessage(trUtf8("Во время обновления произошли ошибки!"), ImprovedMessageWidget::Error, errorString);
 }
 
 void DeviceTablePageWidget::filterDeviceTextChanged(QString text)

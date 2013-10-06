@@ -3,6 +3,8 @@
 
 #include "devicepagewidget.h"
 
+#include <improvedwidgets/improvedmessagewidget.h>
+
 namespace Ui
 {
 class OltPageWidget;
@@ -17,6 +19,8 @@ public:
     ~OltPageWidget();
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information);
     void filterOntComboBoxIndexChanged(int index);
     void filterOntEditTextChanged(QString text);
 

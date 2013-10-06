@@ -4,6 +4,7 @@
 #include <customtypes.h>
 #include <snmpclient.h>
 #include <devices/switch.h>
+#include <improvedwidgets/improvedmessagewidget.h>
 #include <ports/switchport.h>
 
 class SwitchPortTableModel : public QAbstractTableModel
@@ -17,7 +18,7 @@ public:
         DescColumn
     };
 
-    explicit SwitchPortTableModel(Switch::Ptr parentDevice,
+    explicit SwitchPortTableModel(Switch::Ptr parentDevice, ImprovedMessageWidget *messageWidget,
                                   QObject *parent = 0);
 
     ~SwitchPortTableModel();
@@ -89,6 +90,7 @@ private:
     QMutex mMutexUpdateErrors;
 
     QVector<SwitchPort::Ptr> mList;
+    ImprovedMessageWidget *mMessageWidget;
 };
 
 //Wrapper for QtConcurrent::map

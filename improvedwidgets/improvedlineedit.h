@@ -7,25 +7,26 @@
 **
 ****************************************************************************/
 
-#ifndef LINEEDIT_H
-#define LINEEDIT_H
+#ifndef IMPROVEDLINEEDIT_H
+#define IMPROVEDLINEEDIT_H
 
-#include <stdafx.h>
+#include <QLineEdit>
+#include <QToolButton>
 
-class LineEdit : public QLineEdit
+class ImprovedLineEdit : public QLineEdit
 {
     Q_OBJECT
 
 public:
-    LineEdit(QWidget *parent = 0);
+    explicit ImprovedLineEdit(QWidget *parent = 0);
 
 protected:
     void resizeEvent(QResizeEvent *);
 
 private:
-    void updateCloseButton(const QString &text);
+    void updateClearButton(const QString &text);
 
     QToolButton *clearButton;
 };
 
-#endif // LIENEDIT_H
+#endif

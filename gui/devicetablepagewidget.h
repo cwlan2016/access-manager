@@ -37,6 +37,9 @@ public:
     DeviceTableModel *deviceTableModel() const;
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
+                     const QString &detailedText = "");
     void openDevice();
     void addDevice();
     void editDevice();

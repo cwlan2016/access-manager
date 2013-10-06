@@ -132,6 +132,7 @@ bool MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
 {
     OidPair oidPair = createOidPair(Mib::dot1qTpFdbPort, 13, vlanTag);
 
+    //TODO: Make GETBULKNEXT request
     snmpClient->createPdu(SNMP_MSG_GETNEXT);
     snmpClient->addOid(oidPair);
 

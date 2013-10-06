@@ -11,10 +11,12 @@
 // invalidParentIndex - основная информация о порте, верхний уровень
 // < invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
-DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice, QObject *parent) :
+DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice,
+                                         ImprovedMessageWidget *messageWidget, QObject *parent) :
     QAbstractItemModel(parent),
     mParentDevice(parentDevice),
-    mFutureWatcher(new QFutureWatcher<void>())
+    mFutureWatcher(new QFutureWatcher<void>()),
+    mMessageWidget(messageWidget)
 {
     connect(mFutureWatcher, &QFutureWatcher<void>::finished,
             this, &DslamPortTableModel::finishAsyncUpdate);
@@ -110,7 +112,9 @@ bool DslamPortTableModel::setData(const QModelIndex &index, const QVariant &valu
         mList[index.row()]->setDescription(value.toString());
         emit dataChanged(index, index);
     } else {
-        BasicDialogs::error(0, BasicDialogStrings::Error, mParentDevice->error());
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(mParentDevice->error());
+        mMessageWidget->animatedShow();
     }
 
     return true;

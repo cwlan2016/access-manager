@@ -14,11 +14,12 @@
 // 2 - speed/duplex
 // 3 - description
 
-SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice,
+SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice, ImprovedMessageWidget *messageWidget,
                                            QObject *parent) :
     QAbstractTableModel(parent),
     mParentDevice(parentDevice),
-    mFutureWatcher(new QFutureWatcher<void>())
+    mFutureWatcher(new QFutureWatcher<void>()),
+    mMessageWidget(messageWidget)
 {
     createList();
 
@@ -115,7 +116,9 @@ bool SwitchPortTableModel::setData(const QModelIndex &index, const QVariant &val
         QModelIndex descIndex = SwitchPortTableModel::index(portIndex, DescColumn);
         emit dataChanged(descIndex, descIndex);
     } else {
-        BasicDialogs::error(0, BasicDialogStrings::Error, mParentDevice->error());
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(mParentDevice->error());
+        mMessageWidget->animatedShow();
     }
 
     return true;
@@ -441,8 +444,11 @@ bool SwitchPortTableModel::getVlanSettings()
     if (!result)
         allErrors += mError + "\n";
 
-    if (!allErrors.isEmpty())
-        BasicDialogs::error(0, BasicDialogStrings::Error, QString::fromUtf8("Произошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
+    if (!allErrors.isEmpty()) {
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(trUtf8("Произошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
+        mMessageWidget->animatedShow();
+    }
 
     return true;
 }

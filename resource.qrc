@@ -18,8 +18,6 @@
         <file alias="yes.png">images/yes16.png</file>
         <file alias="open.png">images/open16.png</file>
         <file alias="tv.png">images/tv.png</file>
-        <file alias="clear_left.png">images/clear_left.png</file>
-        <file alias="close.png">images/close.png</file>
         <file alias="edit2.png">images/edit2.png</file>
         <file alias="node.png">images/node.png</file>
         <file alias="profile.png">images/profile.png</file>
