@@ -18,6 +18,9 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
     ui->messageWidget->setCloseButtonVisible(true);
     ui->macModelMessage->hide();
     ui->macModelMessage->setCloseButtonVisible(true);
+
+    ui->updatePortFrame->hide();
+    ui->updateMacFrame->hide();
 }
 
 SwitchPageWidget::~SwitchPageWidget()
@@ -128,6 +131,7 @@ void SwitchPageWidget::initView()
     connect(portTableModel, &SwitchPortTableModel::updateFinished,
             this, &SwitchPageWidget::updatePortTableFinished);
 
+    ui->updatePortFrame->show();
     portTableModel->update();
 
     QSortFilterProxyModel *portProxyModel = new QSortFilterProxyModel(this);
@@ -150,6 +154,7 @@ void SwitchPageWidget::initView()
     connect(macTableModel, &MacTableModel::updateFinished,
             this, &SwitchPageWidget::updateMacTableFinished);
 
+    ui->updateMacFrame->show();
     macTableModel->update();
 
     QSortFilterProxyModel *macListProxyModel = new QSortFilterProxyModel(this);
@@ -229,6 +234,7 @@ void SwitchPageWidget::refreshAllPortInfo()
     if (portListModel->updateIsRunning()) {
         showMessage(trUtf8("Уже выполняется обновление информации по всем портам."));
     } else {
+        ui->updatePortFrame->show();
         portListModel->update();
     }
 }
@@ -244,6 +250,7 @@ void SwitchPageWidget::refreshMacTable()
     if (macListModel->updateIsRunning()) {
         showMessage(trUtf8("Обновление таблицы MAC-адресов уже выполняется."));
     } else {
+        ui->updateMacFrame->show();
         macListModel->update();
     }
 }
@@ -464,6 +471,8 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
 
 void SwitchPageWidget::updatePortTableFinished(bool withErrors)
 {
+    ui->updatePortFrame->hide();
+
     if (withErrors) {
         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
         SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
@@ -475,6 +484,8 @@ void SwitchPageWidget::updatePortTableFinished(bool withErrors)
 
 void SwitchPageWidget::updateMacTableFinished(bool withErrors)
 {
+    ui->updateMacFrame->hide();
+
     QString message;
 
     if (withErrors) {
@@ -487,8 +498,6 @@ void SwitchPageWidget::updateMacTableFinished(bool withErrors)
         message = trUtf8("Обновление таблицы MAC-адресов завершилось успешно.");
         ui->macModelMessage->setMessageType(ImprovedMessageWidget::Positive);
         ui->macModelMessage->setText(message);
-        ui->macModelMessage->setWordWrap(true);
-        ui->macModelMessage->updateGeometry();
     }
 
     ui->macModelMessage->animatedShow();

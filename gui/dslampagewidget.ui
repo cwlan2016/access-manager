@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+    <widget class="ImprovedMessageWidget" name="messageWidget"/>
    </item>
    <item>
     <widget class="QWidget" name="topButtonPanel" native="true">
@@ -416,7 +416,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../resource.qrc">
+           <iconset resource="../improvedwidgets/improvedwidgets.qrc">
             <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
           </property>
           <property name="autoRaise">
@@ -452,6 +452,60 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="updatePortFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="ImprovedBusyIndicator" name="updatePortBusyIndicator">
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="indicatorStyle">
+         <enum>ImprovedBusyIndicator::StyleEllipse</enum>
+        </property>
+        <property name="interval">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="updatePortLabel">
+        <property name="text">
+         <string>Обновление информации по портам в процессе...</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="updatePOortHSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>285</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -594,8 +648,21 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ImprovedMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>improvedwidgets/improvedmessagewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImprovedBusyIndicator</class>
+   <extends>QWidget</extends>
+   <header>improvedwidgets/improvedbusyindicator.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resource.qrc"/>
+  <include location="../improvedwidgets/improvedwidgets.qrc"/>
  </resources>
  <connections/>
 </ui>

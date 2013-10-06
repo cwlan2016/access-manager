@@ -87,7 +87,8 @@ SOURCES += main.cpp \
     models/dslamporttabledelegate.cpp \
     models/switchporttabledelegate.cpp \
     improvedwidgets/improvedmessagewidget.cpp \
-    improvedwidgets/improvedlineedit.cpp
+    improvedwidgets/improvedlineedit.cpp \
+    improvedwidgets/improvedbusyindicator.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -152,7 +153,8 @@ HEADERS  += basicdialogs.h \
     models/dslamporttabledelegate.h \
     models/switchporttabledelegate.h \
     improvedwidgets/improvedmessagewidget.h \
-    improvedwidgets/improvedlineedit.h
+    improvedwidgets/improvedlineedit.h \
+    improvedwidgets/improvedbusyindicator.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \

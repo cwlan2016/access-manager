@@ -18,6 +18,8 @@ DslamPageWidget::DslamPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
 
     ui->messageWidget->hide();
     ui->messageWidget->setCloseButtonVisible(true);
+
+    ui->updatePortFrame->hide();
 }
 
 DslamPageWidget::~DslamPageWidget()
@@ -146,6 +148,7 @@ void DslamPageWidget::initView()
         portListModel->setBoardIndex(1);
         portListModel->createList();
 
+        ui->updatePortFrame->show();
         portListModel->update();
 
         ui->dslamTreeView->setModel(portListModel);
@@ -279,6 +282,7 @@ void DslamPageWidget::showPortListModel()
     portListModel->setBoardIndex(indexPairRange.row());
     portListModel->createList();
 
+    ui->updatePortFrame->show();
     portListModel->update();
 
     ui->boardNameLabel->setText(QString::fromUtf8("Доска %1 [%2]")
@@ -298,11 +302,12 @@ void DslamPageWidget::showPortListModel()
 
 void DslamPageWidget::backToBoardListModel()
 {
-    ui->backToBoardListButton->setVisible(false);
-    ui->boardNameLabel->setVisible(false);
-    ui->beginEditButton->setVisible(true);
-    ui->operationToolButtonPanel->setVisible(false);
-    ui->profileFrame->setVisible(false);
+    ui->backToBoardListButton->hide;
+    ui->boardNameLabel->hide;
+    ui->beginEditButton->show();
+    ui->operationToolButtonPanel->hide();
+    ui->profileFrame->hide();
+    ui->updatePortFrame->hide();
 
     DslamPortTableModel *portTableModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
     BoardTableModel *boardTableModel = mDevice.objectCast<Dslam>()->boardTableModel();
@@ -401,6 +406,7 @@ void DslamPageWidget::refreshPortInfo()
 void DslamPageWidget::refreshAllPortInfo()
 {
     DslamPortTableModel *portListModel = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
+    ui->updatePortFrame->show();
     portListModel->update();
 }
 
@@ -585,6 +591,8 @@ void DslamPageWidget::portListExpandedNode(QModelIndex index)
 
 void DslamPageWidget::updatePortTableFinished(bool withErrors)
 {
+    ui->updatePortFrame->hide();
+
     if (withErrors) {
         DslamPortTableModel *model = qobject_cast<DslamPortTableModel *>(ui->dslamTreeView->model());
         showMessage(trUtf8("Обновление информации по портам завершилось с ошибками."),
