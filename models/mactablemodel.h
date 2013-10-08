@@ -36,15 +36,15 @@ signals:
     void updateFinished(bool withError);
 
 private:
-    bool updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
-                          QVector<Mac::Ptr> *list, long vlanTag, QString vlanName);
-    QVector<Mac::Ptr> *asyncUpdateMacTable(bool fullMacTable);
+    QString vlanValue(const int macIndex) const;
+    QVector<Mac::Ptr> *asyncUpdateMacTable();
 
     void finishAsyncUpdate();
 
     QString decMacAddressToHex(oid *macAddressOid, int length);
 
     QFutureWatcher<QVector<Mac::Ptr> *> *mFutureWatcher;
+    QString mUpdateErrors;
     QString mError;
     QVector<Mac::Ptr> *mList;
     Switch::Ptr mParentDevice;

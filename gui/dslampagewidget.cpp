@@ -302,8 +302,8 @@ void DslamPageWidget::showPortListModel()
 
 void DslamPageWidget::backToBoardListModel()
 {
-    ui->backToBoardListButton->hide;
-    ui->boardNameLabel->hide;
+    ui->backToBoardListButton->hide();
+    ui->boardNameLabel->hide();
     ui->beginEditButton->show();
     ui->operationToolButtonPanel->hide();
     ui->profileFrame->hide();

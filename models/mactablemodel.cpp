@@ -63,7 +63,7 @@ QVariant MacTableModel::data(const QModelIndex &index, int role) const
         case PortColumn:
             return mList->at(index.row())->port();
         case VlanColumn:
-            return mList->at(index.row())->vlanName();
+            return vlanValue(index.row());
         case MacAddressColumn:
             return mList->at(index.row())->mac();
         default:
@@ -117,7 +117,8 @@ void MacTableModel::update()
         return;
     }
 
-    QFuture<QVector<Mac::Ptr> *> future = QtConcurrent::run(this, &MacTableModel::asyncUpdateMacTable, false);
+    mUpdateErrors = "";
+    QFuture<QVector<Mac::Ptr> *> future = QtConcurrent::run(this, &MacTableModel::asyncUpdateMacTable);
     mFutureWatcher->setFuture(future);
 }
 
@@ -126,79 +127,75 @@ QString MacTableModel::error() const
     return mError;
 }
 
-bool MacTableModel::updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient,
-                                     QVector<Mac::Ptr> *list,
-                                     long vlanTag, QString vlanName)
+QString MacTableModel::vlanValue(const int macIndex) const
 {
-    OidPair oidPair = createOidPair(Mib::dot1qTpFdbPort, 13, vlanTag);
+    int vlan = mList->at(macIndex)->vlan();
 
-    //TODO: Make GETBULKNEXT request
-    snmpClient->createPdu(SNMP_MSG_GETNEXT);
-    snmpClient->addOid(oidPair);
-
-    while (true) {
-        if (!snmpClient->sendRequest())
-            return false;
-
-        netsnmp_variable_list *vars = snmpClient->varList();
-
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        if (snmp_oid_ncompare(oidPair.first, oidPair.second, vars->name,
-                              vars->name_length, oidPair.second) != 0)
-            break;
-
-        Mac::Ptr macInfo = new Mac(0);          //create without parent
-        macInfo->setPort(*(vars->val.integer));
-        macInfo->setVlanName(vlanName);
-        macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));
-
-        list->push_back(macInfo);
-
-        snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
+    if (vlan == mParentDevice->inetVlanTag()) {
+        return QString("Inet (%1)").arg(vlan);
+    } else if (vlan == mParentDevice->iptvVlanTag()) {
+        return QString("IPTV Unicast (%1)").arg(vlan);
     }
 
-    return true;
+    return QString::number(vlan);
 }
 
-QVector<Mac::Ptr> *MacTableModel::asyncUpdateMacTable(bool fullMacTable)
+QVector<Mac::Ptr> *MacTableModel::asyncUpdateMacTable()
 {
-    Q_UNUSED(fullMacTable)
-
     QScopedPointer<SnmpClient> snmp(new SnmpClient());
 
     snmp->setIp(mParentDevice->ip());
 
     if (!snmp->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
+        mUpdateErrors = SnmpErrorStrings::SetupSession;
         return 0;
     }
 
     if (!snmp->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
+        mUpdateErrors = SnmpErrorStrings::OpenSession;
         return 0;
     }
 
     QVector<Mac::Ptr> *newList = new QVector<Mac::Ptr>();
     newList->reserve(26);
 
-    bool result = updateMacsInVlan(snmp, newList, mParentDevice->inetVlanTag(),
-                                   SwitchConfig::inetVlanName());
-    if (!result) {
-        mError = snmp->error();
-        qDeleteAll(newList->begin(), newList->end());
-        delete newList;
-        return 0;
-    }
+    OidPair oidPair = createOidPair(Mib::dot1qTpFdbPort, 13);
 
-    result = updateMacsInVlan(snmp, newList, mParentDevice->iptvVlanTag(),
-                              SwitchConfig::iptvVlanName());
-    if (!result) {
-        mError = snmp->error();
-        qDeleteAll(newList->begin(), newList->end());
-        delete newList;
-        return 0;
+    while (true) {
+        snmp->createPdu(SNMP_MSG_GETBULK, 10);
+        snmp->addOid(oidPair);
+
+        if (!snmp->sendRequest()) {
+            mUpdateErrors = snmp->error();
+            break;
+        }
+
+        netsnmp_variable_list *vars = snmp->varList();
+
+        while (true) {
+            if (!isValidSnmpValue(vars)) {
+                mUpdateErrors = snmp->error();
+                return newList;
+            }
+
+            if (snmp_oid_ncompare(oidPair.first, oidPair.second, vars->name,
+                                  vars->name_length, 13) != 0) {
+                return newList;
+            }
+
+            Mac::Ptr macInfo = new Mac(0);          //create without parent
+            macInfo->setPort(*(vars->val.integer));
+            macInfo->setVlan(vars->name[vars->name_length - 7]); //index = vlan.mac
+            macInfo->setMac(decMacAddressToHex(vars->name, vars->name_length));
+            newList->push_back(macInfo);
+
+            if (!vars->next_variable) {
+                oidPair = createOidPair(vars->name, vars->name_length);
+                break;
+            }
+
+            vars = vars->next_variable;
+        }
     }
 
     return newList;
@@ -212,6 +209,7 @@ bool MacTableModel::updateIsRunning()
 void MacTableModel::finishAsyncUpdate()
 {
     auto list = mFutureWatcher->result();
+
     if (list) {
         beginResetModel();
 
@@ -230,9 +228,13 @@ void MacTableModel::finishAsyncUpdate()
         }
 
         endResetModel();
-        emit updateFinished(false);
-    } else {
+    }
+
+    if (!mUpdateErrors.isEmpty()) {
+        mError = mUpdateErrors;
         emit updateFinished(true);
+    } else {
+        emit updateFinished(false);
     }
 }
 

@@ -15,15 +15,15 @@ public:
     QString mac() const;
     void setMac(QString mac);
 
-    QString vlanName() const;
-    void setVlanName(QString vlanName);
+    int vlan() const;
+    void setVlan(int vlanTag);
 
     typedef Mac *Ptr;
 
 private:
     int mPort;
     QString mMac;
-    QString mVlanName;
+    int mVlan;
 };
 
 

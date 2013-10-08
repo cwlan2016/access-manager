@@ -165,7 +165,7 @@ void SwitchPageWidget::initView()
 
     ui->macAddressTableView->setModel(macListProxyModel);
     ui->macAddressTableView->setColumnWidth(MacTableModel::PortColumn, 70);
-    ui->macAddressTableView->setColumnWidth(MacTableModel::VlanColumn, 100);
+    ui->macAddressTableView->setColumnWidth(MacTableModel::VlanColumn, 130);
 
     connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
             this, &SwitchPageWidget::macTableViewRequestContextMenu);
