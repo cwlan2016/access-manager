@@ -88,7 +88,8 @@ SOURCES += main.cpp \
     models/switchporttabledelegate.cpp \
     improvedwidgets/improvedmessagewidget.cpp \
     improvedwidgets/improvedlineedit.cpp \
-    improvedwidgets/improvedbusyindicator.cpp
+    improvedwidgets/improvedbusyindicator.cpp \
+    gui/xdslportpvcwidget.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -154,7 +155,8 @@ HEADERS  += basicdialogs.h \
     models/switchporttabledelegate.h \
     improvedwidgets/improvedmessagewidget.h \
     improvedwidgets/improvedlineedit.h \
-    improvedwidgets/improvedbusyindicator.h
+    improvedwidgets/improvedbusyindicator.h \
+    gui/xdslportpvcwidget.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \
@@ -162,7 +164,8 @@ FORMS += gui/mainwindow.ui \
     gui/oltpagewidget.ui \
     gui/aboutpagewidget.ui \
     gui/settingspagewidget.ui \
-    gui/devicetablepagewidget.ui
+    gui/devicetablepagewidget.ui \
+    gui/xdslportpvcwidget.ui
 
 RESOURCES += \
     resource.qrc \

@@ -23,7 +23,7 @@ Project {
             "gui/*.ui"
         ]
 
-        Group {         
+        Group {
             name : "Other Resources"
             files: [
                 "images/*.png",
@@ -54,7 +54,7 @@ Project {
 
         cpp.includePaths: ["."]
 
-//	Bug in this parameter or in my head.        
+//	Bug in this parameter or in my head.
 //        cpp.precompiledHeader: "stdafx.h"
 //        cpp.precompiledHeaderDir : "."
         cpp.cxxFlags: {
@@ -71,4 +71,4 @@ Project {
                 return ["netsnmp"]
         }
     }
-}  
+}

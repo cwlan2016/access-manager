@@ -21,7 +21,7 @@ public:
     void loadDeviceList();
     void loadProgramSettings();
 
-private:    
+private:
     void showMessage(const QString &msg,
                      ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
                      const QString &detailedText = "");
