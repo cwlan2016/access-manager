@@ -34,6 +34,21 @@ SettingsPageWidget::~SettingsPageWidget()
     delete ui;
 }
 
+void SettingsPageWidget::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType)
+{
+    if (msg.isEmpty())
+        return;
+
+    ui->messageWidget->setText(msg);
+    ui->messageWidget->setMessageType(messageType);
+
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
+
+    ui->messageWidget->animatedShow();
+}
+
 void SettingsPageWidget::initGlobalActions()
 {
     connect(ui->saveSettingsButton, &QPushButton::pressed,
@@ -69,16 +84,14 @@ void SettingsPageWidget::initDevicesTabActions()
     ui->dsDslProfileTableView->addAction(ui->editDslProfileAction);
     ui->dsDslProfileTableView->addAction(ui->removeDslProfileAction);
 
+    ui->dsAddProfileButton->setDefaultAction(ui->addDslProfileAction);
+    ui->dsEditProfileButton->setDefaultAction(ui->editDslProfileAction);
+    ui->dsRemoveProfileButton->setDefaultAction(ui->removeDslProfileAction);
+
     connect(ui->dsDeviceModelComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &SettingsPageWidget::dsComboBoxCurrentIndexChanged);
     connect(ui->dsTypeBoardComboBox, static_cast<void (QComboBox:: *)(int)>(&QComboBox::currentIndexChanged),
             this, &SettingsPageWidget::dsComboBoxCurrentIndexChanged);
-    connect(ui->dsAddProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::addDslProfile);
-    connect(ui->dsEditProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::editDslProfile);
-    connect(ui->dsRemoveProfileButton, &QPushButton::pressed,
-            this, &SettingsPageWidget::removeDslProfile);
     connect(ui->addDslProfileAction, &QAction::triggered,
             this, &SettingsPageWidget::addDslProfile);
     connect(ui->editDslProfileAction, &QAction::triggered,
@@ -103,10 +116,10 @@ void SettingsPageWidget::saveSetting()
     SwitchConfig::setIptvVlanName(ui->swIptvUnicastVlanEdit->text().trimmed());
 
     if (!Config::save()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error(), "");
+        showMessage(Config::error(), ImprovedMessageWidget::Error);
         return;
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки программы сохранены."), "");
+        showMessage(trUtf8("Настройки программы сохранены."), ImprovedMessageWidget::Positive);
         return;
     }
 }
@@ -126,56 +139,55 @@ void SettingsPageWidget::resetToDefault()
     initSnmpTabFields();
     initDevicesTabFields();
 
-    BasicDialogs::information(this, QString::fromUtf8("Информация"),
-                              QString::fromUtf8("Настройки сброшены! Нажмите \"Сохранить\" чтобы применить изменения"));
+    showMessage(trUtf8("Настройки сброшены! Нажмите \"Сохранить\" чтобы применить изменения"));
 }
 
 bool SettingsPageWidget::validateSettingsData()
 {
     if (ui->readComEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для чтения!"));
+        showMessage(trUtf8("Введите комьюнити для чтения!"));
         ui->readComEdit->setFocus();
         return false;
     }
 
     if (ui->writeComEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите комьюнити для записи!"));
+        showMessage(trUtf8("Введите комьюнити для записи!"));
         ui->writeComEdit->setFocus();
         return false;
     }
 
     if (ui->timeoutEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута!"));
+        showMessage(trUtf8("Введите значение таймаута!"));
         ui->timeoutEdit->setFocus();
         return false;
     }
 
     if (ui->saveTimeoutEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение таймаута сохранения конфигурации на коммутаторе!"));
+        showMessage(trUtf8("Введите значение таймаута сохранения конфигурации на коммутаторе!"));
         ui->saveTimeoutEdit->setFocus();
         return false;
     }
 
     if (ui->portEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение TCP порта!"));
+        showMessage(trUtf8("Введите значение TCP порта!"));
         ui->portEdit->setFocus();
         return false;
     }
 
     if (ui->retriesEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите значение количества повторов!"));
+        showMessage(trUtf8("Введите значение количества повторов!"));
         ui->retriesEdit->setFocus();
         return false;
     }
 
     if (ui->swInternetVlanEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите названия влана для интернет трафика!"));
+        showMessage(trUtf8("Введите названия влана для интернет трафика!"));
         ui->swInternetVlanEdit->setFocus();
         return false;
     }
 
     if (ui->swIptvUnicastVlanEdit->text().trimmed().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Введите названия влана для юникастового IPTV трафика!"));
+        showMessage(trUtf8("Введите названия влана для юникастового IPTV трафика!"));
         ui->swIptvUnicastVlanEdit->setFocus();
         return false;
     }

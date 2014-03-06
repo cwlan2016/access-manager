@@ -1,7 +1,8 @@
 #ifndef SWITCHPAGEWIDGET_H
 #define SWITCHPAGEWIDGET_H
 
-#include "pagewidget.h"
+#include "devicepagewidget.h"
+#include <improvedwidgets/improvedmessagewidget.h>
 
 class LineEdit;
 
@@ -10,7 +11,7 @@ namespace Ui
 class SwitchPageWidget;
 }
 
-class SwitchPageWidget : public PageWidget
+class SwitchPageWidget : public DevicePageWidget
 {
     Q_OBJECT
 
@@ -18,9 +19,21 @@ public:
     explicit SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent = 0);
     ~SwitchPageWidget();
 
-    void saveSwitchConfig();
+    void init();
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
+                     const QString &detailedText = "");
+    void initActions();
+    void initComponents();
+    void initMenu();
+    void initView();
+
+    void saveSwitchConfig();
+
+    void editDescPort();
+
     void refreshPortInfo();
     void refreshAllPortInfo();
     void refreshMacTable();
@@ -36,9 +49,12 @@ private:
     void macLineEditTextChanged(QString text);
     void macRadioButtonChangeState(bool checked);
 
-    void showPortInfoGroupBox();
+    void showPortInfoFrame();
     void portViewRequestContextMenu(QPoint point);
     void macTableViewRequestContextMenu(QPoint point);
+
+    void updatePortTableFinished(bool withErrors);
+    void updateMacTableFinished(bool withErrors);
 
     Ui::SwitchPageWidget *ui;
 };

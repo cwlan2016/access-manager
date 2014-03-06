@@ -5,33 +5,59 @@
 #include <constant.h>
 #include <devices/switch.h>
 #include <models/mactablemodel.h>
+#include <models/switchporttabledelegate.h>
 #include <models/switchporttablemodel.h>
 
 SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
-    PageWidget(deviceInfo, parent),
+    DevicePageWidget(deviceInfo, parent),
     ui(new Ui::SwitchPageWidget)
 {
     ui->setupUi(this);
 
-    ui->portInfoGroupBox->setVisible(false);
-    ui->portInfoGroupBox->setChecked(false);
+    ui->messageWidget->hide();
+    ui->messageWidget->setCloseButtonVisible(true);
+    ui->macModelMessage->hide();
+    ui->macModelMessage->setCloseButtonVisible(true);
 
-    connect(ui->portListTableView, &QTableView::customContextMenuRequested,
-            this, &SwitchPageWidget::portViewRequestContextMenu);
-    connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
-            this, &SwitchPageWidget::macTableViewRequestContextMenu);
-    connect(ui->portInfoGroupBox, &QGroupBox::toggled,
-            ui->portInfoGroupBox, &QGroupBox::setVisible);
+    ui->updatePortFrame->hide();
+    ui->updateMacFrame->hide();
+}
 
-    connect(ui->macRadioButton, &QRadioButton::toggled,
-            this, &SwitchPageWidget::macRadioButtonChangeState);
-    connect(ui->macLineEdit, &QLineEdit::textChanged,
-            this, &SwitchPageWidget::macLineEditTextChanged);
-    connect(ui->filterPortButton, &QPushButton::pressed,
-            this, &SwitchPageWidget::filterMacAddressByPorts);
+SwitchPageWidget::~SwitchPageWidget()
+{
+    delete ui;
+}
 
+void SwitchPageWidget::init()
+{
+    initActions();
+    initComponents();
+    initMenu();
+    initView();
+}
+
+void SwitchPageWidget::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType,
+                                   const QString &detailedText)
+{
+    if (msg.isEmpty())
+        return;
+
+    ui->messageWidget->setText(msg, detailedText);
+    ui->messageWidget->setMessageType(messageType);
+
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
+
+    ui->messageWidget->animatedShow();
+}
+
+void SwitchPageWidget::initActions()
+{
     connect(ui->showPortInfoAction, &QAction::triggered,
-            this, &SwitchPageWidget::showPortInfoGroupBox);
+            this, &SwitchPageWidget::showPortInfoFrame);
+    connect(ui->editPortDescAction, &QAction::triggered,
+            this, &SwitchPageWidget::editDescPort);
     connect(ui->refreshPortInfoAction, &QAction::triggered,
             this, &SwitchPageWidget::refreshPortInfo);
     connect(ui->refreshAllPortInfoAction, &QAction::triggered,
@@ -46,45 +72,103 @@ SwitchPageWidget::SwitchPageWidget(Device::Ptr deviceInfo, QWidget *parent) :
             this, &SwitchPageWidget::setPortInternetService);
     connect(ui->setPortInetWithIptvStbServiceAction, &QAction::triggered,
             this, &SwitchPageWidget::setPortInternetWithStbService);
+    connect(ui->saveConfigAction, &QAction::triggered,
+            this, &SwitchPageWidget::saveSwitchConfig);
 
+    ui->saveConfigButton->setDefaultAction(ui->saveConfigAction);
+    ui->editPortDescButton->setDefaultAction(ui->editPortDescAction);
+    ui->refreshAllPortInfoButton->setDefaultAction(ui->refreshAllPortInfoAction);
+    ui->refreshMacTableInfoButton->setDefaultAction(ui->refreshMacTableInfoAction);
+}
+
+void SwitchPageWidget::initComponents()
+{
+    ui->portInfoFrame->setVisible(false);
+
+    connect(ui->closePortInfoButton, &QToolButton::pressed,
+            ui->portInfoFrame, &QFrame::hide);
+    connect(ui->macRadioButton, &QRadioButton::toggled,
+            this, &SwitchPageWidget::macRadioButtonChangeState);
+    connect(ui->macLineEdit, &QLineEdit::textChanged,
+            this, &SwitchPageWidget::macLineEditTextChanged);
+    connect(ui->filterPortButton, &QPushButton::pressed,
+            this, &SwitchPageWidget::filterMacAddressByPorts);
+
+    Switch::Ptr switchInfo = qobject_cast<Switch::Ptr>(mDevice);
+
+    ui->portListLineEdit->setText(QString("1-%1").arg(switchInfo->countPorts()));
+}
+
+void SwitchPageWidget::initMenu()
+{
+    mContextMenu->addAction(ui->showPortInfoAction);
+    mContextMenu->addAction(ui->refreshPortInfoAction);
+    mContextMenu->addAction(ui->editPortDescAction);
+    mContextMenu->addSeparator();
+
+    QMenu *mvlanMenu = mContextMenu->addMenu(QIcon(":/images/tv.png"), "Multicast Vlan");
+    mvlanMenu->addAction(ui->addPortToMulticastVlanAction);
+    mvlanMenu->addAction(ui->removePortFromMulticastVlanAction);
+
+    QMenu *settingsPortMenu = mContextMenu->addMenu(QString::fromUtf8("Установить сервис"));
+    settingsPortMenu->addAction(ui->setPortInetServiceAction);
+    settingsPortMenu->addAction(ui->setPortInetWithIptvStbServiceAction);
+
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->refreshAllPortInfoAction);
+
+    mContextMenu->addSeparator();
+    mContextMenu->addAction(ui->refreshMacTableInfoAction);
+}
+
+void SwitchPageWidget::initView()
+{
     //Инициализация модели списка портов
     Switch::Ptr switchInfo = mDevice.objectCast<Switch>();
 
-    SwitchPortTableModel *portListModel = new SwitchPortTableModel(switchInfo, this);
+    SwitchPortTableModel *portTableModel = new SwitchPortTableModel(switchInfo,
+                                                                    ui->messageWidget, this);
+    connect(portTableModel, &SwitchPortTableModel::updateFinished,
+            this, &SwitchPageWidget::updatePortTableFinished);
 
-    portListModel->updateInfoAllPort();
+    ui->updatePortFrame->show();
+    portTableModel->update();
 
-    ui->portListTableView->setModel(portListModel);
-    ui->portListTableView->setColumnWidth(0, 50);
-    ui->portListTableView->setColumnWidth(1, 70);
-    ui->portListTableView->setColumnWidth(2, 145);
+    QSortFilterProxyModel *portProxyModel = new QSortFilterProxyModel(this);
+    portProxyModel->setSourceModel(portTableModel);
+
+    SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(this);
+    portTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
+
+    ui->portListTableView->setModel(portProxyModel);
+    ui->portListTableView->setItemDelegate(portTableDelegate);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::NumberColumn, 50);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::StateColumn, 70);
+    ui->portListTableView->setColumnWidth(SwitchPortTableModel::SpeedDuplexColumn, 145);
+
+    connect(ui->portListTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::portViewRequestContextMenu);
 
     //Инициализация модели таблицы mac-адресов
-    MacTableModel *macListModel = new MacTableModel(switchInfo, this);
+    MacTableModel *macTableModel = new MacTableModel(switchInfo, this);
+    connect(macTableModel, &MacTableModel::updateFinished,
+            this, &SwitchPageWidget::updateMacTableFinished);
 
-    if (!macListModel->update())
-        BasicDialogs::error(this, BasicDialogStrings::Error, macListModel->error());
+    ui->updateMacFrame->show();
+    macTableModel->update();
 
-    QSortFilterProxyModel *macListFilterProxyModel = new QSortFilterProxyModel(this);
-    macListFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    macListFilterProxyModel->setFilterKeyColumn(2);
-    macListFilterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    macListFilterProxyModel->setSourceModel(macListModel);
+    QSortFilterProxyModel *macListProxyModel = new QSortFilterProxyModel(this);
+    macListProxyModel->setFilterRole(Qt::DisplayRole);
+    macListProxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
+    macListProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    macListProxyModel->setSourceModel(macTableModel);
 
-    ui->macAddressTableView->setModel(macListFilterProxyModel);
-    ui->macAddressTableView->setColumnWidth(0, 70);
-    ui->macAddressTableView->setColumnWidth(1, 100);
+    ui->macAddressTableView->setModel(macListProxyModel);
+    ui->macAddressTableView->setColumnWidth(MacTableModel::PortColumn, 70);
+    ui->macAddressTableView->setColumnWidth(MacTableModel::VlanColumn, 130);
 
-    if (switchInfo->deviceModel() == DeviceModel::DES3550) {
-        ui->portListLineEdit->setText("1-50");
-    } else {
-        ui->portListLineEdit->setText("1-26");
-    }
-}
-
-SwitchPageWidget::~SwitchPageWidget()
-{
-    delete ui;
+    connect(ui->macAddressTableView, &QTableView::customContextMenuRequested,
+            this, &SwitchPageWidget::macTableViewRequestContextMenu);
 }
 
 void SwitchPageWidget::saveSwitchConfig()
@@ -92,57 +176,82 @@ void SwitchPageWidget::saveSwitchConfig()
     bool result = mDevice.objectCast<Switch>()->saveConfig();
 
     if (result) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Запрос на сохранение конфигурации коммутатора отправлен."));
+        showMessage(trUtf8("Запрос на сохранение конфигурации коммутатора отправлен."));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Error, mDevice->error());
+        showMessage(mDevice->error(), ImprovedMessageWidget::Error);
     }
+}
+
+void SwitchPageWidget::editDescPort()
+{
+    QModelIndex currentPort = ui->portListTableView->currentIndex();
+
+    if (!currentPort.isValid())
+        return;
+
+    QModelIndex descIndex = ui->portListTableView->model()->index(currentPort.row(),
+                                                              SwitchPortTableModel::DescColumn);
+    ui->portListTableView->setFocus();
+    ui->portListTableView->edit(descIndex);
 }
 
 void SwitchPageWidget::refreshPortInfo()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
         return;
 
-    bool result = portListModel->updateInfoPort(port);
+    if (portListModel->updateIsRunning()) {
+        showMessage(trUtf8("Уже выполняется обновление информации по всем портам."));
+        return;
+    }
+
+    bool result = portListModel->updatePort(port);
 
     if (!result) {
-        BasicDialogs::information(this, BasicDialogStrings::Error, portListModel->error());
+        showMessage(portListModel->error(), ImprovedMessageWidget::Error);
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по порту %1 обновлена.").arg(port));
+        showMessage(trUtf8("Информация по порту %1 обновлена.").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
 void SwitchPageWidget::refreshAllPortInfo()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    ui->portInfoGroupBox->setChecked(false);
+    ui->portInfoFrame->setVisible(false);
 
-    if (!portListModel->updateInfoAllPort()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+    if (portListModel->updateIsRunning()) {
+        showMessage(trUtf8("Уже выполняется обновление информации по всем портам."));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация по всем портам обновлена."));
+        ui->updatePortFrame->show();
+        portListModel->update();
     }
 }
 
 void SwitchPageWidget::refreshMacTable()
 {
+    if (ui->macModelMessage->isVisible())
+        ui->macModelMessage->animatedHide();
+
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
     MacTableModel *macListModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
 
-    if (!macListModel->update()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, macListModel->error());
+    if (macListModel->updateIsRunning()) {
+        showMessage(trUtf8("Обновление таблицы MAC-адресов уже выполняется."));
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация в таблице MAC-адресов обновлена."));
+        ui->updateMacFrame->show();
+        macListModel->update();
     }
 }
 
@@ -158,85 +267,88 @@ void SwitchPageWidget::removePortFromMulticastVlan()
 
 void SwitchPageWidget::changeStateSwitchPortInMulticastVlan(bool state)
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
         return;
 
     if (port == 25 || port == 26) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки на данном порту менять нельзя."));
+        showMessage(trUtf8("Настройки на данном порту менять нельзя."));
         return;
     }
 
     bool result = portListModel->setMemberMulticastVlan(port, state);
 
     if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+        showMessage(portListModel->error(), ImprovedMessageWidget::Error);
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настойки порта изменены."));
+        showMessage(trUtf8("Настойки порта %1 изменены.").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
 void SwitchPageWidget::setPortInternetService()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
         return;
 
     if (port == 25 || port == 26) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки на данном порту менять нельзя."));
+        showMessage(trUtf8("Настройки на данном порту менять нельзя."));
         return;
     }
 
     bool result = portListModel->setMemberInternetService(port);
 
     if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+        showMessage(portListModel->error(), ImprovedMessageWidget::Error);
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт %1 настроен для Интернета.").arg(port));
+        showMessage(trUtf8("Порт %1 настроен для Интернета.").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
 void SwitchPageWidget::setPortInternetWithStbService()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
 
     if (!index.isValid())
         return;
 
     if (port == 25 || port == 26) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Настройки на данном порту менять нельзя."));
+        showMessage(trUtf8("Настройки на данном порту менять нельзя."));
         return;
     }
 
     bool result = portListModel->setMemberInternetWithIptvStbService(port);
 
     if (!result) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, portListModel->error());
+        showMessage(portListModel->error(), ImprovedMessageWidget::Error);
     } else {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Порт настроен для Интернета + Iptv Stb"));
+        showMessage(trUtf8("Порт %1 настроен для Интернета + Iptv Stb").arg(port));
 
-        if (ui->portInfoGroupBox->isVisible())
-            showPortInfoGroupBox();
+        if (ui->portInfoFrame->isVisible())
+            showPortInfoFrame();
     }
 }
 
@@ -244,10 +356,10 @@ void SwitchPageWidget::filterMacAddressByPorts()
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
 
-    proxyModel->setFilterKeyColumn(0);
+    proxyModel->setFilterKeyColumn(MacTableModel::PortColumn);
 
     if (ui->portListLineEdit->text().isEmpty()) {
-        BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Перед фильтрованием необходимо ввести список портов."));
+        showMessage(trUtf8("Перед фильтрованием необходимо ввести список портов."));
         return;
     }
 
@@ -285,7 +397,7 @@ void SwitchPageWidget::macLineEditTextChanged(QString text)
     text = ui->macLineEdit->displayText();
     text.replace('_', "?");
 
-    proxyModel->setFilterKeyColumn(2);
+    proxyModel->setFilterKeyColumn(MacTableModel::MacAddressColumn);
     proxyModel->setFilterWildcard(text);
 }
 
@@ -302,16 +414,17 @@ void SwitchPageWidget::macRadioButtonChangeState(bool checked)
     }
 }
 
-void SwitchPageWidget::showPortInfoGroupBox()
+void SwitchPageWidget::showPortInfoFrame()
 {
-    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(ui->portListTableView->model());
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+    SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
 
-    QModelIndex index = ui->portListTableView->currentIndex();
+    QModelIndex index = proxyModel->mapToSource(ui->portListTableView->currentIndex());
 
     if (!index.isValid())
         return;
 
-    QModelIndex portIndex = portListModel->index(index.row(), 0);
+    QModelIndex portIndex = portListModel->index(index.row(), SwitchPortTableModel::NumberColumn);
     int port = portListModel->data(portIndex).toInt();
     ui->portInetVlanValueLabel->setText(VlanState::toString(portListModel->memberInetVlan(port)));
     ui->portIptvVlanValueLabel->setText(VlanState::toString(portListModel->memberIptvVlan(port)));
@@ -322,8 +435,8 @@ void SwitchPageWidget::showPortInfoGroupBox()
         ui->multicastVlanValueLabel->setPixmap(QPixmap(QString::fromUtf8(":/images/no.png")));
     }
 
-    ui->portInfoGroupBox->setTitle(QString::fromUtf8("Порт %1").arg(port));
-    ui->portInfoGroupBox->setChecked(true);
+    ui->portInfoLabel->setText(QString::fromUtf8("Порт %1").arg(port));
+    ui->portInfoFrame->setVisible(true);
 }
 
 void SwitchPageWidget::portViewRequestContextMenu(QPoint point)
@@ -331,6 +444,7 @@ void SwitchPageWidget::portViewRequestContextMenu(QPoint point)
     QMenu contextMenu(this);
     contextMenu.addAction(ui->showPortInfoAction);
     contextMenu.addAction(ui->refreshPortInfoAction);
+    contextMenu.addAction(ui->editPortDescAction);
     contextMenu.addSeparator();
 
     QMenu *mvlanMenu = contextMenu.addMenu(QIcon(":/images/tv.png"), "Multicast Vlan");
@@ -353,4 +467,38 @@ void SwitchPageWidget::macTableViewRequestContextMenu(QPoint point)
     contextMenu.addAction(ui->refreshMacTableInfoAction);
 
     contextMenu.exec(ui->macAddressTableView->mapToGlobal(point));
+}
+
+void SwitchPageWidget::updatePortTableFinished(bool withErrors)
+{
+    ui->updatePortFrame->hide();
+
+    if (withErrors) {
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->portListTableView->model());
+        SwitchPortTableModel *portListModel = static_cast<SwitchPortTableModel *>(proxyModel->sourceModel());
+        showMessage(trUtf8("Обновление информации по портам завершилось с ошибками."), ImprovedMessageWidget::Error, portListModel->error());
+    } else {
+        showMessage(trUtf8("Обновление информации по всем портам завершилось успешно."), ImprovedMessageWidget::Positive);
+    }
+}
+
+void SwitchPageWidget::updateMacTableFinished(bool withErrors)
+{
+    ui->updateMacFrame->hide();
+
+    QString message;
+
+    if (withErrors) {
+        message = trUtf8("Обновление таблицы MAC-адресов завершилось с ошибками.");
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel *>(ui->macAddressTableView->model());
+        MacTableModel *macTableModel = static_cast<MacTableModel *>(proxyModel->sourceModel());
+        ui->macModelMessage->setMessageType(ImprovedMessageWidget::Error);
+        ui->macModelMessage->setText(message, macTableModel->error());
+    } else {
+        message = trUtf8("Обновление таблицы MAC-адресов завершилось успешно.");
+        ui->macModelMessage->setMessageType(ImprovedMessageWidget::Positive);
+        ui->macModelMessage->setText(message);
+    }
+
+    ui->macModelMessage->animatedShow();
 }

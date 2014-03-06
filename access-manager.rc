@@ -7,8 +7,8 @@ IDI_ICON1               ICON    DISCARDABLE     "data.ico"
 # endif
 
 VS_VERSION_INFO VERSIONINFO
-        FILEVERSION 0,2,1,0
-        PRODUCTVERSION 0,2,1,0
+        FILEVERSION 0,2,2,0
+        PRODUCTVERSION 0,2,2,0
         FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
         FILEFLAGS VS_FF_DEBUG
@@ -25,7 +25,7 @@ VS_VERSION_INFO VERSIONINFO
                         BEGIN
                                 VALUE "CompanyName", "rt.ru\0"
                                 VALUE "FileDescription", "Manage of access devices\0"
-                                VALUE "FileVersion", "0.2.1\0"
+                                VALUE "FileVersion", "0.2.2\0"
                                 VALUE "LegalCopyright", "Gudkov Konstantin & Kuznetsov Vyacheslav © 2012\0"
                                 VALUE "OriginalFilename", "access-manager.exe\0"
                                 VALUE "ProductName", "Access Manager\0"

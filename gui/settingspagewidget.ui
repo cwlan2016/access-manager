@@ -15,6 +15,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="topHorizontalLayout">
      <item>
       <widget class="QListWidget" name="listWidget">
@@ -63,19 +66,19 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="readComEdit"/>
+             <widget class="ImprovedLineEdit" name="readComEdit"/>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="writeComEdit"/>
+             <widget class="ImprovedLineEdit" name="writeComEdit"/>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="timeoutEdit"/>
+             <widget class="ImprovedLineEdit" name="timeoutEdit"/>
             </item>
             <item row="5" column="1">
-             <widget class="QLineEdit" name="portEdit"/>
+             <widget class="ImprovedLineEdit" name="portEdit"/>
             </item>
             <item row="6" column="1">
-             <widget class="QLineEdit" name="retriesEdit"/>
+             <widget class="ImprovedLineEdit" name="retriesEdit"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="writeComLabel">
@@ -113,7 +116,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="saveTimeoutEdit"/>
+             <widget class="ImprovedLineEdit" name="saveTimeoutEdit"/>
             </item>
            </layout>
           </widget>
@@ -125,7 +128,7 @@
          <item>
           <widget class="QTabWidget" name="deviceTabWidget">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="switchTab">
             <attribute name="title">
@@ -153,10 +156,10 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLineEdit" name="swInternetVlanEdit"/>
+                 <widget class="ImprovedLineEdit" name="swInternetVlanEdit"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="swIptvUnicastVlanEdit"/>
+                 <widget class="ImprovedLineEdit" name="swIptvUnicastVlanEdit"/>
                 </item>
                </layout>
               </widget>
@@ -218,7 +221,7 @@
                 <item row="1" column="0" colspan="6">
                  <layout class="QHBoxLayout" name="dsEditProfileButtonsHLayout">
                   <item>
-                   <widget class="QPushButton" name="dsAddProfileButton">
+                   <widget class="QToolButton" name="dsAddProfileButton">
                     <property name="toolTip">
                      <string>Добавить новый DSL профиль...</string>
                     </property>
@@ -229,10 +232,19 @@
                      <iconset resource="../resource.qrc">
                       <normaloff>:/images/add.png</normaloff>:/images/add.png</iconset>
                     </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>22</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="autoRaise">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="dsEditProfileButton">
+                   <widget class="QToolButton" name="dsEditProfileButton">
                     <property name="toolTip">
                      <string>Отредактировать информацию о Dsl профиле...</string>
                     </property>
@@ -243,10 +255,19 @@
                      <iconset resource="../resource.qrc">
                       <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
                     </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>22</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="autoRaise">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="dsRemoveProfileButton">
+                   <widget class="QToolButton" name="dsRemoveProfileButton">
                     <property name="toolTip">
                      <string>Удалить существующий DSL профиль...</string>
                     </property>
@@ -256,6 +277,15 @@
                     <property name="icon">
                      <iconset resource="../resource.qrc">
                       <normaloff>:/images/remove.png</normaloff>:/images/remove.png</iconset>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>22</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="autoRaise">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -396,7 +426,10 @@
      <normalon>:/images/add.png</normalon>:/images/add.png</iconset>
    </property>
    <property name="text">
-    <string>Добавить</string>
+    <string>Добавить новый профиль</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить новый профиль</string>
    </property>
   </action>
   <action name="editDslProfileAction">
@@ -406,7 +439,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Изменить</string>
+    <string>Изменить текущую ячейку</string>
+   </property>
+   <property name="toolTip">
+    <string>Изменить текущую ячейку</string>
    </property>
   </action>
   <action name="removeDslProfileAction">
@@ -416,7 +452,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Удалить</string>
+    <string>Удалить текущий профиль</string>
+   </property>
+   <property name="toolTip">
+    <string>Удалить текущий профиль</string>
    </property>
   </action>
  </widget>

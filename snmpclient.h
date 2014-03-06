@@ -30,6 +30,8 @@ public:
     typedef SnmpClient *Ptr;
 
 private:
+    static void freeOid(const QVector<const oid *> &oidPairList);
+
     QString mIp;
 
     netsnmp_pdu *mPdu;

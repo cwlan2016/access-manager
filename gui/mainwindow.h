@@ -1,7 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "customtypes.h"
+#include <customtypes.h>
+#include <improvedwidgets/improvedmessagewidget.h>
 
 namespace Ui
 {
@@ -20,11 +21,10 @@ public:
     void loadDeviceList();
     void loadProgramSettings();
 
-private:    
-    void upDslPort();
-    void downDslPort();
-
-    void saveSwitchConfig();
+private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information,
+                     const QString &detailedText = "");
 
     void getServiceDataFromDevice();
 
@@ -33,8 +33,6 @@ private:
 
     void tabCurrentChanged(int index);
     void tabCloseRequested(int index);
-
-    void deviceViewActivatedItem(QModelIndex index);
 
     void closeEvent(QCloseEvent *event);
 

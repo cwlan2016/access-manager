@@ -32,6 +32,8 @@ protected:
     virtual QString speedDuplexString(long snmpValue);
 
     int mIndex;
+
+private:
     QString mDescription;
     QString mSpeedDuplex;
     SwitchPortState::Enum mState;

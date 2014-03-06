@@ -23,8 +23,9 @@
 // 1 - model_device
 // 2 - ip
 // 3 - type_device
-DeviceTableModel::DeviceTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+DeviceTableModel::DeviceTableModel(ImprovedMessageWidget *messageWidget, QObject *parent) :
+    QAbstractTableModel(parent),
+    mMessageWidget(messageWidget)
 {
     mDeviceListPath = Config::path() % "devicelist.xml";
     mDeviceListBackupPath = Config::path() % "devicelist.bak";
@@ -49,20 +50,23 @@ QVariant DeviceTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == NameColumn) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        switch (index.column())  {
+        case NameColumn:
             return mList.at(index.row())->name();
-        } else if (index.column() == 1) {
+        case DeviceModelColumn:
             return DeviceModel::toString(mList.at(index.row())->deviceModel());
-        }  else if (index.column() == 2) {
+        case IpColumn:
             return mList.at(index.row())->ip();
-        } else if (index.column() == 3) {
+        case DeviceTypeColumn:
             return DeviceType::toString(mList.at(index.row())->deviceType());
+        default:
+            return QVariant();
         }
     }
 
@@ -75,47 +79,49 @@ bool DeviceTableModel::setData(const QModelIndex &index, const QVariant &value,
     if (!index.isValid() || (role != Qt::EditRole))
         return false;
 
-    if (role == Qt::EditRole) {
-        if (index.column() == 0) {
-            mList[index.row()]->setName(value.toString().trimmed());
-            emit dataChanged(index, index);
+    if (index.column() == NameColumn) {
+        mList[index.row()]->setName(value.toString().trimmed());
+        emit dataChanged(index, index);
 
-            return true;
-        } else if (index.column() == 1) {
-            DeviceModel::Enum newModel = DeviceModel::from(value.toString());
-            DeviceType::Enum newType = DeviceType::from(newModel);
+        return true;
+    } else if (index.column() == DeviceModelColumn) {
+        DeviceModel::Enum newModel = DeviceModel::from(value.toString());
+        DeviceType::Enum newType = DeviceType::from(newModel);
 
-            QModelIndex deviceTypeIndex = this->index(index.row(), 3);
+        QModelIndex deviceTypeIndex = this->index(index.row(), DeviceTypeColumn);
 
-            if (mList.at(index.row())->deviceModel() == newModel)
-                return false;
+        if (mList.at(index.row())->deviceModel() == newModel)
+            return false;
 
-            if ((mList.at(index.row())->deviceType() == DeviceType::Other)
-                    || (mList.at(index.row())->deviceType() == newType)) {
-                changeDeviceModel(index.row(), newType, newModel);
-            } else {
-                BasicDialogs::information(0, BasicDialogStrings::Info,
-                                          QString::fromUtf8("Запрещено менять модель с одного типа устройства на другое."));
-                return false;
-            }
+        if ((mList.at(index.row())->deviceType() == DeviceType::Other)
+                || (mList.at(index.row())->deviceType() == newType)) {
+            changeDeviceModel(index.row(), newType, newModel);
+        } else {
+            mMessageWidget->setMessageType(ImprovedMessageWidget::Information);
+            mMessageWidget->setText(trUtf8("Запрещено менять модель с одного типа устройства на другое."));
+            mMessageWidget->animatedShow();
 
-            emit dataChanged(index, index);
-            emit dataChanged(deviceTypeIndex, deviceTypeIndex);
-
-            return true;
-        } else if (index.column() == 2) {
-            if (!validIpAddress(value.toString())) {
-                BasicDialogs::information(0, trUtf8("Редактирование IP адреса"),
-                                          trUtf8("Некорректный IP адрес."));
-                return false;
-            }
-
-            mList[index.row()]->setIp(value.toString().trimmed());
-            emit dataChanged(index, index);
-            //mModified = true;
-
-            return true;
+            return false;
         }
+
+        emit dataChanged(index, index);
+        emit dataChanged(deviceTypeIndex, deviceTypeIndex);
+
+        return true;
+    } else if (index.column() == IpColumn) {
+        //TODO: make QRegExpValidator in delegate. remove this check
+        if (!validIpAddress(value.toString())) {
+            mMessageWidget->setMessageType(ImprovedMessageWidget::Information);
+            mMessageWidget->setText(trUtf8("Некорректный IP адрес."));
+            mMessageWidget->animatedShow();
+
+            return false;
+        }
+
+        mList[index.row()]->setIp(value.toString().trimmed());
+        emit dataChanged(index, index);
+
+        return true;
     }
 
     return false;
@@ -128,14 +134,17 @@ QVariant DeviceTableModel::headerData(int section, Qt::Orientation orientation,
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        switch (section) {
+        case NameColumn:
             return DeviceTableModelStrings::Name;
-        } else if (section == 1) {
+        case DeviceModelColumn:
             return DeviceTableModelStrings::DeviceModel;
-        } else if (section == 2) {
+        case IpColumn:
             return DeviceTableModelStrings::IP;
-        } else if (section == 3) {
+        case DeviceTypeColumn:
             return DeviceTableModelStrings::DeviceType;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -152,7 +161,7 @@ Qt::ItemFlags DeviceTableModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-    if (index.column() != 3)
+    if (index.column() != DeviceTypeColumn)
         flags |= Qt::ItemIsEditable;
 
     return flags;
@@ -317,11 +326,6 @@ QVector<Device::Ptr> &DeviceTableModel::deviceList()
     return mList;
 }
 
-BoardTableModel *DeviceTableModel::boardListModel(QModelIndex index)
-{
-    return mList.at(index.row()).objectCast<Dslam>()->boardTableModel();
-}
-
 int DeviceTableModel::inetVlan(QModelIndex index)
 {
     return mList.at(index.row()).objectCast<Switch>()->inetVlanTag();
@@ -478,14 +482,10 @@ void DeviceTableModel::readDslamBoardList(QXmlStreamReader &reader,
 {
     Dslam::Ptr dslamInfo = deviceInfo.objectCast<Dslam>();
 
-    int index;
-    int firstPair;
-    BoardType::Enum type;
-
     while (reader.name() == "board") {
-        index = reader.attributes().value("number").toString().toInt();
-        firstPair = reader.attributes().value("firstpair").toString().toInt();
-        type = BoardType::from(reader.attributes().value("type").toString());
+        int index = reader.attributes().value("number").toString().toInt();
+        int firstPair = reader.attributes().value("firstpair").toString().toInt();
+        BoardType::Enum type = BoardType::from(reader.attributes().value("type").toString());
         dslamInfo->boardTableModel()->addBoard(index, type, firstPair);
 
         readNextElement(reader);

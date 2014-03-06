@@ -31,37 +31,16 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::tabCloseRequested);
     connect(ui->tabWidget, &QTabWidget::currentChanged,
             this, &MainWindow::tabCurrentChanged);
-    connect(ui->saveConfigSwitchAction, &QAction::triggered,
-            this, &MainWindow::saveSwitchConfig);
-    connect(ui->upPortAction, &QAction::triggered,
-            this, &MainWindow::upDslPort);
-    connect(ui->downPortAction, &QAction::triggered,
-            this, &MainWindow::downDslPort);
     connect(ui->updateServiceDataAction, &QAction::triggered,
             this, &MainWindow::getServiceDataFromDevice);
-
-    //Panels actions
-    connect(ui->mainBarAction, &QAction::triggered,
-            ui->mainToolBar, &QToolBar::setVisible);
-    connect(ui->mainToolBar, &QToolBar::visibilityChanged,
-            ui->mainBarAction, &QAction::setChecked);
-    connect(ui->switchBarAction, &QAction::triggered,
-            ui->switchToolBar, &QToolBar::setVisible);
-    connect(ui->switchToolBar, &QToolBar::visibilityChanged,
-            ui->switchBarAction, &QAction::setChecked);
-    connect(ui->dslamBarAction, &QAction::triggered,
-            ui->dslamToolBar, &QToolBar::setVisible);
-    connect(ui->dslamToolBar, &QToolBar::visibilityChanged,
-            ui->dslamBarAction, &QAction::setChecked);
-
-    ui->menuSwitch->setEnabled(false);
-    ui->menuDslam->setEnabled(false);
-    ui->menuOlt->setEnabled(false);
 
     this->setWindowState(Qt::WindowMaximized);
 
     mTypePageList = new QVector<PageType::Enum>();
     mPageList = new QHash<QString, QWidget *>();
+
+    ui->messageWidget->setCloseButtonVisible(true);
+    ui->messageWidget->hide();
 }
 
 MainWindow::~MainWindow()
@@ -74,16 +53,9 @@ MainWindow::~MainWindow()
 void MainWindow::createDeviceListPage()
 {
     DeviceTablePageWidget *deviceListPage = new DeviceTablePageWidget(ui->tabWidget, mTypePageList, mPageList, this);
+    deviceListPage->init();
     deviceListPage->setObjectName(QString::fromUtf8("deviceListTab"));
 
-    connect(ui->openDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::openDevice);
-    connect(ui->addDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::addDevice);
-    connect(ui->editDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::editDevice);
-    connect(ui->removeDeviceAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::removeDevice);
     connect(ui->loadDeviceListAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::loadDeviceList);
     connect(ui->saveDeviceListAction, &QAction::triggered,
@@ -96,12 +68,6 @@ void MainWindow::createDeviceListPage()
             deviceListPage, &DeviceTablePageWidget::batchUpdateInfoAllDevices);
     connect(ui->updateAllProfileOltInfoAction, &QAction::triggered,
             deviceListPage, &DeviceTablePageWidget::batchUpdateProfilesOlt);
-    connect(ui->editDslamBoardListAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::showEditDslamBoardListPage);
-    connect(ui->showVlanSwitchAction, &QAction::triggered,
-            deviceListPage, &DeviceTablePageWidget::showVlanInfoGroupBox);
-    connect(deviceListPage, &DeviceTablePageWidget::changedActiveItem,
-            this, &MainWindow::deviceViewActivatedItem);
 
     mPageList->insert(deviceListPage->objectName(), deviceListPage);
     mTypePageList->push_back(PageType::DeviceListPage);
@@ -118,40 +84,25 @@ void MainWindow::loadDeviceList()
 void MainWindow::loadProgramSettings()
 {
     if (!Config::load()) {
-        BasicDialogs::error(this, BasicDialogStrings::Error, Config::error());
+        showMessage(Config::error(), ImprovedMessageWidget::Error);
     }
 }
 
-void MainWindow::upDslPort()
+void MainWindow::showMessage(const QString &msg, ImprovedMessageWidget::MessageType messageType,
+                             const QString &detailedText)
 {
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage) {
+    if (msg.isEmpty()) {
         return;
     }
 
-    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
+    ui->messageWidget->setText(msg, detailedText);
+    ui->messageWidget->setMessageType(messageType);
 
-    dslamPageWidget->upDslPort();
-}
+    ui->messageWidget->setWordWrap(false);
+    const int unwrappedWidth = ui->messageWidget->sizeHint().width();
+    ui->messageWidget->setWordWrap(unwrappedWidth > size().width());
 
-void MainWindow::downDslPort()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::DslamPage)
-        return;
-
-    DslamPageWidget *dslamPageWidget = qobject_cast<DslamPageWidget *>(ui->tabWidget->currentWidget());
-
-    dslamPageWidget->downDslPort();
-}
-
-void MainWindow::saveSwitchConfig()
-{
-    if (mTypePageList->at(ui->tabWidget->currentIndex()) != PageType::SwitchPage) {
-        return;
-    }
-
-    SwitchPageWidget *switchPageWidget = qobject_cast<SwitchPageWidget *>(ui->tabWidget->currentWidget());
-
-    switchPageWidget->saveSwitchConfig();
+    ui->messageWidget->animatedShow();
 }
 
 void MainWindow::getServiceDataFromDevice()
@@ -165,14 +116,14 @@ void MainWindow::getServiceDataFromDevice()
     } else if ((currentPageType == PageType::DslamPage)
                || (currentPageType == PageType::SwitchPage)
                || (currentPageType == PageType::OltPage)) {
-        PageWidget *widget = qobject_cast<PageWidget *>(ui->tabWidget->currentWidget());
+        DevicePageWidget *widget = qobject_cast<DevicePageWidget *>(ui->tabWidget->currentWidget());
 
         bool result = widget->device()->getServiceDataFromDevice();
 
         if (!result) {
-            BasicDialogs::error(this, BasicDialogStrings::Error, widget->device()->error());
+            showMessage(widget->device()->error(), ImprovedMessageWidget::Error);
         } else {
-            BasicDialogs::information(this, BasicDialogStrings::Info, QString::fromUtf8("Информация c устройства получена."));
+            showMessage(trUtf8("Информация c устройства получена."), ImprovedMessageWidget::Information);
         }
     }
 }
@@ -207,7 +158,8 @@ void MainWindow::showSettingsPage()
     mPageList->insert(settingsTab->objectName(), settingsTab);
     mTypePageList->push_back(PageType::SettingsPage);
 
-    ui->tabWidget->addTab(settingsTab, QString::fromUtf8("Настройки"));
+    QPixmap pixmap(":/images/configure.png");
+    ui->tabWidget->addTab(settingsTab, pixmap, QString::fromUtf8("Настройки"));
     ui->tabWidget->setCurrentWidget(settingsTab);
 }
 
@@ -215,30 +167,22 @@ void MainWindow::tabCurrentChanged(int index)
 {
     PageType::Enum pageType = mTypePageList->at(ui->tabWidget->currentIndex());
 
-    ui->mainToolBar->setEnabled(pageType == PageType::DeviceListPage);
-    ui->dslamToolBar->setEnabled(pageType == PageType::DslamPage);
-    ui->switchToolBar->setEnabled(pageType == PageType::SwitchPage);
-    ui->openDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->addDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->editDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-    ui->removeDeviceAction->setEnabled(pageType == PageType::DeviceListPage);
-
-    if (index != 0) {
-        ui->menuDslam->setEnabled(false);
-        ui->menuSwitch->setEnabled(false);
-        ui->menuOlt->setEnabled(false);
-    } else {
+    if (index == 0) {
         DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
         deviceListPage->clearSelection();
     }
 
     if ((pageType == PageType::DeviceListPage)
             || (pageType == PageType::DslamPage)
-            || (pageType == PageType::DslamPage)
-            || (pageType == PageType::DslamPage)) {
+            || (pageType == PageType::SwitchPage)
+            || (pageType == PageType::OltPage)) {
         ui->updateServiceDataAction->setEnabled(true);
+
+        PageWidget *page = qobject_cast<PageWidget *>(ui->tabWidget->currentWidget());
+        ui->currentTabAction->setMenu(page->contextMenu());
     } else {
         ui->updateServiceDataAction->setEnabled(false);
+        ui->currentTabAction->setMenu(new QMenu(this));
     }
 }
 
@@ -252,25 +196,6 @@ void MainWindow::tabCloseRequested(int index)
 
         delete deletedWidget;
     }
-}
-
-void MainWindow::deviceViewActivatedItem(QModelIndex index)
-{
-    if (!index.isValid())
-        return;
-
-    DeviceTablePageWidget *deviceListPage = qobject_cast<DeviceTablePageWidget *>(mPageList->value("deviceListTab"));
-
-    DeviceTableModel *deviceListModel = deviceListPage->deviceTableModel();
-    index = deviceListPage->proxyModel()->mapToSource(index);
-
-    QModelIndex deviceTypeIndex = deviceListModel->index(index.row(), 3);
-    QString deviceTypeString = deviceListModel->data(deviceTypeIndex).toString();
-    DeviceType::Enum deviceType = DeviceType::from(deviceTypeString);
-
-    ui->menuDslam->setEnabled(deviceType == DeviceType::Dslam);
-    ui->menuSwitch->setEnabled(deviceType == DeviceType::Switch);
-    ui->menuOlt->setEnabled(deviceType == DeviceType::Olt);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -297,14 +222,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     if (result == QMessageBox::RejectRole) {
         event->ignore();
+        return;
     } else if (result == QMessageBox::YesRole) {
         if (!deviceListModel->save()) {
-            BasicDialogs::warning(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Ошибка: сохранение списка устройств не удалось."), deviceListModel->error());
+            showMessage(trUtf8("Cохранение списка устройств не удалось."),
+                        ImprovedMessageWidget::Warning, deviceListModel->error());
         } else {
-            BasicDialogs::information(this, QString::fromUtf8("Сохранение данных"), QString::fromUtf8("Информация: список устройств сохранен."));
+            showMessage(trUtf8("Cписок устройств сохранен."),
+                        ImprovedMessageWidget::Positive);
         }
-
-        event->accept();
-        DslamProfileConfig::deinit();
     }
+
+    event->accept();
+    DslamProfileConfig::deinit();
 }

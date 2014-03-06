@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>713</width>
-    <height>531</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,21 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
     <number>3</number>
    </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
+   <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+   </item>
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -27,7 +39,16 @@
      </property>
      <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="leftVerticalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item>
@@ -69,7 +90,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="filterOntLineEdit">
+          <widget class="ImprovedLineEdit" name="filterOntLineEdit">
            <property name="readOnly">
             <bool>false</bool>
            </property>
@@ -100,15 +121,49 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="userSettingsGroupBox">
-         <property name="title">
-          <string>ACS настройки пользователя [NTP-1 xxx] </string>
+        <widget class="QFrame" name="userSettingsFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0" colspan="2">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="userSettingsLabel">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>ACS настройки пользователя [NTP-1 xxx] </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="closeUserSettingsFrameButton">
+              <property name="toolTip">
+               <string>Закрыть</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../resource.qrc">
+                <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QGroupBox" name="pppSettingsGroupBox">
             <property name="title">
              <string>Настройки PPP</string>
@@ -125,7 +180,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="pppLoginLineEdit"/>
+              <widget class="ImprovedLineEdit" name="pppLoginLineEdit"/>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="pppPasswordLabel">
@@ -135,19 +190,19 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="pppPasswordLineEdit"/>
+              <widget class="ImprovedLineEdit" name="pppPasswordLineEdit"/>
              </item>
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
+          <item>
            <widget class="QGroupBox" name="sipSettingsGroupBox">
             <property name="title">
              <string>Настройки SIP</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="2" column="1">
-              <widget class="QLineEdit" name="sipProxyLineEdit"/>
+              <widget class="ImprovedLineEdit" name="sipProxyLineEdit"/>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="sipProxyLabel">
@@ -183,10 +238,10 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLineEdit" name="loginPhone2LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="loginPhone2LineEdit"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="passwordPhone2LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="passwordPhone2LineEdit"/>
                 </item>
                </layout>
               </widget>
@@ -211,10 +266,10 @@
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="loginPhone1LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="loginPhone1LineEdit"/>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QLineEdit" name="passwordPhone1LineEdit"/>
+                 <widget class="ImprovedLineEdit" name="passwordPhone1LineEdit"/>
                 </item>
                 <item row="3" column="0">
                  <widget class="QLabel" name="passwordPhone1Label">
@@ -229,7 +284,7 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item>
            <widget class="QPushButton" name="applyCredentialsButton">
             <property name="text">
              <string>Применить изменения</string>
@@ -243,7 +298,16 @@
      </widget>
      <widget class="QWidget" name="verticalLayoutWidget_2">
       <layout class="QVBoxLayout" name="rightVerticalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item>
@@ -270,7 +334,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="macLineEdit"/>
+           <widget class="ImprovedLineEdit" name="macLineEdit"/>
           </item>
           <item>
            <widget class="QRadioButton" name="portRadioButton">
@@ -280,7 +344,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="portListLineEdit">
+           <widget class="ImprovedLineEdit" name="portListLineEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -324,6 +388,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

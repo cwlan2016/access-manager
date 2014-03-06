@@ -44,9 +44,9 @@ QVariant DslProfileTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::TextAlignmentRole) {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        if (index.column() == DisplayNameColumn) {
             return mList.at(index.row()).first;
-        } else if (index.column() == 1) {
+        } else if (index.column() == DslamNameColumn) {
             return mList.at(index.row()).second;
         }
     } else if (role == Qt::FontRole) {
@@ -68,12 +68,12 @@ bool DslProfileTableModel::setData(const QModelIndex &index,
         return false;
 
     if (role == Qt::EditRole) {
-        if (index.column() == 0) {
+        if (index.column() == DisplayNameColumn) {
             mList[index.row()].first = value.toString();
             emit dataChanged(index, index);
 
             return true;
-        } else if (index.column() == 1) {
+        } else if (index.column() == DslamNameColumn) {
             mList[index.row()].second = value.toString();
             emit dataChanged(index, index);
 
@@ -92,9 +92,9 @@ QVariant DslProfileTableModel::headerData(int section,
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        if (section == DisplayNameColumn) {
             return DslProfileTableModelStrings::DisplayName;
-        } else if (section == 1) {
+        } else if (section == DslamNameColumn) {
             return DslProfileTableModelStrings::DslamName;
         }
     } else if (role == Qt::TextAlignmentRole) {

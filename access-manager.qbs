@@ -24,36 +24,51 @@ Project {
         ]
 
         Group {
-            name : "Resources"
+            name : "Other Resources"
             files: [
                 "images/*.png",
+                "gui/icons/*.png",
                 "data.ico",
-                "access-manager.rc",
-                "schemadevicelist.xsd",
+                "schemadevicelist.xsd"
+            ]
+        }
+
+        Group {
+            fileTags: ["qrc"]
+            name: "Qt Resource"
+            files: [
                 "resource.qrc"
             ]
         }
 
-        Depends { name: "Qt"; submodules: ["core", "gui", "widgets", "xmlpatterns"] }
+        Group {
+            fileTags: ["rc"]
+            name: "RC Resource"
+            files: [
+                "access-manager.rc"
+            ]
+        }
+
+        Depends { name: "Qt"; submodules: ["core", "gui", "widgets", "xmlpatterns", "concurrent"] }
         Depends { name: "cpp" }
 
         cpp.includePaths: ["."]
 
-//	Bug in this parameter or in my head.        
-//       cpp.precompiledHeader: "stdafx.h"
-
+//	Bug in this parameter or in my head.
+//        cpp.precompiledHeader: "stdafx.h"
+//        cpp.precompiledHeaderDir : "."
         cpp.cxxFlags: {
-            if ((qbs.toolchain == "gcc") || (qbs.toolchain == "mingw") || (qbs.toolchain == "clang"))
-                return "-std=c++11"
+        if (qbs.toolchain.contains("gcc")
+                || qbs.toolchain.contains("mingw")
+                || qbs.toolchain.contains("clang"))
+            return "-std=c++11"
         }
 
         cpp.dynamicLibraries: {
-            if ((qbs.targetOS == "windows") && (qbs.buildVariant == "debug"))
-                return ["netsnmpd","wsock32","advapi32"]
-            else if ((qbs.targetOS == "windows") && (qbs.buildVariant == "release"))
+            if (qbs.targetOS.contains("windows"))
                 return ["netsnmp","wsock32","advapi32"]
             else
                 return ["netsnmp"]
         }
     }
-}  
+}

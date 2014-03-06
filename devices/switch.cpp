@@ -67,6 +67,18 @@ int Switch::countPorts()
     return 0;
 }
 
+int Switch::sizePortBitArray()
+{
+    return 0;
+}
+
+SwitchPort::Ptr Switch::createPort(QObject *parentModel)
+{
+    Q_UNUSED(parentModel);
+
+    return 0;
+}
+
 bool Switch::getServiceDataFromDevice()
 {
     mError.clear();
@@ -118,7 +130,7 @@ bool Switch::getServiceDataFromDevice()
         snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
     }
 
-    if (!findedInet && !findedInet) {
+    if (!(findedInet || findedIptv)) {
         mError = QString::fromUtf8("Вланы для интернета и iptv на коммутаторе %1 [%2] не найдены.").arg(name(), ip());
     } else if (!findedInet) {
         mError = QString::fromUtf8("Влан для интернета на коммутаторе %1 [%2] не найден.").arg(name(), ip());

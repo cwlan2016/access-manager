@@ -44,6 +44,9 @@
      <number>0</number>
     </property>
     <item>
+     <widget class="ImprovedMessageWidget" name="messageWidget"/>
+    </item>
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
@@ -89,18 +92,6 @@
     <property name="title">
      <string>Оборудование</string>
     </property>
-    <widget class="QMenu" name="menuDslam">
-     <property name="title">
-      <string>Дслам</string>
-     </property>
-     <addaction name="editDslamBoardListAction"/>
-    </widget>
-    <widget class="QMenu" name="menuSwitch">
-     <property name="title">
-      <string>Коммутатор</string>
-     </property>
-     <addaction name="showVlanSwitchAction"/>
-    </widget>
     <widget class="QMenu" name="menuBatchUpdate">
      <property name="title">
       <string>Пакетное обновление</string>
@@ -111,21 +102,7 @@
      <addaction name="separator"/>
      <addaction name="updateInfoAllDevicesAction"/>
     </widget>
-    <widget class="QMenu" name="menuOlt">
-     <property name="title">
-      <string>Олт</string>
-     </property>
-     <addaction name="showProfilesOltAction"/>
-    </widget>
-    <addaction name="openDeviceAction"/>
-    <addaction name="separator"/>
-    <addaction name="addDeviceAction"/>
-    <addaction name="editDeviceAction"/>
-    <addaction name="removeDeviceAction"/>
-    <addaction name="separator"/>
-    <addaction name="menuDslam"/>
-    <addaction name="menuSwitch"/>
-    <addaction name="menuOlt"/>
+    <addaction name="currentTabAction"/>
     <addaction name="separator"/>
     <addaction name="updateServiceDataAction"/>
     <addaction name="separator"/>
@@ -137,20 +114,6 @@
     </property>
     <addaction name="aboutAction"/>
    </widget>
-   <widget class="QMenu" name="viewMenu">
-    <property name="title">
-     <string>Вид</string>
-    </property>
-    <widget class="QMenu" name="barsMenu">
-     <property name="title">
-      <string>Панель инструментов</string>
-     </property>
-     <addaction name="mainBarAction"/>
-     <addaction name="switchBarAction"/>
-     <addaction name="dslamBarAction"/>
-    </widget>
-    <addaction name="barsMenu"/>
-   </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>Конфигурация</string>
@@ -159,70 +122,10 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConfiguration"/>
-   <addaction name="viewMenu"/>
    <addaction name="menu_2"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <property name="contextMenuPolicy">
-    <enum>Qt::NoContextMenu</enum>
-   </property>
-   <property name="windowTitle">
-    <string>Основная панель</string>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>24</width>
-     <height>24</height>
-    </size>
-   </property>
-   <property name="floatable">
-    <bool>false</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="openDeviceAction"/>
-   <addaction name="separator"/>
-   <addaction name="addDeviceAction"/>
-   <addaction name="editDeviceAction"/>
-   <addaction name="removeDeviceAction"/>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QToolBar" name="switchToolBar">
-   <property name="windowTitle">
-    <string>Операции с коммутатором</string>
-   </property>
-   <property name="toolTip">
-    <string/>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="saveConfigSwitchAction"/>
-  </widget>
-  <widget class="QToolBar" name="dslamToolBar">
-   <property name="windowTitle">
-    <string>Операции с дсламом</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="upPortAction"/>
-   <addaction name="downPortAction"/>
-  </widget>
   <action name="aboutAction">
    <property name="text">
     <string>О программе...</string>
@@ -248,60 +151,9 @@
     <string>Сохранить список устройств</string>
    </property>
   </action>
-  <action name="addDeviceAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/add.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Добавить</string>
-   </property>
-  </action>
-  <action name="removeDeviceAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/remove.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Удалить</string>
-   </property>
-  </action>
-  <action name="editDeviceAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/edit.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Изменить</string>
-   </property>
-  </action>
-  <action name="openDeviceAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/open.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Открыть</string>
-   </property>
-   <property name="toolTip">
-    <string>Зайти на устройство</string>
-   </property>
-  </action>
   <action name="exitAction">
    <property name="text">
     <string>Выход</string>
-   </property>
-  </action>
-  <action name="showVlanSwitchAction">
-   <property name="text">
-    <string>Вланы</string>
-   </property>
-   <property name="toolTip">
-    <string>Информация о вланах коммутатора</string>
    </property>
   </action>
   <action name="updateAllDslamBoardsInfoAction">
@@ -312,92 +164,12 @@
     <string>Обновить информацию о досках на всех dslam'ах...</string>
    </property>
   </action>
-  <action name="editDslamBoardListAction">
-   <property name="text">
-    <string>Редактировать доски</string>
-   </property>
-   <property name="toolTip">
-    <string>Редактировать доски</string>
-   </property>
-  </action>
   <action name="updateVlanAllSwitchAction">
    <property name="text">
     <string>Вланов на коммутаторах...</string>
    </property>
    <property name="toolTip">
     <string>Обновить информацию о вланах на всех коммутаторах...</string>
-   </property>
-  </action>
-  <action name="saveConfigSwitchAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/save.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Сохранить конфигурацию</string>
-   </property>
-   <property name="toolTip">
-    <string>Сохранить конфигурацию</string>
-   </property>
-  </action>
-  <action name="downPortAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/down.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Деактивировать порт</string>
-   </property>
-   <property name="toolTip">
-    <string>Деактивировать порт</string>
-   </property>
-  </action>
-  <action name="mainBarAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Основная панель</string>
-   </property>
-  </action>
-  <action name="switchBarAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Операции с коммутатором</string>
-   </property>
-  </action>
-  <action name="dslamBarAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Операции с дсламом</string>
-   </property>
-  </action>
-  <action name="upPortAction">
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/up.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Активировать порт</string>
-   </property>
-   <property name="toolTip">
-    <string>Активировать порт</string>
    </property>
   </action>
   <action name="updateInfoAllDevicesAction">
@@ -415,13 +187,20 @@
     <string>Обновить информацию об устройстве</string>
    </property>
   </action>
-  <action name="showProfilesOltAction">
+  <action name="currentTabAction">
    <property name="text">
-    <string>Профили</string>
+    <string>Текущая вкладка</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ImprovedMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>improvedwidgets/improvedmessagewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../resource.qrc"/>
  </resources>

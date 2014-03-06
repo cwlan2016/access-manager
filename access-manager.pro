@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xmlpatterns widgets
+QT       += core gui xmlpatterns widgets concurrent
 
 TARGET = access-manager
 TEMPLATE = app
@@ -21,6 +21,7 @@ clang*:QMAKE_CXXFLAGS+="-std=c++11"
 RC_FILE = access-manager.rc
 
 INCLUDEPATH += $$PWD
+INCLUDEPATH += improvedwidgets
 
 SOURCES += main.cpp \    
     basicdialogs.cpp \
@@ -71,19 +72,24 @@ SOURCES += main.cpp \
     configs/switchconfig.cpp \
     configs/snmpconfig.cpp \
     gui/mainwindow.cpp \
-    gui/lineedit.cpp \
     gui/dslampagewidget.cpp \
     gui/pagewidget.cpp \
     gui/switchpagewidget.cpp \
     gui/oltpagewidget.cpp \    
-    gui/editdslamboardtablepagewidget.cpp \
     gui/aboutpagewidget.cpp \
     gui/settingspagewidget.cpp \
     gui/devicetablepagewidget.cpp \
     configs/dslamprofileconfig.cpp \
     models/dslprofiletablemodel.cpp \
     ports/shdslportma5300.cpp \
-    ports/shdslportma5600.cpp
+    ports/shdslportma5600.cpp \
+    gui/devicepagewidget.cpp \
+    models/dslamporttabledelegate.cpp \
+    models/switchporttabledelegate.cpp \
+    improvedwidgets/improvedmessagewidget.cpp \
+    improvedwidgets/improvedlineedit.cpp \
+    improvedwidgets/improvedbusyindicator.cpp \
+    gui/xdslportpvcwidget.cpp
 
 HEADERS  += basicdialogs.h \
     config.h \
@@ -133,43 +139,45 @@ HEADERS  += basicdialogs.h \
     configs/snmpconfig.h \
     configs/switchconfig.h \
     gui/mainwindow.h \
-    gui/lineedit.h \
     gui/dslampagewidget.h \
     gui/pagewidget.h \
     gui/switchpagewidget.h \
     gui/oltpagewidget.h \
-    gui/editdslamboardtablepagewidget.h \
     gui/aboutpagewidget.h \
     gui/settingspagewidget.h \
     gui/devicetablepagewidget.h \ 
-    lineedit.h \
     configs/dslamprofileconfig.h \
     models/dslprofiletablemodel.h \
     ports/shdslportma5300.h \
-    ports/shdslportma5600.h
+    ports/shdslportma5600.h \
+    gui/devicepagewidget.h \
+    models/dslamporttabledelegate.h \
+    models/switchporttabledelegate.h \
+    improvedwidgets/improvedmessagewidget.h \
+    improvedwidgets/improvedlineedit.h \
+    improvedwidgets/improvedbusyindicator.h \
+    gui/xdslportpvcwidget.h
     
 FORMS += gui/mainwindow.ui \
     gui/dslampagewidget.ui \
     gui/switchpagewidget.ui \
     gui/oltpagewidget.ui \
-    gui/editdslamboardtablepagewidget.ui \
     gui/aboutpagewidget.ui \
     gui/settingspagewidget.ui \
-    gui/devicetablepagewidget.ui
+    gui/devicetablepagewidget.ui \
+    gui/xdslportpvcwidget.ui
 
 RESOURCES += \
-    resource.qrc
+    resource.qrc \
+    improvedwidgets/improvedwidgets.qrc
 
-win32:debug:LIBS += -lnetsnmpd
-win32:release:LIBS += -lnetsnmp
-!win32:LIBS += -lnetsnmp
+LIBS += -lnetsnmp
 
-win32:LIBS+= -lwsock32
+win32:LIBS+= -lws2_32
 win32:LIBS+= -ladvapi32
 
 OTHER_FILES += \
     images/up16.png \
-    images/table16.png \
     images/info16.png \
     images/yes16.png \
     images/tv.png \
@@ -184,10 +192,20 @@ OTHER_FILES += \
     images/down16.png \
     images/configure.png \
     images/add16.png \
-    images/clear_left.png \
     data.ico \
     access-manager.rc \
-    schemadevicelist.xsd
+    schemadevicelist.xsd \
+    images/edit2.png \
+    images/node.png \
+    images/profile.png \
+    improvedwidgets/images/go-up.png \
+    improvedwidgets/images/go-down.png \
+    improvedwidgets/images/error.png \
+    improvedwidgets/images/close.png \
+    improvedwidgets/images/clear_left.png \
+    improvedwidgets/images/warning.png \
+    improvedwidgets/images/positive.png \
+    improvedwidgets/images/information.png
 
 HEADERS += \
     stdafx.h

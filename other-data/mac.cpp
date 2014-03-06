@@ -25,12 +25,12 @@ void Mac::setMac(QString mac)
     mMac = mac;
 }
 
-QString Mac::vlanName() const
+int Mac::vlan() const
 {
-    return mVlanName;
+    return mVlan;
 }
 
-void Mac::setVlanName(QString vlanName)
+void Mac::setVlan(int vlanTag)
 {
-    mVlanName = vlanName;
+    mVlan = vlanTag;
 }

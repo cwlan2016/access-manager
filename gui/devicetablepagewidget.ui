@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>347</height>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,154 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="LineEdit" name="filterNameLineEdit" native="true">
-     <property name="placeholderText" stdset="0">
+    <widget class="ImprovedMessageWidget" name="messageWidget"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="openDeviceTabButton">
+       <property name="toolTip">
+        <string>Зайти на устройство</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="addDeviceButton">
+       <property name="toolTip">
+        <string>Добавить новое устройство</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/add.png</normaloff>:/images/add.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="editDeviceButton">
+       <property name="toolTip">
+        <string>Изменить текущее поле</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="removeDeviceButton">
+       <property name="toolTip">
+        <string>Удалить текущее устройство</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/remove.png</normaloff>:/images/remove.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="extendedInfoButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/info.png</normaloff>:/images/info.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="ImprovedLineEdit" name="filterNameLineEdit">
+     <property name="placeholderText">
       <string>Фильтрация по названию устройства...</string>
      </property>
     </widget>
@@ -44,90 +190,112 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="vlanInfoGroupBox">
-     <property name="enabled">
-      <bool>true</bool>
+    <widget class="QFrame" name="switchExtInfoFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="title">
-      <string>Коммутатор xxx</string>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="labelAlignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="formAlignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-      <item row="0" column="1">
-       <widget class="QLabel" name="inetVlanValueLabel">
-        <property name="text">
-         <string>xxx</string>
-        </property>
-       </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="switchExtInfoLabel">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Коммутатор xxx</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="closeSwitchExtInfoButton">
+          <property name="toolTip">
+           <string>Закрыть</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="iptvVlanValueLabel">
-        <property name="text">
-         <string>xxx</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="inetVlanDescLabel">
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>Internet Vlan:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="iptvVlanDescLabel">
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>IPTV Vlan:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
+      <item>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="1" column="0">
+         <widget class="QLabel" name="inetVlanDescLabel">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Internet Vlan:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="inetVlanValueLabel">
+          <property name="text">
+           <string>xxx</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="iptvVlanDescLabel">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>IPTV Vlan:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="iptvVlanValueLabel">
+          <property name="text">
+           <string>xxx</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="profileInfoGroupBox">
-     <property name="title">
-      <string>Олт xxx</string>
+    <widget class="QFrame" name="oltExtInfoFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="checkable">
-      <bool>true</bool>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
        <widget class="QLabel" name="serviceProfileOltLabel">
         <property name="text">
          <string>Сервисные профили</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="multicastProfileOltLabel">
-        <property name="text">
-         <string>Мультикаст профили</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QListView" name="serviceProfileListView">
         <property name="minimumSize">
          <size>
@@ -152,7 +320,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QListView" name="multicastProfileListView">
         <property name="minimumSize">
          <size>
@@ -177,6 +345,47 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="multicastProfileOltLabel">
+        <property name="text">
+         <string>Мультикаст профили</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="oltExtInfoLabel">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>olt xxx</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="closeOltExtInfoButton">
+          <property name="toolTip">
+           <string>Закрыть</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
@@ -188,10 +397,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Добавить</string>
+    <string>Добавить новое устройство</string>
    </property>
    <property name="toolTip">
-    <string>Добавить</string>
+    <string>Добавить новое устройство</string>
    </property>
   </action>
   <action name="removeDeviceAction">
@@ -201,10 +410,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Удалить</string>
+    <string>Удалить текущее устройство</string>
    </property>
    <property name="toolTip">
-    <string>Удалить</string>
+    <string>Удалить текущее устройство</string>
    </property>
   </action>
   <action name="editDeviceAction">
@@ -214,57 +423,41 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Изменить</string>
+    <string>Изменить текущую ячейку</string>
    </property>
    <property name="toolTip">
-    <string>Изменить</string>
+    <string>Изменить текущую ячейку</string>
    </property>
   </action>
-  <action name="selectDeviceAction">
+  <action name="openDeviceTabAction">
    <property name="icon">
     <iconset>
      <normalon>:/images/open.png</normalon>
     </iconset>
    </property>
    <property name="text">
-    <string>Открыть</string>
+    <string>Зайти на утройство</string>
    </property>
    <property name="toolTip">
     <string>Зайти на устройство</string>
    </property>
   </action>
-  <action name="showVlanSwitchAction">
+  <action name="extendedInfoAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/info.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Вланы</string>
+    <string>Дополнительная информация</string>
    </property>
    <property name="toolTip">
-    <string>Информация о вланах коммутатора</string>
-   </property>
-  </action>
-  <action name="editDslamBoardListAction">
-   <property name="text">
-    <string>Редактировать доски</string>
-   </property>
-   <property name="toolTip">
-    <string>Редактировать доски</string>
-   </property>
-  </action>
-  <action name="showProfilesOltAction">
-   <property name="text">
-    <string>Информация о профилях олт</string>
-   </property>
-   <property name="toolTip">
-    <string>Информация о профилях олт</string>
+    <string>Дополнительная информация</string>
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>LineEdit</class>
-   <extends>QWidget</extends>
-   <header>lineedit.h</header>
-  </customwidget>
- </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

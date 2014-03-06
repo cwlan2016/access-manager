@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>392</height>
+    <width>657</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,122 @@
    <property name="bottomMargin">
     <number>3</number>
    </property>
+   <item>
+    <widget class="ImprovedMessageWidget" name="messageWidget"/>
+   </item>
+   <item>
+    <widget class="ImprovedMessageWidget" name="macModelMessage"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="saveConfigButton">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="editPortDescButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/edit.png</normaloff>:/images/edit.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="refreshAllPortInfoButton">
+       <property name="text">
+        <string>Обновить информацию по портам</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="refreshMacTableInfoButton">
+       <property name="text">
+        <string>Обновить информацию по  MAC-адресам</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resource.qrc">
+         <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -60,6 +176,9 @@
          <property name="contextMenuPolicy">
           <enum>Qt::CustomContextMenu</enum>
          </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::EditKeyPressed</set>
+         </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
@@ -78,58 +197,150 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="portInfoGroupBox">
-         <property name="title">
-          <string>Порт XXX</string>
+        <widget class="QFrame" name="portInfoFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="checkable">
-          <bool>true</bool>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QFormLayout" name="formLayout">
-          <property name="labelAlignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="portInetVlanDescLabel">
-            <property name="text">
-             <string>Internet Vlan:</string>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="portInfoLabel">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Порт xxx</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="closePortInfoButton">
+              <property name="toolTip">
+               <string>Закрыть</string>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../improvedwidgets/improvedwidgets.qrc">
+                <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="0" column="0">
+             <widget class="QLabel" name="portInetVlanDescLabel">
+              <property name="text">
+               <string>Internet Vlan:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="portIptvVlanDescLabel">
+              <property name="text">
+               <string>IPTV Unicast Vlan:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="multicastVlanDescLabel">
+              <property name="text">
+               <string>Multicast Vlan Member:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="portInetVlanValueLabel">
+              <property name="text">
+               <string>XXX</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="multicastVlanValueLabel">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="portIptvVlanValueLabel">
+              <property name="text">
+               <string>XXX</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="updatePortFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="ImprovedBusyIndicator" name="updatePortBusyIndicator">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="indicatorStyle">
+             <enum>ImprovedBusyIndicator::StyleEllipse</enum>
+            </property>
+            <property name="interval">
+             <number>100</number>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="portInetVlanValueLabel">
+          <item>
+           <widget class="QLabel" name="updatePortLabel">
             <property name="text">
-             <string>XXX</string>
+             <string>Обновление информации по портам в процессе...</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="portIptvVlanDescLabel">
-            <property name="text">
-             <string>IPTV Unicast Vlan:</string>
+          <item>
+           <spacer name="updatePortHSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="portIptvVlanValueLabel">
-            <property name="text">
-             <string>XXX</string>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="multicastVlanDescLabel">
-            <property name="text">
-             <string>Multicast Vlan Member:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="multicastVlanValueLabel">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -177,8 +388,8 @@
            </widget>
           </item>
           <item>
-           <widget class="LineEdit" name="macLineEdit" native="true">
-            <property name="inputMask" stdset="0">
+           <widget class="ImprovedLineEdit" name="macLineEdit">
+            <property name="inputMask">
              <string>hh-hh-hh-hh-hh-hh;_</string>
             </property>
            </widget>
@@ -191,7 +402,7 @@
            </widget>
           </item>
           <item>
-           <widget class="LineEdit" name="portListLineEdit" native="true">
+           <widget class="ImprovedLineEdit" name="portListLineEdit">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -232,6 +443,57 @@
          </attribute>
         </widget>
        </item>
+       <item>
+        <widget class="QFrame" name="updateMacFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="ImprovedBusyIndicator" name="busyIndicator">
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="indicatorStyle">
+             <enum>ImprovedBusyIndicator::StyleEllipse</enum>
+            </property>
+            <property name="interval">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="updateMacLabel">
+            <property name="text">
+             <string>Обновление таблицы MAC-адресов в процессе...</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="updateMacHSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>28</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -252,10 +514,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Обновить все</string>
+    <string>Обновить информацию по портам</string>
    </property>
    <property name="toolTip">
-    <string>Обновить все</string>
+    <string>Обновить информацию по портам</string>
    </property>
   </action>
   <action name="refreshMacTableInfoAction">
@@ -265,10 +527,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Обновить информацию</string>
+    <string>Обновить информацию по  MAC-адресам</string>
    </property>
    <property name="toolTip">
-    <string>Обновить информацию</string>
+    <string>Обновить информацию по  MAC-адресам</string>
    </property>
   </action>
   <action name="showPortInfoAction">
@@ -321,14 +583,53 @@
     <string>Интернет + Iptv Stb</string>
    </property>
   </action>
+  <action name="saveConfigAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/save.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить изменения конфигурации</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить изменения конфигурации</string>
+   </property>
+  </action>
+  <action name="editPortDescAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Изменить описание порта</string>
+   </property>
+   <property name="toolTip">
+    <string>Изменить описание порта</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>LineEdit</class>
+   <class>ImprovedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>improvedwidgets/improvedlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImprovedMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>improvedwidgets/improvedmessagewidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImprovedBusyIndicator</class>
    <extends>QWidget</extends>
-   <header>lineedit.h</header>
+   <header>improvedwidgets/improvedbusyindicator.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+  <include location="../improvedwidgets/improvedwidgets.qrc"/>
+ </resources>
  <connections/>
 </ui>

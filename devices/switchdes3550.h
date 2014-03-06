@@ -13,6 +13,11 @@ public:
 
     DeviceModel::Enum deviceModel() const;
     int countPorts();
+    int sizePortBitArray();
+    SwitchPort::Ptr createPort(QObject *parentModel);
+
+    int  maxLengthPortDescription();
+    bool setPortDescription(long snmpPortIndex, QString description);
 };
 
 #endif // SWITCHDES3550_H

@@ -5,15 +5,15 @@
 #include <customsnmpfunctions.h>
 #include <configs/dslamprofileconfig.h>
 
-AdslPortMa5300::AdslPortMa5300(long index, QObject *parent) :
-    AdslPort(index, parent)
+AdslPortMa5300::AdslPortMa5300(int index, long snmpIndex, QObject *parent) :
+    AdslPort(index, snmpIndex, parent)
 {
 }
 
 void AdslPortMa5300::fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::ifDescr, 10, portIndex));
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
@@ -27,35 +27,41 @@ bool AdslPortMa5300::parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mName = toString(vars->val.string, vars->val_len);
+    setName(toString(vars->val.string, vars->val_len));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = DslPortState::from(*vars->val.integer);
+    setState(DslPortState::from(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mDescription = toString(vars->val.string, vars->val_len);
+    setDescription(toString(vars->val.string, vars->val_len));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = toString(vars->val.string, vars->val_len);
-    mProfile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(mProfile);
+    QString profile = toString(vars->val.string, vars->val_len);
+    profile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(profile);
+    setProfile(profile);
+
     return true;
 }
 
 void AdslPortMa5300::fillSecondaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex)
 {
     if (portIndex == -1)
-        portIndex = mIndex;
+        portIndex = mSnmpIndex;
 
     snmpClient->addOid(createOidPair(Mib::ifOperStatus, 10, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAtucChanPrevTxRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAturChanPrevTxRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAtucCurrAttainableRate, 13, portIndex));
+    snmpClient->addOid(createOidPair(Mib::adslAturCurrAttainableRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslAtucChanCurrTxRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslAturChanCurrTxRate, 13, portIndex));
     snmpClient->addOid(createOidPair(Mib::adslLineCoding, 13, portIndex));
@@ -73,24 +79,60 @@ bool AdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mState = DslPortState::from(*vars->val.integer);
+    setState(DslPortState::from(*vars->val.integer));
 
-    if (mState == DslPortState::Up) {
-        vars = vars->next_variable;
-        if (!isValidSnmpValue(vars))
-            return false;
+    vars = vars->next_variable;
+    if (!isValidSnmpValue(vars))
+        return false;
 
-        mTxRate = *vars->val.integer / 1000;
-
-        vars = vars->next_variable;
-        if (!isValidSnmpValue(vars))
-            return false;
-
-        mRxRate = *vars->val.integer / 1000;
+    if (*vars->val.integer == 65535) {
+        setTxPrevRate(0);
     } else {
-        mTxRate = 0;
-        mRxRate = 0;
+        setTxPrevRate(*vars->val.integer / 1000);
+    }
+
+    vars = vars->next_variable;
+    if (!isValidSnmpValue(vars))
+        return false;
+
+    if (*vars->val.integer == 65535) {
+        setRxPrevRate(0);
+    } else {
+        setRxPrevRate(*vars->val.integer / 1000);
+    }
+
+    if (state() == DslPortState::Up) {
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+
+        setTxAttainableRate(*vars->val.integer / 1000);
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        setRxAttainableRate(*vars->val.integer / 1000);
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        setTxCurrRate(*vars->val.integer / 1000);
+
+        vars = vars->next_variable;
+        if (!isValidSnmpValue(vars))
+            return false;
+
+        setRxCurrRate(*vars->val.integer / 1000);
+    } else {
+        setTxAttainableRate(0);
+        setRxAttainableRate(0);
+        setTxCurrRate(0);
+        setRxCurrRate(0);
         //skip vars
+        vars = vars->next_variable->next_variable;
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
@@ -100,36 +142,37 @@ bool AdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
     if (!isValidSnmpValue(vars))
         return false;
 
-    mCoding = codingString(*vars->val.integer);
+    setCoding(codingString(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mLineType = typeLineString(*vars->val.integer);
+    setLineType(typeLineString(*vars->val.integer));
 
     vars = vars->next_variable;
     if (!isValidSnmpValue(vars))
         return false;
 
-    mProfile = toString(vars->val.string, vars->val_len);
-    mProfile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(mProfile);
+    QString profile = toString(vars->val.string, vars->val_len);
+    profile = DslamProfileConfig::adsl(DeviceModel::MA5300)->displayProfileName(profile);
+    setProfile(profile);
 
-    if (mState == DslPortState::Up) {
+    if (state() == DslPortState::Up) {
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mTxAttenuation = QString::number(*vars->val.integer / 10.0);
+        setTxAttenuation(QString::number(*vars->val.integer / 10.0));
 
         vars = vars->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
 
-        mRxAttenuation = QString::number(*vars->val.integer / 10.0);
+        setRxAttenuation(QString::number(*vars->val.integer / 10.0));
     } else {
-        mTxAttenuation = "";
-        mRxAttenuation = "";
+        setTxAttenuation("0");
+        setRxAttenuation("0");
         vars = vars->next_variable->next_variable;
         if (!isValidSnmpValue(vars))
             return false;
@@ -145,7 +188,7 @@ bool AdslPortMa5300::parseSecondaryLevelPdu(SnmpClient::Ptr snmpClient)
 
     date = date.addSecs(-sysUpTime + lastChangeStatus);
 
-    mTimeLastChange = date.toString("dd.MM.yyyy hh:mm");
+    setTimeLastChange(date.toString("dd.MM.yyyy hh:mm"));
 
     return true;
 }

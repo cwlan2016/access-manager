@@ -14,31 +14,39 @@
 // 2 - speed/duplex
 // 3 - description
 
-SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice,
+SwitchPortTableModel::SwitchPortTableModel(Switch::Ptr parentDevice, ImprovedMessageWidget *messageWidget,
                                            QObject *parent) :
     QAbstractTableModel(parent),
-    mParentDevice(parentDevice)
+    mParentDevice(parentDevice),
+    mFutureWatcher(new QFutureWatcher<void>()),
+    mMessageWidget(messageWidget)
 {
     createList();
 
     mIptvMultVlanTag = 0;
 
-    int countBit;
-
-    if ((mParentDevice->deviceModel() == DeviceModel::DES3526)
-            || (mParentDevice->deviceModel() == DeviceModel::DES3528)) {
-        countBit = 32;
-    } else if (mParentDevice->deviceModel() == DeviceModel::DES3550) {
-        countBit = 56;
-    } else {
-        countBit = 32;
-    }
+    int countBit = mParentDevice->sizePortBitArray();
 
     mInetVlanAllMember.fill(false, countBit);
     mInetVlanUntagMember.fill(false, countBit);
     mIptvUnicastVlanAllMember.fill(false, countBit);
     mIptvUnicastVlanUntagMember.fill(false, countBit);
     mMulticastVlanMember.fill(false, countBit);
+
+    connect(mFutureWatcher, &QFutureWatcher<void>::finished,
+            this, &SwitchPortTableModel::finishAsyncUpdate);
+}
+
+SwitchPortTableModel::~SwitchPortTableModel()
+{
+    if (mFutureWatcher) {
+        if (mFutureWatcher->isRunning()) {
+            mFutureWatcher->cancel();
+            mFutureWatcher->waitForFinished();
+        }
+
+        delete mFutureWatcher;
+    }
 }
 
 int SwitchPortTableModel::rowCount(const QModelIndex &parent) const
@@ -61,22 +69,22 @@ QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::TextAlignmentRole) {
-        if (index.column() == 0) {
+        if (index.column() == NumberColumn) {
             return int(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             return int(Qt::AlignCenter | Qt::AlignVCenter);
         }
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (index.column() == 0) {
+        if (index.column() == NumberColumn) {
             return mList.at(index.row())->index();
-        } else if (index.column() == 1) {
+        } else if (index.column() == StateColumn) {
             return SwitchPortState::toString(mList.at(index.row())->state());
-        } else if (index.column() == 2) {
+        } else if (index.column() == SpeedDuplexColumn) {
             return mList.at(index.row())->speedDuplex();
-        } else if (index.column() == 3) {
+        } else if (index.column() == DescColumn) {
             return mList.at(index.row())->description();
         }
-    } else if ((role == Qt::BackgroundColorRole) && (index.internalId() == 0)) {
+    } else if (role == Qt::BackgroundColorRole) {
         if (mList.at(index.row())->state() == SwitchPortState::Down) {
             return QBrush(QColor(223, 255, 252));
         } else if (mList.at(index.row())->state() == SwitchPortState::Up) {
@@ -87,6 +95,35 @@ QVariant SwitchPortTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool SwitchPortTableModel::setData(const QModelIndex &index, const QVariant &value,
+                                   int role)
+{
+    if ((!index.isValid()) || (role != Qt::EditRole))
+        return false;
+
+    if (index.column() != DescColumn)
+        return false;
+
+    long portIndex = mList[index.row()]->index();
+
+    if (value.toString() == mList[index.row()]->description())
+        return true;
+
+    bool result = mParentDevice->setPortDescription(portIndex, value.toString());
+
+    if (result) {
+        mList[index.row()]->setDescription(value.toString());
+        QModelIndex descIndex = SwitchPortTableModel::index(portIndex, DescColumn);
+        emit dataChanged(descIndex, descIndex);
+    } else {
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(mParentDevice->error());
+        mMessageWidget->animatedShow();
+    }
+
+    return true;
+}
+
 QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientation,
                                           int role) const
 {
@@ -94,14 +131,17 @@ QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientati
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0) {
+        switch (section) {
+        case NumberColumn:
             return SwitchPortTableModelStrings::Number;
-        } else if (section == 1) {
+        case StateColumn:
             return SwitchPortTableModelStrings::State;
-        } else if (section == 2) {
+        case SpeedDuplexColumn:
             return SwitchPortTableModelStrings::SpeedDuplex;
-        } else if (section == 3) {
+        case DescColumn:
             return SwitchPortTableModelStrings::Desc;
+        default:
+            return QVariant();
         }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
@@ -116,35 +156,12 @@ QVariant SwitchPortTableModel::headerData(int section, Qt::Orientation orientati
 
 Qt::ItemFlags SwitchPortTableModel::flags(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-}
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-void SwitchPortTableModel::sort(int column, Qt::SortOrder order)
-{
-    beginResetModel();
+    if (index.column() == DescColumn)
+        flags |= Qt::ItemIsEditable;
 
-    qSort(mList.begin(), mList.end(),
-              [&](const SwitchPort::Ptr first,
-    const SwitchPort::Ptr second) -> bool {
-        if (column == 0) {
-            return order == Qt::AscendingOrder ? (first->index() < second->index())
-                                               : (first->index() > second->index());
-        } else if (column == 1) {
-            return order == Qt::AscendingOrder ? (first->state() < second->state())
-                                               : (first->state() > second->state());
-        } else if (column == 2) {
-            return order == Qt::AscendingOrder ? (first->speedDuplex() < second->speedDuplex())
-                                               : (first->speedDuplex() > second->speedDuplex());
-        } else if (column == 3) {
-            return order == Qt::AscendingOrder ? (first->description() < second->description())
-                                               : (first->description() > second->description());
-        }
-
-        return false;
-    });
-
-    endResetModel();
+    return flags;
 }
 
 bool SwitchPortTableModel::memberMulticastVlan(int port)
@@ -159,10 +176,10 @@ bool SwitchPortTableModel::setMemberMulticastVlan(int port, bool value)
 
     if (mMulticastVlanMember.at(port - 1) == value) {
         if (value) {
-            mError = QString::fromUtf8("Ошибка: Порт %1 уже является членом Multicast влана.")
+            mError = QString::fromUtf8("Порт %1 уже является членом Multicast влана.")
                      .arg(QString::number(port));
         } else {
-            mError = QString::fromUtf8("Ошибка: Порт %1 не является членом Multicast влана.")
+            mError = QString::fromUtf8("Порт %1 не является членом Multicast влана.")
                      .arg(QString::number(port));
         }
 
@@ -231,21 +248,18 @@ bool SwitchPortTableModel::setMemberInternetService(int port)
     vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag());
     result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanAllMember, "IPTV Unicast");
 
-    if (!result) {
+    if (!result)
         return false;
-
-    }
 
     vlanMemberOid = createOidPair(Mib::dot1qVlanStaticUntaggedPorts, 13, mParentDevice->iptvVlanTag());
     result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanUntagMember, "IPTV Unicast");
 
-    if (!result) {
+    if (!result)
         return false;
-    }
 
     if ((mInetVlanAllMember.at(port - 1) == true)
             && (mInetVlanUntagMember.at(port - 1) == true)) {
-        mError = QString::fromUtf8("Ошибка: Порт %1 уже прописан под Интернет.")
+        mError = QString::fromUtf8("Порт %1 уже прописан под Интернет.")
                  .arg(QString::number(port));
 
         return false;
@@ -301,7 +315,7 @@ bool SwitchPortTableModel::setMemberInternetWithIptvStbService(int port)
             && (mInetVlanUntagMember[port - 1] == false)
             && (mIptvUnicastVlanAllMember[port - 1] == true)
             && (mIptvUnicastVlanUntagMember[port - 1] == true)) {
-        mError = QString::fromUtf8("Ошибка: Порт %1 уже прописан под Интернет + IPTV STB.")
+        mError = QString::fromUtf8("Порт %1 уже прописан под Интернет + IPTV STB.")
                  .arg(QString::number(port));
 
         return false;
@@ -327,94 +341,80 @@ bool SwitchPortTableModel::setMemberInternetWithIptvStbService(int port)
     return sendVlanSetting(oidList, arrayList, false);
 }
 
-bool SwitchPortTableModel::updateInfoPort(int indexPort)
+bool SwitchPortTableModel::updatePort(int index)
+{
+    mUpdateErrors.clear();
+
+    bool result = updatePort(mList[index - 1]);
+
+    if (!result)
+        mError = mUpdateErrors;
+
+    return result;
+}
+
+bool SwitchPortTableModel::updatePort(const SwitchPort::Ptr &port)
 {
     QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
 
     snmpClient->setIp(mParentDevice->ip());
 
     if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::SetupSession));
         return false;
     }
 
     if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::OpenSession));
         return false;
     }
-
-    SwitchPort::Ptr currentPort = 0;
-
-    auto it = mList.constBegin();
-    auto end = mList.constEnd();
-    for (; it != end; ++it) {
-        if ((*it)->index() == indexPort) {
-            currentPort = *it;
-            break;
-        }
-    }
-
-    if (!currentPort)
-        return false;
 
     snmpClient->createPdu(SNMP_MSG_GET);
 
-    currentPort->fillPdu(snmpClient.data());
+    port->fillPdu(snmpClient.data());
 
     if (snmpClient->sendRequest()) {
-        if (!currentPort->parsePdu(snmpClient.data())) {
-            mError = SnmpErrorStrings::Parse;
+        if (!port->parsePdu(snmpClient.data())) {
+            appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                              .arg(port->index())
+                              .arg(SnmpErrorStrings::Parse));
             return false;
         } else {
-            emit dataChanged(index(indexPort - 1, 1), index(indexPort - 1, 3));
+            emit dataChanged(index(port->index() - 1, 1), index(port->index() - 1, 3));
         }
     } else {
-        mError = snmpClient->error();
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(snmpClient->error()));
         return false;
     }
 
     return true;
 }
 
-bool SwitchPortTableModel::updateInfoAllPort()
+void SwitchPortTableModel::update()
 {
+    mUpdateErrors.clear();
+
+    if (mFutureWatcher->isRunning()) {
+        mError = QString::fromUtf8("Обновление информации по портам уже выполняется.");
+        emit updateFinished(true);
+        return;
+    }
+
+    QFuture<void> future = QtConcurrent::map(mList, SwitchUpdateWrapperObject(this));
+    mFutureWatcher->setFuture(future);
+
     getVlanSettings();
+}
 
-    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
-
-    snmpClient->setIp(mParentDevice->ip());
-
-    if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
-        return false;
-    }
-
-    if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
-        return false;
-    }
-
-    int count = mList.size();
-
-    for (int indexPort = 0; indexPort < count; ++indexPort) {
-        snmpClient->createPdu(SNMP_MSG_GET);
-        mList[indexPort]->fillPdu(snmpClient.data());
-
-        if (snmpClient->sendRequest()) {
-            if (!mList[indexPort]->parsePdu(snmpClient.data())) {
-                mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
-            } else {
-                emit dataChanged(index(indexPort, 1), index(indexPort, 3));
-            }
-
-            snmpClient->clearResponse();
-        } else {
-            mError = QString::fromUtf8("При получении информации по портам произошли ошибки.");
-            return false;
-        }
-    }
-
-    return true;
+bool SwitchPortTableModel::updateIsRunning()
+{
+    return mFutureWatcher->isRunning();
 }
 
 bool SwitchPortTableModel::getVlanSettings()
@@ -444,8 +444,11 @@ bool SwitchPortTableModel::getVlanSettings()
     if (!result)
         allErrors += mError + "\n";
 
-    if (!allErrors.isEmpty())
-        BasicDialogs::error(0, BasicDialogStrings::Error, QString::fromUtf8("Произошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
+    if (!allErrors.isEmpty()) {
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(trUtf8("Произошла ошибка при получении информации о принадлежности к сервисным VLAN!"), allErrors);
+        mMessageWidget->animatedShow();
+    }
 
     return true;
 }
@@ -461,22 +464,10 @@ void SwitchPortTableModel::createList()
     mList.reserve(count);
 
     for (int i = 1; i <= count; ++i) {
-        SwitchPort::Ptr portInfo = 0;
+        SwitchPort::Ptr portInfo = mParentDevice->createPort(this);
 
-        switch (mParentDevice->deviceModel())
-        {
-        case DeviceModel::DES3526:
-            portInfo = new SwitchPortDes3526(this);
-            break;
-        case DeviceModel::DES3528:
-            portInfo = new SwitchPortDes3528(this);
-            break;
-        case DeviceModel::DES3550:
-            portInfo = new SwitchPortDes3550(this);
-            break;
-        default:
+        if (!portInfo)
             return;
-        }
 
         portInfo->setIndex(i);
 
@@ -517,7 +508,7 @@ bool SwitchPortTableModel::getUnicastVlanSettings(const OidPair &oidVlan,
                 (snmp_oid_ncompare(oidVlan.first, oidVlan.second,
                                    vars->name, vars->name_length,
                                    oidVlan.second) != 0)) {
-            mError = QString::fromUtf8("Ошибка: Не удалось получить данные по влану %1.")
+            mError = QString::fromUtf8("Не удалось получить данные по влану %1.")
                      .arg(vlanName);
 
             return false;
@@ -528,7 +519,7 @@ bool SwitchPortTableModel::getUnicastVlanSettings(const OidPair &oidVlan,
 
         result = true;
     } else {
-        mError = QString::fromUtf8("Ошибка: Не удалось получить данные по влану %1.")
+        mError = QString::fromUtf8("Не удалось получить данные по влану %1.")
                  .arg(vlanName);
         result = false;
     }
@@ -574,7 +565,7 @@ bool SwitchPortTableModel::getMulticastVlanSettings()
                 (snmp_oid_ncompare(mvrMemberOid.first, mvrMemberOid.second,
                                    vars->name, vars->name_length,
                                    mvrMemberOid.second) != 0)) {
-            mError = QString::fromUtf8("Ошибка: Не удалось получить данные по Multicast влану.");
+            mError = QString::fromUtf8("Не удалось получить данные по Multicast влану.");
 
             return false;
         }
@@ -584,7 +575,7 @@ bool SwitchPortTableModel::getMulticastVlanSettings()
 
         return true;
     } else {
-        mError = QString::fromUtf8("Ошибка: Не удалось получить данные по Multicast влану.");
+        mError = QString::fromUtf8("Не удалось получить данные по Multicast влану.");
 
         return false;
     }
@@ -619,11 +610,19 @@ bool SwitchPortTableModel::sendVlanSetting(QVector<OidPair> &oidList,
     bool result = true;
 
     if (!snmpClient->sendRequest()) {
-        mError = QString::fromUtf8("Ошибка: Не удалось изменить настройки порта!");
+        mError = QString::fromUtf8("Не удалось изменить настройки порта!");
         result = false;
     }
 
     return result;
+}
+
+void SwitchPortTableModel::finishAsyncUpdate()
+{
+    if (!mUpdateErrors.isEmpty())
+        mError = mUpdateErrors;
+
+    emit updateFinished(!mUpdateErrors.isEmpty());
 }
 
 QBitArray SwitchPortTableModel::ucharToQBitArray(DeviceModel::Enum deviceModel, uchar *str)

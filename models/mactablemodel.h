@@ -9,6 +9,12 @@ class MacTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+        PortColumn = 0,
+        VlanColumn,
+        MacAddressColumn
+    };
+
     explicit MacTableModel(Switch::Ptr parentDevice, QObject *parent = 0);
     ~MacTableModel();
 
@@ -21,15 +27,24 @@ public:
                         int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    bool update();
+    void update();
+    bool updateIsRunning();
 
     QString error() const;
 
+signals:
+    void updateFinished(bool withError);
+
 private:
-    void updateMacsInVlan(QScopedPointer<SnmpClient> &snmpClient, long vlanTag,
-                          QString vlanName);
+    QString vlanValue(const int macIndex) const;
+    QVector<Mac::Ptr> *asyncUpdateMacTable();
+
+    void finishAsyncUpdate();
+
     QString decMacAddressToHex(oid *macAddressOid, int length);
 
+    QFutureWatcher<QVector<Mac::Ptr> *> *mFutureWatcher;
+    QString mUpdateErrors;
     QString mError;
     QVector<Mac::Ptr> *mList;
     Switch::Ptr mParentDevice;

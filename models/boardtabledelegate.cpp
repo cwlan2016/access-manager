@@ -1,5 +1,6 @@
 #include "boardtabledelegate.h"
 
+#include "boardtablemodel.h"
 #include <constant.h>
 #include <converters.h>
 
@@ -14,8 +15,8 @@ QWidget *BoardTableDelegate::createEditor(QWidget *parent,
                                           const QStyleOptionViewItem &option,
                                           const QModelIndex &index) const
 {
-    if ((index.column() == mIndexTypeBoard)
-            || (index.column() == mIndexFirstPair)) {
+    if ((index.column() == BoardTableModel::TypeBoardColumn)
+            || (index.column() == BoardTableModel::PairsColumn)) {
         return createComboBoxEditor(parent);
     } else {
         return QItemDelegate::createEditor(parent, option, index);
@@ -25,7 +26,7 @@ QWidget *BoardTableDelegate::createEditor(QWidget *parent,
 void BoardTableDelegate::setEditorData(QWidget *editor,
                                        const QModelIndex &index) const
 {
-    if (index.column() == mIndexTypeBoard) {
+    if (index.column() == BoardTableModel::TypeBoardColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         QString text = index.model()->data(index).toString();
@@ -36,14 +37,14 @@ void BoardTableDelegate::setEditorData(QWidget *editor,
         comboBox->setCurrentIndex(indexFind);
 
         comboBox->setEditable(false);
-    } else if (index.column() == mIndexFirstPair) {
+    } else if (index.column() == BoardTableModel::PairsColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
         comboBox->setEditable(false);
 
         QString text = index.model()->data(index).toString();
 
         QModelIndex indexTypeBoard = index.model()->index(index.row(),
-                                                          mIndexTypeBoard);
+                                                          BoardTableModel::TypeBoardColumn);
         QString typeBoard = index.model()->data(indexTypeBoard).toString();
         comboBox->setModel(fillFirstPairComboBox(typeBoard));
 
@@ -59,14 +60,14 @@ void BoardTableDelegate::setEditorData(QWidget *editor,
 void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                       const QModelIndex &index) const
 {
-    if (index.column() == mIndexTypeBoard) {
+    if (index.column() == BoardTableModel::TypeBoardColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         if (comboBox->currentIndex() == -1)
             return;
 
         model->setData(index, comboBox->currentText(), Qt::EditRole);
-    } else if (index.column() == mIndexFirstPair) {
+    } else if (index.column() == BoardTableModel::PairsColumn) {
         QComboBox *comboBox = qobject_cast<QComboBox *>(editor);
 
         if (comboBox->currentIndex() == -1)
@@ -84,26 +85,6 @@ void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
     } else {
         QItemDelegate::setModelData(editor, model, index);
     }
-}
-
-int BoardTableDelegate::indexTypeBoard()
-{
-    return mIndexTypeBoard;
-}
-
-void BoardTableDelegate::setIndexTypeBoard(int index)
-{
-    mIndexTypeBoard = index;
-}
-
-int BoardTableDelegate::indexFirstPair()
-{
-    return mIndexFirstPair;
-}
-
-void BoardTableDelegate::setIndexFirstPair(int index)
-{
-    mIndexFirstPair = index;
 }
 
 QWidget *BoardTableDelegate::createComboBoxEditor(QWidget *parent) const

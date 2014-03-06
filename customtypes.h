@@ -39,6 +39,40 @@ inline QString toString(BoardType::Enum boardType)
 }
 }
 
+namespace HuaweiSlotType
+{
+enum Enum {
+    //MA5600
+    ADEF =      767,     // 64-port ADSL AnnexA Board
+    ADEF2 =     761,     // 64-port ADSL AnnexA Board
+    ADBF =      131090,  // 64-port ADSL AnnexB Board
+    ADBF2 =     131084,  // 64-port ADSL AnnexB Board
+    SHEA =      131111,  // 32-port SHDSL Board
+    //MA5300
+    EADB =      217,     // 48-port ADSL AnnexA Board
+    EADJ =      802,     // 48-port ADSL AnnexB Board
+    ESHA =      215      // 24-port SHDSL Board
+};
+
+inline BoardType::Enum toBoardType(int slotType) {
+    switch (slotType) {
+    case ADEF:
+    case ADEF2:
+    case EADB:
+        return BoardType::AnnexA;
+    case ADBF:
+    case ADBF2:
+    case EADJ:
+        return BoardType::AnnexB;
+    case SHEA:
+    case ESHA:
+        return BoardType::Shdsl;
+    default:
+        return BoardType::Other;
+    }
+}
+}
+
 namespace DeviceModel
 {
 enum Enum {

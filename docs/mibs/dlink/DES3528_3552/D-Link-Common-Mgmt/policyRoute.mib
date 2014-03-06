@@ -1,0 +1,122 @@
+--*********************************************************
+-- Policy-route mib
+--*********************************************************
+-- 0.9 Draft 
+-- 2006/2/23 17.22 
+-- Create POLICY-ROUTE-MIB 
+-- *********************************************************
+
+POLICY-ROUTE-MIB DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY,OBJECT-TYPE,IpAddress, Unsigned32
+                                        FROM SNMPv2-SMI
+        MacAddress, RowStatus           FROM SNMPv2-TC
+        DisplayString                   FROM RFC1213-MIB
+    	SnmpAdminString					FROM SNMP-FRAMEWORK-MIB
+
+        dlink-common-mgmt				FROM DLINK-ID-REC-MIB;
+        
+		 
+    	
+    swPolicyRouteMIB MODULE-IDENTITY
+	    LAST-UPDATED "0007150000Z"
+	    ORGANIZATION " "
+	    CONTACT-INFO
+	        "    "
+	    DESCRIPTION
+		    "The Structure of policy route management for the
+		    proprietary enterprise."
+        ::= { dlink-common-mgmt 32 }
+
+-- *****************************************************************************
+-- Textual Conventions
+-- *****************************************************************************
+
+   swPolicyRouteCtrl            OBJECT IDENTIFIER ::= { swPolicyRouteMIB 1 }
+   swPolicyRouteInfo            OBJECT IDENTIFIER ::= { swPolicyRouteMIB 2 }
+   swPolicyRouteMgmt            OBJECT IDENTIFIER ::= { swPolicyRouteMIB 3 }
+   
+--***********************************************************************************************
+-- swPolicyRouteMgmt            OBJECT IDENTIFIER ::= { swPolicyRouteMIB 3 }
+--*********************************************************************************************** 
+   swPolicyRouteTable OBJECT-TYPE
+        SYNTAX   SEQUENCE OF SwPolicyRouteEntry
+        MAX-ACCESS not-accessible
+        STATUS   current
+        DESCRIPTION
+        "This entity's policy Routing table."
+        ::= { swPolicyRouteMgmt 1 }
+
+    swPolicyRouteEntry OBJECT-TYPE
+        SYNTAX   SwPolicyRouteEntry
+        MAX-ACCESS not-accessible
+        STATUS   current
+        DESCRIPTION
+           "A particular route to  a  particular  destination, under a particular policy."
+        INDEX {
+            swPolicyRouteName
+            }
+        ::= { swPolicyRouteTable 1 }
+    
+    SwPolicyRouteEntry ::=
+        SEQUENCE {
+            swPolicyRouteName
+            	DisplayString,
+            swPolicyRouteProfileId
+                INTEGER,
+            swPolicyRouteAccessId
+                INTEGER,            
+            swPolicyRouteNextHop
+                IpAddress,
+            swPolicyRouteRowStatus
+                RowStatus
+        }
+        
+    swPolicyRouteName OBJECT-TYPE
+        SYNTAX   DisplayString(SIZE(1..32))
+        MAX-ACCESS read-only
+        STATUS   current
+        DESCRIPTION
+           "Policy route rule name. Max length is 32 characters."
+        ::= { swPolicyRouteEntry 1 }
+    
+    swPolicyRouteProfileId OBJECT-TYPE
+        SYNTAX   INTEGER
+        MAX-ACCESS read-write
+        STATUS   current
+        DESCRIPTION
+           "The destination ACL profile ID of this route."
+        ::= { swPolicyRouteEntry 2 }
+    
+    swPolicyRouteAccessId OBJECT-TYPE
+        SYNTAX   INTEGER
+        MAX-ACCESS read-write
+        STATUS   current
+        DESCRIPTION
+           "The destination ACL access ID of this route."
+        ::= { swPolicyRouteEntry 3 }    
+        
+    swPolicyRouteNextHop OBJECT-TYPE
+        SYNTAX   IpAddress
+        MAX-ACCESS read-write
+        STATUS   current
+        DESCRIPTION
+           "On remote routes, the IP address of the next hop."
+        ::= { swPolicyRouteEntry 4 }
+    
+    swPolicyRouteRowStatus  OBJECT-TYPE
+        SYNTAX   RowStatus
+        MAX-ACCESS read-create
+        STATUS   current
+        DESCRIPTION
+           "To create a row in this table, a manager sets this object
+         to either createAndGo(4) or createAndWait(5).
+          
+         When `swPolicyRouteRowStatus' is set to active(1),action this rule.
+         
+         When `swPolicyRouteRowStatus' is set to notInService(2),not action this rule."
+        ::= { swPolicyRouteEntry 5 }      
+
+		
+END

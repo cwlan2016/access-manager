@@ -1,5 +1,6 @@
 #include "dslamporttablemodel.h"
 
+#include <basicdialogs.h>
 #include <constant.h>
 #include <converters.h>
 #include <customsnmpfunctions.h>
@@ -8,12 +9,29 @@
 
 // index.internalId()
 // invalidParentIndex - основная информация о порте, верхний уровень
-// > invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
+// < invalidParentIndex - дополнительная информация о порте, второй уровень number = index rowParent
 
-DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice, QObject *parent) :
+DslamPortTableModel::DslamPortTableModel(Dslam::Ptr parentDevice,
+                                         ImprovedMessageWidget *messageWidget, QObject *parent) :
     QAbstractItemModel(parent),
-    mParentDevice(parentDevice)
+    mParentDevice(parentDevice),
+    mFutureWatcher(new QFutureWatcher<void>()),
+    mMessageWidget(messageWidget)
 {
+    connect(mFutureWatcher, &QFutureWatcher<void>::finished,
+            this, &DslamPortTableModel::finishAsyncUpdate);
+}
+
+DslamPortTableModel::~DslamPortTableModel()
+{
+    if (mFutureWatcher) {
+        if (mFutureWatcher->isRunning()) {
+            mFutureWatcher->cancel();
+            mFutureWatcher->waitForFinished();
+        }
+
+        delete mFutureWatcher;
+    }
 }
 
 int DslamPortTableModel::rowCount(const QModelIndex &parent) const
@@ -74,6 +92,34 @@ QVariant DslamPortTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool DslamPortTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+
+    if ((!index.isValid()) || (role != Qt::EditRole))
+        return false;
+
+    if ((index.column() != DescColumn)
+            || (index.internalId() != invalidParentIndex))
+        return false;
+
+    if (value.toString() == mList[index.row()]->description())
+        return true;
+
+    long portIndex = mParentDevice->snmpPortIndex(mBoardType, mBoardIndex, index.row());
+    bool result = mParentDevice->setPortDescription(portIndex, value.toString());
+
+    if (result) {
+        mList[index.row()]->setDescription(value.toString());
+        emit dataChanged(index, index);
+    } else {
+        mMessageWidget->setMessageType(ImprovedMessageWidget::Error);
+        mMessageWidget->setText(mParentDevice->error());
+        mMessageWidget->animatedShow();
+    }
+
+    return true;
+}
+
 QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientation,
                                          int role) const
 {
@@ -81,16 +127,20 @@ QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientatio
         return QVariant();
 
     if (role == Qt::DisplayRole) {
-        if (section == 0)
+        switch (section) {
+        case PairColumn:
             return DslamPortTableModelStrings::Pair;
-        else if (section == 1)
+        case PortColumn:
             return DslamPortTableModelStrings::Port;
-        else if (section == 2)
+        case StateColumn:
             return DslamPortTableModelStrings::State;
-        else if (section == 3)
+        case DescColumn:
             return DslamPortTableModelStrings::Desc;
-        else if (section == 4)
+        case ProfileColumn:
             return DslamPortTableModelStrings::Profile;
+        default:
+            return QVariant();
+        }
     } else if (role == Qt::TextAlignmentRole) {
         return int(Qt::AlignCenter | Qt::AlignVCenter);
     } else if (role == Qt::FontRole) {
@@ -104,9 +154,13 @@ QVariant DslamPortTableModel::headerData(int section, Qt::Orientation orientatio
 
 Qt::ItemFlags DslamPortTableModel::flags(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    if ((index.column() == DescColumn)
+            && (index.internalId() == invalidParentIndex))
+        flags |= Qt::ItemIsEditable;
+
+    return flags;
 }
 
 QModelIndex DslamPortTableModel::index(int row, int column,
@@ -155,50 +209,6 @@ void DslamPortTableModel::setBoardIndex(int boardIndex)
     mBoardIndex = boardIndex;
 }
 
-bool DslamPortTableModel::load()
-{
-    beginResetModel();
-    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
-
-    snmpClient->setIp(mParentDevice->ip());
-
-    if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
-        endResetModel();
-        return false;
-    }
-
-    if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
-        endResetModel();
-        return false;
-    }
-
-    snmpClient->createPdu(SNMP_MSG_GET);
-
-    mList[0]->fillPrimaryLevelPdu(snmpClient.data());
-    int size = mList.size();
-
-    for (int i = 0; i < size; ++i) {
-        if (snmpClient->sendRequest()) {
-            if (!mList[i]->parsePrimaryLevelPdu(snmpClient.data())) {
-                mError = snmpClient->error();
-                endResetModel();
-                return false;
-            } else {
-                snmpClient->createPduFromResponse(SNMP_MSG_GETNEXT);
-            }
-        } else {
-            mError = snmpClient->error();
-            endResetModel();
-            return false;
-        }
-    }
-
-    endResetModel();
-    return true;
-}
-
 void DslamPortTableModel::createList()
 {
     int count = mParentDevice->countPorts(mBoardType);
@@ -213,51 +223,7 @@ void DslamPortTableModel::createList()
     }
 }
 
-bool DslamPortTableModel::updatePortInfoBasic(QModelIndex portIndex)
-{
-    int currPort = currentPort(portIndex);
-
-    if (currPort == -1) {
-        mError = QString::fromUtf8("Не выбран порт для обновления информации");
-        return false;
-    }
-
-    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
-
-    snmpClient->setIp(mParentDevice->ip());
-
-    if (!snmpClient->setupSession(SessionType::ReadSession)) {
-        mError = SnmpErrorStrings::SetupSession;
-        return false;
-    }
-
-    if (!snmpClient->openSession()) {
-        mError = SnmpErrorStrings::OpenSession;
-        return false;
-    }
-
-    snmpClient->createPdu(SNMP_MSG_GET);
-
-    mList[currPort]->fillPrimaryLevelPdu(snmpClient.data());
-
-    if (snmpClient->sendRequest()) {
-        if (!mList[currPort]->parsePrimaryLevelPdu(snmpClient.data())) {
-            mError = snmpClient->error();
-            return false;
-        } else {
-            QModelIndex beginTopIndex = index(portIndex.row(), 0, QModelIndex());
-            QModelIndex endTopIndex = index(portIndex.row(), 4, QModelIndex());
-            emit dataChanged(beginTopIndex, endTopIndex);
-        }
-    } else {
-        mError = snmpClient->error();
-        return false;
-    }
-
-    return true;
-}
-
-bool DslamPortTableModel::updatePortInfoExtended(QModelIndex portIndex)
+bool DslamPortTableModel::updatePortExtended(QModelIndex portIndex)
 {
     int currPort = currentPort(portIndex);
 
@@ -302,6 +268,84 @@ bool DslamPortTableModel::updatePortInfoExtended(QModelIndex portIndex)
     }
 
     return true;
+}
+
+bool DslamPortTableModel::updatePortBasic(QModelIndex portIndex)
+{
+    int currPort = currentPort(portIndex);
+
+    if (currPort == -1) {
+        mError = QString::fromUtf8("Не выбран порт для обновления информации");
+        return false;
+    }
+
+    mUpdateErrors.clear();
+
+    bool result = updatePortBasic(mList[currPort]);
+
+    if (!result)
+        mError = mUpdateErrors;
+
+    return result;
+}
+
+bool DslamPortTableModel::updatePortBasic(const XdslPort::Ptr &port)
+{
+    QScopedPointer<SnmpClient> snmpClient(new SnmpClient());
+
+    snmpClient->setIp(mParentDevice->ip());
+
+    if (!snmpClient->setupSession(SessionType::ReadSession)) {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::SetupSession));
+        return false;
+    }
+
+    if (!snmpClient->openSession()) {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(SnmpErrorStrings::OpenSession));
+        return false;
+    }
+
+    snmpClient->createPdu(SNMP_MSG_GET);
+
+    port->fillPrimaryLevelPdu(snmpClient.data());
+
+    if (snmpClient->sendRequest()) {
+        if (!port->parsePrimaryLevelPdu(snmpClient.data())) {
+            appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                              .arg(port->index())
+                              .arg(SnmpErrorStrings::Parse));
+            return false;
+        } else {
+            QModelIndex beginTopIndex = index(port->index(), 0, QModelIndex());
+            QModelIndex endTopIndex = index(port->index(), 4, QModelIndex());
+            emit dataChanged(beginTopIndex, endTopIndex);
+        }
+    } else {
+        appendUpdateError(QString::fromUtf8("Информацию по порту %1 получить не удалось. %2")
+                          .arg(port->index())
+                          .arg(snmpClient->error()));
+        return false;
+    }
+
+    return true;
+}
+
+void DslamPortTableModel::update()
+{
+    mUpdateErrors.clear();
+
+    if (mFutureWatcher->isRunning()) {
+        mError = QString::fromUtf8("Обновление информации по портам уже выполняется.");
+        emit updateFinished(true);
+        return;
+    }
+
+    QFuture<void> future = QtConcurrent::map(mList, DslamUpdateWrapperObject(this));
+    mFutureWatcher->setFuture(future);
 }
 
 //PortState values
@@ -407,9 +451,6 @@ bool DslamPortTableModel::changePortProfile(QModelIndex portIndex,
         return false;
     }
 
-
-
-
     snmpClient->addOid(profileOid, profileName, type);
 
     return snmpClient->sendRequest();
@@ -434,19 +475,20 @@ int DslamPortTableModel::currentPort(QModelIndex index)
 
 QVariant DslamPortTableModel::topLevelData(QModelIndex index) const
 {
-    if (index.column() == 0) {
+    switch(index.column()) {
+    case PairColumn:
         return mList.at(index.row())->pair();
-    } else if (index.column() == 1) {
+    case PortColumn:
         return mList.at(index.row())->name();
-    } else if (index.column() == 2) {
+    case StateColumn:
         return DslPortState::toString(mList.at(index.row())->state());
-    } else if (index.column() == 3) {
+    case DescColumn:
         return mList.at(index.row())->description();
-    } else if (index.column() == 4) {
+    case ProfileColumn:
         return mList.at(index.row())->profile();
+    default:
+        return QVariant();
     }
-
-    return QVariant();
 }
 
 QVariant DslamPortTableModel::secondLevelData(QModelIndex index) const
@@ -485,9 +527,15 @@ QVariant DslamPortTableModel::secondLevelDataAdsl(QModelIndex index) const
         if (index.row() == 0) {
             return portInfo->lineType();
         } else if (index.row() == 1) {
-            return portInfo->txRate();
+            return QString::fromUtf8("%1/%2/%3")
+                    .arg(portInfo->txAttainableRate())
+                    .arg(portInfo->txCurrRate())
+                    .arg(portInfo->txPrevRate());
         } else if (index.row() == 2) {
-            return portInfo->rxRate();
+            return QString::fromUtf8("%1/%2/%3")
+                    .arg(portInfo->rxAttainableRate())
+                    .arg(portInfo->rxCurrRate())
+                    .arg(portInfo->rxPrevRate());
         } else if (index.row() == 3) {
             return portInfo->txAttenuation();
         } else if (index.row() == 4) {
@@ -537,4 +585,12 @@ QVariant DslamPortTableModel::secondLevelDataShdsl(QModelIndex index) const
     }
 
     return QVariant();
+}
+
+void DslamPortTableModel::finishAsyncUpdate()
+{
+    if (!mUpdateErrors.isEmpty())
+        mError = mUpdateErrors;
+
+    emit updateFinished(!mUpdateErrors.isEmpty());
 }

@@ -1,7 +1,6 @@
 #include "snmpclient.h"
 
 #include "converters.h"
-#include "customsnmpfunctions.h"
 #include "configs/snmpconfig.h"
 
 SnmpClient::SnmpClient()
@@ -9,6 +8,7 @@ SnmpClient::SnmpClient()
     mPdu = 0;
     mSnmpSession = 0;
     mResponsePdu = 0;
+    mError = "";
 }
 
 SnmpClient::~SnmpClient()
@@ -25,7 +25,7 @@ SnmpClient::~SnmpClient()
         snmp_free_pdu(mResponsePdu);
 
     if (mSnmpSession)
-        snmp_close(mSnmpSession);
+        snmp_sess_close(mSnmpSession);
 }
 
 void SnmpClient::setIp(QString ip)
@@ -69,9 +69,9 @@ bool SnmpClient::setupSession(SessionType::Enum sessionType)
 bool SnmpClient::openSession()
 {
     if (mSnmpSession)
-        snmp_close(mSnmpSession);
+        snmp_sess_close(mSnmpSession);
 
-    mSnmpSession = snmp_open(&mBaseSession);
+    mSnmpSession = static_cast<netsnmp_session *>(snmp_sess_open(&mBaseSession));
 
     return mSnmpSession ? true : false;
 }
@@ -127,9 +127,14 @@ void SnmpClient::addOid(const OidPair &oid, QString value, char type)
 
 bool SnmpClient::sendRequest()
 {
-    int status = snmp_synch_response(mSnmpSession, mPdu, &mResponsePdu);
+    int status = snmp_sess_synch_response(mSnmpSession, mPdu, &mResponsePdu);
 
     if (status == STAT_SUCCESS) {
+        if (!mResponsePdu) {
+            mError = QString::fromUtf8("Неизвестная ошибка");
+            return false;
+        }
+
         if (mResponsePdu->errstat != SNMP_ERR_NOERROR) {
             mError = QString::fromUtf8("Ошибка в пакете. Причина: %1.")
                     .arg(snmp_errstring(mResponsePdu->errstat));
@@ -142,7 +147,7 @@ bool SnmpClient::sendRequest()
                                     /*EMPTY*/;
                 if (vars) {
                     mError += QString::fromUtf8(" Ошибка в OID: %1.")
-                            .arg(oidToString(vars->name, vars->name_length));
+                            .arg(toString(vars->name, vars->name_length));
                 }
             }
 
@@ -151,7 +156,7 @@ bool SnmpClient::sendRequest()
 
         return true;
     } else if (status == STAT_TIMEOUT) {
-        mError = QString::fromUtf8("Таймаут: Нет ответа от %1").arg(mSnmpSession->peername);
+        mError = QString::fromUtf8("Таймаут. Нет ответа от %1").arg(mIp);
         return false;
     } else {
         mError = QString::fromUtf8("Неизвестная ошибка");
@@ -167,4 +172,13 @@ QString SnmpClient::error() const
 netsnmp_variable_list *SnmpClient::varList()
 {
     return mResponsePdu->variables;
+}
+
+void SnmpClient::freeOid(const QVector<const oid *> &oidPairList)
+{
+    int size = oidPairList.size();
+    for (int i = 0; i < size; ++i) {
+        if (oidPairList.at(i))
+            delete[] oidPairList.at(i);
+    }
 }

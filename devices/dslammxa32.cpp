@@ -48,10 +48,22 @@ XdslPort::Ptr DslamMxa32::createPort(BoardType::Enum boardType, int boardIndex,
     switch (boardType) {
     case BoardType::AnnexA:
     case BoardType::AnnexB:
-        return new AdslPortMxa32(snmpIndex, parent);
+        return new AdslPortMxa32(portIndex, snmpIndex, parent);
     default:
-        return new XdslPort(snmpIndex, parent);
+        return new XdslPort(portIndex, snmpIndex, parent);
     }
+}
+
+int DslamMxa32::maxLengthPortDescription()
+{
+    return 10;
+}
+
+bool DslamMxa32::setPortDescription(long snmpPortIndex, QString description)
+{
+    OidPair oid = createOidPair(Mib::mxa32DslPortName, 13, snmpPortIndex);
+
+    return snmpSet(ip(), oid, 's', description, mError);
 }
 
 QList<DslProfile> *DslamMxa32::defaultAdslProfiles()

@@ -17,6 +17,9 @@ public:
     XdslPort::Ptr createPort(BoardType::Enum boardType, int boardIndex,
                              int portIndex, QObject *parent);
 
+    int  maxLengthPortDescription();
+    bool setPortDescription(long snmpPortIndex, QString description);
+
     static QList<DslProfile> *defaultAdslProfiles();
     static QList<DslProfile> *defaultShdslProfiles();
 };

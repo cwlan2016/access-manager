@@ -3,6 +3,8 @@
 
 #include <stdafx.h>
 
+#include <improvedwidgets/improvedmessagewidget.h>
+
 namespace Ui
 {
 class SettingsPageWidget;
@@ -17,6 +19,9 @@ public:
     ~SettingsPageWidget();
 
 private:
+    void showMessage(const QString &msg,
+                     ImprovedMessageWidget::MessageType messageType = ImprovedMessageWidget::Information);
+
     void initGlobalActions();
     void initSnmpTabFields();
     void initDevicesTabFields();

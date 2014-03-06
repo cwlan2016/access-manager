@@ -1,18 +1,20 @@
 #ifndef PAGEWIDGET_H
 #define PAGEWIDGET_H
 
-#include <devices/device.h>
+#include <stdafx.h>
 
 class PageWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PageWidget(Device::Ptr device, QWidget *parent = 0);
+    explicit PageWidget(QWidget *parent = 0);
 
-    Device::Ptr device();
+    virtual void init();
+    virtual QMenu *contextMenu();
 
 protected:
-    Device::Ptr mDevice;
+    QMenu *mContextMenu; //fillInChild
+
 };
 
 #endif // PAGEWIDGET_H

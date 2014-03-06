@@ -1,0 +1,72 @@
+   IANAifType-MIB DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       MODULE-IDENTITY, mib-2      FROM SNMPv2-SMI
+       TEXTUAL-CONVENTION          FROM SNMPv2-TC;
+
+   ianaifType MODULE-IDENTITY
+       LAST-UPDATED "200010170000Z"  -- Oct 17, 2000
+       ORGANIZATION "IANA"
+       CONTACT-INFO "        Internet Assigned Numbers Authority
+
+                     Postal: ICANN
+                             4676 Admiralty Way, Suite 330
+                             Marina del Rey, CA 90292
+
+                     Tel:    +1 310 823 9358
+                     E-Mail: iana@iana.org"
+       DESCRIPTION  "This MIB module defines the IANAifType Textual
+                     Convention, and thus the enumerated values of
+                     the ifType object defined in MIB-II's ifTable."
+
+       REVISION     "200010170000Z"  -- Oct 17, 2000
+       DESCRIPTION  "Registration of new IANAifTypes
+                    188 and 189."  
+
+       REVISION     "200010020000Z"  -- Oct 02, 2000
+       DESCRIPTION  "Registration of new IANAifType 187." 
+
+       REVISION     "200009010000Z"  -- Sept 01, 2000
+       DESCRIPTION  "Registration of new IANAifTypes
+                     184, 185, and 186."			
+
+       REVISION     "200008240000Z"  -- Aug 24, 2000
+       DESCRIPTION  "Registration of new IANAifType 183." 
+
+       REVISION     "200008230000Z"  -- Aug 23, 2000
+       DESCRIPTION  "Registration of new IANAifTypes
+                     174-182."
+
+       REVISION     "200008220000Z"  -- Aug 22, 2000
+       DESCRIPTION  "Registration of new IANAifTypes 170,
+                     171, 172 and 173."
+
+       REVISION     "200004250000Z"  -- Apr 25, 2000
+       DESCRIPTION  "Registration of new IANAifTypes 168 and 169."       
+
+       REVISION     "200003060000Z"  -- Mar 6, 2000
+       DESCRIPTION  "Fixed a missing semi-colon in the IMPORT.
+                     Also cleaned up the REVISION log a bit.
+                     It is not complete, but from now on it will
+                     be maintained and kept up to date with each
+                     change to this MIB module."
+
+       REVISION     "199910081430Z"  -- Oct 08, 1999
+       DESCRIPTION  "Include new name assignments up to cnr(85).
+                     This is the first version available via the WWW
+                     at: ftp://ftp.isi.edu/mib/ianaiftype.mib"
+
+       REVISION     "199401310000Z"  -- Jan 31, 1994
+       DESCRIPTION  "Initial version of this MIB as published in
+                     RFC 1573."
+       ::= { mib-2 30 }
+
+   IANAifType ::= TEXTUAL-CONVENTION
+       STATUS       current
+       DESCRIPTION
+               "This data type is used as the syntax of the ifType
+               object in the (updated) definition of MIB-II's
+               ifTable."
+       SYNTAX  INTEGER 
+
+   END

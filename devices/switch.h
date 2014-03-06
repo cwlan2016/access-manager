@@ -2,6 +2,7 @@
 #define SWITCH_H
 
 #include "device.h"
+#include <ports/switchport.h>
 
 class Switch : public Device
 {
@@ -19,6 +20,8 @@ public:
 
     DeviceType::Enum deviceType() const;
     virtual int countPorts();
+    virtual int sizePortBitArray();
+    virtual SwitchPort::Ptr createPort(QObject *parentModel);
 
     bool getServiceDataFromDevice();
 

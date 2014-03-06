@@ -9,6 +9,12 @@ class BoardTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    enum ColumnIndex {
+            NumberColumn = 0,
+            TypeBoardColumn,
+            PairsColumn
+    };
+
     explicit BoardTableModel(Dslam *parentDevice, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
@@ -24,6 +30,7 @@ public:
 
     QHash<int, DslamBoard::Ptr> boardList() const;
     void addBoard(int index, BoardType::Enum type, int firstPair);
+    DslamBoard::Ptr newBoard(int index, BoardType::Enum type, int firstPair);
 
     Dslam *parentDevice();
 

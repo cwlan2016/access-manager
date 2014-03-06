@@ -1,32 +1,72 @@
 #include "adslport.h"
 
-AdslPort::AdslPort(long index, QObject *parent) :
-    XdslPort(index, parent)
+AdslPort::AdslPort(int index, long snmpIndex, QObject *parent) :
+    XdslPort(index, snmpIndex, parent)
 {
-    mRxRate = 0;
-    mTxRate = 0;
-    mCoding = "dmt";
-    mLineType = "Fast";
+    setRxCurrRate(0);
+    setTxCurrRate(0);
+    setCoding("dmt");
+    setLineType("Fast");
 }
 
-int AdslPort::rxRate() const
+int AdslPort::rxAttainableRate() const
 {
-    return mRxRate;
+    return mRxAttainableRate;
 }
 
-void AdslPort::setRxRate(int rxRate)
+void AdslPort::setRxAttainableRate(int rxAttainableRate)
 {
-    mRxRate = rxRate;
+    mRxAttainableRate = rxAttainableRate;
 }
 
-int AdslPort::txRate() const
+int AdslPort::txAttainableRate() const
 {
-    return mTxRate;
+    return mTxAttainableRate;
 }
 
-void AdslPort::setTxRate(int txRate)
+void AdslPort::setTxAttainableRate(int txAttainableRate)
 {
-    mTxRate = txRate;
+    mTxAttainableRate = txAttainableRate;
+}
+
+int AdslPort::rxCurrRate() const
+{
+    return mRxCurrRate;
+}
+
+void AdslPort::setRxCurrRate(int rxRate)
+{
+    mRxCurrRate = rxRate;
+}
+
+int AdslPort::txCurrRate() const
+{
+    return mTxCurrRate;
+}
+
+void AdslPort::setTxCurrRate(int txRate)
+{
+    mTxCurrRate = txRate;
+}
+
+int AdslPort::rxPrevRate() const
+{
+    return mRxPrevRate;
+}
+
+void AdslPort::setRxPrevRate(int rxPrevRate)
+{
+    mRxPrevRate = rxPrevRate;
+}
+
+int AdslPort::txPrevRate() const
+{
+    return mTxPrevRate;
+}
+
+void AdslPort::setTxPrevRate(int txPrevRate)
+{
+    mTxPrevRate = txPrevRate;
 }
 
 QString AdslPort::coding() const

@@ -7,7 +7,7 @@ class ShdslPortMa5600 : public ShdslPort
 {
     Q_OBJECT
 public:
-    explicit ShdslPortMa5600(long index, QObject *parent = 0);
+    explicit ShdslPortMa5600(int index, long snmpIndex, QObject *parent = 0);
 
     void fillPrimaryLevelPdu(SnmpClient::Ptr snmpClient, long portIndex = -1);
     bool parsePrimaryLevelPdu(SnmpClient::Ptr snmpClient);

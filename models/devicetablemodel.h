@@ -4,12 +4,20 @@
 #include <devices/dslam.h>
 #include <devices/olt.h>
 #include <devices/switch.h>
+#include <improvedwidgets/improvedmessagewidget.h>
 
 class DeviceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit DeviceTableModel(QObject *parent = 0);
+    enum ColumnIndex {
+        NameColumn = 0,
+        DeviceModelColumn,
+        IpColumn,
+        DeviceTypeColumn
+    };
+
+    explicit DeviceTableModel(ImprovedMessageWidget *messageWidget, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -29,8 +37,6 @@ public:
     bool save();
 
     QVector<Device::Ptr> &deviceList();
-
-    BoardTableModel *boardListModel(QModelIndex index);
 
     int inetVlan(QModelIndex index);
     int iptvVlan(QModelIndex index);
@@ -78,6 +84,7 @@ private:
     QString mDeviceListPath;
     QString mDeviceListBackupPath;
     QVector<Device::Ptr> mList;
+    ImprovedMessageWidget *mMessageWidget;
 };
 
 #endif // DEVICETABLEMODEL_H
