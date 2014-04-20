@@ -9,7 +9,7 @@ class DslamMa5300 : public Dslam
 public:
     explicit DslamMa5300(QObject *parent = 0);
     DslamMa5300(QString name, QString ip, QObject *parent = 0);
-    DslamMa5300(Device *source, QObject *parent = 0);
+    explicit DslamMa5300(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);

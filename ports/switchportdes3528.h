@@ -7,7 +7,7 @@ class SwitchPortDes3528 : public SwitchPort
 {
     Q_OBJECT
 public:
-    SwitchPortDes3528(QObject *parent);
+    explicit SwitchPortDes3528(QObject *parent);
 
     void fillPdu(SnmpClient::Ptr snmpClient, int portIndex = -1);
     bool parsePdu(SnmpClient::Ptr snmpClient);

@@ -11,9 +11,9 @@ class Dslam : public Device
 {
     Q_OBJECT
 public:
-    Dslam(QObject *parent = 0);
+    explicit Dslam(QObject *parent = 0);
     Dslam(QString name, QString ip, QObject *parent = 0);
-    Dslam(Device *source, QObject *parent = 0);
+    explicit Dslam(Device *source, QObject *parent = 0);
     //TODO: Assign only 2 values: 0 or 1. Replace using type on bool
     short autoFill() const;
     void setAutoFill(short autoFill);

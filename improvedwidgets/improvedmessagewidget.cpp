@@ -301,8 +301,8 @@ void ImprovedMessageWidgetPrivate::init(ImprovedMessageWidget* q_ptr)
     textLabel = new QLabel(content);
     textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    QObject::connect(textLabel, SIGNAL(linkActivated(const QString&)), q, SIGNAL(linkActivated(const QString&)));
-    QObject::connect(textLabel, SIGNAL(linkHovered(const QString&)), q, SIGNAL(linkHovered(const QString&)));
+    QObject::connect(textLabel, &QLabel::linkActivated, q, &ImprovedMessageWidget::linkActivated);
+    QObject::connect(textLabel, &QLabel::linkHovered, q, &ImprovedMessageWidget::linkHovered);
 
     detailedTextFrame = new QFrame(content);
     detailedTextFrame->hide();
@@ -364,6 +364,7 @@ void ImprovedMessageWidgetPrivate::createLayout()
         layout->addWidget(textLabel, 0, 1);
 
         QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->setParent(layout);
         buttonLayout->setMargin(2);
         buttonLayout->addStretch();
         Q_FOREACH(QToolButton* button, buttons) {
@@ -385,6 +386,7 @@ void ImprovedMessageWidgetPrivate::createLayout()
         mainLayout->setMargin(2);
 
         QHBoxLayout *layout = new QHBoxLayout();
+        layout->setParent(mainLayout);
         layout->setMargin(2);
         layout->addWidget(iconLabel);
         layout->addWidget(textLabel);

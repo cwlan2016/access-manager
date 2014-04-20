@@ -4,6 +4,7 @@ XdslPort::XdslPort(int index, long snmpIndex, QObject *parent) :
     QObject(parent),
     mIndex(index),
     mSnmpIndex(snmpIndex),
+    mPair(0),
     mState(DslPortState::Other)
 {
 }

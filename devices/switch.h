@@ -10,7 +10,7 @@ class Switch : public Device
 public:
     explicit Switch(QObject *parent = 0);
     Switch(QString name, QString ip, QObject *parent = 0);
-    Switch(Device *source, QObject *parent = 0);
+    explicit Switch(Device *source, QObject *parent = 0);
 
     int inetVlanTag() const;
     void setInetVlanTag(int vlanTag);

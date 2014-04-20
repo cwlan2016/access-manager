@@ -8,7 +8,7 @@ class DslamBoard : public QObject
 {
     Q_OBJECT
 public:
-    DslamBoard(QObject *parent = 0);
+    explicit DslamBoard(QObject *parent = 0);
 
     int index() const;
     void setIndex(int index);
@@ -23,7 +23,7 @@ public:
 signals:
     void modified();
 private:
-    int mNumber;
+    int mIndex;
     int mFirstPair;
     BoardType::Enum mType;
 };

@@ -4,6 +4,6 @@
 #include "customtypes.h"
 
 bool        validIpAddress(QString ip);
-QString     toString(u_char *string, int str_len);
-QString     toString(u_long *oid, int oid_len);
+QString     toString(quint8 *cstring, int strLen);
+QString     toString(ulong *oid, int oidLen);
 #endif // CONVERTERS_H

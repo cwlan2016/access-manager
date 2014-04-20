@@ -8,7 +8,7 @@ class BoardTableDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    BoardTableDelegate(Dslam::Ptr dslamInfo, QObject *parent = 0);
+    explicit BoardTableDelegate(Dslam::Ptr dslamInfo, QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;

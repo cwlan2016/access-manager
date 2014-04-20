@@ -23,6 +23,9 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent) :
     ui->portEdit->setValidator(new QIntValidator(0, 65523, this));
     ui->retriesEdit->setValidator(new QIntValidator(0, 10, this));
 
+    ui->messageWidget->setCloseButtonVisible(true);
+    ui->messageWidget->hide();
+
     initGlobalActions();
     initSnmpTabFields();
     initDevicesTabFields();

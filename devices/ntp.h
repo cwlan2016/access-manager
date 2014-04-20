@@ -7,7 +7,7 @@ class Ntp : public Ont
 {
     Q_OBJECT
 public:
-    Ntp(QObject *parent);
+    explicit Ntp(QObject *parent);
 
     QString pppLogin();
     void setPppLogin(QString login);

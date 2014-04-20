@@ -1,6 +1,7 @@
 #include "dslamboard.h"
 
 DslamBoard::DslamBoard(QObject *parent) : QObject(parent),
+    mIndex(0),
     mFirstPair(1),
     mType(BoardType::AnnexA)
 {
@@ -8,12 +9,12 @@ DslamBoard::DslamBoard(QObject *parent) : QObject(parent),
 
 int DslamBoard::index() const
 {
-    return mNumber;
+    return mIndex;
 }
 
 void DslamBoard::setIndex(int number)
 {
-    mNumber = number;
+    mIndex = number;
 }
 
 BoardType::Enum DslamBoard::type() const

@@ -7,7 +7,7 @@ class Ont : public QObject
 {
     Q_OBJECT
 public:
-    Ont(QObject *parent);
+    explicit Ont(QObject *parent);
 
     QString id();
     void setId(QString id);

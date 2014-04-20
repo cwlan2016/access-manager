@@ -137,8 +137,7 @@ void SwitchPageWidget::initView()
     QSortFilterProxyModel *portProxyModel = new QSortFilterProxyModel(this);
     portProxyModel->setSourceModel(portTableModel);
 
-    SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(this);
-    portTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
+    SwitchPortTableDelegate *portTableDelegate = new SwitchPortTableDelegate(mDevice->maxLengthPortDescription(), this);
 
     ui->portListTableView->setModel(portProxyModel);
     ui->portListTableView->setItemDelegate(portTableDelegate);
@@ -370,7 +369,7 @@ void SwitchPageWidget::filterMacAddressByPorts()
     auto it = rangeStringList.constBegin();
     auto end = rangeStringList.constEnd();
     for (; it != end; ++it) {
-        QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
+        QStringList valueStringList = (*it).split('-', QString::SkipEmptyParts);
 
         if (valueStringList.size() == 2) {
             int first = valueStringList.at(0).toInt();

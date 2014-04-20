@@ -8,9 +8,9 @@ class Device : public QObject
 {
     Q_OBJECT
 public:
-    Device(QObject *parent = 0);
+    explicit Device(QObject *parent = 0);
     Device(QString name, QString ip, QObject *parent = 0);
-    Device(Device *source, QObject *parent = 0);
+    explicit Device(Device *source, QObject *parent = 0);
 
     QString name() const;
     void setName(const QString name);

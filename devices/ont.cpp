@@ -1,7 +1,10 @@
 #include "ont.h"
 
 Ont::Ont(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    mType(OntType::Nte),
+    mServiceProfile(0),
+    mMulticastProfile(0)
 {
 }
 

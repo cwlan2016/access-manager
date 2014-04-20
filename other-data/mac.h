@@ -7,7 +7,7 @@ class Mac : public QObject
 {
     Q_OBJECT
 public:
-    Mac(QObject *parent);
+    explicit Mac(QObject *parent);
 
     int port() const;
     void setPort(int port);

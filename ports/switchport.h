@@ -9,7 +9,7 @@ class SwitchPort : public QObject
 {
     Q_OBJECT
 public:
-    SwitchPort(QObject *parent);
+    explicit SwitchPort(QObject *parent);
 
     int index() const;
     void setIndex(int index);

@@ -9,7 +9,7 @@ class DslamMxa32 : public Dslam
 public:
     explicit DslamMxa32(QObject *parent = 0);
     DslamMxa32(QString name, QString ip, QObject *parent = 0);
-    DslamMxa32(Device *source, QObject *parent = 0);
+    explicit DslamMxa32(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts(BoardType::Enum boardType);

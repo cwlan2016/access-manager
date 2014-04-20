@@ -1,3 +1,4 @@
+
 #include "switchporttablemodel.h"
 
 #include <basicdialogs.h>
@@ -428,7 +429,7 @@ bool SwitchPortTableModel::getVlanSettings()
     result &= getUnicastVlanSettings(vlanMemberOid, mInetVlanUntagMember, "Inet");
 
     if (!result)
-        allErrors += mError + "\n";
+        allErrors += mError + '\n';
 
     vlanMemberOid = createOidPair(Mib::dot1qVlanStaticEgressPorts, 13, mParentDevice->iptvVlanTag());
     result = getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanAllMember, "IPTV Unicast");
@@ -437,12 +438,12 @@ bool SwitchPortTableModel::getVlanSettings()
     result &= getUnicastVlanSettings(vlanMemberOid, mIptvUnicastVlanUntagMember, "IPTV Unicast");
 
     if (!result)
-        allErrors += mError + "\n";
+        allErrors += mError + '\n';
 
     result = getMulticastVlanSettings();
 
     if (!result)
-        allErrors += mError + "\n";
+        allErrors += mError + '\n';
 
     if (!allErrors.isEmpty()) {
         mMessageWidget->setMessageType(ImprovedMessageWidget::Error);

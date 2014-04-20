@@ -7,9 +7,9 @@ class Olt : public Device
 {
     Q_OBJECT
 public:
-    Olt(QObject *parent = 0);
+    explicit Olt(QObject *parent = 0);
     Olt(QString name, QString ip, QObject *parent = 0);
-    Olt(Device *source, QObject *parent = 0);
+    explicit Olt(Device *source, QObject *parent = 0);
 
     QString serviceProfile(int index) const;
     void addServiceProfile(int index, QString profileName);

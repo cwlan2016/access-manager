@@ -1,7 +1,9 @@
 #include "mac.h"
 
 Mac::Mac(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    mPort(0),
+    mVlan(0)
 {
 }
 

@@ -1,5 +1,6 @@
-#include "constant.h"
 #include "customsnmpfunctions.h"
+
+#include "constant.h"
 #include "snmpclient.h"
 
 //type - snmp type: i, s, x and etc.

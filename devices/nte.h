@@ -7,7 +7,7 @@ class Nte : public Ont
 {
     Q_OBJECT
 public:
-    Nte(QObject *parent);
+    explicit Nte(QObject *parent);
 
     void Reconfigure();
 

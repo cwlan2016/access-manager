@@ -11,16 +11,16 @@ bool validIpAddress(QString ip)
     return regExp.indexIn(ip) != -1;
 }
 
-QString toString(u_char *string, int str_len)
+QString toString(quint8 *cstring, int strLen)
 {
-    return QString::fromLatin1(reinterpret_cast<char *>(string), str_len);
+    return QString::fromLatin1(reinterpret_cast<char *>(cstring), strLen);
 }
 
-QString toString(u_long *oid, int oid_len)
+QString toString(ulong *oid, int oidLen)
 {
     QString result = "";
-    for (int i = 0 ; i < oid_len; ++i)
-        result += "." + QString::number(oid[i]);
+    for (int i = 0 ; i < oidLen; ++i)
+        result += '.' + QString::number(oid[i]);
 
     return result;
 }

@@ -1,7 +1,9 @@
 #include "ntp.h"
 
 Ntp::Ntp(QObject *parent) :
-    Ont(parent)
+    Ont(parent),
+    mPhone1Enable(false),
+    mPhone2Enable(false)
 {
 }
 

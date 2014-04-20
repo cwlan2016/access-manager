@@ -76,7 +76,7 @@ void BoardTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
         QString firstPair = comboBox->currentText();
 
         if (!firstPair.isEmpty()) {
-            firstPair = firstPair.split("-").at(0);
+            firstPair = firstPair.split('-').at(0);
         } else {
             return;
         }

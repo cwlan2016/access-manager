@@ -114,8 +114,7 @@ void DslamPageWidget::initComponents()
 
     mBoardTableDelegate = new BoardTableDelegate(mDevice.objectCast<Dslam>(), this);
 
-    mPortTableDelegate = new DslamPortTableDelegate(this);
-    mPortTableDelegate->setDescriptionPortLength(mDevice->maxLengthPortDescription());
+    mPortTableDelegate = new DslamPortTableDelegate(mDevice->maxLengthPortDescription(), this);
 
     connect(ui->autoUpdateBoardListCheckBox, &QCheckBox::toggled,
             this, &DslamPageWidget::autoUpdateBoardListStateChanged);
@@ -275,7 +274,7 @@ void DslamPageWidget::showPortListModel()
             this, &DslamPageWidget::updatePortTableFinished);
 
     QModelIndex indexPairRange = boardListModel->index(ui->dslamTreeView->currentIndex().row(), 2);
-    QString pair = boardListModel->data(indexPairRange).toString().split("-")[0];
+    QString pair = boardListModel->data(indexPairRange).toString().split('-')[0];
 
     portListModel->setBoardType(typeBoard);
     portListModel->setFirstPair(pair.toInt());

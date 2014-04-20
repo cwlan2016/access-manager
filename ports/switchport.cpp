@@ -2,6 +2,7 @@
 
 SwitchPort::SwitchPort(QObject *parent) :
     QObject(parent),
+    mIndex(0),
     mState(SwitchPortState::Other)
 {
 }

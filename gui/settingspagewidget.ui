@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="ImprovedMessageWidget" name="messageWidget" native="true"/>
+    <widget class="ImprovedMessageWidget" name="messageWidget"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="topHorizontalLayout">
@@ -459,6 +459,18 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ImprovedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>improvedwidgets/improvedlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ImprovedMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>improvedwidgets/improvedmessagewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>listWidget</tabstop>
   <tabstop>readComEdit</tabstop>

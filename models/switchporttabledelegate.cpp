@@ -2,8 +2,9 @@
 
 #include "switchporttablemodel.h"
 
-SwitchPortTableDelegate::SwitchPortTableDelegate(QObject *parent) :
-    QItemDelegate(parent)
+SwitchPortTableDelegate::SwitchPortTableDelegate(int descriptionPortLength, QObject *parent) :
+    QItemDelegate(parent),
+    mDescriptionPortLength(descriptionPortLength)
 {
 }
 
@@ -41,15 +42,10 @@ void SwitchPortTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *
 
         QString text = lineEdit->text();
         if (text.isEmpty())
-            text = " ";
+            text = ' ';
 
         model->setData(index, text, Qt::EditRole);
     } else {
         QItemDelegate::setModelData(editor, model, index);
     }
-}
-
-void SwitchPortTableDelegate::setDescriptionPortLength(int length)
-{
-    mDescriptionPortLength = length;
 }

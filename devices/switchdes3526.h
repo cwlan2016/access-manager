@@ -9,7 +9,7 @@ class SwitchDes3526 : public Switch
 public:
     explicit SwitchDes3526(QObject *parent = 0);
     SwitchDes3526(QString name, QString ip, QObject *parent = 0);
-    SwitchDes3526(Device *source, QObject *parent = 0);
+    explicit SwitchDes3526(Device *source, QObject *parent = 0);
 
     DeviceModel::Enum deviceModel() const;
     int countPorts();

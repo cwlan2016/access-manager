@@ -3,8 +3,9 @@
 #include <constant.h>
 #include "dslamporttablemodel.h"
 
-DslamPortTableDelegate::DslamPortTableDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
+DslamPortTableDelegate::DslamPortTableDelegate(int descriptionPortLength, QObject *parent) :
+    QStyledItemDelegate(parent),
+    mDescriptionPortLength(descriptionPortLength)
 {
 }
 
@@ -48,17 +49,12 @@ void DslamPortTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 
         QString text = lineEdit->text();
         if (text.isEmpty())
-            text = " ";
+            text = ' ';
 
         model->setData(index, text, Qt::EditRole);
     } else {
         QStyledItemDelegate::setModelData(editor, model, index);
     }
-}
-
-void DslamPortTableDelegate::setDescriptionPortLength(int length)
-{
-    mDescriptionPortLength = length;
 }
 
 //void DslamPortTableDelegate::paint(QPainter *painter,

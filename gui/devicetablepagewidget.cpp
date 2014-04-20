@@ -371,7 +371,7 @@ void DeviceTablePageWidget::batchUpdate(DeviceType::Enum updatingDeviceType)
             bool result = deviceList[i]->getServiceDataFromDevice();
 
             if (!result)
-                errorString += deviceList.at(i)->error() + "\n";
+                errorString += deviceList.at(i)->error() + '\n';
 
             if (deviceType == DeviceType::Dslam) {
                 if (deviceList.at(i).objectCast<Dslam>()->autoNumeringBoard())

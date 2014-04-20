@@ -38,7 +38,7 @@ QValidator::State PortListValidator::validate(QString &input, int &pos) const
     auto it = rangeStringList.constBegin();
     auto end = rangeStringList.constEnd();
     for (; it != end; ++it) {
-        QStringList valueStringList = (*it).split("-", QString::SkipEmptyParts);
+        QStringList valueStringList = (*it).split('-', QString::SkipEmptyParts);
 
         if (valueStringList.size() == 2) {
             if ((valueStringList.at(0).toInt() > mCountPorts)
